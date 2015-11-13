@@ -1,0 +1,65 @@
+<style type="text/css">
+  ul.data-tabs li{
+    display: inline-block;
+  }
+
+  ul.data-tabs {
+    border-bottom: 1px solid #999;
+    padding-left: 15px;
+    position: relative;
+  }
+
+  ul.data-tabs a {
+    display: inline-block;
+    color: black;
+    text-decoration: none;
+    border: 1px solid #999;
+    padding: 5px 10px;
+    position: relative;
+    bottom: -1px;
+  }
+  ul.data-tabs a.active {
+    border-bottom: 1px solid #FFFFFF;
+  }
+
+  .tab-content {
+    padding: 20px 10px;
+  }
+
+</style>
+<div class="panel panel-default">
+  <div class="panel-body">
+		<%= form_tag "", {method: "POST"} do %>
+      <label for="cjbh">抽检编号(多个编号请换行)：</label>
+      <div class="form-inline">
+        <textarea class="form-control input-sm" value="<%= params[:cjbh]%>" name="cjbh" rows="10"></textarea>
+				<br>
+				<label class="label label-danger" for=""><%= flash[:error]%></label>
+				<br>
+				<br>
+        <button class="btn btn-primary btn-sm">确认延期</button>
+      </div>
+    <% end %>
+    <br>
+		<% if !@result.blank? %>
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th width="110">抽检编号</th>
+					<th>结果</th>
+				</tr>
+			</thead>
+			<tbody>
+			<% @result.each_with_index do |res, index|%>   
+				<tr>
+					<td>
+						<%= res[:cjbh] %>
+					</td>
+					<td><%= res[:result] %></td>
+				</tr>
+			<% end %>
+			</tbody>
+		</table>
+		<% end %>
+  </div>
+</div>

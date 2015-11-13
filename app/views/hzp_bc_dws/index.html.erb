@@ -1,0 +1,51 @@
+
+<div><h1><br\><br\></h1></div>
+<div><h1><br\>化妆品安全检验检测被采样单位信息<br\></h1></div>
+<div>
+<table>
+  <tr>
+    <th>被采样单位名称</th>
+    <th>被采样单位类型</th>
+    <th>其他</th>
+    <th>所在省份(市、自治区)</th>
+    <th>所在地区(市、州、盟)</th>
+    <th>所在县(市、区)</th>
+    <th>所在乡(镇)</th>
+    <th>单位地址</th>
+    <th>邮编</th>
+    <th>法人(负责人)</th>
+    <th>联系电话</th>
+    <th>负责人(联系人)</th>
+    <th>联系电话</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @hzp_bc_dws.each do |hzp_bc_dw| %>
+  <tr>
+    <td><%= hzp_bc_dw.dwname %></td>
+    <td><%= hzp_bc_dw.dwlx %></td>
+    <td><%= hzp_bc_dw.dwlxzdy %></td>
+    <td><%= hzp_bc_dw.dwsf %></td>
+    <td><%= hzp_bc_dw.dwdq %></td>
+    <td><%= hzp_bc_dw.dwxs %></td>
+    <td><%= hzp_bc_dw.dwxz %></td>
+    <td><%= hzp_bc_dw.dwdz %></td>
+    <td><%= hzp_bc_dw.dwyb %></td>
+    <td><%= hzp_bc_dw.dwfr %></td>
+    <td><%= hzp_bc_dw.dwfrdh %></td>
+    <td><%= hzp_bc_dw.dwfzr %></td>
+    <td><%= hzp_bc_dw.dwfzrdh %></td>
+    <td><%= link_to '查看', hzp_bc_dw %></td>
+    <td><%= link_to '编辑', edit_hzp_bc_dw_path(hzp_bc_dw) %></td>
+    <td><%= link_to '删除', hzp_bc_dw, method: :delete, data: { confirm: '是否确定删除?' } %></td>
+  <br/>
+  </tr>
+<% end %>
+</table>
+</div>
+<div><br /></div>
+
+<div><%= link_to '新增', new_hzp_bc_dw_path %></div>
+<div><p><%= will_paginate @hzp_bcdws, :previous_label=>'上一页',:next_label=>'下一页' %> </p></div>

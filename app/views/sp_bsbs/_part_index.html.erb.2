@@ -1,0 +1,205 @@
+<script>
+    $(document).ready(function(){
+        $('#x-table-header-table-basic div[name="x-table-header-title-basic"]').click(function(){
+            if($(this).hasClass("up"))
+            {
+                $('#x-table-header-table-basic div[name="x-table-header-title-basic"]').removeClass();
+                $(this).addClass("down");
+                $('#sp_order_seq').val("DESC");
+                $('#sp_order').val($(this).parent("th").attr("name"));
+            }
+            else
+            {
+                $('#x-table-header-table-basic div[name="x-table-header-title-basic"]').removeClass();
+                $(this).addClass("up");
+                $('#sp_order_seq').val("ASC");
+                $('#sp_order').val($(this).parent("th").attr("name"));                                                                      
+            }
+            $('#sp_submit').trigger("click");
+        });
+    });
+</script>
+<link rel="stylesheet" type="text/css" media="screen" href="/assets/x-table.css" />
+<div id="basic">
+    <div id="x-table-basic" class="x-table" style="border: 0px; padding: 0px;">
+        <div id="x-table-header-basic" class="header">
+            <div id="x-table-header-box-basic" class="box" style="padding-right: 17px;">
+                <table id="x-table-header-table-basic" cellpadding="0" cellspacing="0" border="0">
+                    <thead>
+                        <tr>
+                            <th name="updated_at"  style="width:81px; cursor: pointer;">
+                                <div name="x-table-header-title-basic">
+                                    <div style="overflow: hidden;">更新日期</div>
+                                </div>
+                            </th>
+                            <th name="sp_s_3"  style="width:61px; cursor: pointer;">
+                                <div name="x-table-header-title-basic">
+                                    <div style="overflow: hidden;">省份</div>
+                                </div>
+                            </th>
+                            <th name="sp_s_16"  style="width:91px; cursor: pointer;">
+                                <div name="x-table-header-title-basic">
+                                    <div style="overflow: hidden;">采样编号</div>
+                                </div>
+                            </th>
+                            <th name="sp_s_14"  style="width:90px; cursor: pointer;">
+                                <div name="x-table-header-title-basic">
+                                    <div style="overflow: hidden;">样品名称</div>
+                                </div>
+                            </th>
+                            <th name="sp_s_35"  style="width:90px; cursor: pointer;">
+                                <div name="x-table-header-title-basic">
+                                    <div style="overflow: hidden;">采样单位名称</div>
+                                </div>
+                            </th>
+                            <th name="sp_s_43"  style="width:90px; cursor: pointer;">
+                                <div name="x-table-header-title-basic">
+                                    <div style="overflow: hidden;">检验机构名称</div>
+                                </div>
+                            </th>
+                            <th name="sp_s_214"  style="width:80px; cursor: pointer;">
+                                <div name="x-table-header-title-basic">
+                                    <div style="overflow: hidden;">样品是否确认</div>
+                                </div>
+                            </th>
+                            <th name="sp_i_state"  style="width:80px; cursor: pointer;">
+                                <div name="x-table-header-title-basic">
+                                    <div style="overflow: hidden;">填报状态</div>
+                                </div>
+                            </th>
+                            <th name="c_9"  style="width:80px; cursor: pointer;">
+                                <div name="x-table-header-title-basic">
+                                    <div style="overflow: hidden;"></div>
+                                </div>
+                            </th>
+                            <th name="c_10"  style="width:80px; cursor: pointer;">
+                                <div name="x-table-header-title-basic">
+                                    <div style="overflow: hidden;"></div>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+        <div id="x-table-body-basic" class="body">
+            <div id="x-table-body-box-basic" class="box">
+                <table id="x-table-body-table-basic" cellpadding="0" cellspacing="0" border="0">
+                    <% @sp_bsbs.each do |sp_bsb| %>
+                        <tr valign="top">
+                            <%if  ((sp_bsb.sp_s_71.include? '问题样品' unless sp_bsb.sp_s_71.nil?)or(sp_bsb.sp_s_71.include? '不合格样品' unless sp_bsb.sp_s_71.nil?))%>
+                                <td style="width:80px;"><font color="red"><%=((sp_bsb.updated_at).ago(-3600*8)).to_s[0,19]%></font></td>
+                                <td style="width:59px;"><font color="red"><%= sp_bsb.sp_s_3 %></font></td>
+                                <td style="width:89px; word-break:break-all"><font color="red"><%= sp_bsb.sp_s_16 %></font></td>
+                                <td style="width:89px;"><font color="red"><%= sp_bsb.sp_s_14 %></font></td>
+                                <td style="width:89px;" valign="top"><font color="red"><%= sp_bsb.sp_s_35 %></font></td>
+                                <td style="width:89px;"><font color="red"><%= sp_bsb.sp_s_43 %></font></td>
+                                <td style="width:79px;"><font color="red"><%= sp_bsb.sp_s_214 %></font></td>
+                            <%else%>
+                                <td style="width:80px;"><%=((sp_bsb.updated_at).ago(-3600*8)).to_s[0,19]%></td>
+                                <td style="width:59px;"><%= sp_bsb.sp_s_3 %></td>
+                                <td style="width:89px; word-break:break-all"><%= sp_bsb.sp_s_16 %></td>
+                                <td style="width:89px;"><%= sp_bsb.sp_s_14 %></td>
+                                <td style="width:89px;" valign="top"><%= sp_bsb.sp_s_35 %></td>
+                                <td style="width:89px;"><%= sp_bsb.sp_s_43 %></td>
+                                <td style="width:79px;"><%= sp_bsb.sp_s_214 %></td>
+                            <%end%>
+                            <%if (sp_bsb["sp_i_state"]==nil) %>
+                                <td style="width:79px;"><%= link_to '填报样品信息', edit_sp_bsb_path(sp_bsb) %></td>
+                                <td style="width:79px;"><%= link_to '删除', sp_bsb,method: :delete, data: { confirm: '是否删除?' } %></td>
+                            <%elsif (sp_bsb["sp_i_state"]<2) %>
+                                <td style="width:79px;"><%= link_to '填报样品信息', edit_sp_bsb_path(sp_bsb) %></td>
+                                <td style="width:79px;"><%= link_to '删除', sp_bsb,method: :delete, data: { confirm: '是否删除?' } %></td>
+                            <%elsif sp_bsb["sp_i_state"]<3 %>
+                                <td style="width:79px;"><%= link_to '填报检测数据', edit_sp_bsb_path(sp_bsb) %></td>
+                                <td style="width:79px;"><%= link_to '删除', sp_bsb,method: :delete, data: { confirm: '是否删除?' } %></td>
+                            <%elsif sp_bsb["sp_i_state"]==3 %>
+                                <td style="width:79px;"><%= link_to '退回待修数据', edit_sp_bsb_path(sp_bsb) %></td>
+                            <%elsif sp_bsb["sp_i_state"]==4 %>
+                                <td style="width:79px;"><%= link_to '待机构审核', edit_sp_bsb_path(sp_bsb) %></td>
+                            <%elsif sp_bsb["sp_i_state"]==6 %>
+                                <td style="width:79px;"><%= link_to '待省局审核', edit_sp_bsb_path(sp_bsb) %></td>
+                                <%if  ((sp_bsb.sp_s_71.include? '问题样品')or(sp_bsb.sp_s_71.include? '不合格样品'))&&(session[:user_name]=='admin'||session[:user_js]==1)%>
+                                   <%if sp_bsb.wtyp_state==nil&&sp_bsb.wtyp_state_sc==nil%> 
+                                        <td style="width:79px;"><%= link_to '问题样品处理(未进行)', :controller => "wtyp_czbs",:action => "new", :id =>sp_bsb %></td>
+                                   <%else%>
+                                        <%if (session[:user_province]!=sp_bsb.sp_s_3&&session[:user_province]==sp_bsb.sp_s_202)||session[:user_name]=='admin'||session[:change_js]==10%>
+                                            <%if sp_bsb.wtyp_state_sc==nil%>
+                                                <td style="width:79px;"><%= link_to '问题样品处理(未进行)', :controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb %></td>
+                                            <%else%>
+                                                <td style="width:79px;"><%= link_to '问题样品处理('+sp_bsb.wtyp_state_sc+')', :controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb %></td>
+                                            <%end%>
+                                        <%end%>
+                                        <%if (session[:user_province]==sp_bsb.sp_s_3)||session[:user_name]=='admin'||session[:change_js]==10%>
+                                            <%if sp_bsb.wtyp_state==nil%>
+                                                <td style="width:79px;"><%= link_to '问题样品处理(未进行)', :controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb %></td>
+                                            <%else%>
+                                                <td style="width:79px;"><%= link_to '问题样品处理('+sp_bsb.wtyp_state+')', :controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb %></td>
+                                            <%end%>
+                                        <%end%>
+                                   <%end%>
+                                <%end%>
+                            <%elsif sp_bsb["sp_i_state"]==8 %>
+                                <td style="width:79px;"><%= link_to '待牵头单位审核', edit_sp_bsb_path(sp_bsb) %></td>
+                                <%if  ((sp_bsb.sp_s_71.include? '问题样品')or(sp_bsb.sp_s_71.include? '不合格样品'))&&(session[:user_name]=='admin'||session[:user_js]==1)%>
+                                   <%if sp_bsb.wtyp_state==nil&&sp_bsb.wtyp_state_sc==nil%> 
+                                        <td style="width:79px;"><%= link_to '问题样品处理(未进行)', :controller => "wtyp_czbs",:action => "new", :id =>sp_bsb %></td>
+                                   <%else%>
+                                        <%if (session[:user_province]!=sp_bsb.sp_s_3&&session[:user_province]==sp_bsb.sp_s_202)||session[:user_name]=='admin'||session[:change_js]==10%>
+                                            <%if sp_bsb.wtyp_state_sc==nil%>
+                                                <td style="width:79px;"><%= link_to '问题样品处理(未进行)', :controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb %></td>
+                                            <%else%>
+                                                <td style="width:79px;"><%= link_to '问题样品处理('+sp_bsb.wtyp_state_sc+')', :controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb %></td>
+                                            <%end%>
+                                        <%end%>
+                                        <%if (session[:user_province]==sp_bsb.sp_s_3)||session[:user_name]=='admin'||session[:change_js]==10%>
+                                            <%if sp_bsb.wtyp_state==nil%>
+                                                <td style="width:79px;"><%= link_to '问题样品处理(未进行)', :controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb %></td>
+                                            <%else%>
+                                                <td style="width:79px;"><%= link_to '问题样品处理('+sp_bsb.wtyp_state+')', :controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb %></td>
+                                            <%end%>
+                                        <%end%>
+                                   <%end%>
+                                <%end%>
+                                <%elsif sp_bsb["sp_i_state"]==9%>
+									<td style="width:79px;"><%= link_to '已完全提交', sp_bsb %></td>
+									<td style="width:79px;"><a class="print-sp-bsb" href="/sp_bsbs/<%= sp_bsb.id%>/print.pdf" target="_blank">打印</a></td>
+									<%if ((sp_bsb.sp_s_71.include? '问题样品')or(sp_bsb.sp_s_71.include? '不合格样品'))&&(session[:user_name]=='admin'||session[:user_js]==1||session[:change_js]==9||session[:change_js]==10)%>
+                                    <%if sp_bsb.wtyp_state==nil&&sp_bsb.wtyp_state_sc==nil%> 
+                                        <td style="width:79px;" ><%= link_to '问题样品处理1(未进行)', :controller => "wtyp_czbs",:action => "new", :id =>sp_bsb %></td>
+                                    <%else%>
+                                        <%if (session[:user_province]!=sp_bsb.sp_s_3&&session[:user_province]==sp_bsb.sp_s_202)||session[:user_name]=='admin'||session[:change_js]==10%>
+                                            <%if sp_bsb.wtyp_state_sc==nil%>
+                                                <td style="width:79px;"><%= link_to '问题样品处理2(未进行)',{:controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb},{:width=>80} %></td>
+                                            <%else%>
+                                                <td style="width:79px;"><%= link_to '问题样品处理3('+sp_bsb.wtyp_state_sc+')', :controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb %></td>
+                                            <%end%>
+                                        <%end%>
+                                        <%if (session[:user_province]==sp_bsb.sp_s_3)||session[:user_name]=='admin'||session[:change_js]==10%>
+                                            <%if sp_bsb.wtyp_state==nil%>
+                                                <td style="width:79px;"><%= link_to '问题样品处理4(未进行)', :controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb %></td>
+                                            <%else%>
+                                                <td style="width:79px;"><%= link_to '问题样品处理5('+sp_bsb.wtyp_state+')', :controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb %></td>
+                                            <%end%>
+                                        <%end%>
+                                   <%end%>
+
+                                <%end%>
+                                <%elsif sp_bsb["sp_i_state"]==10 %>
+                                    <td style="width:79px;"><%= link_to '批量导入待入库', edit_sp_bsb_path(sp_bsb) %></td>
+                                    <td style="width:79px;"><%= link_to '删除', sp_bsb,method: :delete, data: { confirm: '是否删除?' } %></td>
+                                <%end%>
+                            <% unless sp_bsb.fail_report_path.blank? %>
+                            <td><a href="/sp_bsbs/<%= sp_bsb.id%>/fail_pdf_report" target="_blank">查看检验报告</a></td>
+                            <% end %>
+                            <% if sp_bsb.sp_i_state == 9 and sp_bsb.is_bad_report? %>
+                            <td width = "50"><a href="/yycz_from_bsb/<%= sp_bsb.id %>" onclick="if(!confirm('确定登记异议信息吗？')){return false;}">异议登记</a></td>
+                            <% end %>
+                        </tr>
+                    <%end%>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

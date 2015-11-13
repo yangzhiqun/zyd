@@ -1,0 +1,29 @@
+<h1>Listing c_categories</h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>A category</th>
+    <th>B category</th>
+    <th>Note</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @c_categories.each do |c_category| %>
+  <tr>
+    <td><%= c_category.name %></td>
+    <td><%= c_category.a_category_id %></td>
+    <td><%= c_category.b_category_id %></td>
+    <td><%= c_category.note %></td>
+    <td><%= link_to 'Show', c_category %></td>
+    <td><%= link_to 'Edit', edit_c_category_path(c_category) %></td>
+    <td><%= link_to 'Destroy', c_category, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New C category', new_c_category_path %>

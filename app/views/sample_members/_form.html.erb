@@ -1,0 +1,61 @@
+<%= form_for(@sample_member) do |f| %>
+  <% if @sample_member.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@sample_member.errors.count, "error") %> prohibited this sample_member from being saved:</h2>
+      <ul>
+      <% @sample_member.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label "机构：" %><br />
+    <%= f.text_field :jg_name, :class => "form-control input-sm" %>
+  </div>
+  <div class="field">
+    <%= f.label "姓名：" %><br />
+    <%= f.text_field :username, :class => "form-control input-sm" %>
+  </div>
+  <div class="field">
+    <%= f.label "身份证号：" %><br />
+    <%= f.text_field :uid, :class => "form-control input-sm" %>
+  </div>
+  <div class="field">
+    <%= f.label "专业：" %><br />
+    <%= f.text_field :major, :class => "form-control input-sm" %>
+  </div>
+  <div class="field">
+    <%= f.label "教育背景：" %><br />
+    <%= f.text_field :edu_bg, :class => "form-control input-sm" %>
+  </div>
+  <div class="field">
+    <%= f.label "职称：" %><br />
+    <%= f.text_field :title, :class => "form-control input-sm" %>
+  </div>
+  <div class="field">
+    <%= f.label "电话：" %><br />
+    <%= f.text_field :mobile, :class => "form-control input-sm" %>
+  </div>
+  <div class="field">
+    <%= f.label "工作经历：" %><br />
+    <%= f.text_field :work_history, :class => "form-control input-sm" %>
+  </div>
+  <div class="field">
+    <%= f.label "备注：" %><br />
+    <%= f.text_field :note, :class => "form-control input-sm" %>
+  </div>
+  <div class="field">
+    <%= f.label "照片：" %><br />
+    <%= f.file_field :portrait_file %>
+		<br>
+		<img src="/sample_members/<%= @sample_member.id %>/portrait" class="img img-rounded">
+  </div>
+
+	<hr>
+
+  <div class="actions">
+    <%= f.submit "保存", :class => 'btn btn-sm btn-primary'%>
+  </div>
+<% end %>

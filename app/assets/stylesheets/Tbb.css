@@ -1,0 +1,68 @@
+/* CSS Document */
+*{ margin:0; padding:0;}
+body{ font-size:12px; color:#333; background:#F5FAFD;}
+img{ border:0;}
+a{ text-decoration:none;}
+ul,li{ list-style-type:none;}
+#wrap{ width:960px; height:auto; margin:auto;}
+#content{ width:960px; height:auto; float:left; background:#FFFFFF;}
+div{ line-height:20px}
+
+/*               list       */
+.clear{ clear:both; height:1px;} 
+.tittle1{width:100%; margin-top:30px; margin-bottom:30px; font-size:24px; font-family:"黑体"; text-align:center; height:45px; line-height:45px;}
+.tittle2{width:100%; margin-top:5px; margin-bottom:15px; font-size:18px; font-family:"宋体"; text-align:center; background-color:#ffff99; line-height:30px;}
+.tittle2b{width:100%; margin-top:5px; margin-bottom:15px; font-size:18px; font-family:"宋体"; text-align:center; background-color:#ffcc00; line-height:30px;}
+.tab1a{width:96px; _width:94px; height:30px; font-size:12px; float:left; margin-left:4px;}
+.tab1b{width:300px; _width:298px; height:30px;  float:left;}
+.tab1c{width:300px; _width:298px; height:30px;  float:left;}
+.tab1d{width:100px; _width:98px; height:30px;  float:left;}
+.tab1e{width:250px; _width:250px; height:30px;  float:left;}
+.tab2b{width:250px; _width:248px; height:30px;  float:left;}
+.tab2c{width:556px; _width:554px; height:30px;  float:right;}
+.tab3b{width:804px; _width:802px; height:30px;  float:right;}
+.tab4a{width:150px; _width:148px; height:30px; float:left; margin-left:4px;}
+.tab4b{width:210px; _width:208px; height:30px;  float:left;}
+.tab4c{width:88px; _width:86px; height:30px;  float:left;}
+.tab4d{width:210px; _width:208px; height:30px;  float:left;}
+.tab4ddh{width:210px; _width:208px; height:45px;  float:left;}
+.tab4e{width:88px; _width:86px; height:30px; float:left;}
+.tab4f{width:210px; _width:208px; height:30px; float:right;}
+.tab5a{width:150px; _width:148px; height:60px; float:left; margin-left:4px; line-height:50px}
+.tab5b{width:296px; _width:294px; height:30px; float:left;}
+.tab6a{width:210px; _width:208px; height:60px; float:left; line-height:60px}
+.tab6b{width:88px; _width:86px; height:60px; float:left; line-height:60px}
+.tab6c{width:100px; _width:98px; height:30px;  float:left;}
+.tab6d{width:110px; _width:108px; height:30px;  float:left;}
+.tab6e{width:88px; _width:86px; height:60px; float:left; line-height:60px;}
+.tab6f{width:210px; _width:208px; height:60px; float:right; line-height:60px}
+.tab6g{width:210px; _width:208px; height:60px;  float:left;}
+.tab7a{width:508px; _width:506px; height:30px;  float:left;}
+.tab8a{width:155px; _width:153px; height:30px;  float:left;}
+.tab8b{width:50px; _width:48px; height:30px;  float:left; text-align:right;}
+.tab8c{width:103px; _width:101px; height:30px;  float:left; text-align:right;}
+.tab8d{width:109px; _width:110px; height:30px;  float:left; text-align:right;}
+.tbl{width:150px; _width:148px; height:30px;  float:left; text-align:center;}
+.tbs{width:85px; _width:83px; height:30px;  float:left; text-align:center;}
+.tbs1{width:85px; _width:83px; height:45px;  float:left; text-align:center;}
+.tbl1{width:90px; _width:98px; height:30px;  float:left; text-align:center;}
+.tbl2{width:120px; _width:118px; height:30px;  float:left; text-align:center;}
+.tbs{width:85px; _width:83px; height:30px;  float:left; text-align:center;}
+/*               textarea       */
+.bcydwmc{width:246px;  font-size:12px;}
+.dwlxqt{width:94px;  font-size:12px;}
+.szdq{width:94px;  font-size:12px;}
+.txtlong{width:740px; _width:738px;  font-size:12px;}
+.txt440{width:440px; _width:438px;  font-size:12px;}
+.txt130{width:130px; _width:128px;  font-size:12px;}
+.txt100{width:100px; _width:98px;  font-size:12px;}
+.sel150{width:150px; _width:148px;  font-size:12px;}
+.sel90{width:90px; _width:88px;  font-size:12px;}
+.num4{width:36px; _width:34px;  font-size:12px;}
+.num2{width:18px; _width:16px;  font-size:12px;}
+.tbtt{width:55px; _width:53px;  font-size:12px;}
+.tbtl{width:140px; _width:138px;  font-size:12px;}
+.tbtl1{width:86px; _width:84px;  font-size:12px;}
+.tbtl2{width:110px; _width:108px;  font-size:12px;}
+.tbts{width:80px; _width:78px;  font-size:12px;}
+.h60mid{margin-top:2px;}

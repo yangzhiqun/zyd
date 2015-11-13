@@ -1,0 +1,28 @@
+<div class="page-header">
+  <h1>被采样单位列表</h1>
+</div>
+
+<table class="table table-bordered table-condensed">
+  <tr>
+    <th>被抽样单位名称</th>
+    <th>营业执照号</th>
+    <th>所在省份</th>
+    <th></th>
+    <th></th>
+  </tr>
+
+  <% @sp_company_infos.each do |sp_company_info| %>
+  <tr>
+    <td><%= sp_company_info.sp_s_1 %></td>
+    <td><%= sp_company_info.sp_s_215 %></td>
+    <td><%= sp_company_info.sp_s_3 %></td>
+    <td><%= link_to '编辑', edit_sp_company_info_path(sp_company_info), :class => 'btn btn-info btn-xs' %></td>
+    <td><%= link_to '删除', sp_company_info, class: 'btn btn-danger btn-xs', method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+  <% end %>
+</table>
+<%= will_paginate @sp_company_infos, :previous_label=>'上一页', :next_label=>'下一页'%>
+
+<br />
+
+<%= link_to '新建', new_sp_company_info_path,class: 'btn btn-sm btn-primary' %>

@@ -1,0 +1,15 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Name:</b>
+  <%= @sys_province.name %>
+</p>
+
+<p>
+  <b>Note:</b>
+  <%= @sys_province.note %>
+</p>
+
+
+<%= link_to 'Edit', edit_sys_province_path(@sys_province) %> |
+<%= link_to 'Back', sys_provinces_path %>

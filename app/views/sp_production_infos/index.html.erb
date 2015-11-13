@@ -1,0 +1,27 @@
+<h1>生产企业库列表</h1>
+
+<table class="table table-bordered table-condensed">
+  <tr>
+    <th>生产许可证编号</th>
+    <th>产品名</th>
+    <th>发证单位</th>
+    <th>企业名称</th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @sp_production_infos.each do |sp_production_info| %>
+  <tr>
+    <td><%= sp_production_info.scbh %></td>
+    <td><%= sp_production_info.cpmc %></td>
+    <td><%= sp_production_info.fzdw %></td>
+    <td><%= sp_production_info.qymc %></td>
+    <td><%= link_to '编辑', edit_sp_production_info_path(sp_production_info), :class => 'btn btn-info btn-xs' %></td>
+    <td><%= link_to '删除', sp_production_info, class: 'btn btn-danger btn-xs', method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+<p><%=will_paginate @sp_production_infos,:params=>params,:separator=>',',:previous_label=>'上一页',:next_label=>'下一页'%></p>
+<br />
+
+<%= link_to '新建', new_sp_production_info_path, class: 'btn btn-sm btn-primary' %>

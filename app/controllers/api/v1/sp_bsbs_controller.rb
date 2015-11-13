@@ -1,0 +1,284 @@
+#encoding: utf-8
+class Api::V1::SpBsbsController < ApplicationController
+  require 'RMagick'
+  include ApplicationHelper
+
+  skip_before_filter :session_expiry, :verify_authenticity_token
+  before_filter :authorize, :except => [:picture, :transfer]
+
+  before_filter :doorkeeper_authorize!, :only => [:transfer]
+
+  def index
+  end
+
+  module ErrorCode
+    None = 0
+    DataSaveError = 40001
+    ParamsParseError = 40002
+    FatalError = 40003
+    ParamsMissingError = 40004
+  end
+
+  # 接口提交数据
+  # /api/v1/sp_bsbs/transfer
+  def transfer
+    respond_to do |format|
+      ActiveRecord::Base.transaction do
+        begin
+          if params[:data].blank?
+            format.json { render :json => {:errorcode => ErrorCode::ParamsParseError, :errormsg => '请提供data参数'} }
+            return
+          end
+          if params[:data].class.to_s.eql?("String")
+            @data = JSON.parse(params[:data], :symbolize_names => true)
+          else
+            @data = params[:data]
+          end
+          @spdata = @data.delete(:spdata)
+
+          # spdata不可为空
+          if @spdata.blank?
+            format.json { render :json => {:errorcode => ErrorCode::ParamsMissingError, :errormsg => '请提供spdata参数'} }
+            return
+          end
+
+          @sp_bsb = SpBsb.new(@data)
+
+          # 增加字段必须性验证
+          sp_bsb_fields[:bsb].each do |field, required|
+            if required
+              @sp_bsb.singleton_class.validates_presence_of field, :message => '请提供'
+            end
+          end
+
+          @sp_bsb.via_api = true
+          @sp_bsb.sp_i_state = 22
+          @sp_bsb.sp_t_procedure = "[" + Time.now.to_s << "] 由[" << doorkeeper_token.application.name << "]接口提交"
+
+          if @sp_bsb.save
+            unless @spdata.blank?
+              @spdata.each do |sd|
+                d = Spdatum.new(sd)
+                d.sp_bsb_id = @sp_bsb.id
+                d.save
+              end
+            end
+            format.json { render :json => {:errorcode => ErrorCode::None, :errormsg => ''} }
+          else
+            format.json { render :json => {:errorcode => ErrorCode::DataSaveError, :msg => @sp_bsb.errors} }
+          end
+        rescue Exception => e
+          format.json { render :json => {:errorcode => ErrorCode::FatalError, :msg => '未知错误', :exception => e.class.to_s} }
+        end
+      end
+    end
+  end
+
+  GPS_API_URL = "http://210.72.225.133/YJWebService/Handler.ashx?Method=SpotCheck&SystemNo=%s&CheckNumber=%s&OperationFlag=%d&OperationTime=%s"
+
+  def do_step
+    @sp_bsb = PadSpBsb.find(params[:id])
+    permited_steps = [12, 13, 14, 15, 16]
+    @sp_bsb.sp_i_state = params[:step].to_i
+
+    if @sp_bsb.sp_i_state == 13 and !@user.car_sys_id.blank?
+      # 接受任务
+      result = RestClient.get(GPS_API_URL % [URI.escape(@user.car_sys_id), @sp_bsb.sp_s_16, 0, URI.escape(Time.now.strftime("%Y-%m-%d %H:%M:%S"))])
+    end
+
+    @sp_bsb.failed_message = params[:failed_message] if @sp_bsb.sp_i_state == 16
+    respond_to do |format|
+      if !params[:step].blank? and permited_steps.include?(params[:step].to_i) and @sp_bsb.save
+        format.json { render :json => {:status => 'OK', :msg => '成功修改状态！'} }
+      else
+        format.json { render :json => {:status => 'ERR', :msg => '修改状态失败！'} }
+      end
+    end
+  end
+
+  def submit
+    @sp_bsb = PadSpBsb.find(params[:id])
+    if params[:isPrint].blank?
+      params[:sp_bsb][:sp_i_state] = 15
+    end
+
+    respond_to do |format|
+      if @sp_bsb.update_attributes(params[:sp_bsb])
+        if @sp_bsb.sp_i_state == 15 and !@user.car_sys_id.blank?
+          # 采样完成
+          result = RestClient.get(GPS_API_URL % [URI.escape(@user.car_sys_id), @sp_bsb.sp_s_16, 1, URI.escape(Time.now.strftime("%Y-%m-%d %H:%M:%S"))])
+
+          logger.error "CLOSE"
+          logger.error result
+        end
+        format.json { render :json => {:status => "OK", :msg => "保存成功!", :id => @sp_bsb.id} }
+      else
+        format.json { render :json => {:status => "ERR", :msg => "保存不成功，数据库中已有该样品编号!"} }
+      end
+    end
+  end
+
+  def check_sp_production_info
+    @scbh = params[:scbh]
+    respond_to do |format|
+      unless @scbh.blank?
+        @info = SpProductionInfo.find_by_scbh(@scbh)
+        unless @info.nil?
+          format.json { render json: {status: 'OK', msg: @info} }
+        else
+          format.json { render json: {status: 'ERR', msg: '查无结果'} }
+        end
+      else
+        format.json { render json: {status: 'ERR', msg: '参数无效'} }
+      end
+    end
+  end
+
+  def tasks
+    @tasks = PadSpBsb.where(:sp_i_state => [12, 13, 14, 15, 16], :sp_s_37 => @user.tname)
+    respond_to do |format|
+      format.json { render :json => {:status => 'OK', :msg => @tasks.as_json(:include => [:sp_bsb_pictures])} }
+    end
+  end
+
+  def upload_picture
+    @sp_bsb_picture = SpBsbPicture.where(:sp_bsb_id => params[:id], :sort_index => params[:sort_index]).first
+    @sp_bsb_picture ||= SpBsbPicture.new(:sp_bsb_id => params[:id], :sort_index => params[:sort_index])
+    @sp_bsb_picture.tmp_file = params[:file]
+
+    respond_to do |format|
+      if @sp_bsb_picture.save
+        format.json { render :json => {:status => 'OK', :msg => '上传照片成功', :picture => @sp_bsb_picture} }
+      else
+        format.json { render :json => {:status => 'ERR', :msg => '上传照片失败'} }
+      end
+    end
+  end
+
+  def picture
+    @picture = SpBsbPicture.where(:sp_bsb_id => params[:id], :sort_index => params[:sort_index]).last
+    if !@picture.blank?
+      if !params[:original].blank?
+        send_file @picture.absolute_path, :disposition => 'inline', :filename => "#{@picture.md5}.jpg"
+      else
+        img_orig = Magick::Image.read(@picture.absolute_path).first
+        img = img_orig.scale(300, 400)
+        send_data(img.to_blob, :filename => "#{@picture.md5}.jpg", :disposition => 'inline')
+      end
+    end
+  end
+
+  # 同步客户端数据
+  def sync
+    @result = {:status => 'OK', :msg => nil}
+    respond_to do |format|
+      ActiveRecord::Base.transaction do
+        @sp_bsbs = params[:sp_bsbs].values if !params[:sp_bsbs].blank?
+        @pictures = params[:pictures].values if !params[:pictures].blank?
+
+        # 处理抽样信息
+        if !@sp_bsbs.blank?
+          @sp_bsbs.each do |sp_bsb|
+            if !PadSpBsb.find(sp_bsb.delete(:id)).update_attributes(sp_bsb)
+              @result[:status] = 'ERR'
+              @result[:msg] = '同步失败，请稍后重试'
+              raise ActiveRecord::Rollback
+            end
+          end
+        end
+
+        # 处理图片信息
+        if !@pictures.blank?
+          @pictures.each do |p|
+            picture = SpBsbPicture.where(:sp_bsb_id => p[:report_id], :sort_index => p[:sort_index]).first || SpBsbPicture.new(:sp_bsb_id => p[:report_id], :sort_index => p[:sort_index])
+            picture.tmp_file = p[:file]
+            picture.updated_at = Time.now
+            if !picture.save
+              @result[:status] = 'ERR'
+              @result[:msg] = '同步失败，请稍后重试'
+              raise ActiveRecord::Rollback
+            end
+          end
+
+        end
+      end
+
+      format.json { render :json => @result }
+    end
+  end
+
+  def get_provinces
+    @provinces = SysProvince.select("name, level")
+
+    if @user.jg_bsb.attachment_path_file.blank?
+      render json: {status: 'OK', msg: '机构未设置签章，无法下发配置信息'}
+    else
+      render json: {status: 'OK', msg: @provinces, jg_stamp: ActiveSupport::Base64.encode64(open(@user.jg_bsb.attachment_path_file).to_a.join)}
+    end
+  end
+
+  def is_valid
+    bsb = PadSpBsb.find_by_sp_s_16(params[:sp_s_16])
+    if bsb.nil?
+      render json: {status: 'ERR', msg: '服务器不存在该任务: ' + params[:sp_s_16]}
+    else
+      bsb.sp_s_215 = params[:sp_s_215]
+      bsb.sp_s_68 = params[:sp_s_68]
+      bsb.sp_s_13 = params[:sp_s_13]
+      bsb.sp_s_14 = params[:sp_s_14]
+      unless bsb.check_bsb_validity
+        render json: {status: 'ERR', msg: bsb.errors.first.last }
+      else
+        render json: {status: 'OK', msg: "当前填报内容可以提交" }
+      end
+    end
+  end
+
+  private
+  def authorize
+    unless params[:userCert].blank?
+      client = Savon.client(wsdl: "http://#{Rails.application.config.site[:ca_auth_address]}/webservice/services/SecurityEngineDeal?wsdl")
+      response = client.call(:validate_cert, message: {appName: "SVSDefault", password: params[:userCert]})
+      response_code = response.as_json[:validate_cert_response][:out].to_i
+
+      if response_code == 1
+        response = client.call(:get_cert_info_by_oid, message: {appName: "SVSDefault", base64EncodeCert: params[:userCert], oid: '1.2.156.112562.2.1.2.2'})
+
+        @SFid = response.as_json[:get_cert_info_by_oid_response][:out].gsub(/SF/, '')
+        @user = User.find_by_id_card(@SFid)
+
+        if @user.nil?
+          format.json { render :json => {status: 'ERR', msg: '该用户未在系统中登记，请在电脑上登录系统绑定您的KEY', key: @SFid, code: 444} }
+          return
+        end
+
+      else
+        format.json { render :json => {status: 'ERR', msg: ValidateCertCode::ResponseCode["code:#{response_code}"]} }
+        return
+      end
+    else
+      if !(params[:username].blank? or params[:password].blank?)
+        @user = User.authenticate(params[:username], params[:password])
+        if @user.blank?
+          respond_to do |format|
+            format.json {
+              render :json => {:status => 'ERR', :msg => '非法访问'}
+              return
+            }
+          end
+        end
+      else
+        respond_to do |format|
+          format.json {
+            render :json => {:status => 'ERR', :msg => '参数无效'}
+            return
+          }
+        end
+      end
+    end
+  end
+
+  # CA AUTHORIZE
+  def ca_authorize
+  end
+end

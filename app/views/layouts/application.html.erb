@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html x-ng-app="Sp">
+<head>
+  <title>检验检测数据管理平台</title>
+  <%= stylesheet_link_tag "application", :media => "all" %>
+  <%= javascript_include_tag "application" %>
+
+  <% unless session[:userCert].blank? %>
+      <%= javascript_include_tag "XTXSuite" %>
+  <% end %>
+
+  <%= csrf_meta_tags %>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" pageEncoding="UTF-8"/>
+  <script type="text/javascript">
+      window.SP = {};
+      $(function () {
+          $(".collapse").click(function () {
+              var o = $(this);
+              o.next('.subnav').slideToggle();
+          });
+
+          <% unless session[:userCert].blank? %>
+          SetOnUsbKeyChangeCallBack(function () {
+              location.href = "/admin/logout";
+          });
+          <% end %>
+      });
+  </script>
+  <style type="text/css">
+      .collapse + .subnav {
+          display: none;
+      }
+
+      .subnav.active {
+          display: block !important;
+      }
+
+      .subnav .active {
+          background-color: #A8B8BC !important;
+          color: white !important;
+      }
+
+      .nav-ctner.affix {
+          position: fixed;
+          top: 0;
+      }
+  </style>
+</head>
+<body>
+<!-- TOP -->
+<div id="top">
+  <IMG src="/assets/logo.jpg">
+
+  <div id="top_right" class="form-inline">
+    <label>欢迎您:<%= session[:user_name] %></label>
+    <%= button_to "退出", '/admin/logout', :method => :get, :class => "btn btn-xs btn-danger" %>
+    <%= (Time.now).strftime("%Y年%m月%d日 %H:%M:%S") %>
+  </div>
+</div>
+<!-- /TOP -->
+<div class="sys-nav">
+  <ul>
+    <li style="WIDTH: 90px"><a href="/welcome_notices">系统首页</a></li>
+    <li style="WIDTH: 150px"><a href="#" target=_blank>检院主页</a></li>
+    <li style="WIDTH: 200px"><a href="/sp_bsbs_download_file?filename=public/shuoming.doc" target=_blank>系统说明</a></li>
+    <li style="WIDTH: 145px"><a href="#" target=main_content>常见问题</a></li>
+  </ul>
+</div>
+<!-- BANNER -->
+<div class="nav_bg"></div>
+<!-- /BANNER -->
+
+<div class="mainbox">
+  <div class="main_left">
+    <div class="nav-ctner" data-spy="affix" data-offset-top="350">
+      <ul id="nav">
+        <% if false and session[:user_bjp]==1 %>
+            <li><a style="font-size: 14px; text-align: center" href="/bjp_bsbs/new">保健品检验数据录入</a></li>
+            <li><a style="font-size: 14px; text-align: center" href="/bjp_bsbs">保健品检验数据查看</a></li>
+        <% end %>
+        <% if false and session[:user_hzp]==1 %>
+            <li><a style="font-size: 14px; text-align: center" href="/hzp_bsbs/new">化妆品检验数据录入</a></li>
+            <li><a style="font-size: 14px; text-align: center" href="/hzp_bsbs">化妆品检验数据查看</a></li>
+        <% end %>
+        <% if session[:user_sp]==1 %>
+            <% if session[:user_authority_1]==1 %>
+                <li><a style="font-size: 14px; text-align: center" href="/sp_bsbs/new">食品检验数据录入</a></li>
+            <% end %>
+            <% if current_user.user_d_authority_5 == 1 or current_user.user_i_switch == 1 or current_user.user_d_authority == 1 or current_user.user_d_authority_1 == 1 or current_user.user_d_authority_2 == 1 or current_user.user_d_authority_3 == 1 %>
+                <li>
+                  <a style="font-size: 14px; text-align: center" href="/sp_bsbs_spsearch?<%= session[:query] %>">食品检验数据查看</a>
+                </li>
+            <% end %>
+            <% if current_user.yycz_permission.to_i > 0 || current_user.is_admin? %>
+                <li>
+                  <a class="collapse" style="font-size: 14px; text-align: center" href="javascript:void(0);">异议处理</a>
+                  <ul class="subnav <%= "active" if controller?("yycz") %>">
+                    <% if current_user.yyadmin == 1 or current_user.yysl == 1 %>
+                        <li><a class="<%= "active" if action?("dj") %>" href="/yycz/dj">登记</a></li>
+                    <% end %>
+                    <% if current_user.yyadmin == 1 %>
+                        <li><a class="<%= "active" if action?("renew") %>" href="/yycz/renew">延期登记</a></li>
+                    <% end %>
+                    <% if false and current_user.zhxt == 1 %>
+                        <li><a class="<%= "active" if action?("gzap") %>" href="/yycz/gzap">处置工作安排</a></li>
+                    <% end %>
+                    <% if current_user.yyadmin == 1 or current_user.yybl == 1 %>
+                        <li><a class="<%= "active" if action?("cztb") %>" href="/yycz/cztb">处置填报</a></li>
+                    <% end %>
+                    <% if current_user.yyadmin == 1 or current_user.yysh == 1 %>
+                        <li><a class="<%= "active" if action?("czsh") %>" href="/yycz/czsh">处置审核</a></li>
+                    <% end %>
+                  </ul>
+                </li>
+            <% end %>
+
+            <% if current_user.hcz_permission.to_i > 0 || current_user.is_admin? %>
+                <li>
+                  <a class="collapse" style="font-size: 14px; text-align: center" href="javascript:void(0);">核查处置</a>
+                  <ul class="subnav <%= "active" if controller?("wtyp_czbs") %>">
+                    <% if current_user.hcz_czap == 1 or current_user.hcz_admin == 1 %>
+                        <li>
+                          <a class="<%= "active" if controller?("wtyp_czbs") and action?("index") and params[:state].to_i == 0 %>" href="/wtyp_czbs?current_tab=1">核查处置安排</a>
+                        </li>
+                    <% end %>
+                    <% if current_user.hcz_czbl == 1 or current_user.hcz_admin == 1 %>
+                        <li>
+                          <a class="<%= "active" if controller?("wtyp_czbs") and action?("index") and params[:state].to_i == 1 %>" href="/wtyp_czbs_by_state/1?current_tab=1">核查处置办理</a>
+                        </li>
+                    <% end %>
+                    <% if current_user.hcz_czsh == 1 or current_user.hcz_admin == 1 %>
+                        <li>
+                          <a class="<%= "active" if controller?("wtyp_czbs") and action?("index") and params[:state].to_i == 2 %>" href="/wtyp_czbs_by_state/2">核查处置审核</a>
+                        </li>
+                    <% end %>
+                  </ul>
+                </li>
+            <% end %>
+        <% end %>
+        <% if current_user.pad_permission.to_i > 0 || current_user.is_admin? %>
+            <li>
+              <a class="collapse" style="font-size: 14px; text-align: center" href="javascript:void(0);">样品采集</a>
+              <ul class="subnav <%= "active" if controller?("tasks") %>">
+                <% if current_user.rwbs == 1 or current_user.is_admin? %>
+                    <li><a class="<%= "active" if action?("deploy") %>" href="/tasks/deploy">计划部署</a></li>
+                <% end %>
+                <% if current_user.rwxd == 1 or current_user.is_admin? %>
+                    <li><a class="<%= "active" if action?("assign") %>" href="/tasks/assign">任务下达</a></li>
+                <% end %>
+                <li><a class="<%= "active" if action?("check") %>" href="/tasks/check">任务查看</a></li>
+
+              <% if false and (current_user.rwxd == 1 or current_user.is_admin?) and !current_user.jg_bsb.nil? %>
+                    <li>
+                      <a target="_blank" href="http://210.72.225.133/webgps/logins.aspx?username=<%= current_user.jg_bsb.gpsname %>&pwd=<%= current_user.jg_bsb.gpspassword %>">GPS信息留存</a>
+                    </li>
+                <% end %> 
+              </ul>
+            </li>
+        <% end %>
+        <% if current_user.pub_xxfb_sh == 1 or current_user.pub_xxfb == 1 %>
+            <li>
+              <a class="collapse" style="font-size: 14px; text-align: center" href="javascript:void(0);">抽检结果发布</a>
+              <ul class="subnav">
+                <li><a href="/sp_bsb_publications/check_duplicate">筛选发布数据</a></li>
+                <!--<li><a href="/sp_bsb_publications">筛选发布数据</a></li>-->
+                <li><a href="">核校发布数据</a></li>
+                <li><a href="">审核发布数据</a></li>
+                <li><a href="">发布数据查询</a></li>
+              </ul>
+            </li>
+        <% end %>
+        <% if current_user.is_admin? %>
+            <li>
+              <a class="collapse" href="javascript:void(0);" style="font-size: 14px; text-align: center" href="/jg_bsbs">机构信息维护</a>
+              <ul class="subnav">
+                <li><a href="/jg_bsbs">机构信息录入</a></li>
+                <li><a href="/jg_bsbs/merge_request">机构合并</a></li>
+              </ul>
+            </li>
+            <li><a style="font-size: 14px; text-align: center" href="/sp_production_infos">生产企业库维护</a></li>
+            <li><a style="font-size: 14px; text-align: center" href="/sp_company_infos">被抽样单位库维护</a></li>
+            <li><a style="font-size: 14px; text-align: center" href="/baosong_as">报送分类维护</a></li>
+        <% end %>
+        <% if current_user.user_d_authority_1 == 1 or current_user.is_admin? %>
+            <li><a style="font-size: 14px; text-align: center" href="/company_standards">企业标准库维护</a></li>
+        <% end %>
+        <% if current_user.is_admin? %>
+            <li>
+              <a style="font-size: 14px; text-align: center" target="_blank" href="http://121.52.214.78:88/ExternalPage/BiaoZhunPage/BiaoZhun.aspx">标准查询</a>
+            </li>
+        <% end %>
+        <li><a style="font-size: 14px; text-align: center" href="/users">登录用户管理</a></li>
+        <% if current_user.user_i_js == 1 %>
+            <li><a style="font-size: 14px; text-align: center" href="/sample_members">人员信息查看</a></li>
+        <% end %>
+        <li><a style="font-size: 14px; text-align: center" href="/users_changeauthority">用户角色切换</a></li>
+        <!-- <li><a style="font-size: 14px; text-align: center" href="/spkj_bsbs/new">食品现场抽检信息</a></li>-->
+      </ul>
+    </div>
+  </div>
+  <div class="main_right">
+    <div class="right_content">
+      <br>
+
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <%= yield %>
+        </div>
+      </div>
+    </div>
+    <div class="copyright">中国食品药品检定研究院<a href="mailto:info@nifdc.org.cn" target="_blank">E-mail:info@nifdc.org.cn</a>
+    </div>
+    <br>
+    <br>
+    <br>
+  </div>
+  <div class="clearfix"></div>
+</div>
+<% if Rails.env.production? %>
+    <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cspan id='cnzz_stat_icon_1000354640'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s22.cnzz.com/z_stat.php%3Fid%3D1000354640' type='text/javascript'%3E%3C/script%3E"));</script>
+<% end %>
+</body>
+</html>

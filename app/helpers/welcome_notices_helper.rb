@@ -1,0 +1,2 @@
+module WelcomeNoticesHelper
+end

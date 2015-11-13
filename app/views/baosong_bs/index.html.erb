@@ -1,0 +1,27 @@
+<h1>Listing baosong_bs</h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Note</th>
+    <th>Baosong a</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @baosong_bs.each do |baosong_b| %>
+  <tr>
+    <td><%= baosong_b.name %></td>
+    <td><%= baosong_b.note %></td>
+    <td><%= baosong_b.baosong_a_id %></td>
+    <td><%= link_to 'Show', baosong_b %></td>
+    <td><%= link_to 'Edit', edit_baosong_b_path(baosong_b) %></td>
+    <td><%= link_to 'Destroy', baosong_b, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Baosong b', new_baosong_b_path %>

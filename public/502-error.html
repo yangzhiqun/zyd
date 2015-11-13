@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="502 Bad Gateway">
+<meta name="author" content="">
+<title>502 Bad Gateway</title>
+<!-- Bootstrap core CSS -->
+<link rel="stylesheet" href="http://libs.useso.com/js/bootstrap/3.2.0/css/bootstrap.css">
+<link rel="stylesheet" href="http://libs.useso.com/js/font-awesome/4.2.0/css/font-awesome.css">
+<style>
+/* Error Page Inline Styles */
+body {
+  padding-top: 20px;
+}
+/* Layout */
+.jumbotron {
+  font-size: 21px;
+  font-weight: 200;
+  line-height: 2.1428571435;
+  color: inherit;
+  padding: 10px 0px;
+}
+/* Everything but the jumbotron gets side spacing for mobile-first views */
+.masthead, .body-content, {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+/* Main marketing message and sign up button */
+.jumbotron {
+  text-align: center;
+  background-color: transparent;
+}
+.jumbotron .btn {
+  font-size: 21px;
+  padding: 14px 24px;
+}
+/* Colors */
+.green {color:#5cb85c;}
+.orange {color:#f0ad4e;}
+.red {color:#d9534f;}
+</style>
+<script type="text/javascript">
+  function loadDomain() {
+    var display = document.getElementById("display-domain");
+    display.innerHTML = document.domain;
+  }
+</script>
+</head>
+<body onload="javascript:loadDomain();">
+<!-- Error Page Content -->
+<div class="container">
+  <!-- Jumbotron -->
+  <div class="jumbotron">
+    <h1><i class="fa fa-bolt orange"></i> 502 Bad Gateway</h1>
+    <p class="lead">The web server is returning an unexpected networking error for <em><span id="display-domain"></span></em>.</p>
+    <a href="javascript:document.location.reload(true);" class="btn btn-default btn-lg text-center"><span class="green">刷新</span></a>
+  </div>
+</div>
+<div class="container">
+  <div class="body-content">
+    <div class="row">
+      <div class="col-md-6">
+        <h2>发生什么了?</h2>
+        <p class="lead">如果您看到这个错误，说明您暂时无法从服务器获取响应内容，导致这种情况的原因可能是我们正在更新系统代码，请您耐心等候或刷新重试</p>
+      </div>
+      <div class="col-md-6">
+        <h2>怎么办?</h2>
+        <p class="lead">您是网站访问者?</p>
+        <p><a href="#" onclick=javascript:checkSite();>请查看其他电脑是否能打开其他站点(比如：百度)，以确认您的电脑网络没有出现问题。</a>
+          <script type="text/javascript">
+              function checkSite(){
+                var currentSite = window.location.hostname;
+                  window.location = "http://baidu.com/" + currentSite;
+              }
+          </script></p>
+        <p>或者，清理一下浏览器的缓存然后刷新页面重试。</p>
+     </div>
+    </div>
+  </div>
+</div>
+
+<!-- End Error Page Content -->
+<!--Scripts-->
+<!-- jQuery library -->
+<script src="http://libs.useso.com/js/jquery/1.11.1/jquery.js"></script>
+<script src="http://libs.useso.com/js/bootstrap/3.2.0/js/bootstrap.js"></script>
+</body>
+</html>

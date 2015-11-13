@@ -1,0 +1,30 @@
+<p id="notice">通知修改成功</p>
+
+<p>
+  <b>标题:</b>
+  <%= @welcome_notice.title %>
+</p>
+
+<p>
+  <b>精华:</b>
+  <%= @welcome_notice.red %>
+</p>
+
+<p>
+  <b>置顶等级:</b>
+  <%= @welcome_notice.top %>
+</p>
+
+<p>
+  <b>附件文件:</b>
+  <%= @welcome_notice.attachment_path %>
+</p>
+
+<p>
+  <b>链接地址:</b>
+  <%= @welcome_notice.url %>
+</p>
+
+
+<%= link_to '修改', edit_welcome_notice_path(@welcome_notice) %> |
+<%= link_to '返回', welcome_notices_path %>

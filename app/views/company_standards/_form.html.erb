@@ -1,0 +1,42 @@
+<%= form_for(@company_standard) do |f| %>
+  <% if @company_standard.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@company_standard.errors.count, "error") %> prohibited this company_standard from being saved:</h2>
+
+      <ul>
+      <% @company_standard.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <table class="table-bordered table">
+    <tr>
+      <th width="100">名称：</th>
+      <td><%= f.text_field :name, :class => "form-control input-sm" %></td>
+    </tr>
+    <tr>
+      <th>编号：</th>
+      <td><%= f.text_field :number, :class => "form-control input-sm" %></td>
+    </tr>
+    <tr>
+      <th>制定机构：</th>
+      <td><%= f.text_field :author_company, :class => "form-control input-sm" %></td>
+    </tr>
+    <tr>
+      <th>生效期：</th>
+      <td><%= f.date_select :valid_at %></td>
+    </tr>
+    <tr>
+      <th>标准正文：</th>
+      <td>
+        <%= f.file_field :attachment_path_file %>
+        <span class="text-danger">(请上传10M以内文件)</span>
+      </td>
+    </tr>
+  </table>
+  <div class="actions">
+    <%= f.submit "保存", :class => "btn btn-primary btn-sm"%>
+  </div>
+<% end %>

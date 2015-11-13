@@ -1,0 +1,22 @@
+<%= form_for(@jg_bsb_stamp) do |f| %>
+    <div class="form-group">
+      <label for="">机构名称：<%= show_error(@jg_bsb_stamp.errors, :jg_bsb_id)%></label>
+      <span><%= @jg_bsb_stamp.jg_bsb.jg_name %></span>
+    </div>
+    <%= f.hidden_field :jg_bsb_id %>
+    <div class="form-group">
+      <%= f.label '规则号：'%><%= show_error(@jg_bsb_stamp.errors, :stamp_no)%><br/>
+      <%= f.text_field :stamp_no, class: 'form-control input-sm' %>
+    </div>
+    <div class="form-group">
+      <%= f.label '图片：'%><%= show_error(@jg_bsb_stamp.errors, :image_file)%><br/>
+      <%= f.file_field :image_file, class: 'form-control input-sm' %>
+    </div>
+    <div class="form-group">
+      <%= f.label '备注：'%><%= show_error(@jg_bsb_stamp.errors, :note)%><br/>
+      <%= f.text_area :note, class: 'form-control input-sm' %>
+    </div>
+    <div class="actions">
+      <%= f.submit '保存', class: 'btn btn-sm btn-primary'%>
+    </div>
+<% end %>

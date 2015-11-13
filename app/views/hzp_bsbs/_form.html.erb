@@ -1,0 +1,694 @@
+<head>
+<meta http-equiv="Content-Language" content="zh-cn" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>保健食品安全检验检测数据报送表</title>
+
+<script>
+    ///////////////////
+    var hzpdata = <%=@hzp_data.to_json.html_safe%>;
+    var hzpdata_condition = "<%= escape_javascript("#{@hzp_bsb["hzp_s_15"]}#{@hzp_bsb["hzp_s_16"]}").html_safe%>";
+    ///////////////////
+
+    // 按检测名称查找已记录的检测项目
+    function find_hzp_data_by_name(name) {
+        if(hzpdata == null) return null;
+        var ret = null;
+        $.each(hzpdata, function(i, data){
+            if(data.hzpdata_0 == name) {
+                ret = data;
+                return false;
+            }
+        });
+        return ret;
+    }
+    // 判断是否为数据库保存的数据
+    function is_previous_data(){
+        var current = $('#hzp_bsb_hzp_s_15').val() + $('#hzp_bsb_hzp_s_16').val();
+        return current == hzpdata_condition;
+    }
+
+
+
+// 渲染检查项目
+function render_spec_list(idx0, idx1) {
+	$('.analysis-item').remove();
+	var row = $('.analysis-item-templ').first().clone();
+	row.removeClass('analysis-item-templ').addClass('analysis-item').find('input').removeAttr('value').val('');
+
+	$.each(HZPJCX[idx0][idx1], function(index, data){
+		var copied = row.clone();
+		var o = find_hzp_data_by_name(data);
+		copied.css('display', 'table-row');
+        if(HZPDL[idx0]=='计划外'&&hzpdata!=null)
+        {
+            copied.find('span.idx').text(index + 1 + "、");
+            copied.find('input:eq(0)').attr({'value':hzpdata[index].hzpdata_0, 'title':hzpdata[index].hzpdata_0}).val(hzpdata[index].hzpdata_0);
+            copied.find('input:eq(1)').attr({'value':hzpdata[index].hzpdata_1, 'title':hzpdata[index].hzpdata_1}).val(hzpdata[index].hzpdata_1);
+            copied.find('input:eq(2)').attr({'value':hzpdata[index].hzpdata_2, 'title':hzpdata[index].hzpdata_2}).val(hzpdata[index].hzpdata_2);
+            copied.find('input:eq(3)').attr({'value':hzpdata[index].hzpdata_3, 'title':hzpdata[index].hzpdata_3}).val(hzpdata[index].hzpdata_3);
+            copied.find('input:eq(4)').attr({'value':hzpdata[index].hzpdata_4, 'title':hzpdata[index].hzpdata_4}).val(hzpdata[index].hzpdata_4);
+            copied.find('input:eq(5)').attr({'value':hzpdata[index].hzpdata_5, 'title':hzpdata[index].hzpdata_5}).val(hzpdata[index].hzpdata_5);
+            copied.find('input:eq(6)').attr({'value':hzpdata[index].hzpdata_6, 'title':hzpdata[index].hzpdata_6}).val(hzpdata[index].hzpdata_6);
+            copied.find('input:eq(7)').attr({'value':hzpdata[index].hzpdata_7, 'title':hzpdata[index].hzpdata_7}).val(hzpdata[index].hzpdata_7);
+            copied.find('input:eq(8)').attr({'value':hzpdata[index].hzpdata_9, 'title':hzpdata[index].hzpdata_9}).val(hzpdata[index].hzpdata_9);
+            copied.find('select').val(hzpdata[index].hzpdata_8);
+        }
+        else
+        {
+            copied.find('span.idx').text(index + 1 + "、");
+            copied.find('input:eq(0)').attr({'value':data, 'title':data}).val(data);
+            copied.find('input:eq(1)').attr('title',HZPJCYJ[idx0][idx1][index]).val(HZPJCYJ[idx0][idx1][index]);
+            copied.find('input:eq(2)').attr('title',HZPPDYJ[idx0][idx1][index]).val(HZPPDYJ[idx0][idx1][index]);
+            copied.find('input:eq(3)').attr('title',HZPJCDW[idx0][idx1][index]).val(HZPJCDW[idx0][idx1][index]);
+            copied.find('input:eq(4)').attr('title',HZPPDZ[idx0][idx1][index]).val(HZPPDZ[idx0][idx1][index]);
+            if(o != null) {
+                copied.find('input:eq(5)').attr({'value':o.hzpdata_5, 'title':o.hzpdata_5}).val(o.hzpdata_5);
+                copied.find('input:eq(6)').attr({'value':o.hzpdata_6, 'title':o.hzpdata_6}).val(o.hzpdata_6);
+                copied.find('input:eq(7)').attr({'value':o.hzpdata_7, 'title':o.hzpdata_7}).val(o.hzpdata_7);
+                copied.find('select').val(o.hzpdata_8);
+                copied.find('input:eq(8)').attr({'value':o.hzpdata_9, 'title':o.hzpdata_9}).val(o.hzpdata_9);
+            }
+            if(o == null) {
+                copied.find('input[type="hidden"]').remove();
+            } 
+            else 
+            {
+                copied.find('input[type="hidden"]').val(o.id);
+            }
+        }
+        if(HZPDL[idx0]=='计划外')
+        {
+            copied.find('input').attr('readonly',false);
+        }
+		copied.insertBefore($('#result'));
+	});
+}
+
+
+
+
+    function disable_enter(){  
+        $("input,select").keypress(function (e) {  
+            var keyCode = e.keyCode ? e.keyCode : e.which ? e.which : e.charCode;  
+            if (keyCode == 13) {  
+                for (var i = 0; i < this.form.elements.length; i++) {  
+                    if (this == this.form.elements[i]) break;  
+                }  
+                i = (i + 1) % this.form.elements.length;  
+                this.form.elements[i].focus();  
+                return false;  
+            } 
+            else {  
+                return true;
+            }  
+        });  
+    }
+
+
+    $(function(){
+        $("#region").ProvinceCity({});
+    });
+    $(function() {
+		$( "#hzp_bsb_hzp_d_20" ).datepicker({dateFormat:"yy-mm-dd",
+			changeMonth: true,
+			changeYear: true,
+            
+		});
+	});
+	$(function() {
+		$( "#hzp_bsb_hzp_d_34" ).datepicker({dateFormat:"yy-mm-dd",
+			changeMonth: true,
+			changeYear: true
+		});
+	});
+    $(function() {
+		$( "#hzp_bsb_hzp_d_42" ).datepicker({dateFormat:"yy-mm-dd",
+			changeMonth: true,
+			changeYear: true
+		});
+	});
+	$(function() {
+		$( "#hzp_bsb_hzp_d_43" ).datepicker({dateFormat:"yy-mm-dd",
+			changeMonth: true,
+			changeYear: true
+		});
+	});
+    $(function() {
+		$( "#hzp_bsb_hzp_d_90" ).datepicker({dateFormat:"yy-mm-dd",
+			changeMonth: true,
+			changeYear: true
+		});
+	});
+        
+    $(document).ready(function(){
+            var s='#jcx';
+            <%if @hzp_jcxcount%>
+            
+                count=<%=@hzp_jcxcount%>;
+            
+            <%else%>
+
+                count=1;
+
+            <%end%>
+            $("#print").click(function(){
+                $("#my_show").printArea();
+            });
+            <%if @hzp_bsb["hzp_i_state"]==2%>
+                $("#province").attr("disabled","disabled");
+                <%@check=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,22,23,24,25,27,29,30,31,32,33,35,36,37,38,61,62,63,70]%>
+                <%@check.each do |i|%>                
+                    $("#hzp_bsb_hzp_s_"+<%=i%>).attr("disabled","disabled");
+                <%end%>
+                <%@check=[20,34]%>
+                <%@check.each do |i|%>                
+                    $("#hzp_bsb_hzp_d_"+<%=i%>).attr("disabled","disabled");
+                <%end%>
+                <%@check=[26,28]%>
+                <%@check.each do |i|%>                
+                    $("#hzp_bsb_hzp_n_"+<%=i%>).attr("disabled","disabled");
+                <%end%>
+            <%end%>
+            for(var i=10;i<=40;i++)
+            {
+                var t1='<tr id="jcx'+(i-8)+'"'+' style="display:none;"><th colspan="4" style="width:10%" align="left"><span>'+(i-8)+'、<input class="inputText" id="hzp_bsb_hzp_s_1'+i+'_0" name="hzp_bsb[hzp_s_1'+i+'_0]" size="30" style="width: 40px; height: 19px" type="text"></th><th colspan="3" style="width:10%" align="left"><input class="inputText" id="hzp_bsb_hzp_s_1'+i+'_1" name="hzp_bsb[hzp_s_1'+i+'_1]" size="30" style="width: 60px; height: 19px" type="text"></th><th colspan="3" style="width:10%" align="left"><input class="inputText" id="hzp_bsb_hzp_s_1'+i+'_2" name="hzp_bsb[hzp_s_1'+i+'_2]" size="30" style="width: 60px; height: 19px" type="text"></th><th colspan="2" style="width:10%" align="left"><input class="inputText" id="hzp_bsb_hzp_s_1'+i+'_3" name="hzp_bsb[hzp_s_1'+i+'_3]" size="30" style="width: 50px; height: 19px" type="text"></th><th colspan="3" style="width:10%" align="left"><input class="inputText" id="hzp_bsb_hzp_s_1'+i+'_4" name="hzp_bsb[hzp_s_1'+i+'_4]" size="30" style="width: 60px; height: 19px" type="text"></th><th colspan="4" style="width:10%" align="left"><input class="inputText" id="hzp_bsb_hzp_s_1'+i+'_5" name="hzp_bsb[hzp_s_1'+i+'_5]" size="30" style="width: 60px; height: 19px" type="text"></th><th colspan="3" style="width:10%" align="left"><input class="inputText" id="hzp_bsb_hzp_s_1'+i+'_6" name="hzp_bsb[hzp_s_1'+i+'_6]" size="30" style="width: 60px; height: 19px" type="text"></th><th colspan="3" style="width:10%" align="left"><input class="inputText" id="hzp_bsb_hzp_s_1'+i+'_7" name="hzp_bsb[hzp_s_1'+i+'_7]" size="30" style="width: 60px; height: 19px" type="text"></th><th colspan="3" style="width:10%" align="left"><select id="hzp_bsb_hzp_s_1'+i+'_8" name="hzp_bsb[hzp_s_1'+i+'_8]" style="width: 50px;"></select></th><th colspan="2" style="width:10%" align="left"><input class="inputText" id="hzp_bsb_hzp_s_1'+i+'_9" name="hzp_bsb[hzp_s_1'+i+'_9]" size="30" style="width: 50px; height: 19px" type="text"></th></tr>';
+                var t2="#jcx"+(i-9);
+                $(t2).after(t1);
+                                
+            }
+            <%i=10%>;
+            <%while i<=40%>
+                
+
+                <%@options[57].each do |x|%>
+                    str='<option value="<%= escape_javascript(x[1]).html_safe%>"><%=escape_javascript(x[1]).html_safe%></option>';
+                    $("#hzp_bsb_hzp_s_1"+<%=i%>+"_8").append(str)
+                <%end%>
+                
+                $("#hzp_bsb_hzp_s_1"+<%="#{i}"%>+"_0").val('<%=escape_javascript(@hzp_bsb["hzp_s_1#{i}_0"]).html_safe%>')
+                
+                $("#hzp_bsb_hzp_s_1"+<%="#{i}"%>+"_1").val('<%=escape_javascript(@hzp_bsb["hzp_s_1#{i}_1"]).html_safe%>')
+                $("#hzp_bsb_hzp_s_1"+<%="#{i}"%>+"_2").val('<%=escape_javascript(@hzp_bsb["hzp_s_1#{i}_2"]).html_safe%>')
+                $("#hzp_bsb_hzp_s_1"+<%="#{i}"%>+"_3").val('<%=escape_javascript(@hzp_bsb["hzp_s_1#{i}_3"]).html_safe%>')
+                $("#hzp_bsb_hzp_s_1"+<%="#{i}"%>+"_4").val('<%=escape_javascript(@hzp_bsb["hzp_s_1#{i}_4"]).html_safe%>')
+                $("#hzp_bsb_hzp_s_1"+<%="#{i}"%>+"_5").val('<%=escape_javascript(@hzp_bsb["hzp_s_1#{i}_5"]).html_safe%>')
+                $("#hzp_bsb_hzp_s_1"+<%="#{i}"%>+"_6").val('<%=escape_javascript(@hzp_bsb["hzp_s_1#{i}_6"]).html_safe%>')
+                $("#hzp_bsb_hzp_s_1"+<%="#{i}"%>+"_7").val('<%=escape_javascript(@hzp_bsb["hzp_s_1#{i}_7"]).html_safe%>')
+                $("#hzp_bsb_hzp_s_1"+<%="#{i}"%>+"_8").val('<%=escape_javascript(@hzp_bsb["hzp_s_1#{i}_8"]).html_safe%>')
+                $("#hzp_bsb_hzp_s_1"+<%="#{i}"%>+"_9").val('<%=escape_javascript(@hzp_bsb["hzp_s_1#{i}_9"]).html_safe%>')
+                
+                <%i=i+1%>
+            <%end%>
+                        
+            $("#hzp_bsb_hzp_n_jcxcount").val(count);
+            
+            for(var i=1;i<=count;i++)
+            {
+                s=s+i.toString();
+                $(s).show();
+                s='#jcx';
+            }
+            
+            $.each(HZPDL, function(index, data){
+                $("#hzp_bsb_hzp_s_15").append("<option value='"+data+"'>"+data+"</option>");
+            });
+            var index0 = $('#hzp_bsb_hzp_s_15 option').index($('#hzp_bsb_hzp_s_15 option:selected'));
+            var index1 = $('#hzp_bsb_hzp_s_16 option').index($('#hzp_bsb_hzp_s_16 option:selected'));
+            if('<%=@hzp_bsb["hzp_s_15"]%>'.length!=0)
+            {
+                $("#hzp_bsb_hzp_s_15").val('<%=@hzp_bsb["hzp_s_15"]%>');
+                index0 = $('#hzp_bsb_hzp_s_15 option').index($('#hzp_bsb_hzp_s_15 option:selected'));
+                $.each(HZPXL[index0], function(index,data){
+                    $("#hzp_bsb_hzp_s_16").append("<option value='"+data+"'>"+data+"</option>");
+                });
+                $("#hzp_bsb_hzp_s_16").val('<%=escape_javascript(@hzp_bsb["hzp_s_16"]).html_safe%>');
+            }
+            else
+            {
+                $.each(HZPXL[index0], function(index,data){
+                    $("#hzp_bsb_hzp_s_16").append("<option value='"+data+"'>"+data+"</option>");
+                });
+                index0 = index1 =  0;
+            }
+            index0 = $('#hzp_bsb_hzp_s_15 option').index($('#hzp_bsb_hzp_s_15 option:selected'));
+            index1 = $('#hzp_bsb_hzp_s_16 option').index($('#hzp_bsb_hzp_s_16 option:selected'));
+            $("#hzp_bsb_hzp_s_15").change(function(){
+                
+                $("#hzp_bsb_hzp_s_16").get(0).options.length=0;
+                index0=this.selectedIndex;
+                index1=0;
+                $.each(HZPXL[index0], function(index,data){
+                    $("#hzp_bsb_hzp_s_16").append("<option value='"+data+"'>"+data+"</option>");
+                });
+                render_spec_list(index0, index1);
+                return;
+            });
+            $("#hzp_bsb_hzp_s_16").change(function(){
+                
+                index1=this.selectedIndex;
+                render_spec_list(index0, index1);
+                disable_enter();
+                return;
+            });            
+            $('#hzp_bsb_hzp_s_16').trigger('change');
+            disable_enter();    
+            $('#addTable').click(function(){
+                if(count<31)
+                {
+                    count=count+1;
+                    s=s+(count).toString();
+                    $(s).show();
+                    s='#jcx';
+                    $("#hzp_bsb_hzp_n_jcxcount").val(count);
+                }
+
+            });
+            $('#decTable').click(function(){
+                if(count>1)
+                {
+                    s=s+(count).toString();
+                    $(s).hide();
+                    s='#jcx';
+                    count=count-1;
+                    $("#hzp_bsb_hzp_n_jcxcount").val(count);
+                }
+            });
+            
+            $('#province').change(function(){
+            
+                $('#hzp_bsb_hzp_s_3').val($('#province').val()); 
+                $('#hzp_bsb_hzp_s_4').val($('#city').val()); 
+                $('#hzp_bsb_hzp_s_5').val($('#lcity').val());           
+            }); 
+            $('#city').change(function(){
+            
+                $('#hzp_bsb_hzp_s_4').val($('#city').val()); 
+                $('#hzp_bsb_hzp_s_5').val($('#lcity').val());           
+            }); 
+            $('#lcity').change(function(){
+            
+                $('#hzp_bsb_hzp_s_5').val($('#lcity').val());            
+            }); 
+            
+
+            $('#submit1').click(function(){
+                <%@check=[1,2,3,4,5,10,11,12,13,14,15,16,17,18,19,22,23,24,25,27,31,32,33,36,37,38,61,62,70]%>
+                <%@check.each do |i|%>
+                if($.trim($("#hzp_bsb_hzp_s_"+<%=i%>).val()).length==0)
+                {
+                    alert("该项为必填项");
+                    $("#hzp_bsb_hzp_s_"+<%=i%>).focus();
+                    return false;
+                }
+                <%end%>
+                <%@check=[34]%>
+                <%@check.each do |i|%>
+                if($.trim($("#hzp_bsb_hzp_d_"+<%=i%>).val()).length==0)
+                {
+                    alert("该日期项为必填项");
+                    $("#hzp_bsb_hzp_d_"+<%=i%>).focus();
+                    return false;
+                }
+                <%end%>
+                $('#hzp_bsb_hzp_i_state').val(2);
+                return true;
+            });
+            $('#submit2').click(function(){
+                <%@check=[39,40,41,44,45,46,47,48,50,51,52,53,54,55,57,89,91,92]%>
+                <%@check.each do |i|%>
+                if($.trim($("#hzp_bsb_hzp_s_"+<%=i%>).val()).length==0)
+                {
+                    alert("该项为必填项");
+                    $("#hzp_bsb_hzp_s_"+<%=i%>).focus();
+                    return false;
+                }
+                <%end%>
+                <%@check=[42,43,90]%>
+                <%@check.each do |i|%>
+                if($.trim($("#hzp_bsb_hzp_d_"+<%=i%>).val()).length==0)
+                {
+                    alert("该日期项为必填项");
+                    $("#hzp_bsb_hzp_d_"+<%=i%>).focus();
+                    return false;
+                }
+                <%end%>
+                
+                $('#hzp_bsb_hzp_i_state').val(4);
+                return true;
+            });
+            $('#save').click(function(){
+    
+                
+                $('#hzp_bsb_hzp_i_state').val(1);
+                return true;
+            });
+ 
+
+            if(<%=@admin_user%>)
+            {
+                <%@avala.each do |i|%>
+                    var strtemp="#hzp_bsb_hzp_s_"+"<%=i%>"
+                    $(strtemp).bind("contextmenu",function(e){ 
+                        return false; 
+                    });
+                    $("#hzp_bsb_hzp_s_"+<%=i%>).mousedown(function(e){
+                        if(e.which==3)
+                        {
+                            digStr="dialogHeight:400px;dialogWidth:500px;center:yes"
+                            var ReturnValue = window.showModalDialog("/flexcontents?flex_fields=hzp_bsb_hzp_s_"+"<%=i%>","hzp_bsb_hzp_s_"+"<%=i%>",digStr)
+                        }
+                                                      
+                    });
+                <%end%>
+                
+            }  
+
+            
+            
+
+        });
+        
+        
+        
+        
+        
+
+	
+
+</script>
+
+
+
+<style type="text/css">
+    
+	.style1 {
+		border-collapse: collapse;
+		font-size: 9pt;
+		font-family: Calibri, sans-serif;
+		border-style: none;
+		border-color: inherit;
+		border-width: medium;
+		table-layout:fixed;
+	}
+	.style1 td{
+		border: solid windowtext 1.0px;
+		padding: 0cm 5.4pt 0cm 5.4pt;
+		height: 30px;		
+	}
+	.style1 th{
+		border: solid windowtext 1.0px;
+		padding: 0cm 5.4pt 0cm 5.4pt;
+		height: 30px;
+	}
+	.style1 p{
+		height:5px;
+	
+	}
+	.inputText {
+		font-size: 12px;
+		border-right-width: 0px;
+		border-left-width: 0px;
+		border-top-width: 0px;
+		border-bottom: 1px solid;
+		background-color : transparent; 
+		
+	}
+    
+}
+
+	
+}
+</style>
+
+</head>
+<!-- 用于容纳检测项的tr模板 -->
+<table style="display: none;" class="analysis-templ-table">
+	<tr class="analysis-item-templ" style="display: none;">
+		<th colspan="4" style="width:10%" align="left"><span><span class="idx">、</span><input class="inputText" name="hzpdata[][hzpdata_0]" style="width: 80px;" readonly="readonly"></input></span></th>
+		<th colspan="3" style="width:10%" align="left"><span><input class="inputText" name="hzpdata[][hzpdata_1]" style="width: 80px;" readonly="readonly"></input></span></th>
+		<th colspan="3" style="width:10%" align="left"><span><input class="inputText" name="hzpdata[][hzpdata_2]" style="width: 80px;" readonly="readonly"></input></span></th>
+		<th colspan="2" style="width:10%" align="left"><span><input class="inputText" name="hzpdata[][hzpdata_3]" style="width: 50px;" readonly="readonly"></input></span></th>
+		<th colspan="3" style="width:10%" align="left"><span><input class="inputText" name="hzpdata[][hzpdata_4]" style="width: 80px;" readonly="readonly"></input></span></th>
+		<th colspan="4" style="width:10%" align="left"><span><input class="inputText" name="hzpdata[][hzpdata_5]" style="width: 90px;"></input></span></th>
+		<th colspan="3" style="width:10%" align="left"><span><input class="inputText" name="hzpdata[][hzpdata_6]" style="width: 80px;"></input></span></th>
+        <th colspan="3" style="width:10%" align="left"><span><input class="inputText" name="hzpdata[][hzpdata_7]" style="width: 80px;"></input></span></th>
+		<th colspan="3" style="width:10%" align="left"><span><%=select_tag "hzpdata[][hzpdata_8]",options_from_collection_for_select(@options[57],"first","first")%></span></th>
+		<th colspan="2" style="width:10%" align="left"><span><input class="inputText" name="hzpdata[][hzpdata_9]" style="width: 50px;"></input></span></th>
+		<%=hidden_field_tag "hzpdata[][id]"%>
+	</tr>
+</table>
+<h1 style="color:red"><%= flash[:import_result] unless flash[:import_result].nil?%></h1>
+<%= flash[:import_result]=''%>
+<%= form_for(@hzp_bsb) do |f| %>
+  <% if @hzp_bsb.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@hzp_bsb.errors.count, "error") %> prohibited this hzp_bsb from being saved:</h2>
+
+      <ul>
+      <% @hzp_bsb.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div id="my_show">
+	<table border="1" cellspacing="0" cellpadding="0" width="960px" class="style1">
+		<tr>
+            <td colspan="20" style="background: #FFFF99;"><p><span style="font-family:宋体">△―――――――――――样品信息登记部分</span></p>	</td>
+            <td colspan="3"><p>报送分类*</p></td>
+			<td colspan="7"><%= f.select :hzp_s_70, @options[70],:class=>"inputText" %></td>
+		</tr>
+		<tr>
+			<td colspan="5"><p>被采样单位名称*</p></td>
+			<td colspan="14"><%= f.text_field:hzp_s_1, :class=>"inputText",:style=>"width: 360px; height: 19px" %></td>
+			<td colspan="4"><p>单位类型*</p></td>
+			<td colspan="7"><span><%=f.select :hzp_s_2, @options[2],:class=>"inputText" %><%= f.text_field:hzp_s_2_1, :class=>"inputText",:style=>"width: 80px; height: 19px"%></span></td>
+            
+		</tr>
+        <tr id="region">
+			<td colspan="3" style="width: 73px"><p>所在地区*</p></td>
+			<td colspan="20">
+            <span><select id='province' name='province' class="NoPrint"></select><%=f.text_field :hzp_s_3, :class=>"inputText",:style=>"width: 60px; height: 19px" %>省(市、自治区)
+            <select id='city' name='city'></select><%= f.text_field :hzp_s_4, :class=>"inputText",:style=>"width: 60px; height: 19px" %>地区(市、州、盟)
+			<select id='lcity' name='lcity'></select><%= f.text_field :hzp_s_5, :class=>"inputText",:style=>"width: 60px; height: 19px" %>县(市、区)</span></td>
+            <td colspan="3"><p>地域类型*</p></td>
+			<td colspan="4"><%=f.select :hzp_s_12,@options[12],:class=>"inputText" %></td>
+        </tr>
+		<tr>
+			<td colspan="3" style="width: 73px"><p>单位地址</p></td>
+			<td colspan="19"><%= f.text_field :hzp_s_6, :class=>"inputText",:style=>"width: 460px; height: 19px" %></td>
+            <td colspan="3"><p style="width: 43px">邮编</p></td>
+			<td colspan="5"><%= f.text_field:hzp_s_9, :class=>"inputText",:style=>"width: 120px; height: 19px" %></td>
+		</tr>
+		<tr>
+			<td colspan="8"><p>被采样单位法人（负责人）</p></td>
+			<td colspan="7"><%= f.text_field:hzp_s_7, :class=>"inputText",:style=>"width: 175px; height: 19px" %></td>
+			<td colspan="4"><p>电话</p></td>
+			<td colspan="11"><%= f.text_field:hzp_s_8, :class=>"inputText",:style=>"width: 120px; height: 19px" %></td>
+			
+		</tr>
+		<tr>
+			<td colspan="8"><p>被采样单位负责（联系）人*</p></td>
+			<td colspan="7"><%= f.text_field:hzp_s_10, :class=>"inputText",:style=>"width: 175px; height: 19px" %></td>
+			<td colspan="4" ><p>电话*</p></td>
+			<td colspan="11"><%= f.text_field:hzp_s_11, :class=>"inputText",:style=>"width: 120px; height: 19px" %></td>
+			
+		</tr>
+		<tr>
+			<td colspan="5"><p>样品名称*</p></td>
+			<td colspan="17"><%= f.text_field:hzp_s_13, :class=>"inputText",:style=>"width: 450px; height: 19px" %></td>
+            <td colspan="3"><p>抽样编号*</p></td>
+			<td colspan="5"><%= f.text_field:hzp_s_14, :class=>"inputText",:style=>"width: 120px; height: 19px" %></td>
+		</tr>
+        <tr>
+			<td colspan="5"><p>样品分类*</p></td>
+			<td colspan="5"><%=f.select :hzp_s_15,'',{},{:style=>"width: 150px;"} %></td>
+			<td colspan="4"><p>样品类别*</p></td>
+			<td colspan="6"><%=f.select :hzp_s_16,'',{},{:style=>"width: 150px;"}%></td>
+            <td colspan="4"><p>包装规格*</p></td>
+			<td colspan="6"><%= f.text_field:hzp_s_17, :class=>"inputText",:style=>"width: 150px; height: 19px" %></td>
+		</tr>
+        <tr>
+			
+			<td colspan="4"><p>批号*</p></td>
+			<td colspan="5"><%= f.text_field:hzp_s_18, :class=>"inputText",:style=>"width: 120px; height: 19px" %></td>
+            <td colspan="6"><p>保质期/限用日期*</p></td>
+			<td colspan="4"><%= f.text_field:hzp_s_19, :class=>"inputText",:style=>"width: 90px; height: 19px" %></td>
+            <td colspan="5"><p>生产日期</p></td>
+			<td colspan="6"><%= f.text_field:hzp_d_20, :class=>"inputText",:style=>"width: 150px; height: 19px" %></td>
+		</tr>
+        <tr>
+			
+			<td colspan="5"><p>批准文号/备案号*</p></td>
+			<td colspan="10"><%= f.text_field:hzp_s_22, :class=>"inputText",:style=>"width: 200px; height: 19px" %></td>
+            <td colspan="5"><p>卫生许可证号*</p></td>
+			<td colspan="10"><%= f.text_field:hzp_s_23, :class=>"inputText",:style=>"width: 200px; height: 19px" %></td>
+		</tr>
+        <tr>
+			<td colspan="5"><p>进口国/产地（省）*</p></td>
+			<td colspan="17"><%= f.text_field:hzp_s_61, :class=>"inputText",:style=>"width: 450px; height: 19px" %></td>
+            <td colspan="3"><p>化妆品品牌*</p></td>
+			<td colspan="5"><%= f.text_field:hzp_s_62, :class=>"inputText",:style=>"width: 120px; height: 19px" %></td>
+		</tr>
+        <tr>
+			<td colspan="6"><p>标识生产企业名称*</p></td>
+			<td colspan="24"><%= f.text_field:hzp_s_24, :class=>"inputText",:style=>"width: 660px; height: 19px" %></td>
+		</tr>
+		<tr>
+			<td colspan="6"><p>标识生产企业地址*</p></td>
+			<td colspan="24"><%= f.text_field:hzp_s_25, :class=>"inputText",:style=>"width: 660px; height: 19px" %></td>
+		</tr>
+        <tr>
+			<td colspan="6"><p>委托生产企业名称</p></td>
+			<td colspan="24"><%= f.text_field:hzp_s_63, :class=>"inputText",:style=>"width: 660px; height: 19px" %></td>
+		</tr>
+       <tr>
+			<td colspan="4"><p>采样数量*</p></td>
+			<td colspan="3"><%= f.number_field:hzp_n_26, :class=>"inputText",:style=>"width: 70px; height: 19px" %></td>
+			<td colspan="3"><p>数量单位*</p></td>
+			<td colspan="4"><%= f.select :hzp_s_27, @options[27],:class=>"inputText" %></td>
+			<td colspan="3"><p>货物数量</p></td>
+			<td colspan="3"><%= f.number_field:hzp_n_28, :class=>"inputText",:style=>"width: 70px; height: 19px" %></td>
+			<td colspan="4"><p>货物数量单位</p></td>
+			<td colspan="6"><%= f.select :hzp_s_29, @options[29],:class=>"inputText" %></td>
+		</tr>
+        <tr>
+			<td colspan="4"><p>备注</p></td>
+			<td colspan="26"><%= f.text_field:hzp_s_30, :class=>"inputText",:style=>"width: 695px; height: 19px" %></td>
+		</tr>
+		<tr>
+			<td colspan="4"><p>采样单位名称*</p></td>
+			<td colspan="18"><%= f.text_field:hzp_s_31, :class=>"inputText",:style=>"width: 470px; height: 19px" %></td>
+			<td colspan="3"><p>单位类型*</p></td>
+			<td colspan="5"><%=f.select :hzp_s_32,@options[32],:class=>"inputText" %></td>
+		</tr>
+		<tr>
+			<td colspan="4"><p>抽样人员*</p></td>
+			<td colspan="6"><%= f.text_field:hzp_s_33, :class=>"inputText",:style=>"width: 150px; height: 19px" %></td>
+			<td colspan="4"><p>抽样时间*</p></td>
+			<td colspan="6"><%= f.text_field:hzp_d_34,:class=>"inputText",:style=>"width: 150px; height: 19px" %></td>
+			<td colspan="4"><p>电话</p></td>
+			<td colspan="6"><%= f.text_field:hzp_s_35, :class=>"inputText",:style=>"width: 150px; height: 19px" %></td>
+		</tr>
+		<tr>
+			<td colspan="7"><p>采样单位负责（联系）人*</p></td>
+			<td colspan="7"><%= f.text_field:hzp_s_36, :class=>"inputText",:style=>"width: 175px; height: 19px" %></td>
+			<td colspan="3" ><p>电话*</p></td>
+			<td colspan="5"><%= f.text_field:hzp_s_37, :class=>"inputText",:style=>"width: 120px; height: 19px" %></td>
+			<td colspan="3"><p>电子邮箱*</p></td>
+			<td colspan="5"><%= f.text_field:hzp_s_38, :class=>"inputText",:style=>"width: 125px; height: 19px" %></td>
+		</tr>
+		<tr>
+			<td colspan="30" style="background: #FFFF99;"><p><span style="font-family:宋体">△―――――――――――检验信息部分</span></p>	</td>
+		</tr>
+		<tr>
+			<td colspan="4"><p>检验机构名称*</p></td>
+			<td colspan="6"><%= f.text_field:hzp_s_39, :class=>"inputText",:style=>"width: 150px; height: 19px" %></td>
+			<td colspan="4"><p>检验目的*</p></td>
+			<td colspan="6"><%=f.select :hzp_s_40, @options[40],:class=>"inputText" %></td>
+			<td colspan="4"><p>报告书编号*</p></td>
+			<td colspan="6"><%= f.text_field:hzp_s_41, :class=>"inputText",:style=>"width: 150px; height: 19px" %></td>
+		</tr>
+		<tr>
+			<td colspan="4"><p>收检日期*</p></td>
+			<td colspan="6"><%= f.text_field:hzp_d_42,:class=>"inputText",:style=>"width: 150px; height: 19px" %></td>
+			<td colspan="4"><p>报告日期*</p></td>
+			<td colspan="6"><%= f.text_field:hzp_d_43,:class=>"inputText",:style=>"width: 150px; height: 19px" %></td>
+			<td colspan="4"><p>报告签发人*</p></td>
+			<td colspan="6"><%= f.text_field:hzp_s_44, :class=>"inputText",:style=>"width: 150px; height: 19px" %></td>
+		</tr>
+		<tr>
+			<td colspan="4"><p>联系人*</p></td>
+			<td colspan="6"><%= f.text_field:hzp_s_45, :class=>"inputText",:style=>"width: 150px; height: 19px" %></td>
+			<td colspan="4"><p>电话*</p></td>
+			<td colspan="6"><%= f.text_field:hzp_s_46, :class=>"inputText",:style=>"width: 150px; height: 19px" %></td>
+			<td colspan="4"><p>电子邮箱*</p></td>
+			<td colspan="6"><%= f.text_field:hzp_s_47, :class=>"inputText",:style=>"width: 150px; height: 19px" %></td>
+		</tr>
+		<tr>
+			<th colspan="4" style="width:10%"><p>检验项目*</p></th>
+            <th colspan="3" style="width:10%"><p>检验依据*</p></th>
+			<th colspan="3" style="width:10%"><p>判定依据*</p></th>
+            <th colspan="2" style="width:10%"><p>单位*</p></th>
+			<th colspan="3" style="width:10%"><p>标准规定*</p></th>
+			<th colspan="4" style="width:10%"><p>检验结果*</p></th>
+			<th colspan="3" style="width:10%"><p>检出限*</p></th>
+			<th colspan="3" style="width:10%"><p>定量限</p></th>
+			<th colspan="3" style="width:10%"><p>结论*</p></th>
+			<th colspan="2" style="width:10%"><p>说明</p></th>
+		</tr>
+		<tr id="jcx1">
+			<th colspan="4" style="width:10%" align="left"><span>1、<%= f.text_field:hzp_s_48, :class=>"inputText",:style=>"width: 40px; height: 19px" %></span></th>
+			<th colspan="3" style="width:10%" align="left"><%= f.text_field:hzp_s_50, :class=>"inputText",:style=>"width: 60px; height: 19px" %></th>
+			<th colspan="3" style="width:10%" align="left"><%= f.text_field:hzp_s_51, :class=>"inputText",:style=>"width: 60px; height: 19px" %></th>
+			<th colspan="2" style="width:10%" align="left"><%= f.text_field:hzp_s_52, :class=>"inputText",:style=>"width: 50px; height: 19px" %></th>
+			<th colspan="3" style="width:10%" align="left"><%= f.text_field:hzp_s_53, :class=>"inputText",:style=>"width: 60px; height: 19px" %></th>
+            <th colspan="4" style="width:10%" align="left"><%= f.text_field:hzp_s_54, :class=>"inputText",:style=>"width: 60px; height: 19px" %></th>
+            <th colspan="3" style="width:10%" align="left"><%= f.text_field:hzp_s_55, :class=>"inputText",:style=>"width: 60px; height: 19px" %></th>
+            <th colspan="3" style="width:10%" align="left"><%= f.text_field:hzp_s_56, :class=>"inputText",:style=>"width: 60px; height: 19px" %></th>
+			<th colspan="3" style="width:10%" align="left"><%= f.select :hzp_s_57, @options[57],{},{:style=>"width: 50px;"}%></th>
+			<th colspan="2" style="width:10%" align="left"><%= f.text_field:hzp_s_58, :class=>"inputText",:style=>"width: 50px; height: 19px" %></th>
+
+		</tr>
+        <tr id="result">
+        <%if !@showrecord%>
+        
+           <td colspan="30"> <input type="button" id="addTable" value ="增加检测项" /><input type="button" id="decTable" value ="减少检测项" /></td>
+        
+        <%end%>
+        </tr>			
+		<tr>
+			<td colspan="3"><p>备注</p></td>
+			<td colspan="27"><%= f.text_field:hzp_s_88, :class=>"inputText",:style=>"width: 720px; height: 19px" %></td>
+		</tr>
+		<tr>
+			<td colspan="3"><p>填报人*</p></td>
+			<td colspan="4"><%= f.text_field:hzp_s_89, :class=>"inputText",:style=>"width: 90px; height: 19px" %></td>
+			<td colspan="4"><p>填报日期*</p></td>
+			<td colspan="4"><%= f.text_field:hzp_d_90,:class=>"inputText",:style=>"width: 90px; height: 19px" %></td>
+			<td colspan="3"><p>电话*</p></td>
+			<td colspan="3"><%= f.text_field:hzp_s_91, :class=>"inputText",:style=>"width: 70px; height: 19px" %></td>
+			<td colspan="4"><p>电子邮箱*</p></td>
+			<td colspan="5"><%= f.text_field:hzp_s_92, :class=>"inputText",:style=>"width: 120px; height: 19px" %></td>
+		</tr>
+        <tr id="hzp_jcxcount" style="display:none;">
+            
+            <th colspan="30" style="width:10%" align="left"><%= f.number_field:hzp_n_jcxcount, :class=>"inputText",:style=>"width: 60px; height: 19px" %></th>
+            <th colspan="20"><%= f.number_field:hzp_i_state, :class=>"inputText",:style=>"width: 60px; height: 19px" %></th>
+            
+		</tr>
+		
+        
+        
+        
+    </table>
+  </div>
+</br>     
+    <div class="actions"><span>
+      <%if !@showrecord%>
+        <%if (@hzp_bsb["hzp_i_state"]==nil)%>
+            <%= f.submit(vaule="临时保存",options={"id"=>"save"}) %>
+        <%elsif (@hzp_bsb["hzp_i_state"]<4)%>
+            <%= f.submit(vaule="临时保存",options={"id"=>"save"}) %>
+        <%end%>
+        <%if (@hzp_bsb["hzp_i_state"]==nil)%>
+            <%= f.submit(vaule="基本信息提交入库",options={"id"=>"submit1"}) %>
+        <%elsif (@hzp_bsb["hzp_i_state"]<2)%>
+            <%= f.submit(vaule="基本信息提交入库",options={"id"=>"submit1"}) %>
+        <%end%>
+        <%if @hzp_bsb["hzp_i_state"]==nil%>
+            <%= f.submit(vaule="检测数据提交入库",options={"id"=>"submit2"}) %>
+        <%elsif @hzp_bsb["hzp_i_state"]<4%>
+            <%= f.submit(vaule="检测数据提交入库",options={"id"=>"submit2"}) %>
+        <%elsif @hzp_bsb["hzp_i_state"]==10%>
+            <%= f.submit(vaule="临时保存",options={"id"=>"save"}) %>
+            <%= f.submit(vaule="基本信息提交入库",options={"id"=>"submit1"}) %>
+            <%= f.submit(vaule="检测数据提交入库",options={"id"=>"submit2"}) %>
+        <%end%>
+      <%end%>
+        <input type="button" id="print" value="打印"></input></span>
+    </div>
+        
+</br>
+<% end %>

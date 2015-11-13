@@ -1,0 +1,91 @@
+<style type="text/css">
+.bind-panel {
+	width: 400px;
+	margin: 10px auto;
+}
+</style>
+<script type="text/javascript">
+$(function(){
+	SetUserCertList('bind_ca_form.user_cert_list', CERT_TYPE_ALL);
+
+	SetOnUsbKeyChangeCallBack(function(){
+		setTimeout(function(){
+			if(!!!bind_ca_form.user_cert_list.value) {
+				$('.no-key-tip').removeClass('hidden');
+				alert('请插入USB key后再尝试绑定！');
+				location.href = "/";
+			} else {
+				$('.no-key-tip').addClass('hidden');
+				loadPicture();
+			}
+		}, 2000)
+	});
+
+	loadPicture();
+
+	$('#bind_ca_form').submit(function(){
+		$('#bind_ca_form').ajaxSubmit({
+			dataType: 'json',
+			success: function(data){
+				alert(data.msg);
+				if(data.status == 'OK') {
+					location.href = "/";
+				}
+			}
+		});
+		return false;
+	});
+});
+
+// 加载图片
+function loadPicture() {
+	if(!!window.getpicItvl) clearInterval(window.getpicItvl);
+
+	window.getpicItvl = setInterval(function(){
+		var sign = GetPic(bind_ca_form.user_cert_list.value);
+		if(!!sign) {
+			$('.user-sign').attr('src', 'data:image/png;base64,' + sign);
+			$('.user-sign-field').val(sign);
+		} else {
+			if(!!window.getpicItvl) clearInterval(window.getpicItvl);
+			
+			$('.user-sign').attr('src', '');
+			$('.user-sign-field').val('');
+		}
+	}, 1000);
+}
+</script>
+<div class="container">
+	<br>
+	<div class="bind-panel panel panel-primary">
+		<div class="panel-heading">绑定CA Key</div>
+		<div class="panel-body">
+			<form id="bind_ca_form" name="bind_ca_form" action="/bind_ca_key" method="POST">
+				<p class="text-danger no-key-tip hidden">提示：请插入USBkey完成绑定</p>
+				<div class="form-group">
+					<label for="">CA Key 识别码：</label><br>
+					<div class="ca-id label label-danger"><%= session[:sfid] %></div>
+					<input type="hidden" name="sfid" value="<%= session[:sfid] %>" >
+					<select id="user_cert_list" name="user_cert_list" class="hidden form-control input-sm"></select>
+				</div>
+
+				<div class="form-group">
+					<label for="">签名：</label><br>
+					<img class="user-sign" src="">
+					<input type="hidden" name="user_sign" class="user-sign-field">
+				</div>
+
+				<div class="form-group">
+					<label>用户名：</label>
+					<input name="username" class="form-control" type="text">
+				</div>
+
+				<div class="form-group">
+					<label>密码：</label>
+					<input name="password" class="form-control" type="password">
+				</div>
+				<button class="btn btn-success">绑定</button>
+			</form>
+		</div>
+	</div>
+</div>

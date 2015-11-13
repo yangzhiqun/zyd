@@ -1,0 +1,27 @@
+<h1>Listing xsbg_tts</h1>
+
+<table>
+  <tr>
+    <th>Gjmc</th>
+    <th>Cjbh</th>
+    <th>Sp bsb</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @xsbg_tts.each do |xsbg_tt| %>
+  <tr>
+    <td><%= xsbg_tt.GJMC %></td>
+    <td><%= xsbg_tt.CJBH %></td>
+    <td><%= xsbg_tt.sp_bsb_id %></td>
+    <td><%= link_to 'Show', xsbg_tt %></td>
+    <td><%= link_to 'Edit', edit_xsbg_tt_path(xsbg_tt) %></td>
+    <td><%= link_to 'Destroy', xsbg_tt, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Xsbg tt', new_xsbg_tt_path %>

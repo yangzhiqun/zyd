@@ -1,0 +1,21 @@
+<p>
+  <b>机构名称：</b>
+  <%= @jg_bsb_stamp.jg_bsb.jg_name %>
+</p>
+
+<p>
+  <b>签章规则号：</b>
+  <%= @jg_bsb_stamp.stamp_no %>
+</p>
+<p>
+  <b>签章图片：</b>
+  <img src="/jg_bsb_stamps/<%= @jg_bsb_stamp.id %>/cover" alt="">
+</p>
+<p>
+  <b>备注：</b>
+  <%= @jg_bsb_stamp.note %>
+</p>
+
+
+<%= link_to '编辑', edit_jg_bsb_stamp_path(@jg_bsb_stamp) %> |
+<%= link_to '返回', jg_bsb_stamps_path(jg_bsb_id: @jg_bsb_stamp.jg_bsb_id) %>

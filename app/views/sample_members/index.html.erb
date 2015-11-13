@@ -1,0 +1,48 @@
+<h1>总局本级承检机构安全抽检监测抽样人员统计表</h1>
+
+<hr>
+<form action="" method="get">
+	<label>机构名称：</label>
+	<%= select_tag "jg_name", options_for_select(SampleMember.select("distinct jg_name").map{|s| [s.jg_name, s.jg_name]}.unshift(['请选择机构名称', '']), params[:jg_name]), {class: 'form-control input-sm'}%>
+	<label>关键字：</label>
+	<input value="<%= params[:keyword] %>" placeholder="输入姓名或身份证号查询……" name="keyword" class="col-md-4 form-control input-sm" type="text">
+	<br>
+	<br>
+	<br>
+	<input type="submit" class="btn btn-sm btn-primary" value="查询">
+</form>
+<hr>
+<div class="page_info"><%= page_entries_info @applications %></div>
+<table class="table table-bordered">
+  <tr>
+    <th>姓名</th>
+    <th>职称</th>
+    <th>电话</th>
+    <th>照片</th>
+		<% if current_user.is_admin? %>
+    <th></th>
+		<% end %>
+  </tr>
+
+<% @sample_members.each do |sample_member| %>
+  <tr>
+    <td><a href="/sample_members/<%= sample_member.id%>"><%= sample_member.username %></a></td>
+    <td><%= sample_member.title %></td>
+    <td><%= sample_member.mobile %></td>
+    <td><img src="/sample_members/<%= sample_member.id %>/portrait" width="50"></td>
+		<% if current_user.is_admin? %>
+    <td>
+			<%= link_to '编辑', edit_sample_member_path(sample_member) %>
+			<%= link_to '删除', sample_member, method: :delete, data: { confirm: 'Are you sure?' } %>
+		</td>
+		<% end %>
+  </tr>
+<% end %>
+</table>
+<%=will_paginate @sp_bsbs, :params=>params, :separator=>',', :previous_label=>'上一页', :next_label=>'下一页'%>
+
+<br />
+
+<% if current_user.is_admin? %>
+<%= link_to '添加', new_sample_member_path %>
+<% end %>

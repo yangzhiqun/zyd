@@ -1,0 +1,253 @@
+ <style type="text/css">
+  .fj-items {
+		width: 4000px;
+  }
+  .fj-items-ctner {
+		width: 100%;
+		overflow-x: scroll;
+  }
+  .submit {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+  }
+</style>
+<script type="text/javascript">
+	$(function(){
+		$('.part-ctner .panel-heading').click(function(){
+			var body = $(this).next('.panel-body');
+			var me = $(this);
+			body.slideToggle({
+				complete: function(){
+					if(body.is(':hidden')) {
+						me.find('i').removeClass('glyphicon-triangle-bottom').addClass('glyphicon-triangle-right')
+					} else {
+						me.find('i').removeClass('glyphicon-triangle-right').addClass('glyphicon-triangle-bottom')
+					}
+				}
+			});
+		});
+
+		$(".tmp-save").click(function(){
+			var o = $(this);
+			o.parents('.part-ctner').find('.tmp-save-tag').val('1');
+			o.parents('.part-ctner').find('.save-me').val('1');
+		});
+
+		$('.assign-task').click(function(){
+			var parent_ctner = $(this).parents('.part-ctner');
+			parent_ctner.find('.tmp-save-tag').val('0');
+			parent_ctner.find('.save-me').val('1');
+
+		  var empty_ele = false;
+		  $.each(parent_ctner.find('.czbm, .czfzr'), function(){
+		  	var o = $(this);
+		  	if(o.val() == '') {
+		  		empty_ele = o;
+		  		return false;
+		  	}
+		  });
+
+		  if(empty_ele) {
+		  	alert("请填写处置信息");
+		  	empty_ele.focus();
+		  	return false;
+		  }
+
+			if (!confirm("确定执行次安排吗？")) {
+				return false;
+			}
+		
+		});
+
+		// 提交按钮
+		$(".save").click(function(){
+			
+			var parent_ctner = $(this).parents('.part-ctner');
+			parent_ctner.find('.tmp-save-tag').val('0');
+			parent_ctner.find('.save-me').val('1');
+
+		  if(parent_ctner.find('div.submit').length > 0) {
+		  	alert("尚有待确认的内容，请填写完整后提交！");
+		  	parent_ctner.find('div.submit:first').focus();
+				console.log(parent_ctner.find('div.submit:first'));
+		  	return false;
+		  } else {
+		  	if (!confirm("确定要提交吗？")) {
+		  		return false;
+		  	}
+		  }
+		});
+
+		// 部分提交
+	  $('.submit .btn').click(function(){
+			var form_controls = $(this).parents('td').find('select, input[type=text]');
+			var form_result = "";
+			$.each(form_controls, function(){
+				form_result += $(this).val();
+			});
+
+			if($.trim(form_result) == '') {
+				alert("请填写处理信息后提交");
+				return false;
+			}
+
+	    if(confirm("确定提交吗？")) {
+				$(this).parents('.part-ctner').find('.save-me').val('1');
+	      $(this).parents('.part-ctner').find('.flag' + $(this).attr('data-part')).attr('type', 'text').val('true');
+	      $(this).parents('.part-ctner').find('.part-submit').val('1');
+	    } else {
+	      return false;
+	    }
+	  });
+
+		// 根据处置部门列出可用人员
+    $(".czbm").change(function(){
+	    var o = $(this);
+	    $.get("/users_by_jcjg.json", {jcjg: o.val(), model: "wtyp_czb"}, function(data){
+	      if(data.status == 'OK') {
+	      	var czfzr = o.parents('.form-ctner').find('.czfzr');
+	        czfzr.empty();
+				  $('<option value="">请选择</option>').appendTo(czfzr);
+	        $.each(data.msg, function(i, user){
+	          $('<option value="' + user.id + '">' + user.tname + '</option>').appendTo(czfzr);
+	        });
+	      } else {
+	        alert("获取用户失败");
+	      }
+	    }, 'json');
+	  }).trigger("change");
+  });
+</script>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">基本信息</div>
+	<div class="panel-body">
+		<table class="table table-bordered table-bordered-black" id="tblGrid">
+			 <tr>
+				<th colspan="4">抽检编号</th>
+				<td colspan="26"><a target="_blank" href="/sp_bsbs/<%= @wtyp_czb.wtyp_sp_bsbs_id %>/cyd"><%= @wtyp_czb.cjbh %></a></td>
+			 </tr>
+			 <tr>
+				<th colspan="4">报告书编号</th>
+				<td colspan="26"><a target="_blank" href="/sp_bsbs/<%= @wtyp_czb.wtyp_sp_bsbs_id%>/print"><%= @wtyp_czb.bgsbh %></a></td>
+			 </tr>
+			 <tr>
+			 	<th colspan="4">样品名称</th>
+				<td colspan="11"><%= @wtyp_czb.ypmc %></td>
+				<th colspan="4">抽样地点</th>
+				<td colspan="11"><%= @wtyp_czb.cydd %></td>
+			 </tr>
+			 <tr>
+				<th colspan="4">被抽样单位名称</th>
+				<td colspan="11"><%= @wtyp_czb.bcydwmc %></td>
+				<th colspan="4">被抽样单位地址</th>
+				<td colspan="11"><%= @wtyp_czb.bcydwdz %></td>
+			 </tr>
+			 <tr>
+				<th colspan="4">标识生产企业名称</th>
+				<td colspan="11"><%= @wtyp_czb.bsscqymc %></td>
+				<th colspan="4">标识生产企业地址</th>
+				<td colspan="11"><%= @wtyp_czb.bsscqydz %></td>
+			 </tr>
+			 <tr>
+				<th colspan="4">抽样基数</th>
+				<td colspan="11"><%= @wtyp_czb.cyjs %></td>
+				<th colspan="4">检验目的/任务类别</th>
+				<td colspan="11"><%= @wtyp_czb.jymd %></td>
+			 </tr>
+			 <tr>
+			  <th colspan="4">检验结论</th>
+				<td colspan="26"><%= @wtyp_czb.jyjl %></td>
+			 </tr>
+			 <tr>
+				<th colspan="4">异议状态</th>
+				<td colspan="7"><%= @yydjb.blank? ? "逾期未提出异议" : @yydjb.yyczjg %></td>
+				<th colspan="3">检验结果状态</th>
+				<td colspan="8"><%= @yydjb.blank? ? "初检结论" : @yydjb.fjzt  %></td>
+				<th colspan="4">是否为限时报告</th>
+				<td colspan="4"><%= @wtyp_czb.bgfl %></td>
+			 </tr>
+		</table>
+	</div>
+</div>
+<br>
+<div class="panel panel-primary">
+	<div class="panel-heading"> 检验结果(不合格项/监测问题项) </div>
+	<div class="panel-body">
+		<div class="fj-items-ctner">
+		  <table class="fj-items table table-bordered table-bordered-black">
+				<thead>
+				  <tr>
+						<th colspan="2" >#</th>
+						<th colspan="5" >检验项目*</th>
+						<th colspan="3" >原检验结果*</th>
+						<th colspan="2" >结果单位*</th>
+						<th colspan="2" >原结果判定*</th>
+						<th colspan="7" >检验依据*</th>
+						<th colspan="7" >判定依据*</th>
+						<th colspan="2" >标准方法检出限*</th>
+						<th colspan="2" >标准检出限单位*</th>
+						<th colspan="2" >方法检出限*</th>
+						<th colspan="2" >检出限单位*</th>
+						<th colspan="2" >标准最小允许限*</th>
+						<th colspan="2" >标准最小允许限单位*</th>
+						<th colspan="2" >最小允许限*</th>
+						<th colspan="2" >最小允许限单位*</th>
+						<th colspan="2" >标准最大允许限*</th>
+						<th colspan="2" >标准最大允许限单位*</th>
+						<th colspan="2" >最大允许限*</th>
+						<th colspan="2" >最大允许限单位*</th>     
+						<th colspan="2" >说明</th>
+						<th colspan="2" >复检结果</th>
+						<th colspan="2" >结果单位</th>
+						<th colspan="2" >复检结论</th>
+				  </tr>
+				</thead>
+				<tbody>
+				  <% @wtyp_czb.spdata.each_with_index do |data, index| %>
+				  <tr class="analysis-item">
+						<td colspan="2" ><%= index + 1 %></td>
+						<td colspan="5" style="width:10%" align="left"><%= data.spdata_0 %></td>
+						<td colspan="3"  align="left"><%= data.spdata_1 %></td>
+						<td colspan="2"  align="left"><%= data.spdata_18 %></td>
+						<td colspan="2"  align="left"><%= data.spdata_2 %></td>
+						<td colspan="7"  align="left"><%= data.spdata_3 %></td>
+						<td colspan="7"  align="left"><%= data.spdata_4 %></td>
+						<td colspan="2"  align="left"><%= data.spdata_5 %></td>
+						<td colspan="2"  align="left"><%= data.spdata_6 %></td>
+						<td colspan="2"  align="left"><%= data.spdata_7 %></td>
+						<td colspan="2"  align="left"><%= data.spdata_8 %></td>
+						<td colspan="2"  align="left"><%= data.spdata_9 %></td>
+						<td colspan="2"  align="left"><%= data.spdata_10 %></td>
+						<td colspan="2"  align="left"><%= data.spdata_11 %></td>
+						<td colspan="2"  align="left"><%= data.spdata_12 %></td>
+						<td colspan="2"  align="left"><%= data.spdata_13 %></td>
+						<td colspan="2"  align="left"><%= data.spdata_14 %></td>
+						<td colspan="2"  align="left"><%= data.spdata_15 %></td>
+						<td colspan="2"  align="left"><%= data.spdata_16 %></td>
+						<td colspan="2"  align="left"><%= data.spdata_17 %></td>
+						<td colspan="2"  align="left"><%= data.fjjg %></td>
+						<td colspan="2"  align="left"><%= data.jgdw %></td>
+						<td colspan="2"  align="left"><%= data.fjjl %></td>
+				  </tr>
+				  <% end %>
+				</tbody>
+		  </table>
+		</div>
+	</div>
+</div>
+<br>
+<%= form_tag "/update_wtyp_czbs/#{@wtyp_czb.id}" do %>
+	<input type="hidden" id="part-submit" name="part_submit">
+	
+	<!-- 生产 -->
+	<%if @part_sc.present? and @part_sc.visible_for_user?(current_user, ::WtypCzbPart::Type::SC) %>
+		<%= render "form_part", :czb => @part_sc, :title => "生产环节核查处置情况" %>
+		<hr>
+	<% end %>
+	<!-- 流通/餐饮 -->
+	<%if @part_lt_cy.present? and @part_lt_cy.visible_for_user?(current_user, ::WtypCzbPart::Type::LT) %>
+		<%= render "form_part", :czb => @part_lt_cy, :title => "经营环节核查处置情况" %>
+	<% end %>
+<% end %>

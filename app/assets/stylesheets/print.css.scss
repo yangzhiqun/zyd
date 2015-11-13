@@ -1,0 +1,96 @@
+html,body{
+	padding: 0;
+	margin: 0;
+  font: 12pt "方正", sans-serif;
+}
+.subpage {
+  outline: 2cm #FFFFFF solid;
+	height: 27cm;
+	border: 1px solid white;
+}
+
+@page {
+  size: A4;
+}
+.page {
+	position: relative;
+	.qrcode {
+		position: absolute;
+		right: 0.1cm;
+		top: -0.3cm;
+		img { display: block; margin: 0 auto;}
+	}
+  padding: 1cm;
+	page-break-after: always;
+	table {
+		height: 25cm;
+	}
+	.table {
+		border-collapse: collapse;
+		margin-top: 1pt;
+		width: 100%;
+		table-layout: fixed;
+		td {
+			padding: 2pt 3pt;
+		}
+		th {
+			text-align: center;
+		}
+	}
+	.table-bordered {
+		border-collapse: collapse;
+		border-style:solid;
+		margin-top: 1pt;
+		width: 100%;
+		table-layout: fixed;
+		td {
+			border: 1px solid #000 !important;
+			padding: 2pt 3pt;
+			word-wrap:break-word;
+		}
+		th {
+			border: 1px solid #000 !important; 
+			text-align: center;
+		}
+	}
+	.cover {
+		table {height: auto;}
+		caption {
+			padding-top: 5cm;
+			margin: 5cm auto 0 auto;
+			font-size: 30pt;
+		}
+		td { font-size: 12pt;}
+	}
+	.page-title {
+		font-size: 15pt;
+		font-weight: 700;
+		text-align: center;
+	}
+	.page-footer {
+		font-size: 14pt;
+		text-align: center;
+	}
+	.page-note {
+		width: 19cm;
+		margin: 10px auto;
+		font-size: 10pt;
+		line-height: 12pt;
+	}
+
+	#footer {
+		position: absolute;
+		bottom: 12;
+		left: 1cm;
+		line-height: 14pt;
+		font-size: 12pt;
+	}
+}
+.id-number {
+	font-size: 10pt;
+}
+.product-list {
+	list-style: none;
+	padding: 5px;
+	margin: 5px;
+}

@@ -1,0 +1,57 @@
+
+<script>
+    $(document).ready(function(){      
+          
+          //var str1= window.dialogArguments;
+          //var str2=<%=@flex_temp%>;
+          //if(str2=='')
+          //{
+          //  $("#flex_fields").val(str1);
+            
+         // }
+         // else
+         // {
+         $("#flex_fields").val('<%=@flex_temp%>');
+         // }
+
+    });
+</script>
+
+
+
+<h1></h1><br/>
+<h1>编辑选项内容</h1>
+<h1></h1><br/>
+<form action="/flexcontents_additem" method="get">
+            
+    <input type="text" id="flex_fields" name="flex_fields" style="display:none"></input>
+    顺序号：<input type="text" id="flex_name" name="flex_sortid"></input>
+    选项名：<input type="text" id="flex_name" name="flex_name"></input>
+    <input type="submit" value="添加" ></input>
+            
+</form>
+<br/>
+
+<table>
+  <th>顺序号</th>
+  <th>&nbsp;&nbsp;</th>
+  <th>选项名</th>
+  <th>&nbsp;&nbsp;</th>
+  <th>所在组</th>
+  <th>&nbsp;&nbsp;</th>
+
+  <% @flexcontents.each do |flexcontent| %>
+  <tr>
+    <td><%= flexcontent.flex_sortid %></td>
+    <td>&nbsp;&nbsp;</td>
+    <td><%= flexcontent.flex_name %></td>  
+    <td>&nbsp;&nbsp;</td>
+    <td><%= flexcontent.flex_groupid %></td>  
+    <td>&nbsp;&nbsp;</td>  
+    <td><%= link_to '编辑', edit_flexcontent_path(flexcontent) %></td>
+    <td><%= link_to '删除', flexcontent, method: :delete, data: { confirm: '确认是否删除?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />

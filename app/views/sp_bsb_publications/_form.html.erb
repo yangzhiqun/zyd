@@ -1,0 +1,29 @@
+<%= form_for(@sp_bsb_publication) do |f| %>
+  <% if @sp_bsb_publication.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@sp_bsb_publication.errors.count, "error") %> prohibited this sp_bsb_publication from being saved:</h2>
+
+      <ul>
+      <% @sp_bsb_publication.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :title %><br />
+    <%= f.text_field :title %>
+  </div>
+  <div class="field">
+    <%= f.label :user_id %><br />
+    <%= f.number_field :user_id %>
+  </div>
+  <div class="field">
+    <%= f.label :username %><br />
+    <%= f.text_field :username %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

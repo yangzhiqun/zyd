@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="403 Forbidden">
+<meta name="author" content="">
+<title>403 Forbidden</title>
+<!-- Bootstrap core CSS -->
+<link rel="stylesheet" href="http://libs.useso.com/js/bootstrap/3.2.0/css/bootstrap.css">
+<link rel="stylesheet" href="http://libs.useso.com/js/font-awesome/4.2.0/css/font-awesome.css">
+<style>
+/* Error Page Inline Styles */
+body {
+  padding-top: 20px;
+}
+/* Layout */
+.jumbotron {
+  font-size: 21px;
+  font-weight: 200;
+  line-height: 2.1428571435;
+  color: inherit;
+  padding: 10px 0px;
+}
+/* Everything but the jumbotron gets side spacing for mobile-first views */
+.masthead, .body-content, {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+/* Main marketing message and sign up button */
+.jumbotron {
+  text-align: center;
+  background-color: transparent;
+}
+.jumbotron .btn {
+  font-size: 21px;
+  padding: 14px 24px;
+}
+/* Colors */
+.green {color:#5cb85c;}
+.orange {color:#f0ad4e;}
+.red {color:#d9534f;}
+</style>
+<script type="text/javascript">
+  function loadDomain() {
+    var display = document.getElementById("display-domain");
+    display.innerHTML = document.domain;
+  }
+</script>
+</head>
+<body onload="javascript:loadDomain();">
+<!-- Error Page Content -->
+<div class="container">
+<div class="jumbotron">
+  <h1><i class="fa fa-ban red"></i> 403 Forbidden</h1>
+  <p class="lead">抱歉! 你无权限访问该页面<em><span id="display-domain"></span></em>。</p>
+    <p><a onclick=javascript:checkSite(); class="btn btn-default btn-lg green">返回首页</a>
+      <script type="text/javascript">
+          function checkSite(){
+            var currentSite = window.location.hostname;
+              window.location = "http://" + currentSite;
+          }
+      </script>
+    </p>
+</div>
+</div>
+<div class="container">
+  <div class="body-content">
+    <div class="row">
+      <div class="col-md-6">
+        <h2>发生什么了?</h2>
+        <p class="lead">403错误，是网站访问过程中，常见的错误提示。资源不可用。服务器理解客户的请求，但拒绝处理它。通常由于服务器上文件或目录的权限设置导致。</p>
+      </div>
+      <div class="col-md-6">
+        <h2>怎么办呢?</h2>
+        <p class="lead">如果您是网站的使用站</p>
+        <p>请点击浏览器的返回按钮并检查您是否打开了正确的地址。</p>
+        <p class="lead">如果您是网站的管理员</p>
+         <p>请检查您的系统是否设置了正确的权限配置</p>
+     </div>
+    </div>
+  </div>
+</div>
+
+<!-- End Error Page Content -->
+<!--Scripts-->
+<!-- jQuery library -->
+<script src="http://libs.useso.com/js/jquery/1.11.1/jquery.js"></script>
+<script src="http://libs.useso.com/js/bootstrap/3.2.0/js/bootstrap.js"></script>
+</body>
+</html>

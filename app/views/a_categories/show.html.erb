@@ -1,0 +1,20 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Bgfl:</b>
+  <%= @a_category.bgfl_id %>
+</p>
+
+<p>
+  <b>Name:</b>
+  <%= @a_category.name %>
+</p>
+
+<p>
+  <b>Note:</b>
+  <%= @a_category.note %>
+</p>
+
+
+<%= link_to 'Edit', edit_a_category_path(@a_category) %> |
+<%= link_to 'Back', a_categories_path %>

@@ -1,0 +1,180 @@
+<!--link rel="stylesheet" href="/jquery-ui/themes/base/jquery.ui.all.css">
+<script src="/jquery-ui/jquery-1.9.1.js"></script>
+<script src="/jquery-ui/ui/jquery.ui.core.js"></script>
+<script src="/jquery-ui/ui/jquery.ui.widget.js"></script>
+<script src="/jquery-ui/ui/jquery.ui.datepicker.js"></script>
+<link rel="stylesheet" href="/jquery-ui/demos.css"-->
+
+<script>
+    function partRefresh1() {
+        document.getElementById("indexid").src="/sp_bsbs";
+    };
+    $(function() {
+		$( "#begin_time" ).datepicker({dateFormat:"yy-mm-dd",
+			changeMonth: true,
+			changeYear: true
+		});
+	});
+    $(function() {
+		$( "#ending_time" ).datepicker({dateFormat:"yy-mm-dd",
+			changeMonth: true,
+			changeYear: true
+		});
+	});
+    
+    $(document).ready(function(){
+				$.each(SPDL, function(index, data){
+                    $("#spdl").append("<option value='"+data+"'>"+data+"</option>");
+				});
+                $.each(SPYL[0], function(index,data){
+                    $("#spyl").append("<option value='"+data+"'>"+data+"</option>");
+                });
+                $.each(SPCYL[0][0], function(index,data){
+                    $("#spcyl").append("<option value='"+data+"'>"+data+"</option>");
+                });
+                $.each(SPXL[0][0][0], function(index,data){
+                    $("#spxl").append("<option value='"+data+"'>"+data+"</option>");
+                });
+                index0 = index1 = index2 = index3 = 0;
+                $("#spdl").change(function(){
+						$("#spyl").get(0).options.length=0;
+						index0=this.selectedIndex;
+						index1=0;
+						index2=0;
+						index3=0;
+
+						$.each(SPYL[index0], function(index,data){
+								$("#spyl").append("<option value='"+data+"'>"+data+"</option>");
+						});
+						$("#spcyl").get(0).options.length=0;
+						$.each(SPCYL[index0][0], function(index,data){
+								$("#spcyl").append("<option value='"+data+"'>"+data+"</option>");
+						});
+						$("#spxl").get(0).options.length=0;
+						$.each(SPXL[index0][0][0], function(index,data){
+								$("#spxl").append("<option value='"+data+"'>"+data+"</option>");
+						});
+				});
+				
+				$("#spyl").change(function(){
+						$("#spcyl").get(0).options.length=0;
+						
+						index2=0;
+						index3=0;
+						index1 = this.selectedIndex;
+						$.each(SPCYL[index0][index1], function(index,data){
+								$("#spcyl").append("<option value='"+data+"'>"+data+"</option>");
+						});
+						$("#spxl").get(0).options.length=0;
+						$.each(SPXL[index0][index1][0], function(index,data){
+								$("#spxl").append("<option value='"+data+"'>"+data+"</option>");
+						});
+				});
+				$("#spcyl").change(function(){
+						$("#spxl").get(0).options.length=0;
+						index3=0;
+						index2 = this.selectedIndex;
+						$.each(SPXL[index0][index1][index2], function(index,data){
+								$("#spxl").append("<option value='"+data+"'>"+data+"</option>");
+						});
+				});
+                
+                
+                <%@check=[1,2,3,4,5,6,7,8,9,10,11,12]%>
+                
+                <%@check.each do |i|%>                
+                    id_str="#table"+<%=i%>
+                    $(id_str+"_show").click(function(){
+						$("#table"+<%=i%>).show();
+                    });
+                    $(id_str+"_hide").click(function(){
+						$("#table"+<%=i%>).hide();
+                    });
+                    $(id_str+"_d_hide").click(function(){
+						$("#table"+<%=i%>).hide();
+                    });
+                <%end%>
+                
+
+
+    });
+</script>
+
+<h1><center>食品安全检验数据统计</center></h1>
+<br/>
+
+    
+    
+<div id="chart1div">
+
+</div>
+
+<script language="JavaScript"> 
+    var chart1 = new FusionCharts("FCF_Column3D.swf", "chart1Id", "820", "260");
+    var s="<graph caption='全国报送情况' xAxisName='省份' yAxisName='amount' decimalPrecision='0' formatNumberScale='0'>";
+    <% @sp_infos.each do |sp_bsb| %>
+        s=s+"<set name='<%=sp_bsb.sp_s_52%>' value='<%=sp_bsb.上报数量%>' color='D64646'/>";
+    <%end%>
+    s=s+"</graph>";
+    chart1.setDataXML(s);
+    chart1.render("chart1div");
+   
+</script> 
+<% @sp_infos_count.each do |sp_bsb| %>
+    全国样品总上报数：<font color="blue"><%=sp_bsb.上报数量%></font>,其中不合格样品数量：<font color="red"><%=@sp_bhg_count%></font>       
+<%end%>    
+
+<table border="1px" bordercolor="#000000" cellspacing="0px" style="border-collapse:collapse">
+
+    <tr>
+        <th>省份</th>
+        <% @sp_infos.each do |sp_bsb| %>
+        
+            <td><%=sp_bsb.sp_s_52%></td>        
+        
+        <%end%>
+    </tr> 
+    <tr>
+        <th>全部样品</th>
+        <% @sp_infos.each do |sp_bsb| %>
+        
+            <td><%=sp_bsb.上报数量%></td>        
+        
+        <%end%>
+    </tr> 
+    <tr>
+        <th><font color="red">不合格</font></th>
+        <% @sp_infos_bhg_fscount.each do |sp_bsb| %>
+        
+            <td><font color="red"><%=sp_bsb["不合格上报数量"]%></font></td>        
+        
+        <%end%>
+    </tr>
+</table>
+
+
+
+<tr>
+<h2>组合上报数量</h2><u id="table3_show">显示</u>&nbsp;&nbsp;&nbsp;<u id="table3_hide">隐藏</u>
+</tr>
+<div id="table3">
+    <table border="1px" bordercolor="#000000" cellspacing="0px" style="border-collapse:collapse">
+        <tr>
+            <%@fields_str.each do |str|%>
+                <th><%=str%></th>       
+            <%end%>
+            <th>上报数量</th>
+        </tr> 
+        <% @sp_combox_count.each do |sp_bsb| %>
+            <%show=0%>
+            <tr>
+                <%sp_bsb.attributes.keys.each do |attr|%>
+                    <td>
+                        <%=sp_bsb[attr]%>
+                    </td>
+                <%end%>
+            </tr> 
+        <%end%>
+    </table> 
+    <u id="table3_d_hide">隐藏</u>
+</div>

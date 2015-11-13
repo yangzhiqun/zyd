@@ -1,0 +1,57 @@
+<%= form_for(@spdatum) do |f| %>
+  <% if @spdatum.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@spdatum.errors.count, "error") %> prohibited this spdatum from being saved:</h2>
+
+      <ul>
+      <% @spdatum.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :spdata_0 %><br />
+    <%= f.text_field :spdata_0 %>
+  </div>
+  <div class="field">
+    <%= f.label :spdata_1 %><br />
+    <%= f.text_field :spdata_1 %>
+  </div>
+  <div class="field">
+    <%= f.label :spdata_2 %><br />
+    <%= f.text_field :spdata_2 %>
+  </div>
+  <div class="field">
+    <%= f.label :spdata_3 %><br />
+    <%= f.text_field :spdata_3 %>
+  </div>
+  <div class="field">
+    <%= f.label :spdata_4 %><br />
+    <%= f.text_field :spdata_4 %>
+  </div>
+  <div class="field">
+    <%= f.label :spdata_5 %><br />
+    <%= f.text_field :spdata_5 %>
+  </div>
+  <div class="field">
+    <%= f.label :spdata_6 %><br />
+    <%= f.text_field :spdata_6 %>
+  </div>
+  <div class="field">
+    <%= f.label :spdata_7 %><br />
+    <%= f.text_field :spdata_7 %>
+  </div>
+  <div class="field">
+    <%= f.label :spdata_8 %><br />
+    <%= f.text_field :spdata_8 %>
+  </div>
+  <div class="field">
+    <%= f.label :spdata_9 %><br />
+    <%= f.text_field :spdata_9 %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

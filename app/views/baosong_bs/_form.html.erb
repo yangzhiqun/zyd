@@ -1,0 +1,242 @@
+<style type="text/css">
+    .category li {
+        list-style: none;
+    }
+
+    .category ul {
+        border-right: 1px solid #CECECE;
+    }
+
+    .category-link {
+        line-height: 30px;
+    }
+
+    .category-link.active {
+        color: green;
+        text-decoration: underline;
+    }
+
+    .list-group-item-heading {
+        cursor: pointer;
+    }
+
+    .category .actions{
+        border-bottom: 1px solid #CECECE;
+    }
+</style>
+<script type="text/javascript">
+    app.value('BaosongB', <%= @baosong_b.to_json.html_safe %>);
+</script>
+<div data-ng-controller="PlanMakerCtrl">
+  <div class="form-group">
+    <label>名称：</label>
+    <a href="javascript:void(0);" e-style="width: 400px;" editable-text="baosong_b.name">{{baosong_b.name}}</a>
+  </div>
+
+  <div class="form-group">
+    <label>备注：</label>
+    <a href="javascript:void(0);" e-style="width: 400px;" e-rows="10" editable-textarea="baosong_b.note">{{baosong_b.note || '无备注'}}</a>
+    <!--p class="help-block">以上为备注</p-->
+  </div>
+  <div class="form-group">
+    <div style="margin: 0;" class="row">
+      <h5 class="col-md-3 col-xs-3">
+        食品大类
+        <a href="javascript:void(0);" x-ng-click="is_editing_a = !is_editing_a" x-ng-show="!is_editing_a" class="btn btn-link btn-xs pull-right">编辑</a>
+        <a href="javascript:void(0);" x-ng-click="is_editing_a = !is_editing_a" x-ng-show="is_editing_a" class="btn btn-link btn-xs pull-right">完成</a>
+      </h5>
+      <h5 class="col-md-3 col-xs-3">食品亚类
+        <a href="javascript:void(0);" x-ng-click="is_editing_b = !is_editing_b" x-ng-show="!is_editing_b" class="btn btn-link btn-xs pull-right">编辑</a>
+        <a href="javascript:void(0);" x-ng-click="is_editing_b = !is_editing_b" x-ng-show="is_editing_b" class="btn btn-link btn-xs pull-right">完成</a>
+      </h5>
+      <h5 class="col-md-3 col-xs-3">食品次亚类
+        <a href="javascript:void(0);" x-ng-click="is_editing_c = !is_editing_c" x-ng-show="!is_editing_c" class="btn btn-link btn-xs pull-right">编辑</a>
+        <a href="javascript:void(0);" x-ng-click="is_editing_c = !is_editing_c" x-ng-show="is_editing_c" class="btn btn-link btn-xs pull-right">完成</a>
+      </h5>
+      <h5 class="col-md-3 col-xs-3">食品细类
+        <a href="javascript:void(0);" x-ng-click="is_editing_d = !is_editing_d" x-ng-show="!is_editing_d" class="btn btn-link btn-xs pull-right">编辑</a>
+        <a href="javascript:void(0);" x-ng-click="is_editing_d = !is_editing_d" x-ng-show="is_editing_d" class="btn btn-link btn-xs pull-right">完成</a>
+      </h5>
+    </div>
+    <div style="margin: 0;" class="category row">
+      <ul class="col-md-3 col-xs-3">
+        <li class="actions" x-ng-show="is_editing_a">
+          <a href="javascript:void(0);" x-ng-click="doRemoveCategory('ACategory', a_categories)" class="pull-right btn btn-xs btn-link">
+            <i class="text-danger glyphicon glyphicon-minus"></i>
+            移除
+          </a>
+          <a href="javascript:void(0);" x-ng-click="addCategory.addACategory('<%= @baosong_b.identifier %>')" class="pull-right btn btn-xs btn-link">
+            <i class="text-success glyphicon glyphicon-plus"></i>
+            添加
+          </a>
+          <div class="clearfix"></div>
+        </li>
+        <li data-ng-repeat="category in a_categories| filter: {enable: true}">
+          <input x-ng-show="is_editing_a" type="checkbox" data-ng-model="category.checked">
+          <a x-ng-show="!is_editing_a" x-ng-click="select('a_category_id', category)" data-ng-class="{active: selected.a_category_id == category.id}" class="category-link" href="">
+            {{category.name}}
+          </a>
+          <a x-ng-show="is_editing_a" onbeforesave="updateCategoryName('ACategory', $data, category)" class="category-link" e-class="input-sm" buttons="no" editable-text="a_categories[$index].name">{{category.name}}</a>
+        </li>
+      </ul>
+      <ul class="col-md-3 col-xs-3">
+        <li class="actions" x-ng-show="is_editing_b">
+          <a href="javascript:void(0);" x-ng-click="doRemoveCategory('BCategory', b_categories)" class="pull-right btn btn-xs btn-link">
+            <i class="text-danger glyphicon glyphicon-minus"></i>
+            移除
+          </a>
+          <a href="javascript:void(0);" x-ng-click="addCategory.addOtherCategory('BCategory', b_categories, selected.a_category_id)" class="pull-right btn btn-xs btn-link">
+            <i class="text-success glyphicon glyphicon-plus"></i>
+            添加
+          </a>
+          <div class="clearfix"></div>
+        </li>
+        <li data-ng-repeat="category in b_categories| filter: {enable: true}">
+          <input x-ng-show="is_editing_b" type="checkbox" data-ng-model="category.checked">
+          <a x-ng-show="!is_editing_b" x-ng-click="select('b_category_id', category)" data-ng-class="{active: selected.b_category_id == category.id}" class="category-link" href="">
+            {{category.name}}
+          </a>
+          <a x-ng-show="is_editing_b" onbeforesave="updateCategoryName('BCategory', $data, category)" class="category-link" e-class="input-sm" buttons="no" editable-text="b_categories[$index].name">{{category.name}}</a>
+        </li>
+      </ul>
+      <ul class="col-md-3 col-xs-3">
+        <li class="actions" x-ng-show="is_editing_c">
+          <a href="javascript:void(0);" x-ng-click="doRemoveCategory('CCategory', c_categories)" class="pull-right btn btn-xs btn-link">
+            <i class="text-danger glyphicon glyphicon-minus"></i>
+            移除
+          </a>
+          <a href="javascript:void(0);" x-ng-click="addCategory.addOtherCategory('CCategory', c_categories, selected.b_category_id)" class="pull-right btn btn-xs btn-link">
+            <i class="text-success glyphicon glyphicon-plus"></i>
+            添加
+          </a>
+          <div class="clearfix"></div>
+        </li>
+        <li data-ng-repeat="category in c_categories| filter: {enable: true}">
+          <input x-ng-show="is_editing_c" type="checkbox" data-ng-model="category.checked">
+          <a x-ng-show="!is_editing_c" x-ng-click="select('c_category_id', category)" data-ng-class="{active: selected.c_category_id == category.id}" class="category-link" href="">
+            {{category.name}}
+          </a>
+          <a x-ng-show="is_editing_c" onbeforesave="updateCategoryName('CCategory', $data, category)" class="category-link" e-class="input-sm" buttons="no" editable-text="c_categories[$index].name">{{category.name}}</a>
+        </li>
+      </ul>
+      <ul class="col-md-3 col-xs-3">
+        <li class="actions" x-ng-show="is_editing_d">
+          <a href="javascript:void(0);" x-ng-click="doRemoveCategory('DCategory', d_categories)" class="pull-right btn btn-xs btn-link">
+            <i class="text-danger glyphicon glyphicon-minus"></i>
+            移除
+          </a>
+          <a href="javascript:void(0);" x-ng-click="addCategory.addOtherCategory('DCategory', d_categories, selected.c_category_id)" class="pull-right btn btn-xs btn-link">
+            <i class="text-success glyphicon glyphicon-plus"></i>
+            添加
+          </a>
+          <div class="clearfix"></div>
+        </li>
+        <li data-ng-repeat="category in d_categories| filter: {enable: true}">
+          <input x-ng-show="is_editing_d" type="checkbox" data-ng-model="category.checked">
+          <a x-ng-show="!is_editing_d" x-ng-click="select('d_category_id', category)" data-ng-class="{active: selected.d_category_id == category.id}" class="category-link" href="">
+            {{category.name}}
+          </a>
+          <a x-ng-show="is_editing_d" onbeforesave="updateCategoryName('DCategory', $data, category)" class="category-link" e-class="input-sm" buttons="no" editable-text="d_categories[$index].name">{{category.name}}</a>
+        </li>
+      </ul>
+    </div>
+    <hr>
+    <div class="items-ctner" x-ng-if="check_items.length > 0">
+      <h4>检验项目
+        <small class="text-warning">（点击各检验项目展开详情）</small>
+      </h4>
+      <hr>
+      <div class="item list-group" data-ng-repeat="check_item in check_items">
+        <div class="list-group-item-heading">
+          <h5>
+            <span x-ng-click="toggleItem(check_item)">{{$index + 1}}. {{check_item.name}}</span>
+            <a x-ng-if="current_item == check_item" x-ng-click="deleteItem($index)" class="btn text-danger btn-xs pull-right" href="javascript:void(0);">移除该检测项</a>
+          </h5>
+        </div>
+        <div x-ng-if="current_item == check_item" class="list-group-item-body">
+          <table class="table table-bordered table-condensed">
+            <tr>
+              <th style="text-align: center; vertical-align: middle;" width="80">名称</th>
+              <td><a href="#" editable-text="check_item.name">{{check_item.name || '单击编辑'}}</a></td>
+            </tr>
+            <tr>
+              <th style="text-align: center; vertical-align: middle;" width="80">结果单位</th>
+              <td><a href="#" editable-text="check_item.JGDW">{{check_item.JGDW || '单击编辑'}}</a></td>
+            </tr>
+            <tr>
+              <th width="80" style="vertical-align: middle; text-align: center;">判定依据</th>
+              <td>
+                <ol style="padding-left: 30px;" class="pdyj-list">
+                  <li data-ng-repeat="pdyj in check_item.PDYJ track by $index">
+                    <a href="#" editable-text="check_item.PDYJ[$index]">{{pdyj || '点击编辑'}}</a></li>
+                </ol>
+                <a class="btn btn-link btn-xs" x-ng-click="check_item.PDYJ.push(null)" href="javascript:void(0);"><i class="glyphicon glyphicon-plus"></i>添加判定依据</a>
+              </td>
+            </tr>
+            <tr>
+              <th>检测方法</th>
+              <td>
+                <table class="table table-bordered">
+                  <thead>
+                  <tr>
+                    <th>检验依据</th>
+                    <th>标准方法检出限</th>
+                    <th>标准检出限单位</th>
+                    <th>标准最小允许限</th>
+                    <th>标准最小允许限单位</th>
+                    <th>标准最大允许限</th>
+                    <th>标准最大允许限单位</th>
+                    <th>#</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr data-ng-repeat="option in check_item.options">
+                    <td>
+                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.JYYJ}}" data-ng-model="option.JYYJ">
+                    </td>
+                    <td>
+                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.BZFFJCX}}" data-ng-model="option.BZFFJCX">
+                    </td>
+                    <td>
+                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.BZFFJCXDW}}" data-ng-model="option.BZFFJCXDW">
+                    </td>
+                    <td>
+                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.BZZXYXX}}" data-ng-model="option.BZZXYXX">
+                    </td>
+                    <td>
+                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.BZZXYXXDW}}" data-ng-model="option.BZZXYXXDW">
+                    </td>
+                    <td>
+                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.BZZDYXX}}" data-ng-model="option.BZZDYXX">
+                    </td>
+                    <td>
+                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.BZZDYXXDW}}" data-ng-model="option.BZZDYXXDW">
+                    </td>
+                    <td>
+                      <a x-ng-click="removeOption(check_item.options, $index)" class="btn btn-xs btn-danger" href="javascript:void(0);">移除</a>
+                    </td>
+                  </tr>
+                  </tbody>
+                  <tfoot>
+                  <tr>
+                    <td colspan="8">
+                      <a class="btn btn-success btn-xs" x-ng-click="check_item.options.push({})" href="javascript:void(0);"><i class="glyphicon glyphicon-plus"></i>添加检验依据</a>
+                    </td>
+                  </tr>
+                  </tfoot>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="actions">
+      <a href="javascript:void(0);" x-ng-click="addCheckItem()" class="btn btn-xs btn-default"><i class="glyphicon glyphicon-plus"></i>添加检测项目</a>
+    </div>
+  </div>
+  <div x-ng-if="!!selected.d_category_id">
+    <hr>
+    <button x-ng-click="doSave(selected.d_category_id)" class="btn btn-success btn-sm">保存</button>
+  </div>
+</div>

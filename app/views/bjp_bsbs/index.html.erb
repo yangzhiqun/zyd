@@ -1,0 +1,149 @@
+<!--link rel="stylesheet" href="/jquery-ui/themes/base/jquery.ui.all.css">
+<script src="/jquery-ui/jquery-1.9.1.js"></script>
+<script src="/jquery-ui/ui/jquery.ui.core.js"></script>
+<script src="/jquery-ui/ui/jquery.ui.widget.js"></script>
+<script src="/jquery-ui/ui/jquery.ui.datepicker.js"></script>
+<link rel="stylesheet" href="/jquery-ui/demos.css">
+<script src="jquery.province.js" type="text/javascript"></script>
+<script src="provincesdata.js" type="text/javascript"></script-->
+
+<script>
+    function partRefresh1() {
+        document.getElementById("indexid").src="/bjp_bsbs";
+    };
+    $(function() {
+		$( "#begin_time" ).datepicker({dateFormat:"yy-mm-dd",
+			changeMonth: true,
+			changeYear: true
+		});
+	});
+    $(function() {
+		$( "#ending_time" ).datepicker({dateFormat:"yy-mm-dd",
+			changeMonth: true,
+			changeYear: true
+		});
+	});
+    $(function(){
+        $("#region").ProvinceCity({});
+    });
+    $(document).ready(function(){
+    
+            $('#province').change(function(){
+            
+                $('#t_province').val($('#province').val()); 
+                      
+            }); 
+            $('#city').change(function(){
+            
+                $('#t_city').val($('#city').val()); 
+
+            }); 
+            $('#lcity').change(function(){
+            
+                $('#t_lcity').val($('#lcity').val());            
+            });  
+    });
+
+</script>
+<br/>
+<h1><center>保健食品安全检验检测数据报送表</center></h1>
+<br/>
+<form action="/bjp_bsbs_bjpsearch" method="get">
+<!--%= tag(:input, :type => "hidden", :name =>request_forgery_protection_token.to_s, :value =>form_authenticity_token) %-->
+填报起始日期:&nbsp;<input type="text" id="begin_time" name="begin_time" value=<%=@begin_time%>></input>&nbsp;&nbsp;
+至填报结束日期:&nbsp;<input type="text" id="ending_time" name="ending_time" value=<%=@ending_time%>></input>
+填报类型：
+<select id="s8" name="s8">
+  <option value=4>全部数据</option>
+  <option value=5>批量导入数据提交</option>
+  <option value=1>数据未提交</option>
+  <option value=2>基本信息已提交</option>
+  <option value=3>检测数据已提交</option>
+</select>
+
+<br/>
+<br/>
+采样单位名称：<input type="text" id="s1" name="s1"></input>
+&nbsp;&nbsp;&nbsp;&nbsp;检验机构名称：<input type="text" id="s2" name="s2"></input>
+&nbsp;&nbsp;&nbsp;&nbsp;填报人：<input type="text" id="s3" name="s3"></input>
+<br/>
+<br/>
+样品名称：<input type="text" id="s4" name="s4"></input>
+&nbsp;&nbsp;&nbsp;&nbsp;采样编号：<input type="text" id="s7" name="s7"></input>
+<input type="submit" value="搜索" ></input></form>
+<br/>
+<table>
+  <tr>
+    <th>填报日期</th>
+    <th>&nbsp;</th>
+    <th>采样日期</th>
+    <th>&nbsp;</th>
+    <th>省份</th>
+    <th>&nbsp;</th>
+    <th>采样编号</th>
+    <th>&nbsp;</th>
+    <th>样品名称</th>
+    <th>&nbsp;</th>
+    <th>采样单位名称</th>
+    <th>&nbsp;</th>
+    <th>检验机构名称</th>
+    <th>&nbsp;</th>
+  </tr>
+
+
+
+<% @bjp_bsbs.each do |bjp_bsb| %>
+  <tr>
+    <td><%= bjp_bsb.bjp_d_95 %></td>
+    <td>&nbsp;</td>
+    <td><%= bjp_bsb.bjp_d_34 %></td>
+    <td>&nbsp;</td>
+    <td><%= bjp_bsb.bjp_s_3 %></td>
+    <td>&nbsp;</td>
+    <td width="80px"><%= bjp_bsb.bjp_s_14 %></td>
+    <td>&nbsp;</td>
+    <td width="80px"><%= bjp_bsb.bjp_s_13 %></td>
+    <td>&nbsp;</td>
+    <td width="100px"><%= bjp_bsb.bjp_s_31 %></td>
+    <td>&nbsp;</td>
+    <td width="100px"><%= bjp_bsb.bjp_s_39 %></td>
+    <td>&nbsp;</td>
+    <%if (bjp_bsb["bjp_i_state"]==nil) %>
+        <td><%= link_to '修改', edit_bjp_bsb_path(bjp_bsb) %></td>
+        <td><%= link_to '删除', bjp_bsb, method: :delete, data: { confirm: '是否删除?' } %></td>
+    <%elsif (bjp_bsb["bjp_i_state"]<2) %>
+        <td><%= link_to '修改', edit_bjp_bsb_path(bjp_bsb) %></td>
+        <td><%= link_to '删除', bjp_bsb, method: :delete, data: { confirm: '是否删除?' } %></td>
+    <%elsif bjp_bsb["bjp_i_state"]<4 %>
+        <td><%= link_to '填报检测数据', edit_bjp_bsb_path(bjp_bsb) %></td>
+        <td><%= link_to '删除', bjp_bsb, method: :delete, data: { confirm: '是否删除?' } %></td>
+        <td><%= link_to '退修', :controller => "bjp_bsbs",:action => "submit", :id =>bjp_bsb %></td>
+    <%elsif bjp_bsb["bjp_i_state"]==4%>
+        <td><%= link_to '查看', bjp_bsb %></td>
+        <td><%= link_to '退修', :controller => "bjp_bsbs",:action => "submit", :id =>bjp_bsb %></td>
+    <%elsif bjp_bsb["bjp_i_state"]==10 %>
+        <td><%= link_to '修改(导入待入库)', edit_bjp_bsb_path(bjp_bsb) %></td>
+        <td><%= link_to '删除', bjp_bsb,method: :delete, data: { confirm: '是否删除?' } %></td>
+    <%end%>
+  </tr>
+<% end %>
+</table>
+<p><%=will_paginate @bjp_bsbs ,:separator=>',',:previous_label=>'上一页',:next_label=>'下一页'%></p>
+<!-- %= button_to '新填表格', new_bjp_bsb_path,:method => :get%-->
+<fieldset style="padding: 5px 10px;">
+	<legend>Excel导入与导出</legend>
+	<b> <%= flash[:import_result] unless flash[:import_result].nil?%> </b>
+	<%= form_tag({action: :import_excel}, multipart: true) do %>
+		<%= file_field_tag 'excel' %>
+		<br></br>
+		<%= submit_tag("样本信息批量上传") %>
+        <br></br>
+	<% end %>
+    <%= form_tag({action: :export_excel}, multipart: true) do %>
+        <%= submit_tag("样本信息批量上传模板下载") %>
+	<% end %>
+    <br></br>
+    <%= form_tag({action: :export_info_excel}, multipart: true) do %>
+        <%= submit_tag("样本信息下载") %><font color="red">特别要注意：</font>本功能可将系统中的全部样品信息数据下载到本地，本功能非常占用系统资源，下载时间会较长，请不要反复下载！<br></br>
+	<% end %>
+</fieldset>

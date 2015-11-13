@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="jsbin/base/jquery.ui.all.css">
+<script src="jsbin/jquery-1.9.1.js"></script>
+<script src="jsbin/jquery.ui.core.js"></script>
+<script src="jsbin/jquery.ui.widget.js"></script>
+<script src="jsbin/jquery.ui.datepicker.js"></script>
+<link rel="stylesheet" href="jsbin/demos.css">
+	<script>
+	$(function() {
+		$( "#datepicker" ).datepicker({
+			changeMonth: true,
+			changeYear: true
+		});
+	});
+	</script>
+</head>
+<body>
+<input type="text" id="datepicker">
+<p>Date: <input type="text" id="datepicker"></p>
+
+
+<p>Show month and year dropdowns in place of the static month/year header to facilitate navigation through large timeframes.  Add the boolean <code>changeMonth</code> and <code>changeYear</code> options.</p>
+
+</body>
+</html>

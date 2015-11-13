@@ -1,0 +1,9 @@
+<% if params[:preview].blank? %>
+<h1 style="text-align:center">不合格（问题）食品核查处置</h1>
+<% end %>
+
+<% if @wtyp_czb.cjbh.blank? %>
+<%= render 'form_old' %>
+<% else %>
+<%= render 'form' %>
+<% end %>

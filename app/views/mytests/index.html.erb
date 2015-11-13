@@ -1,0 +1,25 @@
+<h1>Listing mytests</h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Age</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @mytests.each do |mytest| %>
+  <tr>
+    <td><%= mytest.name %></td>
+    <td><%= mytest.age %></td>
+    <td><%= link_to 'Show', mytest %></td>
+    <td><%= link_to 'Edit', edit_mytest_path(mytest) %></td>
+    <td><%= link_to 'Destroy', mytest, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Mytest', new_mytest_path %>

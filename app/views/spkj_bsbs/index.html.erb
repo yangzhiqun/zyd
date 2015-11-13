@@ -1,0 +1,22 @@
+<h1>现场样品信息查看</h1>
+
+<table>
+  <tr>
+    <th>食品编号</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @spkj_bsbs.each do |spkj_bsb| %>
+  <tr>
+    <td><%= spkj_bsb.sp_s_16 %></td>
+    <td><%= link_to '修改', edit_spkj_bsb_path(spkj_bsb) %></td>
+    <td><%= link_to '删除', spkj_bsb, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to '继续采样', new_spkj_bsb_path %>

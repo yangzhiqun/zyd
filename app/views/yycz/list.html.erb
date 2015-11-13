@@ -1,0 +1,172 @@
+<style type="text/css">
+  ul.data-tabs li{
+    display: inline-block;
+  }
+
+  ul.data-tabs {
+    border-bottom: 1px solid #999;
+    padding-left: 15px;
+    position: relative;
+  }
+
+  ul.data-tabs a {
+    display: inline-block;
+    color: black;
+    text-decoration: none;
+    border: 1px solid #999;
+    padding: 5px 10px;
+    position: relative;
+    bottom: -1px;
+  }
+  ul.data-tabs a.active {
+    border-bottom: 1px solid #FFFFFF;
+  }
+  .table {
+    border: 1px solid #333;
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+  .table th, .table td {
+    border: 1px solid #333;
+    padding: 5px 4px;
+  }
+  .tab-content {
+    padding: 20px 10px;
+  }
+  .table input[type='text'] {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #000;
+    line-height: 20px;
+  }
+  .btn {
+    padding: 6px 12px;
+    line-height: 1.42857143;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .btn-primary {
+    color: #fff;
+    background-color: #337ab7;
+    border: 1px solid #2e6da4;
+  }
+</style>
+<script type="text/javascript">
+$(function(){
+  $('#select-all').click(function(){
+    var o = $(this);
+    if (o.is(':checked')) {
+      $('.yycz-list tbody input[type="checkbox"]').attr('checked', 'checked');
+    } else {
+      $('.yycz-list tbody input[type="checkbox"]').removeAttr('checked');
+    }
+  });
+  $('#assign-task').click(function(){
+    var yycz_ids = [];
+    $.each($('.yycz-list tbody .checkbox:checked'), function(){
+      yycz_ids.push($(this).attr('data-id'));
+    });
+    if(yycz_ids.length == 0 || $('.task-info #czbm').val() == '' || $('.task-info #czfzr').val() == '') {
+      alert('请选择、填写完整信息');
+    } else {
+      var ids_str = yycz_ids.join(',');
+      $.post('/yycz/assign_task.json', {ids: ids_str, czbm: $('.task-info #czbm').val(), czfzr: $('.task-info #czfzr').val()}, function(data){
+        if (data.status == 'OK') {
+          location.reload();
+        } else {
+          alert("错误！ERR: " + data.msg);
+        }
+      });
+    }
+    return false;
+  });
+});
+</script>
+<h2><center>异议处置安排</center></h2>
+
+<div class="container">
+  <ul class="data-tabs">
+    <li><a href="?status=0" class="<%= "active" if params[:status].to_i == 0%>">未处置</a></li>
+    <li><a href="?status=1" class="<%= "active" if params[:status].to_i == 1%>">已处置</a></li>
+  </ul>
+  <div class="tab-content">
+    <% if params[:status].to_i == 0 %>
+      <% if @yyczs.blank? %>
+        <p>暂无未安排数据</p>
+      <% else %>
+        <table class="task-info table table-bordered">
+          <tbody>
+            <tr>
+              <th>处置部门</th>
+              <td><input type="text" name="czbm" id="czbm"></td>
+              <th>处置责任人</th>
+              <td><input type="text" name="czfzr" id="czfzr"></td>
+            </tr>
+          </tbody>
+        </table>
+        <br>
+        <table class="yycz-list table table-bordered">
+          <thead>
+            <tr>
+              <th width="30" align="center">
+                <input type="checkbox" id="select-all">
+              </th>
+              <th width="110">抽检编号</th>
+              <th>样品名称</th>
+              <th width="100">异议分类</th>
+              <th>抽检结论</th>
+            </tr>
+          </thead>
+          <tbody>
+          <% @yyczs.each_with_index do |yycz, index|%>   
+            <tr>
+              <td align="center">
+                <input class="checkbox" type="checkbox" data-id="<%= yycz.id %>" <%= 'checked' if index == 0%>>
+              </td>
+              <td><%= yycz.cjbh%></td>
+              <td><%= yycz.ypmc%></td>
+              <td><%= yycz.yyfl%></td>
+              <td><%= yycz.jyjl%></td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+        <br>
+        <button class="btn btn-primary" id="assign-task">确认处置信息</button>
+      <% end %>
+    <% else %>
+    <table class="yycz-list table table-bordered">
+      <thead>
+        <tr>
+          <th width="30" align="center">
+            <input type="checkbox" id="select-all">
+          </th>
+          <th width="110">抽检编号</th>
+          <th>样品名称</th>
+          <th width="100">异议分类</th>
+          <th>抽检结论</th>
+          <th width="120">异议处置部门</th>
+          <th width="120">异议处置负责人</th>
+        </tr>
+      </thead>
+      <tbody>
+      <% @yyczs.each_with_index do |yycz, index|%>   
+        <tr>
+          <td align="center">
+            <input class="checkbox" type="checkbox" data-id="<%= yycz.id %>" <%= 'checked' if index == 0%>>
+          </td>
+          <td><%= yycz.cjbh%></td>
+          <td><%= yycz.ypmc%></td>
+          <td><%= yycz.yyfl%></td>
+          <td><%= yycz.jyjl%></td>
+          <td><%= yycz.blbm%></td>
+          <td><%= yycz.blr%></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+    <% end %>
+  </div>
+</div>

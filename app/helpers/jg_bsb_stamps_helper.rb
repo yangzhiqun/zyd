@@ -1,0 +1,2 @@
+module JgBsbStampsHelper
+end

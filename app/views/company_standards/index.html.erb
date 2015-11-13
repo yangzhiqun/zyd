@@ -1,0 +1,31 @@
+<h1>企业标准库</h1>
+
+<table class="table table-bordered">
+  <tr>
+    <th>名称</th>
+    <th>编号</th>
+    <th>制定机构</th>
+    <th>生效日期</th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @company_standards.each do |company_standard| %>
+  <tr>
+    <td><%= company_standard.name %></td>
+    <td><%= company_standard.number %></td>
+    <td><%= company_standard.author_company %></td>
+    <td><%= company_standard.valid_at %></td>
+    <td><%= company_standard.attachment_id %></td>
+    <td><%= link_to '查看', company_standard, :class => "btn btn-xs btn-primary" %>
+    <% if company_standard.user_id == current_user.id  or current_user.is_admin? %>
+      <%= link_to '编辑', edit_company_standard_path(company_standard), :class => "btn btn-xs btn-default"%>
+      <%= link_to '删除', company_standard, method: :delete, data: { confirm: '确定删除吗？' }, :class => "btn btn-xs btn-danger" %></td>
+    <% end %>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to '新建标准库', new_company_standard_path, :class => "btn btn-primary btn-sm"%>

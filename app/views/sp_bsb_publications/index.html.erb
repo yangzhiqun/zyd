@@ -1,0 +1,216 @@
+<h1>发布数据筛选</h1>
+<p class="text-danger"><%= flash[:error] %></p>
+<%= form_tag "", :method => "GET" do %>
+<table class="table">
+  <tr>
+    <th>起始时间：</th>
+    <td>
+      <input type="text" name="begin_at" value="<%= @begin_at.strftime("%Y-%m-%d") %>" class="form-control datepicker input-sm">
+    </td>
+    <th>截止时间：</th>
+    <td>
+      <input type="text" name="end_at" value="<%= @end_at.strftime("%Y-%m-%d") %>" class="form-control datepicker input-sm">
+    </td>
+  </tr>
+  <tr>
+    <th>报送类型：</th>
+    <td colspan="3">
+      <div class="form-inline">
+        <%= select_tag :baosong_a, options_for_select(BaosongA.where("prov = ? or prov is null or prov = ''", current_user.user_s_province).map{|b| [b.name, b.name]}.unshift(["请选择", ""]), params[:baosong_a]),{:style=>"width: 200px;", :class => "form-control input-sm"} %>
+        <%= select_tag :baosong_b, options_for_select(@baosong_bs.map{|s| [s.name, s.name, {'data-identifier' => s.identifier}]}.unshift(["请选择", ""]), params[:baosong_b]),{:style=>"width: 250px;", :class => "form-control input-sm"}%></td>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="4">
+      <button class="btn btn-sm btn-primary">筛选</button>
+    </td>
+  </tr>
+</table>
+<% end %>
+<hr>
+<h5>内容：<%= @table_name_parts.join("/") %></h5>
+<hr>
+<ul class="nav nav-tabs">
+  <li class="<%= "active" if params[:current_tab].to_i == 0%>"><a href="?<%= generate_tab_params(0)%>">不合格数据列表</a></li>
+  <li class="<%= "active" if params[:current_tab].to_i == 1%>"><a href="?<%= generate_tab_params(1)%>">合格数据列表</a></li>
+</ul>
+<br>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <%= will_paginate @sp_data, :previous_label=>'上一页', :next_label=>'下一页'%>
+    <table 
+      id="result-table"
+      data-toggle="table"
+      data-show-columns="true"
+      data-reorderable-columns="true"
+      data-show-toggle="true">
+      <thead>
+        <tr>
+          <th data-index="0" data-checkbox="true"></th>
+          <th data-index="1">#</th>
+          <th data-field="BSSCQYMC">标识生产企业名称</th>
+          <th data-field="BSSCQYDZ">标识生产企业地址</th>
+          <th data-field="BCYDWMC">被抽样单位名称</th>
+          <th data-field="BCYDWDZ">被抽样单位地址</th>
+          <th data-field="SPMC">食品名称</th>
+          <th data-field="GGXH" data-visible="false">规格型号</th>
+          <th data-field="SB" data-visible="false">商标</th>
+          <th data-field="SCRQ" data-visible="false">生产日期/批号</th>
+          <th data-field="BHGXM">不合格项目</th>
+          <th data-field="JYJG">检验结果</th>
+          <th data-field="BZZ" data-visible="false">标准值</th>
+          <th data-field="BH">抽样编号</th>
+          <th data-field="ID" data-visible="false">ID</th>
+        </tr>
+      </thead>
+      <tbody>
+      <% @index = 1 %>
+      <% @sp_data.each do |data|%>
+        <tr data-id="<%= data.id %>">
+          <td></td>
+          <td><%= @index + ((params[:page] || 1).to_i - 1) * 10 %></td>
+          <td><%= data.sp_s_64 %></td>
+          <td><%= data.sp_s_65 %></td>
+          <td><%= data.sp_s_1 %></td>
+          <td><%= data.sp_s_7 %></td>
+          <td><%= data.sp_s_14 %></td>
+          <td><%= data.sp_s_26 %></td>
+          <td><%= data.sp_s_74 %></td>
+          <td><%= data.sp_d_28 %></td>
+          <td><%= data.spdata_0 %></td>
+          <td><%= data.spdata_1 %></td>
+          <td><%= data.spdata_15 %></td>
+          <td><%= data.sp_s_16 %></td>
+          <td><%= data.id %></td>
+        </tr>
+        <% @index = @index + 1 %>
+      <% end %>
+      </tbody>
+    </table>
+    <%= will_paginate @sp_data, :previous_label=>'上一页', :next_label=>'下一页'%>
+    <br>
+    <a href="javascript:void(0);" id="do-submit" class="btn btn-sm btn-success">提交-<%= params[:current_tab].to_i == 0 ? "不合格" : "合格"%></a>
+  </div>
+</div>
+<script type="text/javascript">
+window.storage = $.localStorage;
+window.inited = false;
+
+$(function(){
+  var sp_bsb_pub_unchecked_ids = storage.get('sp_bsb_pub_unchecked_ids');
+  var sp_bsb_pub_checked_ids = storage.get('sp_bsb_pub_checked_ids');
+
+  if(!sp_bsb_pub_unchecked_ids) {
+    console.log("A");
+    storage.set('sp_bsb_pub_unchecked_ids', []);
+    sp_bsb_pub_unchecked_ids = storage.get('sp_bsb_pub_unchecked_ids');
+  }
+
+  if(!sp_bsb_pub_checked_ids) {
+    console.log("B");
+    storage.set('sp_bsb_pub_checked_ids', []);
+    sp_bsb_pub_checked_ids = storage.get('sp_bsb_pub_checked_ids');
+  }
+
+  $('#result-table').on('check.bs.table', function (e, row) {
+    if(storage.get('uncheck_all')) {
+      var index = sp_bsb_pub_checked_ids.indexOf(parseInt(row.ID));
+      if(index == -1) {
+        sp_bsb_pub_checked_ids.push(parseInt(row.ID));
+        storage.set('sp_bsb_pub_checked_ids', sp_bsb_pub_checked_ids);
+      }
+    } else {
+      var index = sp_bsb_pub_unchecked_ids.indexOf(parseInt(row.ID));
+      if(index != -1) {
+        sp_bsb_pub_unchecked_ids.splice(index, 1);
+        storage.set('sp_bsb_pub_unchecked_ids', sp_bsb_pub_unchecked_ids);
+      }
+    }
+  }).on('uncheck.bs.table', function (e, row) {
+    if(storage.get('uncheck_all')) {
+      var index = sp_bsb_pub_checked_ids.indexOf(parseInt(row.ID));
+      if(index != -1) {
+        sp_bsb_pub_checked_ids.splice(index, 1);
+        storage.set('sp_bsb_pub_checked_ids', sp_bsb_pub_checked_ids);
+      }
+    } else {
+      var index = sp_bsb_pub_unchecked_ids.indexOf(parseInt(row.ID));
+      if(index == -1) {
+        sp_bsb_pub_unchecked_ids.push(parseInt(row.ID));
+        storage.set('sp_bsb_pub_unchecked_ids', sp_bsb_pub_unchecked_ids);
+      }
+    }
+  }).on('check-all.bs.table', function (e) {
+    if(window.inited) {
+      // $.each($('#result-table tbody tr'), function(){
+      //   var o = $(this);
+      //   var index = sp_bsb_pub_unchecked_ids.indexOf(parseInt(o.attr('data-id')));
+      //   if(index != -1) {
+      //     sp_bsb_pub_unchecked_ids.splice(index, 1);
+      //   }
+      // });
+      storage.set('uncheck_all', false);
+      storage.set('sp_bsb_pub_checked_ids', []);
+      storage.set('sp_bsb_pub_unchecked_ids', []);
+    } else {
+      $.each(sp_bsb_pub_unchecked_ids, function(){
+        var id = this;
+        $('tr[data-id="' + id + '"] input[type="checkbox"]').removeAttr('checked');
+        $('input[name="btSelectAll"]').prop('checked', false);
+      });
+      window.inited = true;
+    }
+  }).on('uncheck-all.bs.table', function (e) {
+    storage.set('uncheck_all', true);
+    storage.set('sp_bsb_pub_checked_ids', []);
+    storage.set('sp_bsb_pub_unchecked_ids', []);
+
+  });
+
+  if(!storage.get('uncheck_all')) {
+    $('#result-table').bootstrapTable('checkAll'); 
+  }
+
+  if(storage.get('uncheck_all')) {
+    $.each(sp_bsb_pub_checked_ids, function(){
+      var o = $('tr[data-id="' + this + '"] input[type="checkbox"]');
+      var i = $('#result-table tbody tr input[type="checkbox"]').index(o);
+      if(i != -1) $('#result-table').bootstrapTable('check', i);
+    });
+  }
+  window.inited = true;
+
+  $('#do-submit').click(function(){
+    var params = {};
+    params['type'] = <%= params[:current_tab].to_i %>;
+    // 如果uncheck_all为真，则传送已选的ID，否则传送未勾选的ID
+    if(storage.get('uncheck_all')) {
+      params['ids'] = storage.get('sp_bsb_pub_checked_ids')
+      params['uncheck_all'] = 1;
+    } else {
+      params['ids'] = storage.get('sp_bsb_pub_unchecked_ids')
+      params['uncheck_all'] = 0;
+    }
+    $.post("/sp_bsb_publications_filtered.json" + location.search, params, function(data){
+
+    }, 'json')
+  });
+
+  // 报送分类第一列
+  $('#baosong_a').change(function(){
+    var o = $(this);
+    if(o.val() != '') {
+      $.get('/baosong_bs/by_name.json', {a_name: o.val()}, function(data){
+        if(data.status == 'OK') {
+          $('#baosong_b').empty();
+          $("<option>").text("请选择").appendTo($('#baosong_b'));
+          $.each(data.data, function(){
+            $("<option>").attr('data-identifier', this.identifier).attr("value", this.name).text(this.name).appendTo($('#baosong_b'));
+          });
+        }
+      }, "json")
+    }
+  });
+});
+</script>

@@ -1,0 +1,37 @@
+<script type="text/javascript" charset="utf-8">
+    $(function () {
+        $('.submit').click(function () {
+            if (confirm('确定提交合并操作吗？')) {
+                $.post('/jg_bsbs/merge_request.json', {
+                    left_id: $('.left').val(),
+                    right_id: $('.right').val()
+                }, function (res) {
+                    if (res.status == 'OK') {
+                        alert('修改成功！');
+                        location.reload();
+                    } else {
+                        alert('修改失败！ERR: ' + res.msg);
+                    }
+                });
+            }
+            return false;
+        });
+    });
+</script>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <%= form_tag "", {method: 'post'} do %>
+        <div class="row">
+          <div class="col-md-5">
+            <%= select_tag 'jg_bsb_left', options_for_select(JgBsb.where(status: 0).map { |jg| [jg.jg_name, jg.id] }.unshift(['请选择', nil])), {class: 'left form-control'} %>
+          </div>
+          <div class="col-md-2 text-center">修改为</div>
+          <div class="col-md-5">
+            <%= select_tag 'jg_bsb_right', options_for_select(JgBsb.where(status: 0).map { |jg| [jg.jg_name, jg.id] }.unshift(['请选择', nil])), {class: 'right form-control'} %>
+          </div>
+        </div>
+        <hr>
+        <button class="btn btn-primary btn-sm submit">提交</button>
+    <% end %>
+  </div>
+</div>

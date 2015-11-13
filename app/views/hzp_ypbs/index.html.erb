@@ -1,0 +1,127 @@
+<!--link rel="stylesheet" href="/jquery-ui/themes/base/jquery.ui.all.css">
+<script src="/jquery-ui/jquery-1.9.1.js"></script>
+<script src="/jquery-ui/ui/jquery.ui.core.js"></script>
+<script src="/jquery-ui/ui/jquery.ui.widget.js"></script>
+<script src="/jquery-ui/ui/jquery.ui.datepicker.js"></script>
+<link rel="stylesheet" href="/jquery-ui/demos.css"-->
+
+
+
+
+<br/>
+<h1><center>化妆品安全检验数据报送表</center></h1>
+<br/>
+<form action="/hzp_bsbs_spsearch" method="get">
+<!--%= tag(:input, :type => "hidden", :name =>request_forgery_protection_token.to_s, :value =>form_authenticity_token) %-->
+填报起始日期:&nbsp;<input type="text" id="begin_time" name="begin_time" value=<%=@begin_time%>></input>&nbsp;&nbsp;
+至填报结束日期:&nbsp;<input type="text" id="ending_time" name="ending_time" value=<%=@ending_time%>></input>
+<input type="submit" value="搜索" ></input>
+<br/>
+<br/>
+<%@xyz='<graph>'%>
+<table>
+  <tr>
+    <th>被采样单位名称</th>
+    <th></th>
+    <th>样品名称</th>
+    <th></th>
+    <th>填报人员</th>
+    <th></th>
+    <th>填报日期</th>
+    <th></th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @hzp_bsbs.each do |hzp_bsb| %>
+  <tr>
+    <%@xyz=@xyz+"<set name='#{hzp_bsb.hzp_s_3}' value='10'/>"%>
+    <td><%= hzp_bsb.hzp_s_1 %></td>
+    <td>&nbsp;&nbsp;&nbsp;</td>
+    <td><%= hzp_bsb.hzp_s_13 %></td>
+    <td>&nbsp;&nbsp;&nbsp;</td>
+    <td><%= hzp_bsb.hzp_s_89 %></td>
+    <td>&nbsp;&nbsp;&nbsp;</td>
+    <td><%= hzp_bsb.hzp_d_90 %></td>
+    <td>&nbsp;&nbsp;&nbsp;</td>
+    <%if (hzp_bsb["hzp_i_state"]==nil) %>
+        <td><%= link_to '修改', edit_hzp_bsb_path(hzp_bsb) %></td>
+        <td><%= link_to '删除', hzp_bsb, method: :delete, data: { confirm: '是否删除?' } %></td>
+    <%elsif (hzp_bsb["hzp_i_state"]<2) %>
+        <td><%= link_to '修改', edit_hzp_bsb_path(hzp_bsb) %></td>
+        <td><%= link_to '删除', hzp_bsb, method: :delete, data: { confirm: '是否删除?' } %></td>
+    <%elsif hzp_bsb["hzp_i_state"]<4 %>
+        <td><%= link_to '填报检测数据', edit_hzp_bsb_path(hzp_bsb) %></td>
+        <td><%= link_to '删除', hzp_bsb, method: :delete, data: { confirm: '是否删除?' } %></td>
+    <%else%>
+        <td><%= link_to '查看', hzp_bsb %></td>
+    <%end%>
+  </tr>
+<% end %>
+
+<% @hzp_bsbs.each do |s| %>
+  <tr>
+    <td><%= s.hzp_s_54 %></td>
+  </tr>
+<% end %>
+
+</table>
+</form>
+<%@xyz=@xyz+"</graph>"%>
+
+
+<div id="chart1div">
+         FusionCharts
+      </div>
+      <p id="test1">这是段落。</p>
+      <script language="JavaScript"> 
+         var chart1 = new FusionCharts("FCF_Column3D.swf", "chart1Id", "400", "300"); 
+         var s="<graph><set name='北京1' value='10' color='D64646'/><set name='天津1' value='10' color='D64646'/><set name='贵州省1' value='10' color='D64646'/></graph>";
+
+         s="<%=@xyz.html_safe%>";
+         
+         chart1.setDataXML(s);
+         chart1.render("chart1div");
+      </script> 
+      
+      <form name='frmUpdate'>
+         <input type="button" value="Change Data"  id="btnUpdate"> 
+      </form> 
+
+
+<script>
+    function partRefresh1() {
+        document.getElementById("indexid").src="/hzp_bsbs";
+    };
+    $(function() {
+		$( "#begin_time" ).datepicker({dateFormat:"yy-mm-dd",
+			changeMonth: true,
+			changeYear: true
+		});
+	});
+    $(function() {
+		$( "#ending_time" ).datepicker({dateFormat:"yy-mm-dd",
+			changeMonth: true,
+			changeYear: true
+		});
+	});
+    $(document).ready(function(){
+        $("#btnUpdate").click(function(){
+            
+            var s1;
+            <%@xyz='1'%>
+            s1=<%=@xyz%>;
+
+            $("#test1").text(s1);
+            //updateChartXML("chart1Id",s1); 
+        });
+    });
+       
+    
+
+</script>
+
+
+<p><%=will_paginate @hzp_bsbs ,:separator=>',',:previous_label=>'上一页',:next_label=>'下一页'%></p>
+<!-- %= button_to '新填表格', new_hzp_bsb_path,:method => :get%-->

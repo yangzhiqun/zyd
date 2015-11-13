@@ -1,0 +1,41 @@
+<%= form_for(@sp_standard) do |f| %>
+  <% if @sp_standard.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@sp_standard.errors.count, "error") %> prohibited this sp_standard from being saved:</h2>
+
+      <ul>
+      <% @sp_standard.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :sp_sta_0 %><br />
+    <%= f.text_field :sp_sta_0 %>
+  </div>
+  <div class="field">
+    <%= f.label :sp_sta_1 %><br />
+    <%= f.text_field :sp_sta_1 %>
+  </div>
+  <div class="field">
+    <%= f.label :sp_sta_2 %><br />
+    <%= f.text_field :sp_sta_2 %>
+  </div>
+  <div class="field">
+    <%= f.label :sp_sta_3 %><br />
+    <%= f.text_field :sp_sta_3 %>
+  </div>
+  <div class="field">
+    <%= f.label :sp_sta_4 %><br />
+    <%= f.text_field :sp_sta_4 %>
+  </div>
+  <div class="field">
+    <%= f.label :sp_sta_5 %><br />
+    <%= f.text_field :sp_sta_5 %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

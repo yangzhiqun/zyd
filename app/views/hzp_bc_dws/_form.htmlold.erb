@@ -1,0 +1,65 @@
+<form>
+</form>
+<%= form_for(@hzp_bc_dw) do |f| %>
+  <% if @hzp_bc_dw.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@hzp_bc_dw.errors.count, "error") %> prohibited this hzp_bc_dw from being saved:</h2>
+
+      <ul>
+      <% @hzp_bc_dw.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <br />
+    被采样单位名称：<%= f.text_field :dwname,:size=>60 %>
+    被采样单位类型:<%= f.text_field :dwlx %>
+    <br />
+  </div>
+  <div class="field">
+    <%= f.label :dwsf %><br />
+    <%= f.text_field :dwsf %>
+  </div>
+  <div class="field">
+    <%= f.label :dwdq %><br />
+    <%= f.text_field :dwdq %>
+  </div>
+  <div class="field">
+    <%= f.label :dwxs %><br />
+    <%= f.text_field :dwxs %>
+  </div>
+  <div class="field">
+    <%= f.label :dwxz %><br />
+    <%= f.text_field :dwxz %>
+  </div>
+  <div class="field">
+    <%= f.label :dwdz %><br />
+    <%= f.text_field :dwdz %>
+  </div>
+  <div class="field">
+    <%= f.label :dwyb %><br />
+    <%= f.text_field :dwyb %>
+  </div>
+  <div class="field">
+    <%= f.label :dwfr %><br />
+    <%= f.text_field :dwfr %>
+  </div>
+  <div class="field">
+    <%= f.label :dwfrdh %><br />
+    <%= f.text_field :dwfrdh %>
+  </div>
+  <div class="field">
+    <%= f.label :dwfzr %><br />
+    <%= f.text_field :dwfzr %>
+  </div>
+  <div class="field">
+    <%= f.label :dwfzrdh %><br />
+    <%= f.text_field :dwfzrdh %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

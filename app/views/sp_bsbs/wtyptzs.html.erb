@@ -1,0 +1,122 @@
+
+<link type="text/css" rel="stylesheet" href="/assets/noprint.css" media="print"/>
+<script>
+    function partRefresh1() {
+        document.getElementById("indexid").src="/sp_bsbs";
+    };
+    $(function() {
+		$( "#begin_time" ).datepicker({dateFormat:"yy-mm-dd",
+			changeMonth: true,
+			changeYear: true
+		});
+	});
+    $(function() {
+		$( "#ending_time" ).datepicker({dateFormat:"yy-mm-dd",
+			changeMonth: true,
+			changeYear: true
+		});
+	});
+    
+    $(document).ready(function(){
+				$("#print").click(function(){
+                        
+                    $("#my_show").printArea();
+                        
+                });
+                $.each(SPDL, function(index, data){
+                    $("#spdl").append("<option value='"+data+"'>"+data+"</option>");
+				});
+                $.each(SPYL[0], function(index,data){
+                    $("#spyl").append("<option value='"+data+"'>"+data+"</option>");
+                });
+                $.each(SPCYL[0][0], function(index,data){
+                    $("#spcyl").append("<option value='"+data+"'>"+data+"</option>");
+                });
+                $.each(SPXL[0][0][0], function(index,data){
+                    $("#spxl").append("<option value='"+data+"'>"+data+"</option>");
+                });
+                index0 = index1 = index2 = index3 = 0;
+                $("#spdl").change(function(){
+						$("#spyl").get(0).options.length=0;
+						index0=this.selectedIndex;
+						index1=0;
+						index2=0;
+						index3=0;
+
+						$.each(SPYL[index0], function(index,data){
+								$("#spyl").append("<option value='"+data+"'>"+data+"</option>");
+						});
+						$("#spcyl").get(0).options.length=0;
+						$.each(SPCYL[index0][0], function(index,data){
+								$("#spcyl").append("<option value='"+data+"'>"+data+"</option>");
+						});
+						$("#spxl").get(0).options.length=0;
+						$.each(SPXL[index0][0][0], function(index,data){
+								$("#spxl").append("<option value='"+data+"'>"+data+"</option>");
+						});
+				});
+				
+				$("#spyl").change(function(){
+						$("#spcyl").get(0).options.length=0;
+						
+						index2=0;
+						index3=0;
+						index1 = this.selectedIndex;
+						$.each(SPCYL[index0][index1], function(index,data){
+								$("#spcyl").append("<option value='"+data+"'>"+data+"</option>");
+						});
+						$("#spxl").get(0).options.length=0;
+						$.each(SPXL[index0][index1][0], function(index,data){
+								$("#spxl").append("<option value='"+data+"'>"+data+"</option>");
+						});
+				});
+				$("#spcyl").change(function(){
+						$("#spxl").get(0).options.length=0;
+						index3=0;
+						index2 = this.selectedIndex;
+						$.each(SPXL[index0][index1][index2], function(index,data){
+								$("#spxl").append("<option value='"+data+"'>"+data+"</option>");
+						});
+				});
+                 
+    });
+</script>
+<style type="text/css">
+    .tt1 { font-family:"宋体"; font-size: 20px; font-style: normal}
+    .tt2 { font-family:"宋体"; font-size: 18px; font-style: normal}
+    .tt3 { font-family:"宋体"; font-size: 16px; font-style: normal}
+    .tt4 { font-family:"宋体"; font-size: 14px; font-style: normal;line-height: 19px }
+    .tt5 { font-family:"宋体"; font-size: 12px; font-style: normal;line-height: 17px }
+
+
+
+
+</style>
+
+<h1 style="color:red"><%= flash[:edit_result] unless flash[:edit_result].nil?%></h1>
+<div id="my_show">
+<form style="width:800px" action="/sp_bsbs_wtyptzs" method="get" >
+<h1><center>国家食品安全抽样检验结果通知书</center></h1>
+<br/>
+<center><p class="tt5">（顺序号）</p></center><br/>
+<p class="tt4">（被抽样单位、标示生产者名称）：<%=@sp_bsb.sp_s_1%>、<%=@sp_bsb.sp_s_64%></p>
+<p class="tt4"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;受国家食品药品监督管理总局委托，我单位于<%=@sp_bsb.sp_d_38%>对你单位（<%=@sp_bsb.sp_s_21%>）的 （产品名称:<%=@sp_bsb.sp_s_14%>、商标:<%=@sp_bsb.sp_s_74%>、规格型号:<%=@sp_bsb.sp_s_26%>、生产日期:<%=@sp_bsb.sp_d_22%>、质量等级:<%=@sp_bsb.sp_s_73%>）食品进行了国家食品安全抽检检验，检验结果为不合格，检验报告附后。</p>
+<p class="tt4"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;请你单位收到此通知书后立即将《检验结果确认回执》传真或寄送回我单位。对检验结果若有异议，请在接到本通知书5个工作日内向我单位提出书面（传真或寄送文本）意见和相关证明材料。逾期无书面反馈的，视为认可检验结果（请阅读复检须知）。</p>
+<br/>
+<p class="tt4">我单位电话、传真：<%=@sp_bsb.sp_s_39%></p>
+<br/>
+<p class="tt4">我单位地址、邮编：<%=@sp_bsb.sp_s_26%>、<%=@sp_bsb.sp_s_26%></p>
+<br/>
+<p class="tt4">（组织抽样检验的食品药品监管部门印章）</p>
+<br/>
+<p class="tt4"><%=(Time.now).year.to_s%>年<%=(Time.now).month.to_s%>月 <%=(Time.now).day.to_s%>  日</p>
+<p class="tt4">……………………………………………………………………………………………………………………………………………………………………………</p>
+<h1><center>检验结果确认回执</center></h1>
+<center><p class="tt5">（顺序号</p></center><br/>
+<p class="tt4">我单位对检验结果无异议；</p>
+<p class="tt4">我单位将在规定时间内提出书面异议。</p>
+<p class="tt4">企业签收人签字：                        （企业公章）</p>
+<p class="tt4">年   月   日</p>
+</form>
+</div>
+<input type="button" id="print" value="打印"></input></span>

@@ -1,0 +1,327 @@
+#encoding=UTF-8
+class UsersController < ApplicationController
+  include ApplicationHelper
+  skip_before_filter :check_user_info_completeness, only: [:update]
+
+  # GET /users
+  # GET /users.xml
+  before_filter :init
+
+  def init
+    @options=[]
+  end
+
+  def complete_user_info
+    @user = current_user
+    @title = '请填写完整个人信息'
+    render layout: 'blank'
+  end
+
+  def index
+    str="select * from users "
+    if params[:sp_sf]=='请选择' #省份
+      str=str+"where user_s_province like ? "
+      province='%%'
+    else
+      str=str+"where user_s_province like ? "
+      province=params[:sp_sf]
+    end
+    if params[:sp_name]=='' #用户名
+      str=str+"and name like ? "
+      username='%%'
+    else
+      str=str+"and name like ? "
+      if params[:sp_name]==nil
+        params[:sp_name]=''
+      end
+      username="%"+params[:sp_name]+"%"
+    end
+    str=str+"order by user_s_province"
+    if session[:user_name]=='admin'
+      @users = User.paginate_by_sql([str, province, username], :page => params[:page], :per_page => 10)
+    else
+      @users = User.find_all_by_name(session[:user_name])
+    end
+
+
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml { render :xml => @users }
+    end
+  end
+
+  # GET /users/1
+  # GET /users/1.xml
+  def show
+    @user = User.find(params[:id])
+
+    respond_to do |format|
+      format.html # show.html.erb
+      format.xml { render :xml => @user }
+    end
+  end
+
+  def changeauthority
+    @user = User.find_by_name(session[:user_name])
+
+    respond_to do |format|
+      format.html # changeauthority.html.erb
+      format.xml { render :xml => @user }
+    end
+  end
+
+  # GET /users/new
+  # GET /users/new.xml
+  def new
+
+    if session[:user_name]=='admin'
+      @user = User.new
+      respond_to do |format|
+        format.html # new.html.erb
+        format.xml { render :xml => @user }
+      end
+    else
+      redirect_to :controller => 'admin', :action => 'login'
+    end
+  end
+
+  def bind_ca_key
+    if request.get?
+      render layout: "blank"
+    elsif request.post?
+      @user = User.authenticate(params[:username], params[:password])
+      if @user.nil?
+        render json: {status: 'ERR', msg: '无效的用户名或密码'}
+      else
+        if params[:user_sign].blank?
+          render json: {status: 'ERR', msg: '无效的签名'}
+          return
+        end
+
+        if session[:sfid].blank?
+          render json: {status: 'ERR', msg: '无效的身份证号'}
+          return
+        end
+
+        @user.id_card = session[:sfid]
+        @user.user_sign = params[:user_sign]
+
+        unless @user.save
+          render json: {status: 'ERR', msg: @user.errors.first.last}
+        else
+          render json: {status: 'OK', msg: "成功绑定，请重新登录！"}
+        end
+      end
+    end
+  end
+
+  # GET /users/1/edit
+  def edit
+    @user = User.find(params[:id])
+  end
+
+  # POST /users
+  # POST /users.xml
+  def create
+    @user = User.new(params[:user])
+
+    respond_to do |format|
+      if @user.save
+        flash[:notice] = "User #{@user.name} was successfully created."
+        format.html { redirect_to(:action => 'index') }
+        format.xml { render :xml => @user, :status => :created,
+                            :location => @user }
+      else
+        format.html { render :action => "new" }
+        format.xml { render :xml => @user.errors,
+                            :status => :unprocessable_entity }
+      end
+    end
+  end
+
+  # PUT /users/1
+  # PUT /users/1.xml
+  def update
+    @user = User.find(params[:id])
+
+    respond_to do |format|
+      if @user.update_attributes(params[:user])
+        flash[:notice] = "User #{@user.name} was successfully updated."
+        format.html { redirect_to(:action => 'index') }
+        format.xml { head :ok }
+      else
+        logger.error @user.errors.as_json
+        format.html { render :action => "edit" }
+        format.xml { render :xml => @user.errors,
+                            :status => :unprocessable_entity }
+      end
+    end
+  end
+
+  def users_by_jcjg
+    @jg_bsb = JgBsb.find_by_jg_name(params[:jcjg])
+
+    if (params[:model] || "yydjb").eql? "yydjb"
+      @users = User.where("jg_bsb_id = ? and yycz_permission & ? > 0", @jg_bsb.id, 0x0000000000100)
+    elsif params[:model].eql? "wtyp_czb"
+      @users = User.where("jg_bsb_id = ? and hcz_permission & ? > 0", @jg_bsb.id, 0x0000000000010)
+    end
+
+    respond_to do |format|
+      format.json { render :json => {:status => 'OK', :msg => @users} }
+    end
+  end
+
+  # DELETE /users/1
+  # DELETE /users/1.xml
+  def destroy
+    @user = User.find(params[:id])
+    if @user.name!='admin'
+      @user.destroy
+    end
+    respond_to do |format|
+      format.html { redirect_to(users_url) }
+      format.xml { head :ok }
+    end
+  end
+
+  #
+  def import_data_excel
+    unless current_user.is_admin?
+      respond_to do |format|
+        flash[:import_result] = "仅管理员可操作"
+        format.html { redirect_to :back }
+      end
+      return
+    end
+
+    @imported_excel = params[:excel]
+
+    if @imported_excel.blank?
+      respond_to do |format|
+        flash[:import_result] = "请上传导入文件"
+        format.html { redirect_to :back }
+      end
+      return
+    end
+
+    unless ['.xls', '.xlsx'].include? File.extname(@imported_excel.original_filename)
+      respond_to do |format|
+        flash[:import_result] = "仅支持.xls 和 .xlsx格式文件"
+        format.html { redirect_to :back }
+      end
+      return
+    end
+
+    roster = Spreadsheet.open(@imported_excel.path).worksheet(0)
+
+    roster.each_with_index do |row, index|
+      if index == 0
+        @title = row
+        next
+      end
+
+      if User.exists?(name: row[@title.index('用户名')])
+        user = User.find_by_name(row[@title.index('用户名')])
+      else
+        user = User.new
+      end
+      user.name = row[@title.index('用户名')]
+
+      pwd = row[@title.index('初始密码')].to_s
+      if pwd.blank?
+        user.password = '123456'
+      else
+        user.password = pwd
+      end
+
+      user.tel = row[@title.index('联系电话')]
+      user.eaddress = row[@title.index('E-mail')]
+      user.user_s_province = row[@title.index('所在省份')]
+      user.user_s_city = row[@title.index('所在市')]
+      user.user_s_lcity = row[@title.index('所在县')]
+      user.user_jcjg = row[@title.index('机构名称')]
+
+
+			user.jg_bsb_id = JgBsb.find_by_jg_name(user.user_jcjg).id
+      user.user_i_switch = row[@title.index('是否为工作组')].to_i
+      user.user_s_dl = row[@title.index('工作组内容')]
+      user.user_i_js = row[@title.index('是否为地方药监局')].to_i
+      user.user_i_spys = row[@title.index('是否为食品一司')].to_i
+      user.user_i_spss = row[@title.index('是否为食品三司')].to_i
+      user.user_i_sp = row[@title.index('食品')].to_i
+      user.user_d_authority = row[@title.index('填报基本信息')].to_i
+      user.user_d_authority_1 = row[@title.index('填报检测数据')].to_i
+      user.user_d_authority_2 = row[@title.index('机构审核')].to_i
+      user.user_d_authority_5 = row[@title.index('机构批准')].to_i
+      user.user_d_authority_4 = row[@title.index('统计分析')].to_i
+      user.yysl = row[@title.index('异议受理')].to_i
+      user.zhxt = row[@title.index('异议安排')].to_i
+      user.yybl = row[@title.index('异议办理')].to_i
+      user.yysh = row[@title.index('异议审核')].to_i
+      user.hcz_czap = row[@title.index('核查处置安排')].to_i
+      user.hcz_czbl = row[@title.index('核查处置办理')].to_i
+      user.hcz_czsh = row[@title.index('核查处置审核')].to_i
+      user.jsyp = row[@title.index('接收样品')].to_i
+      user.zxcy = row[@title.index('执行采样任务')].to_i
+      user.rwbs = row[@title.index('任务部署')].to_i
+      user.rwxd = row[@title.index('任务下达')].to_i
+      user.pub_xxfb = row[@title.index('信息发布')].to_i
+      user.pub_xxfb_sh = row[@title.index('信息发布审核')].to_i
+      user.enable_api = row[@title.index('是否启用接口')].to_i
+
+      if user.save
+      else
+      end
+    end
+
+    respond_to do |format|
+      format.html { redirect_to :action => "index", :controller => "users" }
+    end
+  end
+
+  ###导出用户信息
+  def export_user_info
+    book = Spreadsheet::Workbook.new
+    sheet =book.create_worksheet :name => "totles"
+    sheet.row(0).concat %w{用户名 姓名 联系电话 电子邮箱 所在省份 所在机构 是否为工作组 是否为地方药监局 是否为食品一司 是否为食品三司 保健食品权限 化妆品权限 食品权限 填报基本信息 填报检测数据 上报审核 问题样品处理 统计分析 异议登记 异议安排 异议办理 异议审核 处置安排 处置办理 处置审核 任务部署 任务下达 执行采样 接收样品}
+    count_row=1
+    @user_info= User.find_by_sql("select * from users where user_i_js=1")
+    @user_info.each do |info|
+      sheet[count_row, 0]=info.name
+      sheet[count_row, 1]=info.tname
+      sheet[count_row, 2]=info.tel
+      sheet[count_row, 3]=info.eaddress
+      sheet[count_row, 4]=info.user_s_province
+      sheet[count_row, 5]=info.jg_bsb.jg_name
+      sheet[count_row, 6]=info.user_i_switch
+      sheet[count_row, 7]=info.user_i_js
+      sheet[count_row, 8]=info.user_i_spys
+      sheet[count_row, 9]=info.user_i_spss
+      sheet[count_row, 10]=info.user_i_bjp
+      sheet[count_row, 11]=info.user_i_hzp
+      sheet[count_row, 12]=info.user_i_sp
+      sheet[count_row, 13]=info.user_d_authority
+      sheet[count_row, 14]=info.user_d_authority_1
+      sheet[count_row, 15]=info.user_d_authority_2
+      sheet[count_row, 16]=info.user_d_authority_3
+      sheet[count_row, 17]=info.user_d_authority_4
+      sheet[count_row, 18]=info.yysl
+      sheet[count_row, 19]=info.zhxt
+      sheet[count_row, 20]=info.yybl
+      sheet[count_row, 21]=info.yysh
+      sheet[count_row, 22]=info.hcz_czap
+      sheet[count_row, 23]=info.hcz_czbl
+      sheet[count_row, 24]=info.hcz_czsh
+      sheet[count_row, 25]=info.rwbs
+      sheet[count_row, 26]=info.rwxd
+      sheet[count_row, 27]=info.zxcy
+      sheet[count_row, 28]=info.jsyp
+      count_row += 1
+    end
+
+    savetempfile="public/#{(Time.now).year.to_s}年用户信息.xls"
+    book.write(savetempfile)
+    send_file(savetempfile, :disposition => "attachment")
+  end
+end

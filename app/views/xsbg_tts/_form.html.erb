@@ -1,0 +1,29 @@
+<%= form_for(@xsbg_tt) do |f| %>
+  <% if @xsbg_tt.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@xsbg_tt.errors.count, "error") %> prohibited this xsbg_tt from being saved:</h2>
+
+      <ul>
+      <% @xsbg_tt.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :GJMC %><br />
+    <%= f.text_field :GJMC %>
+  </div>
+  <div class="field">
+    <%= f.label :CJBH %><br />
+    <%= f.text_field :CJBH %>
+  </div>
+  <div class="field">
+    <%= f.label :sp_bsb_id %><br />
+    <%= f.number_field :sp_bsb_id %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

@@ -1,0 +1,41 @@
+<h1>Listing spdata</h1>
+
+<table>
+  <tr>
+    <th>Spdata 0</th>
+    <th>Spdata 1</th>
+    <th>Spdata 2</th>
+    <th>Spdata 3</th>
+    <th>Spdata 4</th>
+    <th>Spdata 5</th>
+    <th>Spdata 6</th>
+    <th>Spdata 7</th>
+    <th>Spdata 8</th>
+    <th>Spdata 9</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @spdata.each do |spdatum| %>
+  <tr>
+    <td><%= spdatum.spdata_0 %></td>
+    <td><%= spdatum.spdata_1 %></td>
+    <td><%= spdatum.spdata_2 %></td>
+    <td><%= spdatum.spdata_3 %></td>
+    <td><%= spdatum.spdata_4 %></td>
+    <td><%= spdatum.spdata_5 %></td>
+    <td><%= spdatum.spdata_6 %></td>
+    <td><%= spdatum.spdata_7 %></td>
+    <td><%= spdatum.spdata_8 %></td>
+    <td><%= spdatum.spdata_9 %></td>
+    <td><%= link_to 'Show', spdatum %></td>
+    <td><%= link_to 'Edit', edit_spdatum_path(spdatum) %></td>
+    <td><%= link_to 'Destroy', spdatum, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Spdatum', new_spdatum_path %>

@@ -1,0 +1,76 @@
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('#x-table-header-table-basic div[name="x-table-header-title-basic"]').click(function(){
+      if($(this).hasClass("up")){
+        $('#x-table-header-table-basic div[name="x-table-header-title-basic"]').removeClass();
+        $(this).addClass("down");
+        $('#sp_order_seq').val("DESC");
+        $('#sp_order').val($(this).parent("th").attr("name"));
+      } else {
+        $('#x-table-header-table-basic div[name="x-table-header-title-basic"]').removeClass();
+        $(this).addClass("up");
+        $('#sp_order_seq').val("ASC");
+        $('#sp_order').val($(this).parent("th").attr("name"));                                                                      
+      }
+      $('#sp_submit').trigger("click");
+    });
+  });
+</script>
+<style type="text/css">
+  .btn-xs {
+    font-size: 12px;
+    margin-bottom: 5px;
+  }
+</style>
+
+<table class="table table-bordered table-hover">
+  <thead>
+    <tr>
+      <th width="100">更新日期</th>
+      <th width="60">省份</th>
+      <th width="120">采样编号</th>
+      <th>样品名称</th>
+      <th width="120">采样单位名称</th>
+      <th width="120">检验机构名称</th>
+      <th width="100" style="font-size: 12px;">样品是否确认</th>
+      <th width="100">填报状态</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @pad_sp_bsbs.each do |sp_bsb| %>
+    <tr class="<%= 'danger' if sp_bsb.is_bad_report? %>">
+      <td><%=((sp_bsb.updated_at).ago(-3600*8)).to_s[0,19]%></td>
+      <td><%= sp_bsb.sp_s_3 %></td>
+      <td style="word-break:break-all"><%= sp_bsb.sp_s_16 %></td>
+      <td><%= sp_bsb.sp_s_14 %></td>
+      <td valign="top"><%= sp_bsb.sp_s_35 %></td>
+      <td><%= sp_bsb.sp_s_43 %></td>
+      <td><%= sp_bsb.sp_s_214 %></td>
+      <td>
+        <% if sp_bsb.sp_i_state == ::PadSpBsb::Step::TMP_SAVE %>
+          <%= link_to '临时保存状态', edit_pad_sp_bsb_path(sp_bsb), :class => 'btn btn-default btn-xs center-block' %>
+        <% elsif sp_bsb.sp_i_state == ::PadSpBsb::Step::DEPLOYED %>
+          <%= link_to '任务已下达', edit_pad_sp_bsb_path(sp_bsb), :class => 'btn btn-success btn-xs center-block' %>
+        <% elsif sp_bsb.sp_i_state == ::PadSpBsb::Step::ACCEPTED %>
+          <%= link_to '任务已领取', edit_pad_sp_bsb_path(sp_bsb), :class => 'btn btn-success btn-xs center-block' %>
+        <% elsif sp_bsb.sp_i_state == ::PadSpBsb::Step::ARRIVED %>
+          <%= link_to '已到达采样地', edit_pad_sp_bsb_path(sp_bsb), :class => 'btn btn-success btn-xs center-block' %>
+        <% elsif sp_bsb.sp_i_state == ::PadSpBsb::Step::FINISHED %>
+          <%= link_to '采样完成', edit_pad_sp_bsb_path(sp_bsb), :class => 'btn btn-success btn-xs center-block' %>
+        <% elsif sp_bsb.sp_i_state == ::PadSpBsb::Step::SAMPLE_ACCEPTED %>
+          <%= link_to '样品已接收', edit_pad_sp_bsb_path(sp_bsb), :class => 'btn btn-success btn-xs center-block' %>
+        <% elsif sp_bsb.sp_i_state == ::PadSpBsb::Step::SAMPLE_REFUSED %>
+          <%= link_to '样品已被拒收', edit_pad_sp_bsb_path(sp_bsb), :class => 'btn btn-danger btn-xs center-block' %>
+        <% elsif sp_bsb.sp_i_state == ::PadSpBsb::Step::FAILED %>
+          <%= link_to '无法完成抽检', edit_pad_sp_bsb_path(sp_bsb), :class => 'btn btn-danger btn-xs center-block', "data-toggle" => "tooltip", "data-placement" => "top", "title" => "#{sp_bsb.failed_message}"%>
+        <% end %>
+
+        <% if [::PadSpBsb::Step::TMP_SAVE].include? sp_bsb.sp_i_state and current_user.rwxd == 1 %>
+        <%= link_to '删除', sp_bsb,method: :delete, data: { confirm: '是否删除?' }, :class => 'btn btn-link btn-xs center-block' %>
+        <% end %>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+

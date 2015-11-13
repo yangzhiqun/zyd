@@ -1,0 +1,47 @@
+<div class="depot-form">
+
+<%= form_for(@user) do |f| %>
+  <% if @user.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
+
+      <ul>
+      <% @user.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <fieldset>
+  <legend>Enter User Details</legend>
+
+  <div>
+    <p>用户名：</p>
+    <%= f.text_field :name, :size => 40 %>
+  </div>
+
+  <div>
+    <p>密码：</p>
+    <%= f.password_field :password, :size => 40 %>
+  </div>
+
+  <div>
+    <p>密码确认：</p>
+    <%= f.password_field :password_confirmation, :size => 40 %>
+  </div>
+  
+  <div>
+    <p>真实姓名：</p>
+    <%= f.text_field :tname, :size => 40 %>
+  </div>
+
+  <div>
+    <%= f.submit "Add User", :class => "submit" %>
+  </div>
+
+  </fieldset>
+<% end %>
+</div>
+
+<%= link_to 'Back', users_path %>

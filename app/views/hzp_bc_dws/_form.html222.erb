@@ -1,0 +1,59 @@
+
+  <%= form_for(@hzp_bc_dw) do |f| %>  
+  <% if @hzp_bc_dw.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@hzp_bc_dw.errors.count, "error") %> prohibited this hzp_bc_dw from being saved:</h2>
+
+      <ul>
+      <% @hzp_bc_dw.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    被采样单位名称<%= f.text_field :dwname,:size=>40 %><br/>
+  </div>
+  <div class="field">
+    被采样单位类型<%=f.select :dwlx, HzpBcDw.options1 %>
+    其他<%=f.text_field :dwlxzdy %>
+  </div>
+  <div class="field">
+    所在省份(市、自治区)<%= f.select :dwsf, HzpBcDw.options2 %>
+  
+    所在地区(市、州、盟)<%= f.text_field :dwdq %>
+  </div>
+  <div class="field">
+ 
+    所在县(市、区)<%= f.text_field :dwxs %>
+ 
+    所在乡(镇)<%= f.text_field :dwxz %>
+  </div>
+  <div class="field">
+ 
+    单位地址<%= f.text_field :dwdz,:size=>60 %>
+    邮编<%= f.text_field :dwyb,:size=>20 %>
+ 
+  </div>
+  <div class="field">
+ 
+    法人(负责人)<%= f.text_field :dwfr %>
+ 
+    联系电话<%= f.text_field :dwfrdh %>
+  </div>
+  <div class="field">
+ 
+    负责人(联系人)<%= f.text_field :dwfzr %>
+ 
+    联系电话<%= f.text_field :dwfzrdh %>
+  </div>
+  <div class="actions">
+    <%= f.submit '提交' %>
+    
+  </div>
+
+  <div><#iframe src="/hzp_bc_dws/<%= @hzp_bc_dw[:id] %>" id="indexid"  name="indexname" height="100px" width="80%" ><#/iframe></div>
+
+<% end %>
+

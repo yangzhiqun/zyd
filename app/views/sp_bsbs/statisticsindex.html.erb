@@ -1,0 +1,547 @@
+<!--link rel="stylesheet" href="/jquery-ui/themes/base/jquery.ui.all.css">
+<script src="/jquery-ui/jquery-1.9.1.js"></script>
+<script src="/jquery-ui/ui/jquery.ui.core.js"></script>
+<script src="/jquery-ui/ui/jquery.ui.widget.js"></script>
+<script src="/jquery-ui/ui/jquery.ui.datepicker.js"></script>
+<link rel="stylesheet" href="/jquery-ui/demos.css"-->
+<style type="text/css">
+    
+	.style1 {
+		border-collapse: collapse;
+		font-size: 9pt;
+		font-family: Calibri, sans-serif;
+		border-style: none;
+		border-color: inherit;
+		border-width: medium;
+		table-layout:fixed;
+	}
+	.style1 td{
+		border: solid windowtext 1.0px;
+		padding: 0cm 5.4pt 0cm 5.4pt;
+		height: 30px;		
+	}
+	.style1 th{
+		border: solid windowtext 1.0px;
+		padding: 0cm 5.4pt 0cm 5.4pt;
+		height: 30px;
+	}
+	.style1 p{
+		height:5px;
+	
+	}
+	.inputText {
+		font-size: 12px;
+		border-right-width: 0px;
+		border-left-width: 0px;
+		border-top-width: 0px;
+		border-bottom: 1px solid;
+		background-color : transparent; 
+		
+	}
+    
+</style>
+<script>
+    function partRefresh1() {
+        document.getElementById("indexid").src="/sp_bsbs";
+    };
+    $(function() {
+		$( "#begin_time" ).datepicker({dateFormat:"yy-mm-dd",
+			changeMonth: true,
+			changeYear: true
+		});
+	});
+    $(function() {
+		$( "#ending_time" ).datepicker({dateFormat:"yy-mm-dd",
+			changeMonth: true,
+			changeYear: true
+		});
+	});
+    
+    $(document).ready(function(){
+				$.each(SPDL, function(index, data){
+                    $("#spdl").append("<option value='"+data+"'>"+data+"</option>");
+				});
+                $.each(SPYL[0], function(index,data){
+                    $("#spyl").append("<option value='"+data+"'>"+data+"</option>");
+                });
+                $.each(SPCYL[0][0], function(index,data){
+                    $("#spcyl").append("<option value='"+data+"'>"+data+"</option>");
+                });
+                $.each(SPXL[0][0][0], function(index,data){
+                    $("#spxl").append("<option value='"+data+"'>"+data+"</option>");
+                });
+                index0 = index1 = index2 = index3 = 0;
+                $("#spdl").change(function(){
+						$("#spyl").get(0).options.length=0;
+						index0=this.selectedIndex;
+						index1=0;
+						index2=0;
+						index3=0;
+
+						$.each(SPYL[index0], function(index,data){
+								$("#spyl").append("<option value='"+data+"'>"+data+"</option>");
+						});
+						$("#spcyl").get(0).options.length=0;
+						$.each(SPCYL[index0][0], function(index,data){
+								$("#spcyl").append("<option value='"+data+"'>"+data+"</option>");
+						});
+						$("#spxl").get(0).options.length=0;
+						$.each(SPXL[index0][0][0], function(index,data){
+								$("#spxl").append("<option value='"+data+"'>"+data+"</option>");
+						});
+				});
+				
+				$("#spyl").change(function(){
+						$("#spcyl").get(0).options.length=0;
+						
+						index2=0;
+						index3=0;
+						index1 = this.selectedIndex;
+						$.each(SPCYL[index0][index1], function(index,data){
+								$("#spcyl").append("<option value='"+data+"'>"+data+"</option>");
+						});
+						$("#spxl").get(0).options.length=0;
+						$.each(SPXL[index0][index1][0], function(index,data){
+								$("#spxl").append("<option value='"+data+"'>"+data+"</option>");
+						});
+				});
+				$("#spcyl").change(function(){
+						$("#spxl").get(0).options.length=0;
+						index3=0;
+						index2 = this.selectedIndex;
+						$.each(SPXL[index0][index1][index2], function(index,data){
+								$("#spxl").append("<option value='"+data+"'>"+data+"</option>");
+						});
+				});
+                $.each(GP, function(index,data){
+                    $("#sp_sf").append("<option value='"+data+"'>"+data+"</option>");
+                });
+                $.each(SPDL1, function(index, data){
+                    $("#sp_dl").append("<option value='"+data+"'>"+data+"</option>");
+                });
+                
+                 
+    });
+</script>
+
+<h1><center>食品安全检验数据统计分析</center></h1>
+<br/>
+
+<h1 style="color:red"><%= flash[:edit_result] unless flash[:edit_result].nil?%></h1>
+
+<form action="/sp_bsbs_statistics" method="get">
+<!--%= tag(:input, :type => "hidden", :name =>request_forgery_protection_token.to_s, :value =>form_authenticity_token) %-->
+<fieldset style="padding: 5px 10px;">
+	<legend>数据查询选项</legend>
+<div>
+<table border="1" cellspacing="0" cellpadding="0" width="800px" class="style1">
+<tr>
+    <td colspan="5">填报起始日期</td>
+    <td colspan="10"><input type="text" id="begin_time" name="begin_time" value=<%=@begin_time%>></input>
+        <select type="text" id="sp_time_begin" name="sp_time_begin">
+            <option value=0>0</option>
+            <option value=1>1</option>
+            <option value=2>2</option>
+            <option value=3>3</option>
+            <option value=4>4</option>
+            <option value=5>5</option>
+            <option value=6>6</option>
+            <option value=7>7</option>
+            <option value=8>8</option>
+            <option value=9>9</option>
+            <option value=10>10</option>
+            <option value=11>11</option>
+            <option value=12>12</option>
+            <option value=13>13</option>
+            <option value=14>14</option>
+            <option value=15>15</option>
+            <option value=16>16</option>
+            <option value=17>17</option>
+            <option value=18>18</option>
+            <option value=19>19</option>
+            <option value=20>20</option>
+            <option value=21>21</option>
+            <option value=22>22</option>
+            <option value=23>23</option>
+        </select>时
+    </td>
+    <td colspan="5">至填报结束日期</td>
+    <td colspan="10"><input type="text" id="ending_time" name="ending_time" value=<%=@ending_time%>></input>
+        <select type="text" id="sp_time_end" name="sp_time_end">
+            <option value=1>1</option>
+            <option value=2>2</option>
+            <option value=3>3</option>
+            <option value=4>4</option>
+            <option value=5>5</option>
+            <option value=6>6</option>
+            <option value=7>7</option>
+            <option value=8>8</option>
+            <option value=9>9</option>
+            <option value=10>10</option>
+            <option value=11>11</option>
+            <option value=12>12</option>
+            <option value=13>13</option>
+            <option value=14>14</option>
+            <option value=15>15</option>
+            <option value=16>16</option>
+            <option value=17>17</option>
+            <option value=18>18</option>
+            <option value=19>19</option>
+            <option value=20>20</option>
+            <option value=21>21</option>
+            <option value=22>22</option>
+            <option value=23>23</option>
+            <option value=24 selected="selected">24</option>
+        </select>时
+    </td>
+    
+</tr>
+    <tr>
+        <td colspan="3">提交状态</td>
+        <td colspan="7">
+            <select id="s8" name="s8">
+                <option value=1>全部数据</option>
+                <option value=2>批量导入数据</option>
+                <option value=3>基本信息(填报中)</option>
+                <option value=4>检测数据(填报)</option>
+                <option value=5>检测数据(机构审核中)</option>
+                <option value=6>检测数据(药监局审核中)</option>
+                <option value=7>检测数据(牵头单位审核中)</option>
+                <option value=8>检测数据(已提交至秘书处)</option>
+            </select>
+        </td>
+        <td colspan="4">报送分类</td>
+        <td colspan="16"><select id="s12" name="s12">
+            <option value="全部">全部</option>
+            <option value="抽检监测(总局本级)">抽检监测(总局本级)</option>
+            <option value="抽检监测（地方）">抽检监测（地方）</option>
+            <option value="三司专项检验">三司专项检验</option>
+            <option value="网络专项检验">网络专项检验</option>
+            </select></td>
+    </tr>
+<tr>
+        <td colspan="4">合格状态</td>
+        <td colspan="26"><select id="s28" name="s28">
+            <option value="全部">全部</option>
+            <option value="不合格/问题样品">不合格/问题样品</option>
+            <option value="不合格">不合格</option>
+            <option value="问题样品">问题样品</option>
+            </select></td>
+</tr>
+<tr>
+    <td colspan="30">
+        <select id="cx_1" name="cx_1">
+            <option value="">请选择查询项</option>
+            <option value="sp_s_56">任务分类(一司/三司)</option>
+            <option value="sp_s_68">抽样地点_1</option>
+            <option value="sp_s_2">抽样地点_2</option>
+            <option value="sp_s_201">区域类型</option>
+            <option value="sp_s_62">样品类型</option>
+            <option value="sp_s_44">检验目的</option>
+            <option value="sp_s_1">被抽样单位</option>
+            <option value="sp_s_3">被抽样单位省份</option>
+            <option value="sp_s_4">被抽样单位地市</option>
+            <option value="sp_s_5">被抽样单位县</option>
+            <option value="sp_s_17">食品大类</option>
+            <option value="sp_s_18">食品亚类</option>
+            <option value="sp_s_19">食品次亚类</option>
+            <option value="sp_s_20">食品细类</option>
+            <option value="sp_s_64">标识生产企业名称</option>
+            <option value="sp_s_202">标识生产企业省份</option>
+            <option value="sp_s_35">抽样单位</option>
+            <option value="sp_s_52">抽样单位省份</option>
+            <option value="sp_s_43">检测机构</option>
+            <option value="sp_s_71">样品合格结论</option>
+            <option value="spdata_0">检测项</option>
+        </select>
+        =<input class="inputText" id="cx_1_1" name="cx_1_1" style="width: 200px; height: 19px" type="text"></input>
+    </td>
+    
+    
+    
+
+</tr>
+<tr>
+    <td colspan="6">
+        <select id="s13" name="s13">
+            <option value="sp_s_56">请选择统计项</option>
+            <option value="sp_s_56">任务分类(一司/三司)</option>
+            <option value="sp_s_68">抽样地点_1</option>
+            <option value="sp_s_2">抽样地点_2</option>
+            <option value="sp_s_201">区域类型</option>
+            <option value="sp_s_62">样品类型</option>
+            <option value="sp_s_44">检验目的</option>
+            <option value="sp_s_1">被抽样单位</option>
+            <option value="sp_s_3">被抽样单位省份</option>
+            <option value="sp_s_4">被抽样单位地市</option>
+            <option value="sp_s_5">被抽样单位县</option>
+            <option value="sp_s_17">食品大类</option>
+            <option value="sp_s_18">食品亚类</option>
+            <option value="sp_s_19">食品次亚类</option>
+            <option value="sp_s_20">食品细类</option>
+            <option value="sp_s_64">标识生产企业名称</option>
+            <option value="sp_s_202">标识生产企业省份</option>
+            <option value="sp_s_35">抽样单位</option>
+            <option value="sp_s_52">抽样单位省份</option>
+            <option value="sp_s_43">检测机构</option>
+            <option value="sp_s_71">样品合格结论</option>
+            <option value="spdata_0">检测项</option>
+        </select>
+    </td>
+    <td colspan="6">
+        <select id="s14" name="s14">
+            <option value="">请选择统计项</option>
+            <option value="sp_s_56">任务分类(一司/三司)</option>
+            <option value="sp_s_68">抽样地点_1</option>
+            <option value="sp_s_2">抽样地点_2</option>
+            <option value="sp_s_201">区域类型</option>
+            <option value="sp_s_62">样品类型</option>
+            <option value="sp_s_44">检验目的</option>
+            <option value="sp_s_1">被抽样单位</option>
+            <option value="sp_s_3">被抽样单位省份</option>
+            <option value="sp_s_4">被抽样单位地市</option>
+            <option value="sp_s_5">被抽样单位县</option>
+            <option value="sp_s_17">食品大类</option>
+            <option value="sp_s_18">食品亚类</option>
+            <option value="sp_s_19">食品次亚类</option>
+            <option value="sp_s_20">食品细类</option>
+            <option value="sp_s_64">标识生产企业名称</option>
+            <option value="sp_s_202">标识生产企业省份</option>
+            <option value="sp_s_35">抽样单位</option>
+            <option value="sp_s_52">抽样单位省份</option>
+            <option value="sp_s_43">检测机构</option>
+            <option value="sp_s_71">样品合格结论</option>
+            <option value="spdata_0">检测项</option>
+        </select>
+    </td>
+    <td colspan="6">
+        <select id="s15" name="s15">
+            <option value="">请选择统计项</option>
+            <option value="sp_s_56">任务分类(一司/三司)</option>
+            <option value="sp_s_68">抽样地点_1</option>
+            <option value="sp_s_2">抽样地点_2</option>
+            <option value="sp_s_201">区域类型</option>
+            <option value="sp_s_62">样品类型</option>
+            <option value="sp_s_44">检验目的</option>
+            <option value="sp_s_1">被抽样单位</option>
+            <option value="sp_s_3">被抽样单位省份</option>
+            <option value="sp_s_4">被抽样单位地市</option>
+            <option value="sp_s_5">被抽样单位县</option>
+            <option value="sp_s_17">食品大类</option>
+            <option value="sp_s_18">食品亚类</option>
+            <option value="sp_s_19">食品次亚类</option>
+            <option value="sp_s_20">食品细类</option>
+            <option value="sp_s_64">标识生产企业名称</option>
+            <option value="sp_s_202">标识生产企业省份</option>
+            <option value="sp_s_35">抽样单位</option>
+            <option value="sp_s_52">抽样单位省份</option>
+            <option value="sp_s_43">检测机构</option>
+            <option value="sp_s_71">样品合格结论</option>
+            <option value="spdata_0">检测项</option>
+        </select>
+    </td>
+    <td colspan="6">
+        <select id="s16" name="s16">
+            <option value="">请选择统计项</option>
+            <option value="sp_s_56">任务分类(一司/三司)</option>
+            <option value="sp_s_68">抽样地点_1</option>
+            <option value="sp_s_2">抽样地点_2</option>
+            <option value="sp_s_201">区域类型</option>
+            <option value="sp_s_62">样品类型</option>
+            <option value="sp_s_44">检验目的</option>
+            <option value="sp_s_1">被抽样单位</option>
+            <option value="sp_s_3">被抽样单位省份</option>
+            <option value="sp_s_4">被抽样单位地市</option>
+            <option value="sp_s_5">被抽样单位县</option>
+            <option value="sp_s_17">食品大类</option>
+            <option value="sp_s_18">食品亚类</option>
+            <option value="sp_s_19">食品次亚类</option>
+            <option value="sp_s_20">食品细类</option>
+            <option value="sp_s_64">标识生产企业名称</option>
+            <option value="sp_s_202">标识生产企业省份</option>
+            <option value="sp_s_35">抽样单位</option>
+            <option value="sp_s_52">抽样单位省份</option>
+            <option value="sp_s_43">检测机构</option>
+            <option value="sp_s_71">样品合格结论</option>
+            <option value="spdata_0">检测项</option>
+        </select>
+    </td>
+    <td colspan="6">
+        <select id="s17" name="s17">
+            <option value="">请选择统计项</option>
+            <option value="sp_s_56">任务分类(一司/三司)</option>
+            <option value="sp_s_68">抽样地点_1</option>
+            <option value="sp_s_2">抽样地点_2</option>
+            <option value="sp_s_201">区域类型</option>
+            <option value="sp_s_62">样品类型</option>
+            <option value="sp_s_44">检验目的</option>
+            <option value="sp_s_1">被抽样单位</option>
+            <option value="sp_s_3">被抽样单位省份</option>
+            <option value="sp_s_4">被抽样单位地市</option>
+            <option value="sp_s_5">被抽样单位县</option>
+            <option value="sp_s_17">食品大类</option>
+            <option value="sp_s_18">食品亚类</option>
+            <option value="sp_s_19">食品次亚类</option>
+            <option value="sp_s_20">食品细类</option>
+            <option value="sp_s_64">标识生产企业名称</option>
+            <option value="sp_s_202">标识生产企业省份</option>
+            <option value="sp_s_35">抽样单位</option>
+            <option value="sp_s_52">抽样单位省份</option>
+            <option value="sp_s_43">检测机构</option>
+            <option value="sp_s_71">样品合格结论</option>
+            <option value="spdata_0">检测项</option>
+        </select>
+    </td>
+</tr>
+<tr>
+    <td colspan="6">
+        <select id="s18" name="s18">
+            <option value="">请选择统计项</option>
+            <option value="sp_s_56">任务分类(一司/三司)</option>
+            <option value="sp_s_68">抽样地点_1</option>
+            <option value="sp_s_2">抽样地点_2</option>
+            <option value="sp_s_201">区域类型</option>
+            <option value="sp_s_62">样品类型</option>
+            <option value="sp_s_44">检验目的</option>
+            <option value="sp_s_1">被抽样单位</option>
+            <option value="sp_s_3">被抽样单位省份</option>
+            <option value="sp_s_4">被抽样单位地市</option>
+            <option value="sp_s_5">被抽样单位县</option>
+            <option value="sp_s_17">食品大类</option>
+            <option value="sp_s_18">食品亚类</option>
+            <option value="sp_s_19">食品次亚类</option>
+            <option value="sp_s_20">食品细类</option>
+            <option value="sp_s_64">标识生产企业名称</option>
+            <option value="sp_s_202">标识生产企业省份</option>
+            <option value="sp_s_35">抽样单位</option>
+            <option value="sp_s_52">抽样单位省份</option>
+            <option value="sp_s_43">检测机构</option>
+            <option value="sp_s_71">样品合格结论</option>
+            <option value="spdata_0">检测项</option>
+        </select>
+    </td>
+    <td colspan="6">
+        <select id="s19" name="s19">
+            <option value="">请选择统计项</option>
+            <option value="sp_s_56">任务分类(一司/三司)</option>
+            <option value="sp_s_68">抽样地点_1</option>
+            <option value="sp_s_2">抽样地点_2</option>
+            <option value="sp_s_201">区域类型</option>
+            <option value="sp_s_62">样品类型</option>
+            <option value="sp_s_44">检验目的</option>
+            <option value="sp_s_1">被抽样单位</option>
+            <option value="sp_s_3">被抽样单位省份</option>
+            <option value="sp_s_4">被抽样单位地市</option>
+            <option value="sp_s_5">被抽样单位县</option>
+            <option value="sp_s_17">食品大类</option>
+            <option value="sp_s_18">食品亚类</option>
+            <option value="sp_s_19">食品次亚类</option>
+            <option value="sp_s_20">食品细类</option>
+            <option value="sp_s_64">标识生产企业名称</option>
+            <option value="sp_s_202">标识生产企业省份</option>
+            <option value="sp_s_35">抽样单位</option>
+            <option value="sp_s_52">抽样单位省份</option>
+            <option value="sp_s_43">检测机构</option>
+            <option value="sp_s_71">样品合格结论</option>
+            <option value="spdata_0">检测项</option>
+        </select>
+    </td>
+    <td colspan="6">
+        <select id="s20" name="s20">
+            <option value="">请选择统计项</option>
+            <option value="sp_s_56">任务分类(一司/三司)</option>
+            <option value="sp_s_68">抽样地点_1</option>
+            <option value="sp_s_2">抽样地点_2</option>
+            <option value="sp_s_201">区域类型</option>
+            <option value="sp_s_62">样品类型</option>
+            <option value="sp_s_44">检验目的</option>
+            <option value="sp_s_1">被抽样单位</option>
+            <option value="sp_s_3">被抽样单位省份</option>
+            <option value="sp_s_4">被抽样单位地市</option>
+            <option value="sp_s_5">被抽样单位县</option>
+            <option value="sp_s_17">食品大类</option>
+            <option value="sp_s_18">食品亚类</option>
+            <option value="sp_s_19">食品次亚类</option>
+            <option value="sp_s_20">食品细类</option>
+            <option value="sp_s_64">标识生产企业名称</option>
+            <option value="sp_s_202">标识生产企业省份</option>
+            <option value="sp_s_35">抽样单位</option>
+            <option value="sp_s_52">抽样单位省份</option>
+            <option value="sp_s_43">检测机构</option>
+            <option value="sp_s_71">样品合格结论</option>
+            <option value="spdata_0">检测项</option>
+        </select>
+    </td>
+    <td colspan="6">
+        <select id="s21" name="s21">
+            <option value="">请选择统计项</option>
+            <option value="sp_s_56">任务分类(一司/三司)</option>
+            <option value="sp_s_68">抽样地点_1</option>
+            <option value="sp_s_2">抽样地点_2</option>
+            <option value="sp_s_201">区域类型</option>
+            <option value="sp_s_62">样品类型</option>
+            <option value="sp_s_44">检验目的</option>
+            <option value="sp_s_1">被抽样单位</option>
+            <option value="sp_s_3">被抽样单位省份</option>
+            <option value="sp_s_4">被抽样单位地市</option>
+            <option value="sp_s_5">被抽样单位县</option>
+            <option value="sp_s_17">食品大类</option>
+            <option value="sp_s_18">食品亚类</option>
+            <option value="sp_s_19">食品次亚类</option>
+            <option value="sp_s_20">食品细类</option>
+            <option value="sp_s_64">标识生产企业名称</option>
+            <option value="sp_s_202">标识生产企业省份</option>
+            <option value="sp_s_35">抽样单位</option>
+            <option value="sp_s_52">抽样单位省份</option>
+            <option value="sp_s_43">检测机构</option>
+            <option value="sp_s_71">样品合格结论</option>
+            <option value="spdata_0">检测项</option>
+        </select>
+    </td>
+    <td colspan="6">
+        <select id="s22" name="s22">
+            <option value="">请选择统计项</option>
+            <option value="sp_s_56">任务分类(一司/三司)</option>
+            <option value="sp_s_68">抽样地点_1</option>
+            <option value="sp_s_2">抽样地点_2</option>
+            <option value="sp_s_201">区域类型</option>
+            <option value="sp_s_62">样品类型</option>
+            <option value="sp_s_44">检验目的</option>
+            <option value="sp_s_1">被抽样单位</option>
+            <option value="sp_s_3">被抽样单位省份</option>
+            <option value="sp_s_4">被抽样单位地市</option>
+            <option value="sp_s_5">被抽样单位县</option>
+            <option value="sp_s_17">食品大类</option>
+            <option value="sp_s_18">食品亚类</option>
+            <option value="sp_s_19">食品次亚类</option>
+            <option value="sp_s_20">食品细类</option>
+            <option value="sp_s_64">标识生产企业名称</option>
+            <option value="sp_s_202">标识生产企业省份</option>
+            <option value="sp_s_35">抽样单位</option>
+            <option value="sp_s_52">抽样单位省份</option>
+            <option value="sp_s_43">检测机构</option>
+            <option value="sp_s_71">样品合格结论</option>
+            <option value="spdata_0">检测项</option>
+        </select>
+    </td>
+</tr>
+</table>
+</div>
+<br/>
+<!--div>
+	<% if !@latest_statics.nil? %>
+		<% if @latest_statics.finished_at.nil? %>
+			<p>您已经有统计程序正在处理中，请等待处理结果...</p>
+		<% else %>
+			<p><a href="/static_queues/<%= @latest_statics.id %>">查看上次统计结果</a></p>
+			<input type="submit" value="搜索" ></input>
+		<% end %>
+	<% else %>
+		<input type="submit" value="搜索" ></input>
+	<% end %>
+</div-->
+<input type="submit" value="搜索" ></input>
+<br/>
+</fieldset>
+</form>
+

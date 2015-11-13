@@ -1,0 +1,30 @@
+<h1>机构签章</h1>
+<hr>
+
+<% unless @jg_bsb_stamps.blank? %>
+    <table class="table table-bordered">
+      <tr>
+        <th>机构名称</th>
+        <th>签章规则号</th>
+        <th>备注</th>
+        <th></th>
+      </tr>
+
+      <% @jg_bsb_stamps.each do |jg_bsb_stamp| %>
+          <tr>
+            <td><%= jg_bsb_stamp.jg_bsb_id %></td>
+            <td><%= jg_bsb_stamp.stamp_no %></td>
+            <td><%= jg_bsb_stamp.note %></td>
+            <td>
+              <%= link_to '查看', jg_bsb_stamp, class: 'btn btn-xs btn-primary' %>
+              <%= link_to '编辑', edit_jg_bsb_stamp_path(jg_bsb_stamp), class: 'btn btn-xs btn-default' %>
+              <%= link_to '删除', jg_bsb_stamp, method: :delete, data: {confirm: '确定删除吗？'}, class: 'btn btn-xs btn-danger' %>
+            </td>
+          </tr>
+      <% end %>
+    </table>
+<% else %>
+    <p class="text-info">暂无</p>
+<% end %>
+
+<%= link_to '新建', new_jg_bsb_stamp_path(jg_bsb_id: params[:jg_bsb_id]), class: 'btn btn-xs btn-primary' %>

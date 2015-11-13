@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="500 Internal Server Error">
+<meta name="author" content="">
+<title>500 Internal Server Error</title>
+<!-- Bootstrap core CSS -->
+<link rel="stylesheet" href="http://libs.useso.com/js/bootstrap/3.2.0/css/bootstrap.css">
+<link rel="stylesheet" href="http://libs.useso.com/js/font-awesome/4.2.0/css/font-awesome.css">
+<style>
+/* Error Page Inline Styles */
+body {
+  padding-top: 20px;
+}
+/* Layout */
+.jumbotron {
+  font-size: 21px;
+  font-weight: 200;
+  line-height: 2.1428571435;
+  color: inherit;
+  padding: 10px 0px;
+}
+/* Everything but the jumbotron gets side spacing for mobile-first views */
+.masthead, .body-content, {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+/* Main marketing message and sign up button */
+.jumbotron {
+  text-align: center;
+  background-color: transparent;
+}
+.jumbotron .btn {
+  font-size: 21px;
+  padding: 14px 24px;
+}
+/* Colors */
+.green {color:#5cb85c;}
+.orange {color:#f0ad4e;}
+.red {color:#d9534f;}
+</style>
+<script type="text/javascript">
+  function loadDomain() {
+    var display = document.getElementById("display-domain");
+    display.innerHTML = document.domain;
+  }
+</script>
+</head>
+<body onload="javascript:loadDomain();">
+<!-- Error Page Content -->
+<div class="container">
+  <!-- Jumbotron -->
+  <div class="jumbotron">
+    <h1><span class="glyphicon glyphicon-fire red"></span> 500 Internal Server Error</h1>
+    <p class="lead">服务器内部错误<em><span id="display-domain"></span></em>.</p>
+    <a href="javascript:document.location.reload(true);" class="btn btn-default btn-lg text-center"><span class="green">刷新</span></a>
+  </div>
+</div>
+<div class="container">
+  <div class="body-content">
+    <div class="row">
+      <div class="col-md-6">
+        <h2>发生什么了?</h2>
+        <p class="lead">服务器可能遇到了内部错误，如果您看到了这条消息，说明内部程序导致了错误。我们工程师会收到相应的错误报告并立马安排修复，请您耐心等候，或刷新重试。</p>
+      </div>
+      <div class="col-md-6">
+        <h2>怎么办?</h2>
+        <p class="lead">如果您是网站访问者</p>
+        <p> 您现在什么也做不了，对此为您带来的不便，我们深表歉意，我们接到错误报告之后会立马修复。</p>
+        <p class="lead">如果您是网站管理员</p>
+         <p>请收到错误日志后对系统尽快完成修复。</p>
+     </div>
+    </div>
+  </div>
+</div>
+
+<!-- End Error Page Content -->
+<!--Scripts-->
+<!-- jQuery library -->
+<script src="http://libs.useso.com/js/jquery/1.11.1/jquery.js"></script>
+<script src="http://libs.useso.com/js/bootstrap/3.2.0/js/bootstrap.js"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<div class="container">
+<h3>省份列表</h3>
+
+<table class="table table-bordered">
+  <tr>
+    <th>名称</th>
+    <th>省份代码</th>
+    <th>备注</th>
+    <th></th>
+  </tr>
+
+<% @sys_provinces.each do |sys_province| %>
+  <tr>
+    <td><%= sys_province.name %></td>
+    <td><%= sys_province.code %></td>
+    <td><%= sys_province.note %></td>
+    <td>
+      <%= link_to '查看', sys_province, :class => "btn btn-xs btn-default"%>
+      <%= link_to '编辑', edit_sys_province_path(sys_province), :class => "btn btn-xs btn-default" %>
+      <%= link_to '删除', sys_province, method: :delete, data: { confirm: 'Are you sure?' }, :class => "btn btn-xs btn-danger" %>
+    </td>
+  </tr>
+<% end %>
+</table>
+
+<%= link_to 'New Sys province', new_sys_province_path %>
+</div>

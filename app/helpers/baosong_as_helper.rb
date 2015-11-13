@@ -1,0 +1,2 @@
+module BaosongAsHelper
+end

@@ -1,0 +1,292 @@
+<style type="text/css">
+  ul.data-tabs li{
+    display: inline-block;
+  }
+
+  ul.data-tabs {
+    border-bottom: 1px solid #999;
+    padding-left: 15px;
+    position: relative;
+  }
+
+  ul.data-tabs a {
+    display: inline-block;
+    color: black;
+    text-decoration: none;
+    border: 1px solid #999;
+    padding: 5px 10px;
+    position: relative;
+    bottom: -1px;
+  }
+  ul.data-tabs a.active {
+    border-bottom: 1px solid #FFFFFF;
+  }
+
+  .tab-content {
+    padding: 20px 10px;
+  }
+
+</style>
+<script type="text/javascript">
+$(function(){
+  $('#select-all').click(function(){
+    var o = $(this);
+    if (o.is(':checked')) {
+      $('.yycz-list tbody input[type="checkbox"]').attr('checked', 'checked');
+    } else {
+      $('.yycz-list tbody input[type="checkbox"]').removeAttr('checked');
+    }
+  });
+
+  $('.yycz-list .checkbox').change(function(){
+    var o = $(this);
+    if(o.is(':checked')) {
+      $('.yycz-list tbody input[type="checkbox"]').removeAttr("checked");
+      o.attr("checked", "checked");
+      $.get("/yycz_info_by_cydbh.json", {cydbh: o.attr('data-bh')}, function(data){
+        if (data.status == 'OK') {
+          $('#tmp_save').val("0");
+          $('.yycz #cydbh').text(data.msg.sp_s_16);
+          $('#yycz_cjbh').val(data.msg.sp_s_16);
+
+          $('.yycz #ypmc').text(data.msg.sp_s_14);
+          $('#yycz_ypmc').val(data.msg.sp_s_14);
+
+          $('.yycz #ypgg').text(data.msg.sp_s_26);
+          $('#yycz_ypgg').val(data.msg.sp_s_26);
+
+          $('.yycz #ypph').text(data.msg.sp_s_27);
+          $('#yycz_ypph').val(data.msg.sp_s_27);
+
+          $('.yycz #scrq').text(data.msg.sp_d_28);
+          $('#yycz_scrq').val(data.msg.sp_d_28);
+
+          $('.yycz #jyjl').text(data.msg.sp_s_71);
+          $('#yycz_jyjl').val(data.msg.sp_s_71);
+
+          $('.yycz #bcydw').text(data.msg.sp_s_1);
+          $('#yycz_bcydw').val(data.msg.sp_s_1);
+
+          $('.yycz #bcydwsf').text(data.msg.sp_s_3);
+          $('#yycz_bcydwsf').val(data.msg.sp_s_3);
+
+          $('.yycz #cydw').text(data.msg.sp_s_35);
+          $('#yycz_cydw').val(data.msg.sp_s_35);
+
+          $('.yycz #cydwsf').text(data.msg.sp_s_52);
+          $('#yycz_cydwsf').val(data.msg.sp_s_52);
+
+          $('.yycz #bsscqy').text(data.msg.sp_s_64);
+          $('#yycz_bsscqy').val(data.msg.sp_s_64);
+
+          $('.yycz #bsscqysf').text(data.msg.sp_s_202);
+          $('#yycz_bsscqysf').val(data.msg.sp_s_202);
+
+          $('.yycz').removeClass('hidden');
+        } else {
+          alert('提取数据失败！ERR: ' + data.msg);
+        }
+      }, 'json');
+    }
+  });
+  $('.yycz-list .checkbox:first').trigger('change');
+
+  $("#czbm").change(function(){
+    var v = $(this).val();
+    $.get("/users_by_jcjg.json", {jcjg: v}, function(data){
+      if(data.status == 'OK') {
+        $('#czfzr').empty();
+        $.each(data.msg, function(i, user){
+          $('<option value="' + user.id + '">' + user.tname + '</option>').appendTo($('#czfzr'));
+        });
+      } else {
+        alert("获取用户失败");
+      }
+    }, 'json');
+  });
+  $('.tmp-save').click(function(){
+    $('#tmp_save').val("1");
+    return true;
+  });
+  $("#require-recheck").change(function(){
+    var o = $(this);
+    if(o.is(":checked")) {
+      $('.fj-infos').removeClass("hidden");
+    } else {
+      $('.fj-infos').addClass("hidden");
+    }
+  });
+
+  $('.submit').click(function(){
+    if($.trim($('#yycz_yytcr').val()) == '') {
+      alert("请填写[异议提出人]");
+      return false;
+    }
+
+    if($.trim($('#yycz_yyfl').val()) == '') {
+      alert("请选择[异议分类]");
+      return false;
+    }
+
+    if($.trim($('#yycz_yynr').val()) == '') {
+      alert("请填写[异议内容]");
+      return false;
+    }
+
+  });
+});
+</script>
+<div class="panel panel-default">
+  <div class="panel-heading">异议登记表</div>
+  <div class="panel-body">
+		<span class="text-danger"><%= flash[:error] %></span>
+    <%= form_for :yycz, url: "/yycz_create", method: "POST" do |f|%>
+      <%= f.hidden_field :cjbh %>
+      <%= f.hidden_field :ypmc %>
+      <%= f.hidden_field :ypgg %>
+      <%= f.hidden_field :ypph %>
+      <%= f.hidden_field :jyjl %>
+      <%= f.hidden_field :scrq %>
+      <%= f.hidden_field :bcydw %>
+      <%= f.hidden_field :bcydwsf %>
+      <%= f.hidden_field :cydw %>
+      <%= f.hidden_field :cydwsf %>
+      <%= f.hidden_field :bsscqy %>
+      <%= f.hidden_field :bsscqysf %>
+      <h4>样品信息区</h4>
+      <table class="yycz table table-bordered">
+        <tr>
+          <th>抽检编号</th>
+          <td id="cydbh"> <%= f.text_field :cjbh,:readonly => :readonly %> </td>
+          <th>样品名称</th>
+          <td id="ypmc"><%= f.text_field :ypmc,:readonly => :readonly %></td>
+        </tr>
+        <tr>
+          <th>样品规格</th>
+          <td id="ypgg"><%= f.text_field :ypgg,:readonly => :readonly %></td>
+          <th>样品批号</th>
+          <td id="ypph"><%= f.text_field :ypph,:readonly => :readonly %></td>
+        </tr>
+        <tr>
+          <th>检验结论</th>
+          <td id="jyjl"><%= f.text_field :jyjl,:readonly => :readonly%></td>
+          <th>生产日期</th>
+          <td id="scrq"><%= f.text_field :scrq,:readonly => :readonly %></td>
+        </tr>
+        <tr>
+          <th>被抽样单位名称</th>
+          <td id="bcydw"><%= f.text_field :bcydw,:readonly => :readonly %></td>
+          <th>被抽样单位省份</th>
+          <td id="bcydwsf"><%= f.text_field :bcydwsf,:readonly => :readonly %></td>
+        </tr>
+        <tr>
+          <th>抽样单位名称</th>
+          <td id="cydw"><%= f.text_field :cydw,:readonly => :readonly %></td>
+          <th>抽样单位省份</th>
+          <td id="cydwsf"><%= f.text_field :cydwsf,:readonly => :readonly %></td>
+        </tr>
+        <tr>
+          <th>标识生产企业名称</th>
+          <td id="bsscqy"><%= f.text_field :bsscqy,:readonly => :readonly %></td>
+          <th>标识生产企业省份</th>
+          <td id="bsscqysf"><%= f.text_field :bsscqysf,:readonly => :readonly %></td>
+        </tr>
+      </table>
+      <h4>异议登记信息区</h4>
+      <table class="yycz table table-bordered">
+        <tr>
+          <th width="120">异议提出人</th>
+          <td><%= f.text_field :yytcr, :class => "form-control input-sm" %></td>
+      	</tr>
+        <tr>
+          <th>异议分类</th>
+          <td colspan="3"><%= f.select :yyfl, SpYydjb::YYFL, {}, :class => "form-control input-sm" %></td>
+        </tr>
+        <tr>
+          <th>异议内容</th>
+          <td colspan="3">
+            <%= f.text_area :yynr, :rows => 3, :style => "width: 100%;", :class => "form-control input-sm" %>
+          </td>
+        </tr>
+      </table>
+      <h4>复检信息区</h4>
+      <table class="yycz table table-bordered">
+        <tr>
+          <td colspan="4">
+            <label><%= f.check_box :fjsqqk, :id => 'require-recheck'%>是否申请复检</label>
+          </td>
+        </tr>
+        <tr class="fj-infos hidden">
+          <th width="100">复检申请人</th>
+          <td colspan="3"><%= f.text_field :fjsqr, :class => "form-control input-sm" %></td>
+        </tr>
+        <tr class="fj-infos hidden">
+          <th>复检机构</th>
+          <td colspan="3"><%= f.text_field :fjjg, :class => "form-control input-sm" %></td>
+        </tr>
+      </table>
+      <h4>人员操作区</h4>
+      <table class="yycz table table-bordered">
+        <tbody>
+          <tr>
+          <tr>
+            <th>登记部门</th>
+            <td><%= current_user.jg_bsb.jg_name %></td>
+            <th>登记人</th>
+            <td><%= session[:user_tname] %></td>
+          </tr>
+        </tbody>
+      </table>
+      <%= f.submit "提交登记表", :class => 'btn btn-primary btn-sm'%>
+    <% end %>
+  </div>
+</div>
+<hr>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <form action="" method="GET">
+      <label for="cjbh">抽检编号：</label>
+      <div class="form-inline">
+        <input type="text" class="form-control input-sm" value="<%= params[:cjbh]%>" name="cjbh" style="width: 200px;">
+        <button class="btn btn-primary btn-sm">查询</button>
+      </div>
+    </form>
+    <br>
+    <% if @sp_bsbs.blank? %>
+      <p class="alert alert-warning">无数据</p>
+    <% else %>
+      <table class="yycz-list table table-bordered">
+        <thead>
+          <tr>
+            <th width="30" align="center"> &nbsp; </th>
+            <th width="110">抽检编号</th>
+            <th>样品名称</th>
+            <th>抽检结论</th>
+          </tr>
+        </thead>
+        <tbody>
+        <% @sp_bsbs.each_with_index do |bsb, index|%>   
+          <tr>
+            <td align="center">
+							<% unless bsb.is_yydj_overdue? %>
+              <input class="checkbox" type="checkbox" data-bh="<%= bsb.sp_s_16 %>" data-id="<%= bsb.id %>" <%= 'checked' if index == 0%>>
+							<% end %>
+            </td>
+            <td>
+              <%= bsb.sp_s_16 %>
+
+              <% if bsb.is_yydj_overdue? %>
+              <a href="javascript:void(0);" class="label label-danger" data-toggle="tooltip" data-placement="top" title="已过15天异议提出时间限制">已过异议提出期</a>
+              <% end %>
+            </td>
+            <td><%= bsb.sp_s_14 %></td>
+            <td><%= bsb.sp_s_71 %></td>
+          </tr>
+        <% end %>
+        </tbody>
+      </table>
+      <p><%= will_paginate @sp_bsbs, :params => params, :separator => ',', :previous_label => '上一页', :next_label =>'下一页'%></p>
+      <br>
+    <% end %>
+  </div>
+</div>

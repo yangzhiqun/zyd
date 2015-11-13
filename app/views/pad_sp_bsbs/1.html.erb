@@ -1,0 +1,368 @@
+<%= wicked_pdf_stylesheet_link_tag 'print' %>
+<div class="book">
+    <div class="page">
+      <div class="subpage cover">
+        <table align="center" width="80%" border="0">
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr align="center">
+            <td colspan="6">
+              <p style="font-size:42px; font-family: '宋体';"><strong>检&nbsp;验&nbsp;报&nbsp;告</strong></p>
+            </td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td align="center" colspan="2">№：<%= @spbsb.sp_s_45 %></td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td align="right" width="40%" height="60">食&ensp;品&ensp;名&ensp;称：</td>
+            <td align="left" height="60"><%= @spbsb.sp_s_14 %></td>
+          </tr>
+          <tr>
+            <td align="right" width="40%" height="60">被&nbsp;抽&nbsp;样&nbsp;单&nbsp;位：</td>
+            <td align="left" height="60"><%= @spbsb.sp_s_1 %></td>
+          </tr>
+          <tr>
+            <td align="right" width="40%" height="60">生&emsp;&emsp;产&emsp;&emsp;者：</td>
+            <td align="left" height="60"><%= @spbsb.sp_s_64 %></td>
+          </tr>
+          <tr>
+            <td align="right" width="40%" height="60">委&ensp;托&ensp;单&ensp;位：</td>
+            <td align="left" height="60"><%= @spbsb.sp_s_35 %></td>
+          </tr>
+          <tr>
+            <td align="right" width="40%" height="60">检&ensp;验&ensp;类&ensp;别：</td>
+            <td align="left" height="60"><%= @spbsb.sp_s_44 %></td>
+          </tr>
+        </table>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+
+        <p class="page-footer" align="center"><%= @spbsb.sp_s_43 %></p>
+      </div>
+    </div>
+    <div class="page">
+      <div class="subpage">
+        <table align="center" width="90%" border="0">
+          <tr align="left">
+            <td colspan="6">(检验报告封面背面内容)
+            </td>
+          </tr>
+          <tr align="center">
+            <td colspan="6">
+              <p style="font-size:30px; font-family: '宋体';"><strong>注&nbsp;意&nbsp;事&nbsp;项</strong></p>
+            </td>
+          </tr>
+          <tr align="left" style="font-size:20px">
+            <td colspan="6">
+              <p style="line-height:15px;text-indent: 1cm;line-height:0.8cm;">1．报告无“检验报告专用章”或检验单位公章无效。</p>
+
+              <p style="line-height:15px;text-indent: 1cm;line-height:0.8cm;">2．复制报告未重新加盖“检验报告专用章”或检验单位公章无效。</p>
+
+              <p style="line-height:15px;text-indent: 1cm;line-height:0.8cm;">3．报告无主检、审核、批准人签字无效。</p>
+
+              <p style="line-height:15px;text-indent: 1cm;line-height:0.8cm;">4．报告涂改无效。</p>
+
+              <p style="line-height:15px;text-indent: 1cm;line-height:0.8cm;">5．检验结果仅对本批次样品负责。未经检验机构同意，委托人不得擅自使用检验结果进行宣传。</p>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="6">&nbsp;</td>
+          </tr>
+          <tr>
+            <td colspan="6">&nbsp;</td>
+          </tr>
+          <tr>
+            <th width="100" align="right">地&nbsp;址：</th>
+            <td colspan="2"><%= @spbsb.sp_s_211 %></td>
+            <th width="100" align="right">电话(含区号)：</th>
+            <td colspan="2"><%= @spbsb.sp_s_41 %></td>
+          </tr>
+          <tr>
+            <th align="right">邮&nbsp;编：</th>
+            <td colspan="2"><%= @spbsb.sp_s_212 %></td>
+            <th align="right">传真(含区号)：</th>
+            <td colspan="2"><%= @spbsb.sp_s_213 %></td>
+          </tr>
+          <tr>
+            <th align="right">E-mail:</th>
+            <td colspan="5"><%= @spbsb.sp_s_42 %></td>
+          </tr>
+        </table>
+        <p class="page-note">&nbsp;</p>
+      </div>
+    </div>
+    <div class="page">
+      <div class="subpage cover">
+        <p align="center" style="font-size:18pt"><%= @spbsb.sp_s_43 %></p>
+        <p align="center" style="font-size:24pt">监督抽检检验报告</p>
+				<table width="100%"  cellspacing="0" cellpadding="0"  border="0">
+					<tr>
+						<td align="left"><p style="font-size:16pt">№：<%= @spbsb.sp_s_45 %></p>
+						</td>
+						<td><p style="font-size:16pt" align="right">共1页&emsp;第1页</p>
+						</td>
+					</tr>
+				</table>
+			  <table class="table-bordered" border="1" cellspacing="0" cellpadding="0">
+          <tr height="30">
+            <th colspan="2">食品名称</th>
+            <td align="left" colspan="2"><%= @spbsb.sp_s_14 %></td>
+            <th>商标</th>
+            <td><%= @spbsb.sp_s_74 %></td>
+            <th>规格型号</th>
+            <td align="left"><%= @spbsb.sp_s_26 %></td>
+          </tr>
+          <tr height="30">
+            <th colspan="2">生产/加工/购进日期/食品批号</th>
+            <td align="left" colspan="4"><%= @spbsb.sp_d_22 %></td>
+            <th>质量等级</th>
+            <td align="left"><%= @spbsb.sp_s_73 %></td>
+          </tr>
+          <tr height="30">
+            <th colspan="2">被抽样单位名称</th>
+            <td align="left" colspan="4"><%= @spbsb.sp_s_1 %></td>
+            <th>联系电话</th>
+            <td align="left"><%= @spbsb.sp_s_12 %></td>
+          </tr>
+          <tr height="30">
+            <th colspan="2">标示生产者名称</th>
+            <td align="left" colspan="4"><%= @spbsb.sp_s_64 %></td>
+            <th>联系电话</th>
+            <td align="left"><%= @spbsb.sp_s_76 %></td>
+          </tr>
+          <tr height="30">
+            <th colspan="2">任务来源</th>
+            <td align="left" colspan="4"><%= @spbsb.sp_s_2_1 %></td>
+            <th>抽样人员</th>
+            <td align="left"><%= @spbsb.sp_s_37 %></td>
+          </tr>
+          <tr height="30">
+            <th colspan="2">抽样日期</th>
+            <td align="left" colspan="2"><%= @spbsb.sp_d_38 %></td>
+            <th colspan="2">样品到达日期</th>
+            <td align="left" colspan="2"><%= @spbsb.sp_d_46 %></td>
+          </tr>
+          <tr height="30">
+            <th colspan="2">样品数量</th>
+            <td align="left" colspan="2"><%= @spbsb.sp_s_207 %></td>
+            <th colspan="2">抽样基数</th>
+            <td align="left" colspan="2"><%= @spbsb.sp_s_206 %></td>
+          </tr>
+          <tr height="30">
+            <th colspan="2">抽样单编号</th>
+            <td align="left" colspan="2"><%= @spbsb.sp_s_16 %></td>
+            <th colspan="2">检查封样人员</th>
+            <td align="left" colspan="2"><%= @spbsb.sp_s_37 %></td>
+          </tr>
+          <tr>
+            <th height="45" colspan="2">抽样地点</th>
+            <td align="left" colspan="2"><%= @spbsb.sp_s_68 %><%= @spbsb.sp_s_2 %></td>
+            <th colspan="2">封样状态</th>
+            <td align="left" colspan="2"><%= @spbsb.sp_s_61 %></td>
+          </tr>
+          <tr>
+            <th height="45" colspan="2">检验项目</th>
+            <td align="left" colspan="6"><%= @jyxm_str %></td>
+          </tr>
+          <tr>
+            <th height="80" colspan="2">检验依据</th>
+            <td align="left" colspan="6"><%= @jyjy_str %>,<%= @jyjy_str4 %></td>
+          </tr>
+          <tr>
+            <th height="150" colspan="2">检验结论</th>
+            <td colspan="6">
+              <p align="left">
+                1．经抽样检验，所检项目符合××标准要求。<br/>
+                2．经抽样检验，××项目不符合××标准要求，检验结论为不合格。
+              </p>
+              <p align="center">&nbsp;</p>
+              <p style="text-indent: 8cm";>（检验报告专用章）</p>
+              <p style="text-indent: 6cm";> 签发日期：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;年&nbsp;&nbsp;&nbsp;&nbsp;月&nbsp;&nbsp;&nbsp;&nbsp;日</p>
+            </td>
+          </tr>
+          <tr>
+            <th height="80" colspan="2">备注</th>
+            <td align="left" colspan="6"><%= @spbsb.sp_s_84 %></td>
+          </tr>
+        </table>
+        <p style="text-indent:1cm">批准：&emsp;&emsp;&emsp;&emsp;审核：&emsp;&emsp;&emsp;&emsp;主检：&emsp;&emsp;&emsp;&emsp;</p>
+
+      </div>
+    </div>
+    <div class="page">
+      <div class="subpage">
+        <table align="center" width="90%" border="0">
+          <caption>
+            <p style="font-size:22px; font-family: '宋体';"><strong>《监督抽检检验报告》文书说明</strong></p>
+          </caption>
+          <tr align="left" style="font-size:18px">
+            <td style="height: 20cm;">
+              <p style="line-height:20px;text-indent: 1cm;">1．此文书用于规定国家食品安全监督抽检出具的检验报告中必须具备的内容，各检验机构可在此基础上增加其他内容。</p>
+
+              <p style="line-height:20px;text-indent: 1cm;">2．国家食品安全监督抽检检验报告按如下原则处理：</p>
+              <p style="line-height:20px;text-indent: 1cm;">地方承担的抽样检验，不合格样品检验报告一式四份或五份（流通环节抽样的增加一份）。一份由检验机构留存，一份交组织抽样检验的省级食品药品监管部门，两份交抽样单位（其中一份交被抽样单位）。若在流通环节抽样的，还需增加一份检验报告交抽样单位，由抽样单位交食品标示生产者。</p>
+              <p style="line-height:20px;text-indent: 1cm;">总局本级开展的抽样检验，不合格样品检验报告一式五份或六份（被抽样单位所在省份与生产者所在地省份不同的增加一份）。一份由检验机构留存，一份交抽样所在地省级食品药品监管部门，一份交被抽样单位，一份交食品标示生产者，一份交秘书处。被抽样单位所在省份与生产者所在地省份不同的，还需增加一份交生产者所在地省级食品药品监管部门。</p>
+              <p style="line-height:20px;text-indent: 1cm;">复检检验报告一式四份，复检申请人、初检机构、复检机构、组织抽样检验工作的食品药品监管部门各一份。</p>
+              <p style="line-height:20px;text-indent: 1cm;">3. 除承检机构自己留存的一份外，其余检验报告应及时送交组织抽样检验工作的食品药品监管部门。</p>
+              <p style="line-height:20px;text-indent: 1cm;">4. 组织抽样检验工作的食品药品监管部门（可委托承检机构）向相关单位发送不合格样品检验报告的工作。</p>
+              <p style="line-height:20px;text-indent: 1cm;">5．检验报告封面左上角用于检验机构盖有关签章，其中工业加工食品和餐饮加工食品检验报告必须加盖CMAF，食用农产品可加盖CMAF或CMA章。</p>
+              <p style="line-height:20px;text-indent: 1cm;">6．“检验依据”需列出判定执行的国家标准，产品明示标准等能表明食品质量安全信息的企业相关技术文件。</p>
+
+            </td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+        </table>
+        <p class="page-note">&nbsp;</p>
+      </div>
+    </div>
+    <div class="page">
+      <div class="subpage cover">
+        <p align="center" style="font-size:18pt"><%= @spbsb.sp_s_43 %></p>
+        <p align="center" style="font-size:24pt">风险监测检验报告</p>
+				<table width="100%"  cellspacing="0" cellpadding="0"  border="0">
+					<tr>
+						<td align="left"><p style="font-size:16pt">№：<%= @spbsb.sp_s_45 %></p>
+						</td>
+						<td><p style="font-size:16pt" align="right">共<%= ((@spbsb.spdata.count - 7).to_f / 17).ceil + 1%>页&emsp;第1页</p>
+						</td>
+					</tr>
+				</table>
+        <table class="table-bordered" border="1" cellspacing="0" cellpadding="0">
+          <tr>
+            <th height="40">食品名称</th>
+            <td width="150"><%= @spbsb.sp_s_14 %></td>
+            <th width="50">商标</th>
+            <td width="100"><%= @spbsb.sp_s_74 %></td>
+            <th width="90">规格型号</th>
+            <td width="150"><%= @spbsb.sp_s_26 %></td>
+          </tr>
+          <tr>
+            <th height="40">生产日期/批号</th>
+            <td><%= @spbsb.sp_d_28 %></td>
+            <th colspan="2">样品质量等级</th>
+            <td colspan="2"><%= @spbsb.sp_s_73 %></td>
+          </tr>
+          <tr>
+            <th height="40">被抽样单位名称</th>
+            <td colspan="3"><%= @spbsb.sp_s_1 %></td>
+            <th>联系电话</th>
+            <td><%= @spbsb.sp_s_12 %></td>
+          </tr>
+          <tr>
+            <th height="40" width="150">标示生产单位名称</th>
+            <td colspan="3"><%= @spbsb.sp_s_64 %></td>
+            <th>联系电话</th>
+            <td><%= @spbsb.sp_s_76 %></td>
+          </tr>
+          <tr>
+            <th height="40">任务来源</th>
+            <td colspan="5"><%= @spbsb.sp_s_2_1 %></td>
+          </tr>
+          <tr>
+            <th height="40">检验依据</th>
+            <td colspan="5"><%= @jyjy_str1 %></td>
+          </tr>
+          <tr>
+            <th height="40">抽样日期</th>
+            <td><%= @spbsb.sp_d_38 %></td>
+            <th colspan="2">样品数量</th>
+            <td colspan="2"><%= @spbsb.sp_n_15 %></td>
+          </tr>
+          <tr>
+            <th height="40">抽样单编号</th>
+            <td><%= @spbsb.sp_s_16 %></td>
+            <th colspan="2">样品到达日期</th>
+            <td colspan="2"><%= @spbsb.sp_d_46 %></td>
+          </tr>
+          <tr>
+            <th height="40">序号</th>
+            <th>项目名称</th>
+            <th colspan="2">单位</th>
+            <th colspan="2">检测数据</th>
+          </tr>
+          <% @spbsb.spdata.limit(7).each_with_index do |product, index| %>
+              <tr>
+                <td align="center" height="45"><%= index + 1 %></td>
+                <td style="<%= auto_adjust_text_size(product.spdata_0, 5)%>"><%= product.spdata_0 %></td>
+                <td colspan="2"><%= product.spdata_18 %></td>
+                <td colspan="2"><%= product.spdata_1 %></td>
+              </tr>
+          <% end %>
+          <% (7 - @spbsb.spdata.count).times do %>
+              <tr>
+                <td align="center" height="45"></td>
+                <td></td>
+                <td colspan="2"></td>
+                <td colspan="2"></td>
+              </tr>
+          <% end %>
+        </table>
+			  <p style="text-indent:1cm">备注</p>
+				<p style="text-indent:1cm">批准：&emsp;&emsp;&emsp;&emsp;审核：&emsp;&emsp;&emsp;&emsp;主检：&emsp;&emsp;&emsp;&emsp;</p>
+			  <div class="page-note">
+				<p> 注：检出问题样品的风险监测检测报告，地方承担的抽样检验出具两份，一份给省级食品药品监管部门，一份<br>由检验机构留存。总局                的抽样检验，还需增加一份交秘书处。</p>
+				</div>						
+			</div>
+    </div>
+    <% products_print_pager @spbsb.spdata.offset(7), 17, 8 do |products, start_index, current_page, is_last_page, total_page| %>
+        <div class="page">
+          <div class="subpage">
+          <p style="font-size:16pt" align="right">共<%= total_page + 1%>页&emsp;第<%= current_page +2%>页</p>
+            <table class="table-bordered" border="1" cellspacing="0" cellpadding="0">
+              <tr>
+                <th height="40">序号</th>
+                <th>项目名称</th>
+                <th colspan="2">单位</th>
+                <th colspan="2">检测数据</th>
+              </tr>
+              <% products.each_with_index do |product, index| %>
+                  <tr>
+                    <td align="center" height="45"><%= index + start_index -1 %></td>
+                    <td style="<%= auto_adjust_text_size(product.spdata_0, 5)%>"><%= product.spdata_0 %></td>
+                    <td colspan="2"><%= product.spdata_18 %></td>
+                    <td colspan="2"><%= product.spdata_1 %></td>
+                  </tr>
+              <% end %>
+              <tr>
+                <td align="center" height="45"></td>
+                <td></td>
+                <td colspan="2"></td>
+                <td colspan="2"></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+    <% end %>
+</div>

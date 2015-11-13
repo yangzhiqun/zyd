@@ -1,0 +1,173 @@
+<style type="text/css">
+  .table {
+    border: 1px solid #333;
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+  .table th, .table td {
+    border: 1px solid #333;
+    padding: 5px 4px;
+  }
+  .cydbh-fieldset {
+    padding: 5px 10px;
+  }
+  .hidden {
+    display: none;
+  }
+  .table input[type='text'] {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #000;
+    line-height: 20px;
+  }
+  #require-recheck {
+
+  }
+  .btn {
+    padding: 6px 12px;
+    line-height: 1.42857143;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .btn-primary {
+    color: #fff;
+    background-color: #337ab7;
+    border: 1px solid #2e6da4;
+  }
+</style>
+<script type="text/javascript">
+$(function(){
+  $('#require-recheck').change(function(){
+    var o = $(this);
+    if(o.is(':checked')) {
+      $('.fj-infos').removeClass('hidden');
+    } else {
+      $('.fj-infos').addClass('hidden');
+    }
+  });
+
+  $("#yycz_yytcsj, #yycz_yysdsj, #yycz_djsj, #yycz_blsj, #yycz_tbsj, #yycz_shsj").datepicker({dateFormat:"yy-mm-dd",
+    changeMonth: true,
+    changeYear: true
+  });
+});
+</script>
+<%= form_for :yycz, url: "/yycz_create", method: "POST" do |f|%>
+<%= f.hidden_field :cjbh %>
+<%= f.hidden_field :ypmc %>
+<%= f.hidden_field :ypgg %>
+<%= f.hidden_field :ypph %>
+<%= f.hidden_field :jyjl %>
+<%= f.hidden_field :scrq %>
+<%= f.hidden_field :bcydw %>
+<%= f.hidden_field :bcydwsf %>
+<%= f.hidden_field :cydw %>
+<%= f.hidden_field :cydwsf %>
+<%= f.hidden_field :bsscqy %>
+<%= f.hidden_field :bsscqysf %>
+<br>
+<table class="yycz table table-bordered">
+  <caption><h1>异议登记表</h1></caption>
+</table>
+<br>
+<table class="yycz table table-bordered">
+<h4>样品信息区</h4>
+    <tr>
+      <th>抽检编号</th>
+      <td id="cydbh"> <%= f.text_field :cjbh,:readonly => :readonly %> </td>
+      <th>样品名称</th>
+      <td id="ypmc"><%= f.text_field :ypmc,:readonly => :readonly %></td>
+    </tr>
+    <tr>
+      <th>样品规格</th>
+      <td id="ypgg"><%= f.text_field :ypgg,:readonly => :readonly %></td>
+      <th>样品批号</th>
+      <td id="ypph"><%= f.text_field :ypph,:readonly => :readonly %></td>
+    </tr>
+    <tr>
+      <th>检验结论</th>
+      <td id="jyjl"><%= f.text_field :jyjl,:readonly => :readonly%></td>
+      <th>生产日期</th>
+      <td id="scrq"><%= f.text_field :scrq,:readonly => :readonly %></td>
+    </tr>
+    <tr>
+      <th>被抽样单位名称</th>
+      <td id="bcydw"><%= f.text_field :bcydw,:readonly => :readonly %></td>
+      <th>被抽样单位省份</th>
+      <td id="bcydwsf"><%= f.text_field :bcydwsf,:readonly => :readonly %></td>
+    </tr>
+    <tr>
+      <th>抽样单位名称</th>
+      <td id="cydw"><%= f.text_field :cydw,:readonly => :readonly %></td>
+      <th>抽样单位省份</th>
+      <td id="cydwsf"><%= f.text_field :cydwsf,:readonly => :readonly %></td>
+    </tr>
+    <tr>
+      <th>标识生产企业名称</th>
+      <td id="bsscqy"><%= f.text_field :bsscqy,:readonly => :readonly %></td>
+      <th>标识生产企业省份</th>
+      <td id="bsscqysf"><%= f.text_field :bsscqysf,:readonly => :readonly %></td>
+    </tr>
+</table>
+<br>
+<table class="yycz table table-bordered">
+<h4>异议登记信息区</h4>
+    <tr>
+      <th>异议提出人</th>
+      <td><%= f.text_field :yytcr %></td>
+    </tr>
+    <tr>
+      <th>异议分类</th>
+      <td colspan="3"><%= f.select :yyfl, SpYydjb::YYFL %></td>
+    </tr>
+    <tr>
+      <th>异议内容</th>
+      <td colspan="3">
+        <%= f.text_area :yynr, :rows => 3, :style => "width: 100%;" %>
+      </td>
+    </tr>
+</table>
+<br>
+<table class="yycz table table-bordered">
+<h4>复检信息区</h4>
+    <tr>
+      <td colspan="4">
+        <%= f.check_box :fjsqqk, :id => 'require-recheck'%>是否申请复检
+      </td>
+    </tr>
+    <tr class="fj-infos hidden">
+      <th>复检申请人</th>
+      <td colspan="3"><%= f.text_field :fjsqr %></td>
+    </tr>
+    <tr class="fj-infos hidden">
+      <th>复检机构</th>
+      <td colspan="3"><%= f.text_field :fjjg %></td>
+    </tr>
+</table>
+<br>
+<table class="yycz table table-bordered">
+<h4>人员操作区</h4>
+  <tbody>
+    <tr>
+    <tr>
+      <th>登记部门</th>
+      <td><%= current_user.jg_bsb.jg_name %></td>
+      <th>登记人</th>
+      <td><%= session[:user_tname] %></td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table class="yycz table table-bordered">
+  <tfoot>
+    <tr>
+      <td colspan="4">
+        <%= f.submit "提交登记表", :class => 'btn btn-primary'%>
+      </td>
+    </tr>
+  </tfoot>
+</table>
+<br>
+<% end %>

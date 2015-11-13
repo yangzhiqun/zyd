@@ -1,0 +1,33 @@
+<h1>Listing sp_standards</h1>
+
+<table>
+  <tr>
+    <th>Sp sta 0</th>
+    <th>Sp sta 1</th>
+    <th>Sp sta 2</th>
+    <th>Sp sta 3</th>
+    <th>Sp sta 4</th>
+    <th>Sp sta 5</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @sp_standards.each do |sp_standard| %>
+  <tr>
+    <td><%= sp_standard.sp_sta_0 %></td>
+    <td><%= sp_standard.sp_sta_1 %></td>
+    <td><%= sp_standard.sp_sta_2 %></td>
+    <td><%= sp_standard.sp_sta_3 %></td>
+    <td><%= sp_standard.sp_sta_4 %></td>
+    <td><%= sp_standard.sp_sta_5 %></td>
+    <td><%= link_to 'Show', sp_standard %></td>
+    <td><%= link_to 'Edit', edit_sp_standard_path(sp_standard) %></td>
+    <td><%= link_to 'Destroy', sp_standard, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Sp standard', new_sp_standard_path %>

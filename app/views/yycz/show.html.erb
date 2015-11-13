@@ -1,0 +1,440 @@
+<style type="text/css">
+  .tab-content {
+    padding: 20px 10px;
+  }
+  .table input[type='text'] {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #000;
+    line-height: 20px;
+  }
+
+  .fj-items {
+    width: 2000px;
+  }
+  .fj-items-ctner {
+    width: 100%;
+    overflow-x: scroll;
+  }
+  .bg-danger {
+    background: #f2dede;
+    padding: 15px;
+  }
+  .attachment-item .del {
+    margin-left: 20px;
+    color: red;
+    cursor: pointer;
+  }
+</style>
+<script type="text/javascript">
+  $(function(){
+    $("#djb_yyczbm").change(function(){
+      var v = $(this).val();
+      $.get("/users_by_jcjg.json", {jcjg: v}, function(data){
+        if(data.status == 'OK') {
+          $('#djb_yyczfzr').empty();
+          $.each(data.msg, function(i, user){
+            $('<option value="' + user.id + '">' + user.tname + '</option>').appendTo($('#djb_yyczfzr'));
+          });
+        } else {
+          alert("获取用户失败");
+        }
+      }, 'json');
+    }).trigger("change");
+    
+    <% if !params[:preview].blank? %>
+    $("input, textarea, select, button").attr("disabled", "disabled")
+    <% end %>
+  });
+</script>
+
+<% if !@djb.thyy.blank? %>
+  <p class="bg-danger"><b>退回历史：</b><br><%= @djb.thyy.html_safe %></p>
+<% end %>
+
+<% if @djb.current_state == SpYydjb::State::HALTED_1 %>
+  <p class="bg-danger">问题样品后处理已结束，异议信息已入库。</p>
+<% end %>
+
+<%= form_for :djb do |f| %>
+  <% if params[:preview].blank? %>
+    <caption><h1>异议登记表</h1></caption>
+  <% end %>
+  <div class="panel panel-default">
+    <div class="panel-heading">样品信息区</div>
+    <div class="panel-body">
+      <table class="yycz table table-bordered">
+        <tr>
+          <th>抽检编号</th>
+          <td><%= @djb.cjbh %></td>
+          <th>样品名称</th>
+          <td><%= @djb.ypmc %></td>
+        </tr>
+        <tr>
+          <th>样品规格</th>
+          <td><%= @djb.ypgg %></td>
+          <th>样品批号</th>
+          <td><%= @djb.ypph %></td>
+        </tr>
+        <tr>		
+          <th>检验结论</th>
+          <td><%= @djb.jyjl %></td>
+          <th>生产日期</th>
+          <td><%= (@djb.scrq + 8.hours).strftime("%Y-%m-%d") if !@djb.scrq.blank?%></td>
+        </tr>
+        <tr>
+          <th>被抽样单位名称</th>
+          <td><%= @djb.bcydw %></td>
+          <th>被抽样单位省份</th>
+          <td><%= @djb.bcydwsf %></td>
+        </tr>
+        <tr>
+          <th>抽样单位名称</th>
+          <td><%= @djb.cydw %></td>
+          <th>抽样单位省份</th>
+          <td><%= @djb.cydwsf %></td>
+        </tr>
+        <tr>
+          <th>标识生产企业名称</th>
+          <td><%= @djb.bsscqy %></td>
+          <th>标识生产企业省份</th>
+          <td><%= @djb.bsscqysf %></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <br>
+  <div class="panel panel-default">
+    <div class="panel-heading">异议登记信息区</div>
+    <div class="panel-body">
+      <table class="yycz table table-bordered">
+        <tr>
+          <th>异议提出时间</th>
+          <td><%= (@djb.yytcsj + 8.hours).strftime("%Y-%m-%d") if !@djb.yytcsj.blank?%></td>
+          <th>异议收到时间</th>
+          <td><%= (@djb.yysdsj + 8.hours).strftime("%Y-%m-%d") if !@djb.yysdsj.blank?%></td>
+        </tr>
+        <tr>
+          <th>异议分类</th>
+          <td><%= @djb.yyfl%></td>
+          <th>异议提出人</th>
+          <td><%= @djb.yytcr %></td>
+        </tr>
+        <tr>
+          <th>异议内容</th>
+          <td colspan="3">
+            <%= @djb.yynr %>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <br>
+  <div class="panel panel-default">
+    <div class="panel-heading">复检信息区</div>
+    <div class="panel-body">
+      <table class="yycz table table-bordered">
+        <tr>
+          <th>复检申请情况</th>
+          <td colspan="3"><%= @djb.fjqk_desc%></td>
+        </tr>
+        <% if @djb.fjsqqk == 1 %>
+          <tr class="fj-infos">
+            <th>复检申请人</th>
+            <td><%= @djb.fjsqr %></td>
+            <th>复检申请时间</th>
+            <td><%= (@djb.fjsqsj + 8.hours).strftime("%Y-%m-%d") if !@djb.fjsqsj.blank?%></td>
+          </tr>
+          <tr class="fj-infos">
+            <th>复检受理日期</th>
+            <td><%= (@djb.fjslrq + 8.hours).strftime("%Y-%m-%d") if !@djb.fjslrq.blank?%></td>
+            <th>复检完成时间</th>
+            <td><%= (@djb.fjwcsj + 8.hours).strftime("%Y-%m-%d") if !@djb.fjwcsj.blank?%></td>
+          </tr>
+          <tr class="fj-infos">
+          <% if current_user.zhxt == 1 and @djb.current_state != ::SpYydjb::State::LOGGED and @djb.current_state != ::SpYydjb::State::ASSIGNED and @djb.current_state != ::SpYydjb::State::FILLED and @djb.current_state != ::SpYydjb::State::PASSED%>
+            <th>复检机构</th>
+            <td colspan="3"><%= f.text_field :fjjg%></td>
+          <%else%>
+            <th>复检机构</th>
+            <td colspan="3"><%= @djb.fjjg %></td>  
+          <%end%>
+          </tr>
+        <% end %>
+      </table>
+      <% if @djb.fjsqqk == 1%>
+        <div class="fj-items-ctner">
+          <br>
+          <h4>复检项目</h4>
+          <table class="fj-items table table-bordered">
+            <thead>
+              <tr>
+                <th colspan="2" ><p>序号</p></th>
+                <th colspan="5" ><p>检验项目*</p></th>
+                <th colspan="3" ><p>原检验结果*</p></th>
+                <th colspan="2" ><p>结果单位*</p></th>
+                <th colspan="2" ><p>原结果判定*</p></th>
+                <th colspan="7" ><p>检验依据*</p></th>
+                <th colspan="7" ><p>判定依据*</p></th>
+                <th colspan="2" ><p>标准方法检出限*</p></th>
+                <th colspan="2" ><p>标准检出限单位*</p></th>
+                <th colspan="2" ><p>方法检出限*</p></th>
+                <th colspan="2" ><p>检出限单位*</p></th>
+                <th colspan="2" ><p>标准最小允许限*</p></th>
+                <th colspan="2" ><p>标准最小允许限单位*</p></th>
+                <th colspan="2" ><p>最小允许限*</p></th>
+                <th colspan="2" ><p>最小允许限单位*</p></th>
+                <th colspan="2" ><p>标准最大允许限*</p></th>
+                <th colspan="2" ><p>标准最大允许限单位*</p></th>
+                <th colspan="2" ><p>最大允许限*</p></th>
+                <th colspan="2" ><p>最大允许限单位*</p></th>     
+                <th colspan="2" ><p>说明</p></th>
+                <th colspan="2" ><p>复检结果</p></th>
+                <th colspan="2" ><p>结果单位</p></th>
+                <th colspan="2" ><p>复检结论</p></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @spdata.each_with_index do |data, index| %>
+              <tr class="analysis-item">
+                <td colspan="2" ><%= index + 1 %></td>
+                <td colspan="5" style="width:10%" align="left"><%= data.spdata_0 %></td>
+                <td colspan="3"  align="left"><%= data.spdata_1 %></td>
+                <td colspan="2"  align="left"><%= data.spdata_18 %></td>
+                <td colspan="2"  align="left"><%= data.spdata_2 %></td>
+                <td colspan="7"  align="left"><%= data.spdata_3 %></td>
+                <td colspan="7"  align="left"><%= data.spdata_4 %></td>
+                <td colspan="2"  align="left"><%= data.spdata_5 %></td>
+                <td colspan="2"  align="left"><%= data.spdata_6 %></td>
+                <td colspan="2"  align="left"><%= data.spdata_7 %></td>
+                <td colspan="2"  align="left"><%= data.spdata_8 %></td>
+                <td colspan="2"  align="left"><%= data.spdata_9 %></td>
+                <td colspan="2"  align="left"><%= data.spdata_10 %></td>
+                <td colspan="2"  align="left"><%= data.spdata_11 %></td>
+                <td colspan="2"  align="left"><%= data.spdata_12 %></td>
+                <td colspan="2"  align="left"><%= data.spdata_13 %></td>
+                <td colspan="2"  align="left"><%= data.spdata_14 %></td>
+                <td colspan="2"  align="left"><%= data.spdata_15 %></td>
+                <td colspan="2"  align="left"><%= data.spdata_16 %></td>
+                <td colspan="2"  align="left"><%= data.spdata_17 %></td>
+                <td colspan="2"  align="left">
+                  <input style="width: 200px" type="text" value="<%= data.fjjg %>" <%= "readonly" if @djb.current_state != ::SpYydjb::State::ASSIGNED%> name="data[][fjjg]">
+                </td>
+                <td colspan="2"  align="left">
+                  <input style="width: 200px" type="text" value="<%= data.jgdw %>" <%= "readonly" if @djb.current_state != ::SpYydjb::State::ASSIGNED%> name="data[][jgdw]">
+                </td>
+                <td colspan="2"  align="left">
+                  <input type ='hidden' name="data[][id]" value="<%=data.id%>">
+                  <select <%= "disabled" if @djb.current_state != ::SpYydjb::State::ASSIGNED%> name="data[][fjjl]">
+                    <option value="">请选择</option>
+                    <option <%= "selected" if !data.fjjl.blank? and data.fjjl.eql?("复检合格") %> value="复检合格">复检合格</option>
+                    <option <%= "selected" if !data.fjjl.blank? and data.fjjl.eql?("复检不合格") %> value="复检不合格">复检不合格</option>
+                  </select>
+                </td>
+              </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">异议处置信息区</div>
+    <div class="panel-body">
+      <table class="table table-bordered">
+         <% if current_user.yybl == 1 and [::SpYydjb::State::ASSIGNED].include?(@djb.current_state)%>
+          <tr>
+            <th>告知生产企业日期</th>
+            <td> <%= f.text_field :gzscqyrq, :class => "datepicker" %> </td>
+            <th>告知被抽样单位日期</th>
+            <td><%= f.text_field :gzbcydwrq, :class => "datepicker" %></td>
+          </tr>
+          <tr>
+            <th>异议处置情况</th>
+            <td> <%= f.text_field :yyczqk %> </td>
+            <th>异议处置状态</th>
+            <td><%= f.text_field :yyczzt %></td>
+          </tr>
+          <tr>
+            <th>异议处置结果</th>
+            <td><%= f.select :yyczjg, SpYydjb::YYCZJG %></td>
+            <th>复检状态</th>
+            <td><%= f.select :fjzt, SpYydjb::FJZT %></td>
+          </tr>
+          <tr>
+            <th colspan="4">
+              <label>电子附件：</label>
+              <%= f.hidden_field :attachments %>
+
+              <span class="btn btn-success btn-xs fileinput-button">
+                <i class="glyphicon glyphicon-plus"></i>
+                <span>添加文件</span>
+                <input id="fileupload" type="file" name="file" multiple>
+              </span>
+              <ol id="files" class="files" style="padding-left: 30px;">
+                <% @attachments.each do |a| %>
+                <li data-id="<%= a.id %>" class="attachment-item">
+                  <a target='_blank' href="/attachments/<%= a.id %>/download"><%= a.filename %></a>
+                  <span class='del' data-url='/attachments/<%= a.id %>/destroy'>x</span>
+                </li>
+                <% end %>
+              </ol>
+            </th>
+          </tr>
+        <% else %>
+          <tr>
+            <th>异议处置情况</th>
+            <td><%= @djb.yyczqk %></td>
+            <th>异议处置状态</th>
+            <td><%= @djb.yyczzt %></td>
+          </tr>
+          <tr>
+            <th>异议处置结果</th>
+            <td><%= @djb.yyczjg %></td>
+            <th>复检状态</th>
+            <td><%= @djb.fjzt%></td>
+          </tr>
+          <tr>
+            <td colspan="4">
+              <ol id="files" class="files" style="padding-left: 30px;">
+                <% @attachments.each do |a| %>
+                <li data-id="<%= a.id %>" class="attachment-item">
+                  <a target='_blank' href="/attachments/<%= a.id %>/download"><%= a.filename %></a>
+                </li>
+                <% end %>
+              </ol>
+            </td>
+          </tr>
+        <%end%>
+      </table>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">人员操作区</div>
+    <div class="panel-body">
+      <table class="table table-bordered">
+        <tr>
+          <th>登记部门</th>
+          <td><%= @djb.djbm %></td>
+          <th>登记人</th>
+          <td><%= @djb.djr %></td>
+        </tr>
+        <tr>
+          <th>登记时间</th>
+          <td><%= (@djb.djsj + 8.hours).strftime("%Y-%m-%d") if !@djb.djsj.blank?%></td>
+          <th>办理部门</th>
+          <td><%= @djb.blbm %></td>
+        </tr>
+        <tr>
+          <th>办理人</th>
+          <td><%= @djb.blr %></td>
+          <th>办理时间</th>
+          <td><%= (@djb.blsj + 8.hours).strftime("%Y-%m-%d") if !@djb.blsj.blank?%></td>
+        </tr>
+        <tr>
+          <th>填报部门</th>
+          <td>
+            <% if current_user.zhxt == 1 and @djb.current_state == ::SpYydjb::State::LOGGED %>
+              <%= f.select :yyczbm, options_for_select(User.select("distinct jg_bsb_id").where("yycz_permission & 0x0000000000100 > 0").map{|u| [u.jg_bsb.jg_name, u.jg_bsb.jg_name]}), :id => 'yyczbm', :style => "width: 180px;"%>
+            <% else %>
+              <%= @djb.yyczbm %>
+            <% end %>
+          </td>
+          <th>填报人</th>
+          <td>
+            <% if current_user.zhxt == 1 and @djb.current_state == ::SpYydjb::State::LOGGED %>
+              <%= f.select :yyczfzr, [], {} %>
+            <% else %>
+            <%= @djb.yyczfzr_desc %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <th>填报时间</th>
+          <td><%= (@djb.tbsj + 8.hours).strftime("%Y-%m-%d") if !@djb.tbsj.blank?%></td>
+          <th>审核部门</th>
+          <td><%= @djb.shbm %></td>
+        </tr>
+        <tr>
+          <th>审核人</th>
+          <td><%= @djb.shr %></td>
+          <th>审核时间</th>
+          <td><%= (@djb.shsj + 8.hours).strftime("%Y-%m-%d") if !@djb.shsj.blank?%></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <br>
+  <% if @djb.attachment_file %>
+    <a target="_blank" href="/yycz/<%= @djb.id%>/download_file">附件下载</a>
+    <br>
+    <br>
+  <% end %>
+  <input type="hidden" id="current_step_finished" name="current_step_finished" value="0">
+  <% if params[:preview].blank? and @djb.can_be_handled_by?(User.find(session[:user_id]))%>
+    <% if @djb.current_state == ::SpYydjb::State::LOGGED %>
+    <%= f.submit "确认处置安排", :id => "save1", :class => 'btn btn-primary' %>
+    <% else %>
+    <%= f.submit "提交结果入库", :id => "save1", :class => 'btn btn-primary' %>
+    <%end%>
+    <% if @djb.current_state == ::SpYydjb::State::ASSIGNED %>
+      <%= f.submit "临时保存", :id => "save2", :class => 'btn btn-primary' %>
+    <% end %>
+  <% end %>
+<% end %>
+<script type="text/javascript">
+var require_czjg = <%= current_user.yybl == 1 and [::SpYydjb::State::ASSIGNED].include?(@djb.current_state) %>;
+
+function refill_attachments(){
+  var ids = [];
+  $.each($('#files .attachment-item'), function(){
+    var o = $(this);
+    ids.push(o.attr('data-id'));
+  });
+  $('#djb_attachments').val(ids.join(","));
+}
+
+$(function(){
+  // 提交结果入库
+  $('#save1').click(function(){
+    if(require_czjg && $.trim($('#djb_yyczjg').val()) == '') {
+      alert("请选择处置结果");
+      $('#djb_yyczjg').focus();
+      return false;
+    }
+    $('#current_step_finished').val(1);
+  });
+
+  $('#files').delegate(".del", 'click', function(e){
+    if(confirm('确定删除该附件吗？')) {
+      $.post($(e.target).attr('data-url'), {}, function(data){
+        if(data.success) {
+          $(e.target).parents('li').remove();
+          refill_attachments();
+        } else {
+          alert("删除失败");
+        }
+      }, 'json')
+    }
+  });
+
+  $('#fileupload').fileupload({
+    url: "/attachment/upload",
+    dataType: 'json',
+    autoUpload: true,
+    acceptFileTypes: /(\.|\/)(gif|jpe?g|png|pdf|doc|rar|zip)$/i,
+    maxFileSize: 10000, 
+    done: function (e, data) {
+      if(data.result.status == 'OK') {
+        $("<li data-id='" + data.result.msg.id + "' class='attachment-item'><a target='_blank' href='/attachments/" + data.result.msg.id + "/download'>" + data.result.msg.name + "</a><span class='del' data-url='/attachments/" + data.result.msg.id + "/destroy'>x</span></li>").appendTo($('#files'));
+        refill_attachments();
+      } else {
+        alert(data.result.msg);
+      }
+    }
+  });
+});
+</script>
+

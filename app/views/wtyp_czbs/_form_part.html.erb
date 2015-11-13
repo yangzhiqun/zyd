@@ -1,0 +1,425 @@
+<div class="panel panel-primary part-ctner" data-type="<%= czb.wtyp_czb_type %>">
+  <div class="panel-heading" style="cursor: pointer;">
+		<i class="glyphicon glyphicon-triangle-right"></i>
+		<%= title %>
+		<% if czb.current_state != ::WtypCzb::State::LOGGED %>
+		<span class="pull-right">[<%= czb.current_state_desc %>]</span>
+		<% else %>
+		<span class="pull-right">[待安排]</span>
+		<% end %>
+	</div>
+  <div style="display: none;" class="form-ctner panel-body">
+    <% if !czb.thyy.blank? %>
+    <br><p class="bg-danger"><b>退回历史：</b><br><%= czb.thyy.html_safe %></p><br>
+    <% end %>
+
+    <% if (current_user.hcz_admin == 0 and czb.current_state != ::WtypCzb::State::PASSED)%>
+		<!-- 条件性显示这些隐藏字段 -->
+    <input type="hidden" name="parts[][cjbh]" value="<%= czb.cjbh %>">
+    <input type="hidden" name="parts[][ypmc]" value="<%= czb.ypmc %>">
+    <input type="hidden" name="parts[][ypgg]" value="<%= czb.ypgg %>">
+    <input type="hidden" name="parts[][ypph]" value="<%= czb.ypph %>">
+    <input type="hidden" name="parts[][bcydwmc]" value="<%= czb.bcydwmc %>">
+    <input type="hidden" name="parts[][bcydw_sheng]" value="<%= czb.bcydw_sheng %>">
+    <input type="hidden" name="parts[][cydwmc]" value="<%= czb.cydwmc %>">
+    <input type="hidden" name="parts[][cydwsf]" value="<%= czb.cydwsf %>">
+    <input type="hidden" name="parts[][bsscqymc]" value="<%= czb.bsscqymc %>">
+    <input type="hidden" name="parts[][bsscqy_sheng]" value="<%= czb.bsscqy_sheng %>">
+    <input type="hidden" name="parts[][scrq]" value="<%= czb.scrq %>">
+    <input type="hidden" name="parts[][jyjl]" value="<%= czb.jyjl %>">
+    <input type="hidden" name="parts[][bgfl]" value="<%= czb.bgfl %>">
+    <input type="hidden" name="parts[][bgsbh]" value="<%= czb.bgsbh %>">
+    <input type="hidden" name="parts[][cydd]" value="<%= czb.cydd %>">
+    <input type="hidden" name="parts[][bcydwdz]" value="<%= czb.bcydwdz %>">
+    <input type="hidden" name="parts[][bsscqydz]" value="<%= czb.bsscqydz %>">
+    <input type="hidden" name="parts[][cyjs]" value="<%= czb.cyjs %>">
+    <input type="hidden" name="parts[][jymd]" value="<%= czb.jymd %>">
+    <input type="hidden" name="parts[][sp_bsb_id]" value="<%= czb.sp_bsb_id %>">
+    <input type="hidden" name="parts[][wtyp_czb_type]" value="<%= czb.wtyp_czb_type %>">
+    <input type="hidden" class="flag1 flag-field" name="parts[][part_submit_flag1]" value="<%= czb.part_submit_flag1 %>">
+    <input type="hidden" class="flag2 flag-field" name="parts[][part_submit_flag2]" value="<%= czb.part_submit_flag2 %>">
+    <input type="hidden" class="flag3 flag-field" name="parts[][part_submit_flag3]" value="<%= czb.part_submit_flag3 %>">
+    <input type="hidden" name="parts[][wtyp_czb_id]" value="<%= czb.wtyp_czb_id %>">
+    <input type="hidden" name="parts[][wtyp_deal_segment]" value="<%= czb.wtyp_deal_segment %>">
+    <% end %>
+
+    <table class="table table-bordered table-bordered-black" id="tblGrid">
+      <tr>
+        <th colspan="4">处置环节</th>
+        <td colspan="6"><%= czb.wtyp_czb_type == ::WtypCzbPart::Type::SC ? "生产" : "消费" %></td>
+        <th colspan="5">填报单位</th>
+        <td colspan="15">
+          <% if is_fill_enabled?(czb) %>
+            <input title="填报单位" type="text" name="parts[][wtyp_jg]" class="form-control input-sm" value="<%= czb.wtyp_jg.blank? ? current_user.jg_bsb.jg_name : czb.wtyp_jg %>">
+          <% else %>
+            <%= beautify_field czb.wtyp_jg%>
+          <% end %>
+        </td>
+       </tr>
+       <tr>
+        <th colspan="4">填报人</th>
+        <td colspan="6">
+          <% if is_fill_enabled?(czb)%>
+            <input title="填报人" type="text" name="parts[][wtyp_contacts]" class="form-control input-sm" value="<%= czb.wtyp_contacts.blank? ? current_user.tname : czb.wtyp_contacts %>">
+          <% else %>
+          <%= beautify_field czb.wtyp_contacts %>
+          <% end %>
+        </td>
+        <th colspan="4">电话</th>
+        <td colspan="6">
+          <% if is_fill_enabled?(czb)%>
+            <input title="电话" type="text" name="parts[][wtyp_tel]" class="form-control input-sm" value="<%= czb.wtyp_tel.blank? ? current_user.tel : czb.wtyp_tel %>">
+          <% else %>
+          <%= beautify_field czb.wtyp_tel %>
+          <% end %>
+        </td>
+        <th colspan="4">传真</th>
+        <td colspan="6">
+          <% if is_fill_enabled?(czb)%>
+            <input title="传真" type="text" name="parts[][wtyp_fax]" class="form-control input-sm" value="<%= czb.wtyp_fax %>">
+          <% else %>
+          <%= beautify_field czb.wtyp_fax%>
+          <% end %>
+        </td>
+       </tr>
+       <tr>
+        <th colspan="4">电子邮箱</th>
+        <td colspan="26">
+          <% if is_fill_enabled?(czb) %>
+            <input title="电子邮箱" type="text" name="parts[][wtyp_email]" class="form-control input-sm" value="<%= czb.wtyp_email.blank? ? current_user.user_jcjg_mail : czb.wtyp_email %>">
+          <% else %>
+            <%= beautify_field czb.wtyp_email%>
+          <% end %>
+        </td>
+       </tr> 
+       <tr>
+        <th colspan="3">收到检验报告日期</th>
+        <td colspan="12">
+          <% if is_fill_enabled?(czb) %>
+            <input type="text" name="parts[][wtyp_date]" disabled="true" class="form-control input-sm datepicker" value="<%= czb.wtyp_date.blank? ? czb.sp_bsb.updated_at.strftime("%Y-%m-%d") : czb.wtyp_date %>">
+          <% else %>
+            <%= beautify_field czb.wtyp_date %>
+          <% end %>
+        </td>
+        <th colspan="3">启动核查处置日期</th>
+        <td colspan="12">
+          <% if is_fill_enabled?(czb) %>
+            <input title="启动核查处置日期" type="text" name="parts[][qdhcczrq]" class="form-control input-sm datepicker" value="<%= czb.qdhcczrq %>">
+          <% else %>
+            <%= beautify_field czb.qdhcczrq %>
+          <% end %>
+        </td>
+       </tr>
+       <tr>
+        <th colspan="3">负责核查处置部门</th>
+        <td colspan="9"><%= beautify_field czb.shbm %></td>
+				<th colspan="3">处置状态</th>
+				<td colspan="3"> <%= beautify_field czb.state_desc2 %> </td>
+        <th colspan="6" width="width:120px">处置完毕日期</th>
+        <td colspan="7">
+          <% if is_fill_enabled?(czb)%>
+            <input title="处置完毕日期" type="text" name="parts[][czwbrq]" class="datepicker form-control input-sm" value="<%= czb.czwbrq %>">
+          <% else %>
+            <%= beautify_field czb.czwbrq %>
+          <% end %>
+        </td>
+       </tr>
+       <% if @sp_bsb.sp_s_44.eql?("风险监测") %>
+       <tr>
+        <th colspan="4">分析评价</th>
+        <td colspan="26" class="form-inline" style="position: relative;">
+          <% if is_fill_enabled?(czb)%>
+            1.是否对风险监测结果进行分析评价<%= select_tag "parts[][fxpj_1]", options_for_select(@czdealfix2_options, czb.fxpj_1), {:class => "form-control input-sm"}%>；<br>
+            2.是否存在安全隐患<%= select_tag "parts[][fxpj_2]", options_for_select(@czdealfix2_options, czb.fxpj_2), {:class => "form-control input-sm"}%>；<br>
+            3.是否发出食品安全风险隐患告知书<%= select_tag "parts[][fxpj_3]", options_for_select(@czdealfix2_options, czb.fxpj_3), {:class => "form-control input-sm"}%>。发出日期：<input type="text" name="parts[][fxpj_4]" class="datepicker form-control input-sm" value="<%= czb.fxpj_4 %>">
+          <% else %>
+            1.是否对风险监测结果进行分析评价：<%= beautify_field czb.fxpj_1%>；<br>
+            2.是否存在安全隐患：<%= beautify_field czb.fxpj_2%>；<br>
+            3.是否发出食品安全风险隐患告知书：<%= beautify_field czb.fxpj_3%>。发出日期：<%= beautify_field czb.fxpj_4%>。
+          <% end %>
+        </td>
+       </tr>
+       <% end %>
+       <tr>
+        <th colspan="4" style="vertical-align: middle;"><div style="width:30px; margin-left:auto; margin-right:auto;">产品控制情况</div></th>
+        <td colspan="26" class="form-inline" style="line-height: 40px; position: relative;">
+          <% if is_fill_enabled?(czb) and !czb.part_submit_flag1 %>
+            1.暂停生产、销售和使用不合格或问题食品、食品添加剂<%= select_tag "parts[][cpkzqk_1]", options_for_select(@czdealfix2_options, czb.cpkzqk_1), {:class => "form-control input-sm"}%>
+            <br>
+
+            下架封存不合格或问题食品：<%= select_tag "parts[][cpkzqk_2]", options_for_select(@czdealfix2_options, czb.cpkzqk_2), {:class => "form-control input-sm"}%>；<br>
+
+            召回不合格或问题食品、食品添加剂：<%= select_tag "parts[][cpkzqk_3]", options_for_select(@czdealfix2_options, czb.cpkzqk_3), {:class => "form-control input-sm"}%>。<br>
+
+            2.企业（生产/购进)
+            <input title="企业（生产/购进)" type="text" name="parts[][cpkzqk_4]" class="form-control input-sm" style="width: 50px;" value="<%= czb.cpkzqk_4 %>">
+
+            <%= select_tag "parts[][cpkzqk_5]", options_for_select(@hcczdw_options, czb.cpkzqk_5), {:class => "form-control input-sm"}%>，
+
+            共计<input title="共计" type="text" name="parts[][cpkzqk_6]" class="form-control input-sm" style="width: 50px;" value="<%= czb.cpkzqk_6 %>">公斤；
+
+            货值<input title="货值" type="text" name="parts[][cpkzqk_7]" class="form-control input-sm" style="width: 50px;" value="<%= czb.cpkzqk_7 %>">元。<br>
+
+            已销售<input title="已销售" type="text" name="parts[][cpkzqk_8]" class="form-control input-sm" style="width: 50px;" value="<%= czb.cpkzqk_8 %>">
+
+            <%= select_tag "parts[][cpkzqk_9]", options_for_select(@hcczdw_options, czb.cpkzqk_9), {:class => "form-control input-sm"}%>，
+
+            共计<input type="text" name="parts[][cpkzqk_10]" class="form-control input-sm" style="width: 50px;" value="<%= czb.cpkzqk_10 %>"> 公斤；
+
+            货值 <input type="text" name="parts[][cpkzqk_11]" class="form-control input-sm" style="width: 50px;" value="<%= czb.cpkzqk_11 %>">元。<br>
+						已使用<input type="text" name="parts[][cpkzqk_20]" class="form-control input-sm" style="width: 50px;" value="<%= czb.cpkzqk_20 %>"> 
+						<%= select_tag "parts[][cpkzqk_21]", options_for_select(@hcczdw_options, czb.cpkzqk_21), {:class => "form-control input-sm"}%>，
+ 
+						共计<input type="text" name="parts[][cpkzqk_22]" class="form-control input-sm" style="width: 50px;" value="<%= czb.cpkzqk_22 %>"> 公斤；
+ 
+						货值 <input type="text" name="parts[][cpkzqk_23]" class="form-control input-sm" style="width: 50px;" value="<%= czb.cpkzqk_23 %>">元。<br>
+            3.封存
+            <input type="text" name="parts[][cpkzqk_12]" class="form-control input-sm" style="width: 50px;" value="<%= czb.cpkzqk_12 %>">
+            <%= select_tag "parts[][cpkzqk_13]", options_for_select(@hcczdw_options, czb.cpkzqk_13), {:class => "form-control input-sm"}%>，
+
+            共计<input type="text" name="parts[][cpkzqk_14]" class="form-control input-sm" style="width: 50px;" value="<%= czb.cpkzqk_14 %>"> 公斤；
+
+            货值 <input type="text" name="parts[][cpkzqk_15]" class="form-control input-sm" style="width: 50px;" value="<%= czb.cpkzqk_15 %>">元。<br>
+
+            <% if czb.current_state == ::WtypCzb::State::ASSIGNED %>
+            <div class="submit">
+              <%= time_left(czb.sp_bsb.created_at, 5)%>
+              <button type="submit" data-part="1" class="btn btn-xs btn-success">提交</button>
+            </div>
+            <% end %>
+          <% else %>          
+            1.暂停生产、销售和使用不合格或问题食品、食品添加剂：<%= beautify_field czb.cpkzqk_1 %>；<br />
+            封存不合格或问题食品：<%= beautify_field czb.cpkzqk_2 %>；<br />
+            召回不合格或问题食品、食品添加剂：<%= beautify_field czb.cpkzqk_3 %>。<br />
+            2.企业（生产/购进) <%= beautify_field czb.cpkzqk_4%><%= beautify_field czb.cpkzqk_5 %>，共计<%= beautify_field czb.cpkzqk_6 %>公斤；
+            货值<%= beautify_field czb.cpkzqk_7%>元。<br>
+            已销售<%= beautify_field czb.cpkzqk_8%><%= beautify_field czb.cpkzqk_9 %>，共计<%= beautify_field czb.cpkzqk_10%>公斤；货值<%= beautify_field czb.cpkzqk_11%>元。<br>
+						已使用<%= beautify_field czb.cpkzqk_20%><%= beautify_field czb.cpkzqk_21 %>，共计<%= beautify_field czb.cpkzqk_22%>公斤；货值<%= beautify_field czb.cpkzqk_23%>元。<br>
+            3.下架封存<%= beautify_field czb.cpkzqk_12%><%= beautify_field czb.cpkzqk_13%>，共计<%= beautify_field czb.cpkzqk_14 %>公斤；货值<%= beautify_field czb.cpkzqk_15 %>元。<br>
+            <% if czb.part_submit_flag1 %>
+            <span class="label label-success submit">已提交</span>
+            <% end %>
+          <% end %>
+        </td>
+       </tr>
+       <tr>
+        <th colspan="4" style="vertical-align: middle;"><div style="width:30px; margin-left:auto; margin-right:auto;">排查整改复查</th>
+        <td colspan="26" class="form-inline" style="line-height: 40px; position: relative;">
+          <% if is_fill_enabled?(czb) and !czb.part_submit_flag2 %>
+            召回<input type="text" name="parts[][cpkzqk_16]" class="form-control input-sm" style="width: 50px;" value="<%= czb.cpkzqk_16 %>">
+
+            <%= select_tag "parts[][cpkzqk_17]", options_for_select(@hcczdw_options, czb.cpkzqk_17), {:class => "form-control input-sm"}%>，
+
+            共计 <input type="text" name="parts[][cpkzqk_18]" class="form-control input-sm" style="width: 50px;" value="<%= czb.cpkzqk_18 %>">公斤；
+
+            货值 <input type="text" name="parts[][cpkzqk_19]" class="form-control input-sm" style="width: 50px;" value="<%= czb.cpkzqk_19 %>">元。<br>
+            1.排查原因：<%= select_tag "parts[][pczgfc_1]", options_for_select(@czdealfix2_options, czb.pczgfc_1), {:class => "form-control input-sm"}%>。<br>
+
+            问题原因：
+            <br>
+            <label><%= check_box_tag "parts[][pczgfc_2]", 1, (czb.pczgfc_2 == 1) %>人为添加</label>
+            <label><%= check_box_tag "parts[][pczgfc_11]", 1, (czb.pczgfc_11 == 1) %>原料问题</label>
+            <label><%= check_box_tag "parts[][pczgfc_12]", 1, (czb.pczgfc_12 == 1) %>生产工艺</label>
+            <label><%= check_box_tag "parts[][pczgfc_13]", 1, (czb.pczgfc_13 == 1) %>过程控制不严</label>
+            <label><%= check_box_tag "parts[][pczgfc_14]", 1, (czb.pczgfc_14 == 1) %>储运不当</label>
+            <label><%= check_box_tag "parts[][pczgfc_15]", 1, (czb.pczgfc_15 == 1) %>包装迁移</label>
+            <label><%= check_box_tag "parts[][pczgfc_16]", 1, (czb.pczgfc_16 == 1) %>标签标识问题</label>
+            <label><%= check_box_tag "parts[][pczgfc_17]", 1, (czb.pczgfc_17 == 1) %>其他</label>
+            <div>
+            具体描述：<input type="text" name="parts[][pczgfc_9]" class="form-control input-sm" value="<%= czb.pczgfc_9 %>">。<br>
+            </div>
+
+            2.责令整改：<%= select_tag "parts[][pczgfc_3]", options_for_select(@czdealfix2_options, czb.pczgfc_3), {:class => "form-control input-sm"}%>
+
+            整改时间：<input type="text" name="parts[][pczgfc_4]" class="datepicker form-control input-sm" value="<%= czb.pczgfc_4 %>" style="width: 100px">
+
+            （开始）至<input type="text" name="parts[][pczgfc_5]" class="datepicker form-control input-sm" style="width: 100px" value="<%= czb.pczgfc_5 %>">
+            （结束），<br>
+            3.整改措施<input type="text" name="parts[][pczgfc_6]" class="form-control input-sm" value="<%= czb.pczgfc_6 %>">。<br>
+
+            4.复查：<%= select_tag "parts[][pczgfc_7]", options_for_select(@czdealfix2_options, czb.pczgfc_7), {:class => "form-control input-sm"}%>，
+
+            复查结果<%= select_tag "parts[][pczgfc_8]", options_for_select(@hcczfjjg_options, czb.pczgfc_8), {:class => "form-control input-sm"}%>。
+            <% if czb.current_state == ::WtypCzb::State::ASSIGNED %>
+            <div class="submit">
+              <%= time_left(czb.sp_bsb.created_at, 30)%>
+              <button type="submit" data-part="2" class="btn btn-xs btn-success">提交</button>
+            </div>
+            <% end %>
+          <% else %>
+            召回<%= beautify_field czb.cpkzqk_16%><%= beautify_field czb.cpkzqk_17 %>，共计<%= beautify_field czb.cpkzqk_18%>公斤；货值<%= beautify_field czb.cpkzqk_19%>元。<br>
+            1.排查原因：<%= beautify_field czb.pczgfc_1 %>。<br> &emsp;问题原因：<%= beautify_field czb.wtyy %> &emsp; 其他：<%= beautify_field czb.pczgfc_9%>。<br>
+            2.责令整改：<%= beautify_field czb.pczgfc_3%> 整改时间：<%= beautify_field czb.pczgfc_4%> （开始）至<%= beautify_field czb.pczgfc_5%> （结束），<br> &emsp;整改措施<%= beautify_field czb.pczgfc_6%>。<br>
+            3.复查：<%= beautify_field czb.pczgfc_7%>，复查结果<%= beautify_field czb.pczgfc_8%>。
+            <% if czb.part_submit_flag2 %>
+            <span class="label label-success submit">已提交</span>
+            <% end %>
+          <% end %>
+        </td>
+       </tr>
+       <tr>
+        <th colspan="4" style="vertical-align: middle;"><div style="width:30px; margin-left:auto; margin-right:auto;">行政处罚情况</div></th>
+        <td colspan="26" class="form-inline" style="line-height: 40px; position: relative;">
+          <% if is_fill_enabled?(czb) and !czb.part_submit_flag3 %>
+            1.立案：<%= select_tag "parts[][xzcfqk_1]", options_for_select(@czdealfix2_options, czb.xzcfqk_1), {:class => "form-control input-sm"}%>；
+            作出行政处罚：
+            <%= select_tag "parts[][xzcfqk_2]", options_for_select(@czdealfix2_options, czb.xzcfqk_2), {:class => "form-control input-sm"}%>；
+            结案：
+            <%= select_tag "parts[][xzcfqk_3]", options_for_select(@czdealfix2_options, czb.xzcfqk_3), {:class => "form-control input-sm"}%>。<br>
+            移送司法机关：
+            <%= select_tag "parts[][xzcfqk_4]", options_for_select(@czdealfix2_options, czb.xzcfqk_4), {:class => "form-control input-sm"}%>；
+            移送其他行政机关：
+            <%= select_tag "parts[][xzcfqk_5]", options_for_select(@czdealfix2_options, czb.xzcfqk_5), {:class => "form-control input-sm"}%>。<br>
+            2.立案日期：<input type="text" name="parts[][xzcfqk_6]" class="datepicker form-control input-sm" value="<%= czb.xzcfqk_6 %>" style="width: 100px">。<br>
+            3.处罚决定书编号：<input type="text" name="parts[][xzcfqk_7]" class="form-control input-sm" style="width: 50px" value="<%= czb.xzcfqk_7%>">，
+            下达日期：
+            <input type="text" name="parts[][xzcfqk_8]" class="datepicker form-control input-sm" value="<%= czb.xzcfqk_8 %>" style="width: 100px">。<br>
+            警告：
+            <%= select_tag "parts[][xzcfqk_9]", options_for_select(@czdealfix2_options, czb.xzcfqk_9), {:class => "form-control input-sm"}%>；<br>
+            没收非法所得：
+            <input type="text" name="parts[][xzcfqk_10]" value="<%= czb.xzcfqk_10 %>" class="form-control input-sm" style="width: 50px">元；<br>
+            没收违法生产经营的食品、食品添加剂：
+            <%= select_tag "parts[][xzcfqk_11]", options_for_select(@czdealfix2_options, czb.xzcfqk_11), {:class => "form-control input-sm"}%>；
+            <input type="text" name="parts[][xzcfqk_12]" value="<%= czb.xzcfqk_12 %>" class="form-control input-sm" style="width: 50px">
+            <%= select_tag "parts[][xzcfqk_13]", options_for_select(@hcczdw_options, czb.xzcfqk_13), {:class => "form-control input-sm"}%>，
+            共计 <input type="text" name="parts[][xzcfqk_14]" value="<%= czb.xzcfqk_14 %>" class="form-control input-sm" style="width: 50px">公斤；
+            货值 <input type="text" name="parts[][xzcfqk_15]" value="<%= czb.xzcfqk_15 %>" class="form-control input-sm" style="width: 50px">元。<br>
+            没收用于违法生产经营的工具、设备、原料等物品：<%= select_tag "parts[][xzcfqk_16]", options_for_select(@czdealfix2_options, czb.xzcfqk_16), {:class => "form-control input-sm"}%>；<br>
+            罚款： <input type="text" name="parts[][xzcfqk_17]" value="<%= czb.xzcfqk_17 %>" class="form-control input-sm" style="width: 50px"> 元；<br>
+            责令停产停业：
+            <%= select_tag "parts[][xzcfqk_18]", options_for_select(@czdealfix2_options, czb.xzcfqk_18), {:class => "form-control input-sm"}%>；<br>
+            吊销许可证：
+            <%= select_tag "parts[][xzcfqk_19]", options_for_select(@czdealfix2_options, czb.xzcfqk_19), {:class => "form-control input-sm"}%>；
+            吊销：
+            <%= select_tag "parts[][xzcfqk_20]", options_for_select(@hcczdx_options, czb.xzcfqk_20), {:class => "form-control input-sm"}%>。<br>
+            4.结案日期： <input type="text" name="parts[][xzcfqk_21]" value="<%= czb.xzcfqk_21 %>" class="datepicker form-control input-sm" style="width: 150px">。
+            <% if czb.current_state == ::WtypCzb::State::ASSIGNED %>
+            <div class="submit">
+              <%= time_left(czb.sp_bsb.created_at, 90)%>
+              <button type="submit" data-part="3" class="btn btn-xs btn-success">提交</button>
+            </div>
+            <% end %>
+          <% else %>
+            <% if czb.is_prevented_by_yydj? %>
+            <p class="alert alert-danger">异议处置中，无法填写以下内容</p>
+            <% end %>
+            1.立案：<%= beautify_field czb.xzcfqk_1 %>；
+            作出行政处罚：<%= beautify_field czb.xzcfqk_2%>；
+            结案：<%= beautify_field czb.xzcfqk_3%>。<br>
+            &emsp;移送司法机关：<%= beautify_field czb.xzcfqk_4%>；
+            移送其他行政机关：<%= beautify_field czb.xzcfqk_5%>。<br>
+            2.立案日期：<%= beautify_field czb.xzcfqk_6 %>。<br>
+            3.处罚决定书编号：<%= beautify_field czb.xzcfqk_7%>，
+            下达日期：<%= beautify_field czb.xzcfqk_8%>。<br>
+            &emsp;警告：<%= beautify_field czb.xzcfqk_9%>；<br>
+            &emsp;没收非法所得：<%= beautify_field czb.xzcfqk_10%>元；<br>
+            &emsp;没收违法生产经营的食品：<%= beautify_field czb.xzcfqk_11%>；
+            <%= beautify_field czb.xzcfqk_12%>
+            <%= beautify_field czb.xzcfqk_13%>，
+            共计<%= beautify_field czb.xzcfqk_14%>公斤；
+            货值<%= beautify_field czb.xzcfqk_15%>元。<br>
+            &emsp;没收用于违法生产经营的工具、设备、原料等物品：<%= beautify_field czb.xzcfqk_16%>；<br>
+            &emsp;罚款：<%= beautify_field czb.xzcfqk_17%>元；<br>
+            &emsp;责令停产停业：<%= beautify_field czb.xzcfqk_18%>；<br>
+            &emsp;吊销许可证：<%= beautify_field czb.xzcfqk_19%>；
+            吊销：<%= beautify_field czb.xzcfqk_20 %>。<br>
+            4.结案日期：<%= beautify_field czb.xzcfqk_21%>。
+            <% if czb.part_submit_flag3 %>
+            <span class="label label-success submit">已提交</span>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+      <tr>
+        <th colspan="4"><div style="width:60px; margin-left:auto; margin-right:auto; vertical-align: middle;">其他核查处置措施</div></th>
+        <td colspan="26">
+          <% if is_fill_enabled?(czb) %>
+          <textarea name="parts[][pczgfc_10]" cols="80" rows="6" class="form-control"><%= czb.pczgfc_10 %></textarea>
+          <% else %>
+          <%= beautify_field czb.pczgfc_10 %>
+          <% end %>
+        </td>
+      </tr>
+      <tr>
+        <th colspan="4" style="vertical-align: middle; text-align: center;">备注</th>
+        <td colspan="26">
+          <% if is_fill_enabled?(czb) %>
+          <textarea name="parts[][wtyp_remark]" cols="80" rows="6" class="form-control"><%= czb.wtyp_remark %></textarea>
+          <% else %>
+          <%= beautify_field czb.wtyp_remark %>
+          <% end %>
+        </td>
+      </tr>
+      <tr>
+        <th colspan="4" style="text-align: center;">办理部门</th>
+        <td colspan="26"><%= beautify_field czb.blbm %></td>
+      </tr>
+      <tr>
+        <th colspan="4" style="text-align: center;">办理人</th>
+        <td colspan="11"><%= beautify_field czb.blr %></td>
+        <th colspan="4" style="text-align: center;">办理时间</th>
+        <td colspan="11"><%= (czb.blsj + 8.hours).strftime("%Y-%m-%d") if !czb.blsj.blank? %></td>
+      </tr>
+      <tr>
+        <th colspan="4" style="text-align: center;">填报部门</th>
+        <% if czb.type_prov_enabled?(current_user) and (current_user.hcz_czap == 1 and czb.current_state == ::WtypCzb::State::LOGGED)%>
+          <td colspan="11">
+            <%= select_tag "parts[][czbm]", options_for_select(JgBsb.where(status: 0, :jg_province => current_user.user_s_province).map{|jg| [jg.jg_name, jg.jg_name]}.unshift(["请选择", ""]), czb.czbm), :style => "width: 180px;", :class => "czbm form-control input-sm"%>
+          </td>
+        <% else %>
+        <td colspan="11"><%= beautify_field czb.czbm %></td>
+        <% end %>
+        <th colspan="4" style="text-align: center;">填报人</th>
+        <% if czb.type_prov_enabled?(current_user) and current_user.hcz_czap == 1 and czb.current_state == ::WtypCzb::State::LOGGED %>
+        <td colspan="11">
+          <select name="parts[][czfzr]" class="czfzr input-sm form-control">
+            <option value="">请选择</option>
+            <% unless czb.czfzr.blank? %>
+            <option value="<%= czb.czfzr %>"><%= czb.czfzr %></option>
+            <% end %>
+          </select>
+        </td>
+        <% else %>
+        <td colspan="11"><%= beautify_field czb.czfzr_desc %></td>
+        <% end %>
+      </tr>
+      <tr>
+        <th colspan="4" style="text-align: center;">填报时间</th>
+        <td colspan="11"><%= (czb.tbsj + 8.hours).strftime("%Y-%m-%d") if !czb.tbsj.blank? %></td>
+        <th colspan="4" style="text-align: center;">审核部门</th>
+        <td colspan="11"><%= beautify_field czb.shbm %></td>
+      </tr>
+      <tr>
+        <th colspan="4" style="text-align: center;">审核人</th>
+        <td colspan="11"><%= beautify_field czb.shr %></td>
+        <th colspan="4" style="text-align: center;">审核时间</th>
+        <td colspan="11"><%= (czb.shsj + 8.hours).strftime("%Y-%m-%d") if !czb.shsj.blank? %></td>
+      </tr>
+    </table>
+  </div>
+	<div class="panel-footer">
+		<% if czb.enable_operation?(current_user) || czb.current_state == ::WtypCzb::State::LOGGED %>
+    <input type="hidden" name="parts[][save_me]" class="save-me">
+		<% end %>
+
+		<% if czb.enable_operation?(current_user) %>
+			<input type="hidden" name="parts[][tmp_save]" class="tmp-save-tag">
+			<input type="hidden" name="parts[][part_submit]" class="part-submit">
+			<button class="btn btn-success btn-sm save" type="submit">提交信息入库</button>
+			<button class="btn btn-default btn-sm tmp-save" type="submit">临时保存</button>
+		<%end%>
+		<% if czb.current_state != ::WtypCzb::State::LOGGED %>
+		<span class="label label-warning">
+			当前状态：<%= czb.current_state_desc %>
+			<% unless is_fill_enabled?(czb) %>
+			 / 填报负责人：<%= czb.czfzr_desc %>
+			<% end %>
+		</span>
+		<% else %>
+		<% if czb.type_prov_enabled?(current_user) and current_user.hcz_czap == 1 and czb.current_state == ::WtypCzb::State::LOGGED %>
+		<button class="btn btn-success assign-task btn-sm" type="submit">安排核查处置</button>
+		<% end %>
+		<span class="text-danger">[待安排]</span>
+		<% end %>
+	</div>
+</div>

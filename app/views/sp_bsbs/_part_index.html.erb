@@ -1,0 +1,202 @@
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('.list thead th').click(function(){
+      if($(this).hasClass("up")){
+        $('#sp_order_seq').val("DESC");
+        $('#sp_order').val($(this).attr("data-field"));
+      } else {
+        $(this).addClass("up");
+        $('#sp_order_seq').val("ASC");
+        $('#sp_order').val($(this).attr("data-field"));                                                                      
+      }
+      $('#sp_submit').trigger("click");
+    });
+
+    // 推送基本数据
+    $('.push-base-data').click(function(){
+      var o = $(this);
+      $.post(o.attr('href'), {}, function(data){
+        if(data.status == 'OK') {
+          alert("推送成功");
+          location.reload();
+        } else {
+          alert(data.msg);
+        }
+      }, 'json');
+      return false;
+    });
+
+    // 推送选中的
+    $('.push-all').click(function(){
+      var ids = [];
+      $.each($('.list tbody :checked'), function(){
+        var o = $(this);
+        ids.push(o.attr('data-id'));
+      });
+      $.post('/sp_bsbs/' + ids.join(",") + "/push_base_data.json", {}, function(data){
+        if(data.status == 'OK') {
+          alert("推送成功");
+          location.reload();
+        } else {
+          alert(data.msg);
+        }
+      }, 'json');
+    });
+
+    // 全选
+    $('.check-all').click(function(){
+      var o = $(this);
+      if (o.is(':checked')) {
+        $('.list tbody input[type="checkbox"]').attr('checked', 'checked');
+      } else {
+        $('.list tbody input[type="checkbox"]').removeAttr('checked');
+      }
+    });
+  });
+</script>
+<style type="text/css">
+  .btn-xs {
+    font-size: 12px;
+    margin-bottom: 5px;
+  }
+  .list thead {
+    cursor: pointer;
+  }
+</style>
+
+<table class="list table table-bordered table-hover">
+  <thead>
+    <% if current_user.jsyp == 1 %>
+    <!-- 只有样品接收人员拥有该权限 -->
+    <tr>
+      <td colspan="10">
+        <a href="javascript:void(0);" class="push-all btn btn-xs btn-success"><i class="glyphicon glyphicon-download"></i>批量推送基本信息</a>
+      </td>
+    </tr>
+    <% end %>
+    <tr>
+      <td width="20"><input type="checkbox" class="check-all"></td>
+      <th class="<%= 'up' if (params[:sp_order_seq] == "ASC" and params[:sp_order] == 'updated_at')%>" width="100" data-field="updated_at">更新日期
+        <% if params[:sp_order] == "updated_at" %>
+        <i class="glyphicon glyphicon-sort-by-attributes<%= params[:sp_order_seq] == "DESC" ? "-alt" : ""%> text-success"></i>
+        <% end %>
+      </th>
+      <th class="<%= 'up' if (params[:sp_order_seq] == 'ASC' and params[:sp_order] == 'sp_s_3')%>" width="60" data-field="sp_s_3">
+        省份
+        <% if params[:sp_order] == "sp_s_3" %>
+        <i class="glyphicon glyphicon-sort-by-attributes<%= params[:sp_order_seq] == "DESC" ? "-alt" : ""%> text-success"></i>
+        <% end %>
+      </th>
+      <th width="120" data-field="sp_s_16" class="<%= 'up' if (params[:sp_order_seq] == "ASC" and params[:sp_order] == 'sp_s_16')%>">
+        采样编号
+        <% if params[:sp_order] == "sp_s_16" %>
+        <i class="glyphicon glyphicon-sort-by-attributes<%= params[:sp_order_seq] == "DESC" ? "-alt" : ""%> text-success"></i>
+        <% end %>
+      </th>
+      <th data-field="sp_s_14" class="<%= 'up' if (params[:sp_order_seq] == "ASC" and params[:sp_order] == 'sp_s_14')%>">
+        样品名称
+        <% if params[:sp_order] == "sp_s_14" %>
+        <i class="glyphicon glyphicon-sort-by-attributes<%= params[:sp_order_seq] == "DESC" ? "-alt" : ""%> text-success"></i>
+        <% end %>
+      </th>
+      <th width="120" data-field="sp_s_35" class="<%= 'up' if (params[:sp_order_seq] == "ASC" and params[:sp_order] == 'sp_s_35')%>">
+        采样单位名称
+        <% if params[:sp_order] == "sp_s_35" %>
+        <i class="glyphicon glyphicon-sort-by-attributes<%= params[:sp_order_seq] == "DESC" ? "-alt" : ""%> text-success"></i>
+        <% end %>
+      </th>
+      <th width="120" data-field="sp_s_43" class="<%= 'up' if (params[:sp_order_seq] == "ASC" and params[:sp_order] == 'sp_s_43')%>">
+        检验机构名称
+        <% if params[:sp_order] == "sp_s_43" %>
+        <i class="glyphicon glyphicon-sort-by-attributes<%= params[:sp_order_seq] == "DESC" ? "-alt" : ""%> text-success"></i>
+        <% end %>
+      </th>
+      <th width="100" style="font-size: 12px;" data-field="sp_s_214" class="<%= 'up' if (params[:sp_order_seq] == "ASC" and params[:sp_order] == 'sp_s_214')%>">
+        样品是否确认
+        <% if params[:sp_order] == "sp_s_214" %>
+        <i class="glyphicon glyphicon-sort-by-attributes<%= params[:sp_order_seq] == "DESC" ? "-alt" : ""%> text-success"></i>
+        <% end %>
+      </th>
+      <th width="100">填报状态</th>
+      <th>-</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% (@sp_bsbs || []).each do |sp_bsb| %>
+    <tr class="<%= 'danger' if sp_bsb.is_bad_report? %>">
+      <td width="20"><input type="checkbox" data-id="<%= sp_bsb.id %>" class="check"></td>
+      <td><%=((sp_bsb.updated_at).ago(-3600*8)).to_s[0,19]%></td>
+      <td><%= sp_bsb.sp_s_3 %></td>
+      <td style="word-break:break-all"><%= sp_bsb.sp_s_16 %></td>
+      <td><%= sp_bsb.sp_s_14 %></td>
+      <td valign="top"><%= sp_bsb.sp_s_35 %></td>
+      <td><%= sp_bsb.sp_s_43 %></td>
+      <td><%= sp_bsb.sp_s_214 %></td>
+      <td>
+        <% if sp_bsb.sp_i_state == nil %>
+          <%= link_to '填报样品信息', edit_sp_bsb_path(sp_bsb), :class => 'btn btn-link btn-xs center-block' %>
+        <% elsif sp_bsb.sp_i_state < 2 %>
+          <%= link_to '填报样品信息', edit_sp_bsb_path(sp_bsb), :class => 'btn btn-info btn-xs center-block' %>
+        <% elsif sp_bsb.sp_i_state < 3 %>
+          <%= link_to '填报检测数据', edit_sp_bsb_path(sp_bsb), :class => 'btn btn-info btn-xs center-block' %>
+        <% elsif sp_bsb.sp_i_state == 3 %>
+          <%= link_to '退回待修数据', edit_sp_bsb_path(sp_bsb), :class => 'btn btn-info btn-xs center-block' %>
+        <% elsif sp_bsb.sp_i_state == 4 %>
+          <%= link_to '待机构审核', edit_sp_bsb_path(sp_bsb), :class => 'btn btn-info btn-xs center-block' %>
+        <% elsif sp_bsb.sp_i_state == 5 %>
+          <%= link_to '待机构批准', edit_sp_bsb_path(sp_bsb), :class => 'btn btn-info btn-xs center-block' %>
+        <% elsif sp_bsb.sp_i_state == 6 %>
+          <%= link_to '待省局审核', edit_sp_bsb_path(sp_bsb), :class => 'btn btn-info btn-xs center-block' %>
+        <% elsif sp_bsb.sp_i_state == 8 %>
+          <%= link_to '待牵头单位审核', edit_sp_bsb_path(sp_bsb), :class => 'btn btn-info btn-xs center-block' %>
+        <% elsif sp_bsb.sp_i_state == 9 %>
+          <%= link_to '已完全提交', sp_bsb, :class => 'btn btn-info btn-xs center-block' %>
+          <a href="/sp_bsbs/<%= sp_bsb.id%>/print" class="print-sp-bsb btn btn-xs btn-link center-block" target="_blank">打印</a>
+        <% elsif sp_bsb.sp_i_state == 10 %>
+          <%= link_to '批量导入待入库', edit_sp_bsb_path(sp_bsb), :class => 'btn btn-info btn-xs center-block' %>
+        <% end %>
+
+			 <!--<% if sp_bsb.is_bad_report? %>
+          <a class="btn btn-danger btn-xs center-block" href="/yycz_from_bsb/<%= sp_bsb.id %>" onclick="if(!confirm('确定登记异议信息吗？')){return false;}">异议登记</a>
+        <% end %>-->
+        
+        <% unless sp_bsb.fail_report_path.blank? %>
+          <a class="btn btn-link btn-xs center-block" href="/sp_bsbs/<%= sp_bsb.id%>/fail_pdf_report" target="_blank">查看检验报告</a>
+        <% end %>
+
+        <% unless [3, 4, 6, 8, 9].include? sp_bsb.sp_i_state%>
+        <%= link_to '删除', sp_bsb,method: :delete, data: { confirm: '是否删除?' }, :class => 'btn btn-link btn-xs center-block' %>
+        <% end %>
+      </td>
+      <td>
+        <% if current_user.jsyp == 1 and sp_bsb.sp_i_state == 2 %>
+        <a href="/sp_bsbs/<%= sp_bsb.id %>/push_base_data.json" class="btn btn-success btn-xs push-base-data"><i class="glyphicon glyphicon-download"></i>&emsp;推送基本信息</a>
+        <% end %>
+        <% if [6, 8].include? sp_bsb.sp_i_state %>
+          <% if sp_bsb.is_bad_report? && (session[:user_name] == 'admin' || session[:user_js] == 1) %>
+            <!-- 问题样品处置 -->
+            <% if (sp_bsb.sc_wtypcz_enabled?(current_user.user_s_province) or sp_bsb.lt_wtypcz_enabled?(current_user.user_s_province) or current_user.is_admin? or session[:change_js] == 10) %>
+              <% if sp_bsb.wtyp_cz_present? %>
+                <a href="/wtyp_czbs/<%= sp_bsb.id%>/edit" class="btn btn-danger btn-xs">问题样品处理(<%= sp_bsb.status_desc %>)</a>
+              <% else %>
+                <a href="/wtyp_czbs/<%= sp_bsb.id %>/edit" class="btn btn-danger btn-xs">问题样品处理（未进行）</a>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% elsif sp_bsb.sp_i_state == 9 %>
+          <%if sp_bsb.is_bad_report? && (session[:user_name]=='admin'||session[:user_js]==1||session[:change_js]==9||session[:change_js]==10)%>
+            <%if (sp_bsb.sc_wtypcz_enabled?(current_user.user_s_province) or sp_bsb.lt_wtypcz_enabled?(current_user.user_s_province))||current_user.is_admin?||session[:change_js]==10%>
+              <% if sp_bsb.wtyp_cz_present? %>
+                <a href="/wtyp_czbs/<%= sp_bsb.id%>/edit" class="btn btn-danger btn-xs">问题样品处理(<%= sp_bsb.status_desc %>)</a>
+              <% else %>
+                <a href="/wtyp_czbs/<%= sp_bsb.id%>/edit" class="btn btn-danger btn-xs">问题样品处理（未进行）</a>
+              <% end %>
+            <%end%>
+          <%end%>
+        <% end %>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+

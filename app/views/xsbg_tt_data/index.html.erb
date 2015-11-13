@@ -1,0 +1,25 @@
+<h1>Listing xsbg_tt_data</h1>
+
+<table>
+  <tr>
+    <th>Xsbg tt</th>
+    <th>Spdata 0</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @xsbg_tt_data.each do |xsbg_tt_datum| %>
+  <tr>
+    <td><%= xsbg_tt_datum.xsbg_tt_id %></td>
+    <td><%= xsbg_tt_datum.spdata_0 %></td>
+    <td><%= link_to 'Show', xsbg_tt_datum %></td>
+    <td><%= link_to 'Edit', edit_xsbg_tt_datum_path(xsbg_tt_datum) %></td>
+    <td><%= link_to 'Destroy', xsbg_tt_datum, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Xsbg tt datum', new_xsbg_tt_datum_path %>

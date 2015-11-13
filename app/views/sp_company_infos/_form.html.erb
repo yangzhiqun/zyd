@@ -1,0 +1,138 @@
+<style type="text/css">
+    
+	.style1 {
+		border-collapse: collapse;
+		font-size: 9pt;
+		font-family: Calibri, sans-serif;
+		border-style: none;
+		border-color: inherit;
+		border-width: medium;
+		table-layout:fixed;
+	}
+	.style1 td{
+		border: solid windowtext 1.0px;
+		padding: 0cm 5.4pt 0cm 5.4pt;
+		height: 30px;		
+	}
+	.style1 th{
+		border: solid windowtext 1.0px;
+		padding: 0cm 5.4pt 0cm 5.4pt;
+		height: 30px;
+	}
+	.inputText {
+		font-size: 12px;
+		border-right-width: 0px;
+		border-left-width: 0px;
+		border-top-width: 0px;
+		border-bottom: 1px solid;
+		background-color : transparent; 
+		
+	}
+    .height600 {
+        height: 600px;
+        width:3000px;
+        overflow-y: auto;
+        overflow-x: auto;
+    }
+}
+
+</style>
+
+<script type="text/javascript">
+$(function(){
+  $("#region").ProvinceCity({});
+  $('#province, #city, #lcity').change(function(){
+    $('#sp_company_info_sp_s_3').val($('#province').val()); 
+    $('#sp_company_info_sp_s_4').val($('#city').val()); 
+    $('#sp_company_info_sp_s_5').val($('#lcity').val());           
+  }); 
+
+  index68 = $('#sp_company_info_sp_s_68 option').index($('#sp_company_info_sp_s_68 option:selected'));
+  $.each(CYDD[index68], function(index,data){
+    $("#sp_company_info_sp_s_2").append("<option value='"+data+"'>"+data+"</option>");
+  });
+  $("#sp_company_info_sp_s_2").val('<%=@sp_company_info.sp_s_2%>');
+    
+  $("#sp_company_info_sp_s_68").change(function(){
+    $("#sp_company_info_sp_s_2").get(0).options.length=0;
+    index68=this.selectedIndex;
+      $.each(CYDD[index68], function(index,data){
+      $("#sp_company_info_sp_s_2").append("<option value='"+data+"'>"+data+"</option>");
+    });
+    $("#sp_company_info_sp_s_2").val(CYDD[index68][0]);
+    return;
+  });
+ });
+</script>
+
+<%= form_for(@sp_company_info) do |f| %>
+  <% if @sp_company_info.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@sp_company_info.errors.count, "error") %> prohibited this sp_company_info from being saved:</h2>
+
+      <ul>
+      <% @sp_company_info.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <table border="1" cellspacing="0" cellpadding="0" width="820px" class="style1">
+    <tr>
+			<td colspan="4"><p>被抽样单位名称*</p></td>
+			<td colspan="11"><%= f.text_field:sp_s_1, :class=>"inputText",:style=>"width: 260px; height: 19px" %></td>
+			<td colspan="4"><p>抽样地点业态*</p></td>
+			<td colspan="11">
+        <%=f.select :sp_s_68, @options[68],{},{:style=>"width: 80px;"}%>
+        <span><%=f.select :sp_s_2,"",:class=>"inputText" %></span>
+      </td>
+		</tr>
+    <tr>
+			<td colspan="3"><p>年销售额</p></td>
+			<td colspan="5"><%= f.text_field:sp_s_23, :class=>"inputText",:style=>"width: 100px; height: 19px" %></td>
+			<td colspan="3"><p>营业执照号</p></td>
+			<td colspan="5"><%= f.text_field:sp_s_215, :class=>"inputText",:style=>"width: 100px; height: 19px" %></td>
+      <td colspan="3"><p>传真</p></td>
+			<td colspan="5"><%= f.text_field:sp_s_bsfl, :class=>"inputText",:style=>"width: 100px; height: 19px" %></td>
+      <td colspan="3"><p>区域类型*</p></td>
+			<td colspan="3"><%= f.text_field:sp_s_201, :class=>"inputText",:style=>"width: 60px; height: 19px" %></td>
+		</tr>
+      <tr id="region">
+			<td colspan="3" style="width: 73px"><p>所在地区*</p></td>
+			<td colspan="27">
+        <span>
+          <select id='province' name='province' class="NoPrint"></select>
+          <%= f.text_field :sp_s_3, :class=>"inputText",:style=>"width: 60px; height: 19px" %>省(市、自治区)
+          <select id='city' name='city'></select>
+          <%= f.text_field :sp_s_4, :class=>"inputText",:style=>"width: 60px; height: 19px" %>地区(市、州、盟)
+          <select id='lcity' name='lcity'></select>
+			    <%= f.text_field :sp_s_5, :class=>"inputText",:style=>"width: 60px; height: 19px" %>县(市、区)
+        </span>
+      </td>            
+      </tr>
+		<tr>
+			<td colspan="3" style="width: 73px"><p>单位地址*</p></td>
+			<td colspan="19"><%= f.text_field :sp_s_7, :class=>"inputText",:style=>"width: 420px; height: 19px" %></td>
+            <td colspan="3"><p style="width: 43px">邮编</p></td>
+			<td colspan="5"><%= f.text_field:sp_s_10, :class=>"inputText",:style=>"width: 120px; height: 19px" %></td>
+		</tr>
+		<tr>
+			<td colspan="7"><p>被抽样单位法人（负责人）</p></td>
+			<td colspan="7"><%= f.text_field:sp_s_8, :class=>"inputText",:style=>"width: 175px; height: 19px" %></td>
+			<td colspan="4"><p>电话</p></td>
+			<td colspan="12"><%= f.text_field:sp_s_9, :class=>"inputText",:style=>"width: 120px; height: 19px" %></td>
+			
+		</tr>
+		<tr>
+			<td colspan="7"><p>被抽样单位负责（联系）人*</p></td>
+			<td colspan="7"><%= f.text_field:sp_s_11, :class=>"inputText",:style=>"width: 175px; height: 19px" %></td>
+			<td colspan="4" ><p>电话*</p></td>
+			<td colspan="12"><%= f.text_field:sp_s_12, :class=>"inputText",:style=>"width: 120px; height: 19px" %></td>
+		</tr>
+    </table>
+    <br/>
+  <div class="actions">
+    <%= f.submit("保存", :class => 'btn btn-sm btn-success') %>
+		<%= link_to '返回', sp_company_infos_path, :class => 'btn btn-sm btn-info' %>
+  </div>
+<% end %>

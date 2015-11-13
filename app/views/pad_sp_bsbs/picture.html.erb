@@ -1,0 +1,45 @@
+<style type="text/css">
+	.rotate {
+		display: block;
+		height: 64px;
+		width: 64px;
+		text-indent: -100000px;
+		float: left;
+	}
+	.rotate.left {
+		background: url('/assets/rotate_left.png');
+	}
+	.rotate.right {
+		background: url('/assets/rotate_right.png')
+	}
+	.clearfix {
+		clear: both;
+	}
+	.rotater-ctner {
+		width: 135px;
+		margin: 10px auto;
+	}
+	img {
+		display: block;
+		margin: 5px auto;
+	}
+</style>
+<script type="text/javascript">
+	window.oriention = 0;
+	function rotate(direction){
+		var href = location.protocol + '//' + location.host + location.pathname + '.jpeg?rotate=';
+		window.oriention = (window.oriention + direction)%4;
+
+		href = href + (window.oriention);
+		$('#img').attr('src', href);
+		return false;
+	}
+</script>
+<div class="rotater-ctner">
+	<a href="javascript:rotate(-1);" class="rotate left">left</a>
+	<a href="javascript:rotate(1);" class="rotate right">left</a>
+	<div class="clearfix"></div>
+</div>
+
+<br>
+<img id="img" src="/pad_sp_bsbs/<%= @picture.sp_bsb_id%>/picture/<%= @picture.sort_index%>.jpeg"/>

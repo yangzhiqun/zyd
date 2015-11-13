@@ -1,0 +1,22 @@
+<br>
+<div class="panel panel-success">
+  <div class="panel-heading">在线验证</div>
+  <div class="panel-body">
+    <div class="alert alert-warning">
+      <b>注：</b>此处用于验证CA签名后的电子版PDF的有效性。请在下方选择电子报告并上传后获取验证结果！
+    </div>
+    <%= form_tag '/ca_helper/verify_report.html', multipart: true do %>
+        <div class="form-group">
+          <label>报告文件：</label>
+          <%= file_field_tag 'report_file', class: 'form-control input-sm', style: 'width: 400px;' %>
+        </div>
+				<% if @verify_passed and @result == 200 %>
+				<div class="text-success">验证通过，电子报告合法有效</div>
+				<% elsif !@result.blank? %>
+				<div class="text-danger">验证失败，错误码：<%= @result %></div>
+				<% end %>
+				<div class="text-danger"><%= flash[:error] %></div>
+        <button type="submit" class="btn btn-sm btn-primary">验证</button>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,37 @@
+<%= form_for(@flexcontent) do |f| %>
+  <% if @flexcontent.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@flexcontent.errors.count, "error") %> prohibited this flexcontent from being saved:</h2>
+
+      <ul>
+      <% @flexcontent.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field" style="display:none;">
+    <%= f.label :flex_field %><br />
+    <%= f.text_field :flex_field %>
+  </div>
+  <div class="field">
+    顺序号：<%= f.text_field :flex_sortid %>
+  </div>
+  <div class="field">
+    选项名：<%= f.text_field :flex_name %>
+  </div>
+  <div class="field">
+    所在组：<%= f.text_field :flex_groupid %>
+  </div>
+  <div class="field" style="display:none;">
+    <%= f.label :flex_id %><br />
+    <%= f.text_field :flex_id %>
+  </div>
+  <div class="actions">
+    <%= f.submit vaules="修改"%>
+  </div>
+  
+  
+  
+<% end %>

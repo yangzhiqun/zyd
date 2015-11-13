@@ -1,0 +1,861 @@
+<link type="text/css" rel="stylesheet" href="/assets/noprint.css" media="print"/>
+<script type="text/javascript">
+    ///////////////////
+    var spdata = <%=@sp_data.to_json.html_safe%>;
+    var jg_data = <%=@options[101].to_json.html_safe%>;
+    ///////////////////
+
+    $(function () {
+        $("#region").ProvinceCity({});
+        $("#pad_sp_bsb_sp_d_22").datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            maxDate: new Date()
+        });
+        $("#pad_sp_bsb_sp_d_28").datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            maxDate: new Date()
+        });
+        $("#pad_sp_bsb_sp_d_38").datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            maxDate: new Date()
+        });
+        $("#pad_sp_bsb_sp_d_46").datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            maxDate: new Date()
+        });
+        $("#pad_sp_bsb_sp_d_47").datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            maxDate: new Date()
+        });
+        $("#pad_sp_bsb_sp_d_86").datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            maxDate: new Date()
+        });
+        $("#pad_sp_bsb_sp_s_209").datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            maxDate: new Date()
+        });
+
+        var s = '#jcx';
+        var count = 1;
+
+        // 报送分类第一列
+        $('#pad_sp_bsb_sp_s_70').change(function () {
+            var o = $(this);
+            if (o.val() != '') {
+                $.get('/baosong_bs/by_name.json', {a_name: o.val()}, function (data) {
+                    if (data.status == 'OK') {
+                        $('#pad_sp_bsb_sp_s_17, #pad_sp_bsb_sp_s_18, #pad_sp_bsb_sp_s_19, #pad_sp_bsb_sp_s_20').empty();
+
+                        $('#pad_sp_bsb_sp_s_67').empty();
+                        $("<option>").text("请选择").appendTo($('#pad_sp_bsb_sp_s_67'));
+                        $.each(data.data, function () {
+                            $("<option>").attr('data-identifier', this.identifier).attr("value", this.name).text(this.name).appendTo($('#pad_sp_bsb_sp_s_67'));
+                        });
+                    }
+                }, "json")
+            }
+        });
+
+        // 报送分类第二列
+        $('#pad_sp_bsb_sp_s_67').change(function () {
+            $.get('/a_categories_by_identifier.json', {identifier: $(this).find('option:selected').attr('data-identifier')}, function (data) {
+                if (data.status == 'OK') {
+                    $('#pad_sp_bsb_sp_s_17, #pad_sp_bsb_sp_s_18, #pad_sp_bsb_sp_s_19, #pad_sp_bsb_sp_s_20').empty();
+
+                    $('<option>').text("请选择").appendTo($('#pad_sp_bsb_sp_s_17'));
+                    $.each(data.data, function () {
+                        $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#pad_sp_bsb_sp_s_17'));
+                    });
+                }
+            }, 'json');
+        });
+
+        // 大类
+        $('#pad_sp_bsb_sp_s_17').change(function () {
+            $.get('/b_categories_by_a_id.json', {a_category_id: $(this).find('option:selected').attr('data-id')}, function (data) {
+                if (data.status == 'OK') {
+                    $('#pad_sp_bsb_sp_s_18, #pad_sp_bsb_sp_s_19, #pad_sp_bsb_sp_s_20').empty();
+
+                    $('<option>').text("请选择").appendTo($('#pad_sp_bsb_sp_s_18'));
+                    $.each(data.data, function () {
+                        $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#pad_sp_bsb_sp_s_18'));
+                    });
+                }
+            }, 'json');
+        });
+        // 亚类
+        $('#pad_sp_bsb_sp_s_18').change(function () {
+            $.get('/c_categories_by_b_id.json', {b_category_id: $(this).find('option:selected').attr('data-id')}, function (data) {
+                if (data.status == 'OK') {
+                    $('#pad_sp_bsb_sp_s_19, #pad_sp_bsb_sp_s_20').empty();
+
+                    $('#pad_sp_bsb_sp_s_19').empty();
+                    $('<option>').text("请选择").appendTo($('#pad_sp_bsb_sp_s_19'));
+                    $.each(data.data, function () {
+                        $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#pad_sp_bsb_sp_s_19'));
+                    });
+                }
+            }, 'json');
+        });
+        // 次亚类
+        $('#pad_sp_bsb_sp_s_19').change(function () {
+            $.get('/d_categories_by_c_id.json', {c_category_id: $(this).find('option:selected').attr('data-id')}, function (data) {
+                if (data.status == 'OK') {
+                    $('#pad_sp_bsb_sp_s_20').empty();
+                    $('<option>').text("请选择").appendTo($('#pad_sp_bsb_sp_s_20'));
+                    $.each(data.data, function () {
+                        $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#pad_sp_bsb_sp_s_20'));
+                    });
+                }
+            }, 'json');
+        });
+
+        <% if !@sp_bsb.sp_s_20.blank? and !@sp_bsb.sp_s_20.eql?("请选择")%>
+        $('#pad_sp_bsb_sp_s_20').trigger('change');
+        <% end %>
+
+        $('body').delegate('.check-detail', 'click', function (e) {
+            $.get("/checkout_standard.json", {
+                name: $(e.target).prev('select').val(),
+                flag: $(e.target).attr('data-flag')
+            }, function (data) {
+                if (data.status == 'OK') {
+                    window.open(data.msg.fileUrl);
+                } else {
+                    alert("无法找到文件");
+                }
+            });
+        });
+
+        $("#pad_sp_bsb_sp_n_15").blur(function () {
+            if (isNaN($("#pad_sp_bsb_sp_n_15").val())) {
+                alert("该项为数值项，请输入数值！");
+                $("#pad_sp_bsb_sp_n_15").focus();
+            }
+            return;
+        });
+
+        $.each(GP, function (index, data) {
+            $("#pad_sp_bsb_sp_s_202").append("<option value='" + data + "'>" + data + "</option>");
+        });
+        $("#pad_sp_bsb_sp_s_202").val('<%=@sp_bsb["sp_s_202"]%>');
+
+        $("#print").click(function () {
+            $("#my_show").printArea();
+        });
+
+        index68 = $('#pad_sp_bsb_sp_s_68 option').index($('#pad_sp_bsb_sp_s_68 option:selected'));
+
+        $.each(CYDD[index68], function (index, data) {
+            $("#pad_sp_bsb_sp_s_2").append("<option value='" + data + "'>" + data + "</option>");
+        });
+        $("#pad_sp_bsb_sp_s_2").val('<%=@sp_bsb["sp_s_2"]%>');
+
+        $("#pad_sp_bsb_sp_s_68").change(function () {
+            $("#pad_sp_bsb_sp_s_2").get(0).options.length = 0;
+            index68 = this.selectedIndex;
+            $.each(CYDD[index68], function (index, data) {
+                $("#pad_sp_bsb_sp_s_2").append("<option value='" + data + "'>" + data + "</option>");
+            });
+            $("#pad_sp_bsb_sp_s_2").val(CYDD[index68][0]);
+            return;
+        });
+        $('#addTable').click(function () {
+            if (count < 31) {
+                count = count + 1;
+                s = s + (count).toString();
+                $(s).show();
+                s = '#jcx';
+                $("#pad_sp_bsb_sp_n_jcxcount").val(count);
+            }
+        });
+
+        $('#decTable').click(function () {
+            if (count > 1) {
+                s = s + (count).toString();
+                $(s).hide();
+                s = '#jcx';
+                count = count - 1;
+                $("#pad_sp_bsb_sp_n_jcxcount").val(count);
+            }
+        });
+
+        $('#province').change(function () {
+            $('#pad_sp_bsb_sp_s_3').val($('#province').val());
+            $('#pad_sp_bsb_sp_s_4').val($('#city').val());
+            $('#pad_sp_bsb_sp_s_5').val($('#lcity').val());
+        });
+
+        $('#city').change(function () {
+            $('#pad_sp_bsb_sp_s_4').val($('#city').val());
+            $('#pad_sp_bsb_sp_s_5').val($('#lcity').val());
+        });
+
+        $('#lcity').change(function () {
+            $('#pad_sp_bsb_sp_s_5').val($('#lcity').val());
+        });
+
+        if (<%=@admin_user%>) {
+            <%@avala.each do |i|%>
+            var strtemp = "#pad_sp_bsb_sp_s_" + "<%=i%>"
+            $(strtemp).bind("contextmenu", function (e) {
+                return false;
+            });
+            $("#pad_sp_bsb_sp_s_" +<%=i%>).mousedown(function (e) {
+                if (e.which == 3) {
+                    digStr = "dialogHeight:400px;dialogWidth:500px;center:yes"
+                    var ReturnValue = window.open("/flexcontents?flex_fields=pad_sp_bsb_sp_s_" + "<%=i%>", "pad_sp_bsb_sp_s_" + "<%=i%>", digStr)
+                }
+            });
+            <%end%>
+        }
+
+        $('input:text:first').focus();
+        var $inp = $('input:text');
+        $inp.bind('keydown', function (e) {
+            var key = e.which;
+            if (key == 13) {
+                e.preventDefault();
+                var nxtIdx = $inp.index(this) + 1;
+                $(":input:text:eq(" + nxtIdx + ")").focus();
+            }
+        });
+
+        $('#submit1').click(function () {
+            var empty_exists = false;
+            $.each($('.required'), function () {
+                var o = $(this);
+                if ($.trim(o.val()) == '') {
+                    alert("请填写" + o.attr("title"));
+                    empty_exists = true;
+                    o.focus();
+                    return false;
+                }
+            });
+            if (empty_exists) return false;
+
+            varDate = $("#pad_sp_bsb_sp_d_86").val();
+            varData = varDate.split("-")
+            varDate = new Date(varData[0], varData[1] - 1, varData[2]);
+            varnow_Date = new Date();
+            var settime = varDate.getTime();
+            var nowtime = varnow_Date.getTime();
+            if (settime > nowtime) {
+                alert("填报日期不能大于今天日期");
+                $("#pad_sp_bsb_sp_d_86").focus();
+                return false;
+            }
+            $("#pad_sp_bsb_sp_s_70").removeAttr("disabled");
+            $("#pad_sp_bsb_sp_s_20").removeAttr("disabled");
+            $('#pad_sp_bsb_sp_i_state').val("<%= ::PadSpBsb::Step::DEPLOYED %>");
+            return true;
+        });
+
+        $('#save').click(function () {
+            var empty_exists = false;
+            $.each($('.required'), function () {
+                var o = $(this);
+                if ($.trim(o.val()) == '') {
+                    alert("请填写" + o.attr("title"));
+                    empty_exists = true;
+                    o.focus();
+                    return false;
+                }
+            });
+            if (empty_exists) return false;
+
+            varDate = $("#pad_sp_bsb_sp_d_86").val();
+            varData = varDate.split("-")
+            varDate = new Date(varData[0], varData[1] - 1, varData[2]);
+            varnow_Date = new Date();
+            var settime = varDate.getTime();
+            var nowtime = varnow_Date.getTime();
+            if (settime > nowtime) {
+                alert("填报日期不能大于今天日期");
+                $("#pad_sp_bsb_sp_d_86").focus();
+                return false;
+            }
+            $('#pad_sp_bsb_sp_i_state').val("<%= ::PadSpBsb::Step::TMP_SAVE %>");
+            $("#pad_sp_bsb_sp_s_70").removeAttr("disabled");
+            $("#pad_sp_bsb_sp_s_20").removeAttr("disabled");
+            return true;
+        });
+
+        $('#admin_alter').click(function () {
+            if ($.trim($("#pad_sp_bsb_sp_s_55").val()).length == 0) {
+                alert("提交该项将修改数据，但必须在退修原因处填写修改原因");
+                $("#pad_sp_bsb_sp_s_55").focus();
+                return false;
+            }
+            $('#pad_sp_bsb_sp_i_state').val("9");
+            return true;
+        });
+
+        // 此处进行表单提交操作
+        $("#new_pad_sp_bsb").submit(function () {
+            $("#new_pad_sp_bsb").ajaxSubmit({
+                datatype: "json",
+                success: function (data) {
+                    if (data.status == 'OK') {
+                        if (data.state == <%= ::PadSpBsb::Step::TMP_SAVE %>) {
+                            location.href = "/tasks/check";
+                        } else if (data.state == <%= ::PadSpBsb::Step::DEPLOYED %>) {
+                            location.href = "/tasks/check?tab=1";
+                        }
+                    } else {
+                        str = "<h3 style='color:red'>" + data.msg + "</h3>";
+                        noty({text: str, timeout: 5000, layout: 'center'});
+                    }
+                }
+            });
+            return false;
+        });
+
+        $('#jg_jg_id').change(function () {
+            index_jg = this.selectedIndex;
+            $("#pad_sp_bsb_sp_s_43").val($("#jg_jg_id").val());
+            $("#pad_sp_bsb_sp_s_49").val(jg_data[index_jg][0]);
+            $("#pad_sp_bsb_sp_s_50").val(jg_data[index_jg][1]);
+            $("#pad_sp_bsb_sp_s_51").val(jg_data[index_jg][2]);
+        });
+        $("#jg_jg_id").val("<%= current_user.jg_bsb.jg_name %>")
+        $('#jg_jg_id').trigger('change');
+    });
+</script>
+<style type="text/css">
+    .style1 {
+        border-collapse: collapse;
+        font-size: 9pt;
+        font-family: Calibri, sans-serif;
+        border-style: none;
+        border-color: inherit;
+        border-width: medium;
+        table-layout: fixed;
+    }
+
+    .style1 td {
+        border: solid windowtext 1.0px;
+        padding: 0cm 5.4pt 0cm 5.4pt;
+        height: 30px;
+    }
+
+    .style1 th {
+        border: solid windowtext 1.0px;
+        padding: 0cm 5.4pt 0cm 5.4pt;
+        height: 30px;
+    }
+
+    .inputText {
+        font-size: 12px;
+        border-right-width: 0px;
+        border-left-width: 0px;
+        border-top-width: 0px;
+        border-bottom: 1px solid;
+        background-color: transparent;
+
+    }
+
+    .height600 {
+        height: 600px;
+        width: 3000px;
+        overflow-y: auto;
+        overflow-x: auto;
+    }
+
+</style>
+<% if @sp_bsb.sp_i_state == ::PadSpBsb::Step::FAILED %>
+    无法完成抽检原因：<p class="text-danger"><%= @sp_bsb.failed_message %></p>
+<% end %>
+<h1 style="color:red"><%= flash[:import_result] unless flash[:import_result].nil? %></h1>
+<% if @sp_bsb.sp_i_state == ::PadSpBsb::Step::SAMPLE_REFUSED %>
+    <div class="alert alert-danger">
+      样品拒收原因：<%= @sp_bsb.refuse_reason %>
+      <br>
+      附件：<a href="/pad_sp_bsbs/<%= @sp_bsb.id %>/accept_file"><%= @sp_bsb.sp_s_16 %>拒收</a>
+    </div>
+<% end %>
+<%= form_for(@sp_bsb) do |f| %>
+    <div id="my_show">
+      <table border="1" cellspacing="0" cellpadding="0" width="100%" class="style1">
+        <tr>
+          <td colspan="30" style="background: #FFFF99;"><span style="font-family:宋体">△――样品信息登记部分</span></td>
+        </tr>
+        <tr>
+          <td colspan="5">任务来源*</td>
+          <td colspan="8">
+            <%= @sp_bsb.sp_s_2_1 %><%= f.hidden_field :sp_s_2_1 %>
+            <%= f.hidden_field :sys_province_id %>
+          </td>
+          <td colspan="3">报送分类*</td>
+          <td colspan="14">
+            <%= @sp_bsb.sp_s_70 %>，<%= @sp_bsb.sp_s_67 %>
+            <%= f.hidden_field :sp_s_70 %>
+            <%= f.hidden_field :sp_s_67 %>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="5">被抽样单位名称*</td>
+          <td colspan="11"><%= f.text_field :sp_s_1, title: "被抽样单位名称", :style => "width: 100%; height: 19px", :class => "inputText" %></td>
+          <td colspan="3">抽样环节*</td>
+          <td colspan="11"><%= f.select :sp_s_68, @options[68], {}, {:style => "width: 87px", :class => "required", title: "抽样地点"} %>
+            <span><%= f.select :sp_s_2, "", {}, :class => "required", :style => "width: 185px" %></span>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3">年销售额</td>
+          <td colspan="4"><%= f.text_field :sp_s_23, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">营业执照号</td>
+          <td colspan="6"><%= f.text_field :sp_s_215, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="2">传真</td>
+          <td colspan="4"><%= f.text_field :sp_s_bsfl, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">区域类型*</td>
+          <td colspan="5"><%= f.select :sp_s_201, @options[201], {}, {:style => "width: 100%;"} %></td>
+        </tr>
+        <tr id="region">
+          <td colspan="3" style="width: 73px">所在地区*</td>
+          <td colspan="9" style="border-right:none;">
+            <select id='province' name='province' class="NoPrint"></select><%= f.text_field :sp_s_3, :class => "inputText", :style => "width: 60px; height: 19px", :readonly => true %>
+            省(市、自治区)
+          </td>
+          <td colspan="9" style="border-left:none; border-right:none">
+            <select id='city' name='city'></select><%= f.text_field :sp_s_4, :class => "inputText", :style => "width: 60px; height: 19px", :readonly => true %>
+            地区(市、州、盟)
+          </td>
+          <td colspan="9" style="border-left:none;">
+            <select id='lcity' name='lcity'></select><%= f.text_field :sp_s_5, :class => "inputText", :style => "width: 60px; height: 19px" %>
+            县(市、区)</span>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3">单位地址*</td>
+          <td colspan="19"><%= f.text_field :sp_s_7, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">邮编</td>
+          <td colspan="5"><%= f.text_field :sp_s_10, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td colspan="7">被抽样单位法人（负责人）</td>
+          <td colspan="11"><%= f.text_field :sp_s_8, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">电话</td>
+          <td colspan="9"><%= f.text_field :sp_s_9, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td colspan="7">被抽样单位负责（联系）人*</td>
+          <td colspan="3"><%= f.text_field :sp_s_11, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">电话*</td>
+          <td colspan="5"><%= f.text_field :sp_s_12, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">许可证</td>
+          <td colspan="4"><%= f.select :sp_xkz, @xkz_options, {}, {:style => "width: 100%;"} %></td>
+          <td colspan="5"><%= f.text_field :sp_xkz_id, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td colspan="3">样品名称*</td>
+          <td colspan="7"><%= f.text_field :sp_s_14, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">样品属性</td>
+          <td colspan="5"><%= f.select :sp_s_203, @options[203], {}, {:style => "width: 100%;"} %></td>
+          <td colspan="3">抽样数量*</td>
+          <td colspan="3"><%= f.text_field :sp_n_15, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">单位*</td>
+          <td colspan="3"><%= f.text_field :sp_s_6, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td colspan="3">抽样编号*</td>
+          <td colspan="27">
+            <% if @sp_bsb.sp_s_16.blank? %>
+                <i class="text-danger">任务下达后由系统生成(3000开始)</i>
+            <% else %>
+                <i class="text-danger"><%= @sp_bsb.sp_s_16 %></i>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3" rowspan="2">样品分类*</td>
+          <td colspan="27">
+              <span>食品大类&emsp;&emsp;<%= f.select :sp_s_17, options_for_select(@a_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_17), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+                食品亚类&emsp;<%= f.select :sp_s_18, options_for_select(@b_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_18), {}, {:style => "width: 220px;"} %></span>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="27">
+            <span>
+            食品次亚类&emsp;<%= f.select :sp_s_19, options_for_select(@c_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_19), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+              食品细类&emsp;<%= f.select :sp_s_20, options_for_select(@d_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_20), {}, {:style => "width: 220px;"} %>
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3">样品形态*</td>
+          <td colspan="4"><%= f.select :sp_s_61, @options[61], {}, :style => "width: 100%" %></td>
+          <td colspan="5">样品类型*</td>
+          <td colspan="7"><%= f.select :sp_s_62, @options[62], {}, :style => "width: 100%" %></td>
+          <td colspan="4">包装分类*</td>
+          <td colspan="7"><%= f.select :sp_s_63, @options[63], {}, :style => "width: 100%" %></td>
+        </tr>
+        <tr>
+          <td colspan="3">样品来源*</td>
+          <td colspan="4"><%= f.select :sp_s_21, @options[21], {}, :style => "width: 100%" %></td>
+          <td colspan="5">生产/加工/购进日期</td>
+          <td colspan="4"><%= f.text_field :sp_d_22, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+          <td colspan="3">抽样方式*</td>
+          <td colspan="4"><%= f.select :sp_s_24, @options[24], {}, :style => "width: 100%" %></td>
+          <td colspan="3">抽样工具</td>
+          <td colspan="4"><%= f.text_field :sp_s_25, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td rowspan="7" colspan="3">预包装<br>产品*</td>
+          <td colspan="5">样品规格*</td>
+          <td colspan="8"><%= f.text_field :sp_s_26, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="5">样品批号*</td>
+          <td colspan="9"><%= f.text_field :sp_s_27, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td colspan="5">生产日期*</td>
+          <td colspan="8"><%= f.text_field :sp_d_28, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+          <td colspan="5">保质期*</td>
+          <td colspan="9"><%= f.text_field :sp_n_29, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td colspan="5">生产许可证号*</td>
+          <td colspan="8"><%= f.text_field :sp_s_13, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="5">执行标准/技术文件*</td>
+          <td colspan="9"><%= f.text_field :sp_s_72, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td colspan="5">质量等级*</td>
+          <td colspan="2"><%= f.text_field :sp_s_73, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="2">商标*</td>
+          <td colspan="4"><%= f.text_field :sp_s_74, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="2">单价*</td>
+          <td colspan="3"><%= f.text_field :sp_s_204, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="4">是否出口*</td>
+          <td colspan="5"><%= f.select :sp_s_205, @options[205], {}, {:style => "width: 100%;"} %></td>
+        </tr>
+        <tr>
+          <td colspan="5">抽样基数/批量*</td>
+          <td colspan="4"><%= f.text_field :sp_s_206, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="4">抽样数</td>
+          <td colspan="5"><%= f.text_field :sp_s_207, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="4">备样数量*</td>
+          <td colspan="5"><%= f.text_field :sp_s_208, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td colspan="5">标识生产企业省份*</td>
+          <td colspan="4"><%= f.select :sp_s_202, '', {}, :style => "width: 100%" %></td>
+          <td colspan="4">生产企业联系人*</td>
+          <td colspan="5"><%= f.text_field :sp_s_75, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="4">生产企业电话*</td>
+          <td colspan="5"><%= f.text_field :sp_s_76, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td colspan="5">标识生产企业名称*</td>
+          <td colspan="8"><%= f.text_field :sp_s_64, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="5">标识生产企业地址*</td>
+          <td colspan="9"><%= f.text_field :sp_s_65, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td rowspan="2" colspan="5">抽样时样品<br>存储状态*</td>
+          <td rowspan="2" colspan="3"><%= f.select :sp_s_30, @options[30], {}, :style => "width: 100%" %></td>
+          <td rowspan="2" colspan="4">储存条件</td>
+          <td colspan="4">温度(℃)</td>
+          <td colspan="5"><%= f.number_field :sp_n_31, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td rowspan="2" colspan="4">抽样样品包装*</td>
+          <td rowspan="2" colspan="5"><%= f.select :sp_s_33, @options[33], {}, :style => "width: 100%" %></td>
+        </tr>
+        <tr>
+          <td colspan="4">湿度(%)</td>
+          <td colspan="5"><%= f.number_field :sp_n_32, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td colspan="5">寄、送样品截止日期</td>
+          <td colspan="7"><%= f.text_field :sp_s_209, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+          <td colspan="4">寄送样品地址</td>
+          <td colspan="14"><%= f.text_field :sp_s_210, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td colspan="5">备注</td>
+          <td colspan="25"><%= f.text_field :sp_s_34, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td colspan="5">抽样单位名称*</td>
+          <td colspan="7"><%= f.text_field :sp_s_35, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="4">单位级别*</td>
+          <td colspan="6"><%= f.select :sp_s_36, @options[36], {}, {:style => "width: 100%;"} %></td>
+          <td colspan="3">所在省份*</td>
+          <td colspan="5"><%= f.text_field :sp_s_52, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+        </tr>
+        <tr>
+          <td colspan="5">抽样人员*</td>
+          <td colspan="7">
+            <% if @sp_bsb.sp_s_37.blank? or @sp_bsb.sp_i_state == 1 %>
+                <% if @sampling_users.blank? %>
+                    <i class="text-danger">暂无可用抽样人员</i>
+                    <%= f.hidden_field :sp_s_37, :class => "required", :title => "抽样人员" %>
+                <% else %>
+                    <%= f.select :sp_s_37, @sampling_users.map { |user| [user.tname, user.tname] }, {}, :class => "required", :title => "抽样人员" %>
+                <% end %>
+            <% else %>
+                <%= @sp_bsb.sp_s_37 %>
+            <% end %>
+          </td>
+          <td colspan="4">抽样时间*</td>
+          <td colspan="6"><%= f.text_field :sp_d_38, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+          <td colspan="3">电话*</td>
+          <td colspan="5"><%= f.text_field :sp_s_39, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td colspan="6">抽样单位负责（联系）人*</td>
+          <td colspan="6"><%= f.text_field :sp_s_40, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="2">电话*</td>
+          <td colspan="7"><%= f.text_field :sp_s_41, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">电子邮箱*</td>
+          <td colspan="6"><%= f.text_field :sp_s_42, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td colspan="3">单位地址</td>
+          <td colspan="9"><%= f.text_field :sp_s_211, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="2">邮编</td>
+          <td colspan="7"><%= f.text_field :sp_s_212, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">传真</td>
+          <td colspan="6"><%= f.text_field :sp_s_213, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td colspan="30" style="background: #FFFF99;"><span style="font-family:宋体">△――检验信息部分</span></td>
+        </tr>
+        <tr>
+          <td colspan="30">请选择送检机构*:<span style="font-size:12px;">&nbsp;&nbsp;</span><%= select("jg", "jg_id", @options[100], {}, {:style => "width:450px; height: 19px"}) %>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="4">检验机构名称*</td>
+          <td colspan="8"><%= f.text_field :sp_s_43, :class => "inputText required", title: "检验机构名称", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+          <td colspan="5">检验目的/任务类别*</td>
+          <td colspan="3"><%= f.select :sp_s_44, @options[44], {}, :style => "width: 100%" %></td>
+          <td colspan="4">报告书编号*</td>
+          <td colspan="6"><%= f.text_field :sp_s_45, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td colspan="3">收检日期*</td>
+          <td colspan="6"><%= f.text_field :sp_d_46, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+          <td colspan="3">报告日期*</td>
+          <td colspan="8"><%= f.text_field :sp_d_47, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+          <td colspan="4">报告签发人*</td>
+          <td colspan="6"><%= f.text_field :sp_s_48, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td colspan="3">联系人*</td>
+          <td colspan="6"><%= f.text_field :sp_s_49, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">电话*</td>
+          <td colspan="8"><%= f.text_field :sp_s_50, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="4">电子邮箱*</td>
+          <td colspan="6"><%= f.text_field :sp_s_51, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td colspan="3">结论*</td>
+          <td colspan="6"><%= f.text_field :sp_s_71, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+          <td colspan="3">确认情况</td>
+          <td colspan="8"><%= f.select :sp_s_214, @options[214], {}, :style => "width: 100%;" %></td>
+          <td colspan="3">备注</td>
+          <td colspan="7"><%= f.text_field :sp_s_84, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td colspan="3">填报人*</td>
+          <td colspan="3"><%= f.text_field :sp_s_85, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">填报日期*</td>
+          <td colspan="3"><%= f.text_field :sp_d_86, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+          <td colspan="3">电话*</td>
+          <td colspan="5"><%= f.text_field :sp_s_87, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">电子邮箱*</td>
+          <td colspan="7"><%= f.text_field :sp_s_88, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr id="reason">
+          <% if @sp_bsb["sp_i_state"]>=4&&@sp_bsb["sp_i_state"]<=9 %>
+              <td colspan="4"><p>历史退回原因</p></td>
+              <td colspan="26"><%= f.text_area :sp_s_reason, :style => "width: 600px; height: 100px;margin:8px", :readonly => "readonly" %></td>
+          <% elsif @sp_bsb["sp_i_state"]==3 %>
+              <td colspan="3"><p>退回原因</p></td>
+              <td colspan="27"><%= f.text_area :sp_s_reason, :style => "width: 600px; height: 100px;margin:8px", :readonly => "readonly" %></td>
+          <% elsif @sp_bsb["sp_s_reason"]!=nil %>
+              <td colspan="3"><p>退回原因</p></td>
+              <td colspan="27"><%= f.text_area :sp_s_reason, :style => "width: 600px; height: 100px;margin:8px", :readonly => "readonly" %></td>
+          <% end %>
+        </tr>
+        <tr>
+          <% if @sp_bsb["sp_i_state"]>=4&&@sp_bsb["sp_i_state"]<=9 %>
+              <td colspan="4"><p>填写退回原因</p></td>
+              <td colspan="26"><%= f.text_field :sp_s_55, :class => "inputText", :style => "width: 600px;height: 19px;margin:8px" %></td>
+          <% end %>
+        </tr>
+        <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<4&&session[:user_authority_2]==1 %>
+            <tr>
+              <td colspan="4">报告分类*</td>
+              <td colspan="26">
+                <%= f.select :bgfl, [["请选择报告分类", ""], ["24小时限时报告", "24小时限时报告"], ["一般不合格（问题）报告", "一般不合格（问题）报告"], ["合格报告", "合格报告"]], {} %>
+              </td>
+            </tr>
+        <% end %>
+      </table>
+      <table>
+        <tr id="hzp_jcxcount" style="display:none;">
+          <td colspan="30" id="result">
+            <input type="button" id="addTable" value="增加检测项"/><input type="button" id="decTable" value="减少检测项"/>
+          </td>
+          <th colspan="30" style="width:10%" align="left"><%= f.number_field :sp_n_jcxcount, :class => "inputText", :style => "width: 60px; height: 19px" %></th>
+          <td colspan="20"><%= f.text_field :sp_i_state %></td>
+          <td colspan="20"><%= f.text_field :sp_s_56 %></td>
+          <td colspan="5"><%= f.number_field :sp_i_jgback %></td>
+          <td colspan="5"><%= f.number_field :sp_i_backtimes %></td>
+        </tr>
+      </table>
+      <br>
+    </div>
+    <br>
+
+    <% if current_user.rwxd == 1 and (@sp_bsb.new_record? or @sp_bsb.sp_i_state == ::PadSpBsb::Step::TMP_SAVE) %>
+        <div class="actions">
+          <%= f.submit(vaule="临时保存", options={"id" => "save", :class => "btn btn-sm btn-primary"}) %>
+          <%= f.submit(vaule="下达任务", options={"id" => "submit1", :class => "btn btn-sm btn-success"}) %>
+        </div>
+    <% else %>
+        <script type="text/javascript">
+            $(function () {
+                //$('select, input[type="text"]').attr('disabled', 'disabled');
+            });
+        </script>
+    <% end %>
+    <hr>
+    <% @pictures.each do |pic| %>
+        <a style="float: left; margin-right: 10px;" href="/pad_sp_bsbs/<%= pic.sp_bsb_id %>/picture/<%= pic.sort_index %>" target="_blank">
+          <img border="0" width="150" height="150" src="/pad_sp_bsbs/<%= pic.sp_bsb_id %>/picture/<%= pic.sort_index %>.jpeg"/>
+
+          <p>
+            <% case pic.sort_index
+                 when 1 then %><%= "图一" %>
+                <% when 2 then %><%= "图二" %>
+                <% when 3 then %><%= "图三" %>
+                <% when 4 then %><%= "图四" %>
+                <% when 5 then %><%= "图五" %>
+                <% when 6 then %><%= "图六" %>
+                <% when 7 then %><%= "图七" %>
+                <% when 8 then %><%= "图八" %>
+            <% end %>
+          </p>
+        </a>
+        <% if pic.sort_index == 4 %>
+            <br style="clear:both;">
+            <br style="clear:both;">
+            <br style="clear:both;">
+        <% end %>
+    <% end unless @pictures.blank? %>
+    <% if current_user.jsyp == 1 and (current_user.user_d_authority_1 == 1 or current_user.user_d_authority == 1) and current_user.jg_bsb.all_names.include?(@sp_bsb.sp_s_43) and @sp_bsb.sp_i_state == ::PadSpBsb::Step::FINISHED %>
+        <script type="text/javascript">
+            $(function () {
+                // 接收样品
+                $('#accept-sample').click(function () {
+                    <%@check=[1,2,3,4,5,6,7,11,12,14,21,24,30,33,35,36,39,40,41,42,61,62,63,70]%>
+                    <%@check.each do |i|%>
+                    if ($.trim($("#pad_sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
+                        alert("该项为必填项<%= i %>");
+                        $("#pad_sp_bsb_sp_s_" +<%=i%>).focus();
+                        return false;
+                    }
+                    <%end%>
+
+                    <%@check=[38]%>
+                    <%@check.each do |i|%>
+                    if ($.trim($("#pad_sp_bsb_sp_d_" +<%=i%>).val()).length == 0) {
+                        alert("该日期项为必填项<%= i %>");
+                        $("#pad_sp_bsb_sp_d_" +<%=i%>).focus();
+                        return false;
+                    }
+                    <%end%>
+
+                    <%@check=[15]%>
+                    <%@check.each do |i|%>
+                    if ($.trim($("#pad_sp_bsb_sp_n_" +<%=i%>).val()).length == 0) {
+                        alert("该数据项为必填项<%= i %>");
+                        $("#pad_sp_bsb_sp_n_" +<%=i%>).focus();
+                        return false;
+                    }
+                    <%end%>
+
+                    <%@check=[68,17,62,202]%>
+                    <%@check.each do |i|%>
+                    if ($.trim($("#pad_sp_bsb_sp_s_" +<%=i%>).val()) == '请选择') {
+                        alert("该项为必选项<%= i %>");
+                        $("#pad_sp_bsb_sp_s_" +<%=i%>).focus();
+                        return false;
+                    }
+                    <%end%>
+
+                    varDate = $("#pad_sp_bsb_sp_d_86").val();
+                    varData = varDate.split("-")
+                    varDate = new Date(varData[0], varData[1] - 1, varData[2]);
+                    varnow_Date = new Date();
+                    var settime = varDate.getTime();
+                    var nowtime = varnow_Date.getTime();
+                    if (settime > nowtime) {
+                        alert("填报日期不能大于今天日期");
+                        $("#pad_sp_bsb_sp_d_86").focus();
+                        return false;
+                    }
+                    $('#pad_sp_bsb_accept_or_not').val("1");
+                });
+                // 拒收样品
+                $('#refuse-sample').click(function () {
+                    $('#pad_sp_bsb_accept_or_not').val("0");
+                });
+            });
+        </script>
+
+        <% if current_user.user_d_authority == 1 %>
+            <!-- 仅仅 【填报基本数据】 可以操作 -->
+            <div class="text-danger"><%= flash[:error] unless flash[:error].blank? %></div>
+            <div class="reject-ctner well well-sm">
+              <%= f.hidden_field :accept_or_not %>
+              <%= f.text_area :refuse_reason, :rows => 5, :class => "form-control", :placeholder => "如果拒收样品，请在此填写原因..." %>
+              <br>
+              <label for="">拒收的电子附件：</label>
+              <%= f.file_field :accept_file, :class => "form-control", :style => "width: 200px;" %>
+              <br>
+              <%= f.submit '拒收样品', id: "refuse-sample", :class => 'btn btn-danger' %>
+            </div>
+            <div class="accept-ctner well well-sm">
+              <label for="">抽样单电子版：</label>
+              <%= f.file_field :cyd_file, :class => "form-control", :style => "width: 400px;" %>
+              <br>
+              <label for="">抽样检验告知书电子版：</label>
+              <%= f.file_field :cyjygzs_file, :class => "form-control", :style => "width: 400px;" %>
+              <br>
+              <%= f.submit '接收样品', id: "accept-sample", :class => 'btn btn-success' %>
+            </div>
+        <% end %>
+    <% end %>
+
+    <% if @sp_bsb.sp_i_state == ::PadSpBsb::Step::SAMPLE_ACCEPTED %>
+        <p class="text-success">样品已接收</p>
+        <a class="btn btn-default btn-xs" href="/pad_sp_bsbs/<%= @sp_bsb.id %>/cyd"><i class="glyphicon glyphicon-download-alt"></i>抽样单电子版</a>
+        <a class="btn btn-default btn-xs" href="/pad_sp_bsbs/<%= @sp_bsb.id %>/cyjygzs"><i class="glyphicon glyphicon-download-alt"></i>抽样检验告知书电子版</a>
+    <% elsif @sp_bsb.sp_i_state == ::PadSpBsb::Step::SAMPLE_REFUSED %>
+        <p class="text-danger">样品已被拒收，原因：</p>
+        <div class="well well-sm">
+          <%= @sp_bsb.refuse_reason %>
+          <br>
+          <a href="/pad_sp_bsbs/<%= @sp_bsb.id %>/accept_file">附件下载</a>
+        </div>
+    <% end %>
+    <br>
+<% end %>

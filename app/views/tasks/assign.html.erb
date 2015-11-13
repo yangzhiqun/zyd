@@ -1,0 +1,332 @@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#assign_act').click(function () {
+            if (($('#baosong_a').val() == "") || ($('#baosong_a').val() == "请选择")) {
+                alert("请选择报送分类A");
+                return false;
+            }
+            if (($('#baosong_b').val() == "") || ($('#baosong_b').val() == "请选择")) {
+                alert("请选择报送分类B");
+                return false;
+            }
+        });
+        $('#baosong_a').change(function () {
+            var o = $(this);
+            if (o.val() != '') {
+                $.get('/baosong_bs/by_name.json', {a_name: o.val()}, function (data) {
+                    if (data.status == 'OK') {
+                        $('#DL, #YL, #CYL, #XL').empty();
+
+                        $('#baosong_b').empty();
+                        $("<option>").text("请选择").appendTo($('#baosong_b'));
+                        $.each(data.data, function () {
+                            $("<option>").attr('data-identifier', this.identifier).attr("value", this.name).text(this.name).appendTo($('#baosong_b'));
+                        });
+                    }
+                }, "json")
+            } else {
+                $('#DL, #YL, #CYL, #XL, #baosong_b').empty();
+            }
+        });
+
+        // 报送分类第二列
+        $('#baosong_b').change(function () {
+            console.log($('#rwly').val());
+            location.href = "?tab=<%= params[:tab].to_i%>&baosong_a="
+                    + $("#baosong_a").val()
+                    + "&baosong_b=" + $('#baosong_b').val()
+                    + "&rwly=" + $('#rwly').val();
+        });
+
+        // 大类
+        $('#DL').change(function () {
+            $.get('/b_categories_by_a_id.json', {a_category_id: $(this).find('option:selected').attr('data-id')}, function (data) {
+                if (data.status == 'OK') {
+                    $('#YL, #CYL, #XL').empty();
+
+                    $('<option>').text("请选择").appendTo($('#YL'));
+                    $.each(data.data, function () {
+                        $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#YL'));
+                    });
+                }
+            }, 'json');
+        });
+        // 亚类
+        $('#YL').change(function () {
+            $.get('/c_categories_by_b_id.json', {b_category_id: $(this).find('option:selected').attr('data-id')}, function (data) {
+                if (data.status == 'OK') {
+                    $('#CYL, #XL').empty();
+
+                    $('<option>').text("请选择").appendTo($('#CYL'));
+                    $.each(data.data, function () {
+                        $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#CYL'));
+                    });
+                }
+            }, 'json');
+        });
+        // 次亚类
+        $('#CYL').change(function () {
+            $.get('/d_categories_by_c_id.json', {c_category_id: $(this).find('option:selected').attr('data-id')}, function (data) {
+                if (data.status == 'OK') {
+                    $('#XL').empty();
+
+                    $('<option>').text("请选择").appendTo($('#XL'));
+                    $.each(data.data, function () {
+                        $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#XL'));
+                    });
+                }
+            }, 'json');
+        });
+
+        // 重新加载产品信息
+        function reload_production_infos() {
+            var params = {};
+            $.get('/sp_production_infos_list.json', {"qymc": $('#company-list').val()}, function (data) {
+                $('#product-id').empty();
+                $('<option/>').attr('value', '').text('请选择').appendTo($('#product-id'));
+                if (data.status == 'OK') {
+                    $.each(data.products, function () {
+                        $('<option/>').attr('value', this.id).text(this.title).appendTo($('#product-id'));
+                    });
+                }
+            }, 'json');
+        }
+
+        // 重新加载产品企业名称
+        function reload_production_company_infos() {
+            var params = {};
+            $('.CP .condition').each(function () {
+                var o = $(this);
+                if (!!o.val() && o.val() != '请选择') {
+                    params[o.attr('data-field')] = o.val();
+                }
+            });
+            $.get('/sp_production_company_infos_list.json', {condition: params}, function (data) {
+                $('#company-list').empty();
+                $('<option/>').attr('value', '').text('请选择').appendTo($('#company-list'));
+                if (data.status == 'OK') {
+                    $.each(data.products, function () {
+                        $('<option/>').attr('value', this.qymc).text(this.qymc).appendTo($('#company-list'));
+                    });
+                }
+            }, 'json');
+        }
+
+        $('#company-list').change(function () {
+            reload_production_infos();
+        });
+
+        $('.CP .condition').change(function () {
+            if ($(this).attr('name') == 'province' || $(this).attr('name') == 'city' || $(this).attr('name') == 'lcity') {
+                setTimeout(function () {
+                    reload_production_company_infos();
+                }, 400);
+            } else {
+                reload_production_company_infos();
+            }
+        });
+
+        $('.BCYDW .condition').change(function () {
+            setTimeout(function () {
+                var params = {};
+                $('.BCYDW .condition').each(function () {
+                    var o = $(this);
+                    if (!!o.val() && o.val() != '请选择') {
+                        params[o.attr('data-field')] = o.val();
+                    }
+                });
+                $.get('/sp_company_infos_list.json', {condition: params}, function (data) {
+                    $('#company-id').empty();
+                    $('<option/>').attr('value', '').text('请选择').appendTo($('#company-id'));
+                    if (data.status == 'OK') {
+                        $.each(data.companies, function () {
+                            var o = $('<option/>').attr('value', this.id).text(this.title + ", 30天内抽样" + this.count + "次");
+                            if (this.count >= 5 && this.sp_s_68 == '流通') o.attr('disabled', 'disabled');
+                            o.appendTo($('#company-id'));
+                        });
+                    }
+                }, 'json');
+            }, 400);
+        });
+
+        $(".region1").ProvinceCity({});
+
+        // $(".region2").data("province", ["吉林", "吉林"]);
+        // $(".region2").data("city1", ["吉林", "吉林"]);
+        // $(".region2").data("city2", ["吉林市", "吉林市"]);
+        $(".region2").ProvinceCity({});
+
+        // 查看结果
+        $('.check-graph').click(function () {
+            var o = $(this);
+            var params = {};
+            $.each(o.parent().parent().prevAll('tr').find('select'), function (i) {
+                var select = $(this);
+                params[select.attr('name')] = select.val();
+            });
+            var select_me = o.parent().parent().find('select');
+            if (select_me.val() == '' || select_me.val() == '请选择') {
+                alert('请选择内容');
+            } else {
+                params[select_me.attr('name')] = select_me.val();
+                location.href = '/sp_bsbs_map_report?' + $.param(params);
+            }
+            return false;
+        });
+    });
+</script>
+<style type="text/css">
+    .style1 {
+        border-collapse: collapse;
+        font-size: 9pt;
+        font-family: Calibri, sans-serif;
+        border-style: none;
+        border-color: inherit;
+        border-width: medium;
+        table-layout: fixed;
+    }
+
+    .style1 td {
+        border: solid windowtext 1.0px;
+        padding: 0cm 5.4pt 0cm 5.4pt;
+        height: 30px;
+    }
+
+    .style1 th {
+        border: solid windowtext 1.0px;
+        padding: 0cm 5.4pt 0cm 5.4pt;
+        height: 30px;
+    }
+
+    .inputText {
+        font-size: 12px;
+        border-right-width: 0px;
+        border-left-width: 0px;
+        border-top-width: 0px;
+        border-bottom: 1px solid;
+        background-color: transparent;
+    }
+
+    .height600 {
+        height: 600px;
+        width: 3000px;
+        overflow-y: auto;
+        overflow-x: auto;
+    }
+
+    .task-list {
+        width: 700px;
+    }
+</style>
+<br>
+<div class="panel-body">
+  <form class="form-inline" action="/pad_sp_bsbs/new" method="get">
+    <div class="panel panel-primary">
+      <div class="panel-heading">新建采样任务</div>
+      <div class="panel-body">
+        <label for="">任务来源：</label>
+        <br>
+        <%= select_tag "rwly", options_for_select(@rwly, params[:rwly]), {:class => "form-control input-sm"} %>
+        <br>
+        <label for="">报送分类：</label>
+        <br>
+        <%= select_tag "cp[sp_s_70]", options_for_select(@baosong_as.map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+        <%= select_tag "cp[sp_s_67]", options_for_select(@baosong_bs.map { |a| [a.name, a.name, {"data-identifier" => a.identifier}] }.unshift(["请选择", ""]), params[:baosong_b]), {:class => "form-control input-sm", id: "baosong_b", style: "width: 150px;"} %>
+        <br>
+        <label class="control-label">产品类别：</label><br>
+
+        <div class="form-group">
+          <%= select_tag "cp[sp_s_17]", options_for_select(@a_categories.map { |c| [c.name, c.name, {'data-id' => c.id}] }.unshift(["请选择", ""])), {:class => "form-control input-sm condition", id: "DL", "data-field" => "spdl", style: "width: 150px;"} %>
+          <select class="form-control input-sm condition" name="cp[sp_s_18]" data-field="spyl" id="YL"></select>
+          <select class="form-control input-sm condition" name="cp[sp_s_19]" data-field="spcyl" id="CYL"></select>
+          <select class="form-control input-sm condition" name="cp[sp_s_20]" data-field="spxl" id="XL"></select>
+        </div>
+        <br>
+        <label class="control-label">被抽样单位信息：</label><br>
+
+        <div class="form-group BCYDW region2">
+          <select class="form-control input-sm condition" name="qy[sp_s_3]" data-field="sp_s_3" name="province"></select>
+          <select class="form-control input-sm condition" name="qy[sp_s_4]" data-field="sp_s_4" name="city"></select>
+          <select class="form-control input-sm condition" name="qy[sp_s_5]" data-field="sp_s_5" name="lcity"></select>
+          <select class="form-control input-sm condition" id="sp_s_68" name="qy[sp_s_68]" data-field="sp_s_68">
+            <!-- sp_s_68 -->
+            <option value="">请选择</option>
+            <option value="流通">流通</option>
+            <option value="生产">生产</option>
+            <option value="餐饮">餐饮</option>
+          </select>
+          <select class="form-control input-sm" name="qy[company_id]" id="company-id"></select>
+        </div>
+        <br>
+
+        <div class="CP">
+          <label class="control-label">标识生产企业信息：</label><br>
+          <span class="region1">
+            <select class="form-control input-sm condition" name="cp[sp_s_3]" data-field="sp_s_3" name="province"></select>
+            <select class="form-control input-sm condition" name="cp[sp_s_4]" data-field="sp_s_4" name="city"></select>
+            <select class="form-control input-sm condition" name="cp[sp_s_5]" data-field="sp_s_5" name="lcity"></select>
+          </span>
+        </div>
+
+        <label class="control-label">生产企业名称：</label><br>
+        <select class="form-control input-sm" name="cp[sp_s_64]" id="company-list">
+          <option value="">请选择</option>
+        </select>
+        <br>
+        <label class="control-label">产品名称：</label><br>
+        <select class="form-control input-sm" name="cp[product_id]" id="product-id">
+          <option value="">请选择</option>
+        </select>
+        <br>
+        <br>
+        <input class="btn btn-primary btn-sm" id="assign_act" type="submit" value="确定"/>
+      </div>
+    </div>
+    <br>
+  </form>
+  <h4>采样概况表</h4>
+
+  <div class="ctner" style="overflow-x: scroll;">
+    <table class="table table-bordered task-deploy table-striped table-hover">
+      <thead>
+      <tr>
+        <th width="100">食品大类</th>
+        <th width="100">亚类</th>
+        <th width="100">次亚类</th>
+        <th width="100">细类</th>
+        <th width="150">计划任务数</th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @d_categories.each do |d| %>
+          <tr>
+            <!-- 大类 -->
+            <% if @current_dl.nil? or d.a_category_id != @current_dl.id %>
+                <% @current_dl = ACategory.find(d.a_category_id) %>
+                <td rowspan="<%= @current_dl.rowspan %>"><%= @current_dl.name %></td>
+            <% end %>
+
+            <!-- 亚类 -->
+            <% if @current_yl.nil? or d.b_category_id != @current_yl.id %>
+                <% @current_yl = BCategory.find(d.b_category_id) %>
+                <td rowspan="<%= @current_yl.rowspan %>"><%= @current_yl.name %></td>
+            <% end %>
+
+            <!-- 次亚类 -->
+            <% if @current_cyl.nil? or d.c_category_id != @current_cyl.id %>
+                <% @current_cyl = CCategory.find(d.c_category_id) %>
+                <td rowspan="<%= @current_cyl.rowspan %>"><%= @current_cyl.name %></td>
+            <% end %>
+
+            <!-- 细类名称 -->
+            <td><%= d.name %></td>
+            <!-- 交叉点 -->
+            <%= grid6(@delegate, d) %>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+
+
+</div>

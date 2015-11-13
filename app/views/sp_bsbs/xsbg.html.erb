@@ -1,0 +1,110 @@
+<style type="text/css">
+@media print {
+  .main_left, .banner_sc, .sys-nav, #top, .copyright {
+    display: none;
+  }
+  #mainbox {
+  }
+  .main_right {
+    width: 100% !important;
+  }
+  .panel {
+    border: none;
+  }
+  th, td {
+    border:solid #000 !important;
+    border-width:0 1px 1px 0 !important;
+    text-align: center;
+  }
+  table {
+    border:solid #000 !important;
+    border-width:1px 0 0 1px !important;
+  }
+}
+td {
+  word-wrap: break-word;
+}
+
+.ctner {
+  overflow: scroll;
+}
+</style>
+<script type="text/javascript">
+$(function(){
+	$('#new_xsbg_tt').submit(function(){
+		var ids = [];
+		$.each($('.item-check:checked'), function(){
+			var item = $(this);
+			ids.push(item.attr('data-spdata-id'));
+		});
+		$('#xsbg_tt_spdata_ids').val(ids.join(','));
+		//return false;
+	});
+});
+</script>
+<%= form_for @xsbg do |f| %>
+	<h3 class="text-center">食品安全抽样检验限时报告情况表</h3> 
+	<div class="text-right">（编号：<%= @sp_bsb.sp_s_16 %>）</div> 
+	<div class="form-inline">
+	<%= f.text_field :GJMC, :class => "form-control input-sm" %><%= @xsbg.GJMC unless @xsbg.new_record? %>食品药品管理局： 
+	</div>
+	<br>
+	<%= f.hidden_field :spdata_ids %>
+	<%= f.hidden_field :sp_bsb_id %>
+	&emsp;&emsp;我单位近期执《2015年国家食品药品监督管理总局食品安全监督抽检和风险监测计划》发现，下表所提及样品检出存在严重健康风险问题。按照该计划有关要求，现将有关情况报告你局。请按照《食品安全监督抽检和风险监测工作规范》调查核实和处理。 
+	<table data-toggle="table" data-reorderable-columns="true" class="table table-bordered"> 
+		<thead>
+			<tr> 
+				<th>#</th>
+				<th>序号</th> 
+				<th>样品编号</th> 
+				<th>产品名称</th> 
+				<th>生产日期</th> 
+				<th>规格型号</th> 
+				<th>商标</th> 
+				<th>生产企业名称</th> 
+				<th>生产单位详细地址</th> 
+				<th>采样区域</th> 
+				<th>采样地点</th> 
+				<th>检测项目</th> 
+				<th>方法标准</th> 
+				<th>检测值</th> 
+				<th width="60">标准值(或参考值)</th> 
+				<th>判定依据</th> 
+				<th>结果说明</th> 
+			</tr> 
+		</thead>
+		<tbody>
+			<% @items.each_with_index do |item, index|%>
+			<tr> 
+				<td>
+					<input class="item-check" type="checkbox" checked data-spdata-id="<%= item.id %>">
+				</td>
+				<td><%= index + 1 %></td> 
+				<td><%= @sp_bsb.sp_s_16 %></td> 
+				<td><%= @sp_bsb.sp_s_14 %></td> 
+				<td><%= @sp_bsb.sp_d_28 %></td> 
+				<td><%= @sp_bsb.sp_s_26 %></td> 
+				<td><%= @sp_bsb.sp_s_74 %></td> 
+				<td><%= @sp_bsb.sp_s_64 %></td> 
+				<td><%= @sp_bsb.sp_s_65 %></td> 
+				<td><%= @sp_bsb.sp_s_68 %></td> 
+				<td><%= @sp_bsb.sp_s_68 %></td> 
+				<td><%= item.spdata_0 %></td> 
+				<td><%= item.spdata_15 %></td> 
+				<td><%= item.spdata_1 %></td> 
+				<td><%= item.spdata_13 %></td> 
+				<td><%= item.spdata_3 %></td> 
+				<td><%= item.spdata_17 %></td> 
+			</tr>
+			<% end %>
+		</tbody>
+	</table> 
+	<div class="xsbg_text"> 
+	 <p>检验机构联系人：<%= @sp_bsb.sp_s_49 %>&emsp;&emsp; 联系电话：<%= @sp_bsb.sp_s_50 %></p> 
+	 <p align="right" style="margin-right:40px">（检验单位公章）<br> <%= Time.now.strftime("%Y年%m月%d日") %></p> 
+	 <p>抄报：中国食品药品检定研究院（秘书处）、总局稽查局。</p> 
+	</div>
+	<hr>
+	<%= f.submit "保存", :class => "btn btn-success btn-sm"%>
+<% end %>

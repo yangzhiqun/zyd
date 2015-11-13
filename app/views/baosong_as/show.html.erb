@@ -1,0 +1,83 @@
+<h5>报送分类A（查看）</h5>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <p>
+      <b>名称:</b>
+      <%= @baosong_a.name %>
+    </p>
+    <p>
+      <b>备注:</b>
+      <%= @baosong_a.note %>
+    </p>
+    <p>
+      <b>任务来源类型:</b>
+      <%= @baosong_a.rwlylx %>
+    </p>
+
+    <%= link_to '编辑', edit_baosong_a_path(@baosong_a) %> |
+    <%= link_to '返回', baosong_as_path %>
+  </div>
+</div>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <h5>报送分类B列表</h5>
+    <table style="table-layout: fixed;" class="table table-bordered">
+      <thead>
+        <tr>
+          <th width="150">名称</th>
+          <th>备注</th>
+          <th width="80">省份</th>
+          <th>创建时间</th>
+          <th>标识符</th>
+          <th width="150"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @baosong_bs.order("updated_at desc").each do |bs| %>
+        <tr>
+          <td><%= bs.name %></td>
+          <td><%= bs.note %></td>
+          <td><%= bs.prov.blank? ? "<i class='text-success'>不限制</i>".html_safe : bs.prov %></td>
+          <td><%= (bs.created_at + 8.hours).strftime("%Y-%m-%d %H:%M:%S")%></td>
+          <td style="word-wrap: break-word;"><%= bs.identifier %></td>
+          <td>
+            <%= link_to "查看", bs, :class => "btn btn-xs btn-primary" %>
+            <%= link_to "编辑", "/baosong_bs/#{bs.id}/edit", :class => "btn btn-xs btn-primary" %>
+            <%= link_to '删除', bs, :class => "btn btn-xs btn-danger", method: :delete, data: { confirm: '确定删除吗？' } %>
+          </td>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <h5>创建报送分类B <small class="text-danger"><%= flash[:notice] %></small></h5>
+    <div class="well well-sm">
+      <%= form_for(@baosong_b) do |f| %>
+        <div class="field">
+          报送分类B<br />
+          <%= f.text_field :name, :class => "form-control input-sm" %>
+        </div>
+        <div class="field">
+          <%= f.label "备注" %><br />
+          <%= f.text_field :note, :class => "form-control input-sm" %>
+        </div>
+        <div class="field">
+          <label>省份</label>
+          <br>
+          <%= f.select :prov, options_for_select(SysProvince.level1.map{|p| [p.name, p.name]}.unshift(["不限制", nil])), {}, :class => "form-control input-sm"%>
+        </div>
+
+        <%= f.hidden_field :baosong_a_id %>
+
+        <div class="field">
+          <%= f.label "模板文件" %> <a href="/baosong_tmpl.xls">导入模板下载</a>
+          <%= f.file_field :file, :class => "form-control input-sm" %>
+        </div>
+        <br>
+        <div class="actions">
+          <%= f.submit "创建", :class => "btn btn-sm btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+    <br>
+  </div>
+</div>

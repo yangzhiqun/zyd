@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="404 Not Found">
+<meta name="author" content="">
+<title>404 Not Found</title>
+<!-- Bootstrap core CSS -->
+<link rel="stylesheet" href="http://libs.useso.com/js/bootstrap/3.2.0/css/bootstrap.css">
+<link rel="stylesheet" href="http://libs.useso.com/js/font-awesome/4.2.0/css/font-awesome.css">
+<style>
+/* Error Page Inline Styles */
+body {
+  padding-top: 20px;
+}
+/* Layout */
+.jumbotron {
+  font-size: 21px;
+  font-weight: 200;
+  line-height: 2.1428571435;
+  color: inherit;
+  padding: 10px 0px;
+}
+/* Everything but the jumbotron gets side spacing for mobile-first views */
+.masthead, .body-content, {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+/* Main marketing message and sign up button */
+.jumbotron {
+  text-align: center;
+  background-color: transparent;
+}
+.jumbotron .btn {
+  font-size: 21px;
+  padding: 14px 24px;
+}
+/* Colors */
+.green {color:#5cb85c;}
+.orange {color:#f0ad4e;}
+.red {color:#d9534f;}
+</style>
+<script type="text/javascript">
+  function loadDomain() {
+    var display = document.getElementById("display-domain");
+    display.innerHTML = document.domain;
+  }
+</script>
+</head>
+<body onload="javascript:loadDomain();">
+<!-- Error Page Content -->
+<div class="container">
+  <!-- Jumbotron -->
+  <div class="jumbotron">
+    <h1><i class="fa fa-frown-o red"></i> 404 Not Found</h1>
+    <p class="lead">无法找到该页面<em><span id="display-domain"></span></em>。</p>
+    <p><a onclick=javascript:checkSite(); class="btn btn-default btn-lg"><span class="green">返回首页</span></a>
+        <script type="text/javascript">
+            function checkSite(){
+              var currentSite = window.location.hostname;
+                window.location = "http://" + currentSite;
+            }
+        </script>
+    </p>
+  </div>
+</div>
+<div class="container">
+  <div class="body-content">
+    <div class="row">
+      <div class="col-md-6">
+        <h2>发生什么了?</h2>
+        <p class="lead">HTTP 404或Not Found错误信息是HTTP的其中一种“标准回应信息”（HTTP状态码），此信息代表客户端在浏览网页时，服务器无法正常提供信息，或是服务器无法回应且不知原因。</p>
+      </div>
+      <div class="col-md-6">
+        <h2>怎么办?</h2>
+        <p class="lead">如果您是访问者</p>
+        <p>请点击浏览器返回按钮，确认您是否访问了正确的地址。</p>
+     </div>
+    </div>
+  </div>
+</div>
+
+<!-- End Error Page Content -->
+<!--Scripts-->
+<!-- jQuery library -->
+<script src="http://libs.useso.com/js/jquery/1.11.1/jquery.js"></script>
+<script src="http://libs.useso.com/js/bootstrap/3.2.0/js/bootstrap.js"></script>
+</body>
+</html>

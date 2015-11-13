@@ -1,0 +1,30 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>名称：</b>
+  <%= @company_standard.name %>
+</p>
+
+<p>
+  <b>编号：</b>
+  <%= @company_standard.number %>
+</p>
+
+<p>
+  <b>制定者：</b>
+  <%= @company_standard.author_company %>
+</p>
+
+<p>
+  <b>生效期：</b>
+  <%= @company_standard.valid_at %>
+</p>
+
+<p>
+  <b>正文：</b>
+  <a href="/company_standards/<%= @company_standard.id %>/attachment">查看/下载标准正文</a>
+</p>
+
+
+<%= link_to '编辑', edit_company_standard_path(@company_standard) %> |
+<%= link_to '返回', company_standards_path %>

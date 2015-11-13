@@ -1,0 +1,30 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Name:</b>
+  <%= @d_category.name %>
+</p>
+
+<p>
+  <b>A category:</b>
+  <%= @d_category.a_category_id %>
+</p>
+
+<p>
+  <b>B category:</b>
+  <%= @d_category.b_category_id %>
+</p>
+
+<p>
+  <b>C category:</b>
+  <%= @d_category.c_category_id %>
+</p>
+
+<p>
+  <b>Note:</b>
+  <%= @d_category.note %>
+</p>
+
+
+<%= link_to 'Edit', edit_d_category_path(@d_category) %> |
+<%= link_to 'Back', d_categories_path %>

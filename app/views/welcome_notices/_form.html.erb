@@ -1,0 +1,48 @@
+<script type="text/javascript">
+$(function(){
+  $('.bctz').click(function(){
+    if($('#welcome_notice_title').val() == ''){
+      alert('通知标题不能为空');
+      return false;
+    }
+  })
+})
+</script>
+<%= form_for(@welcome_notice) do |f| %>
+  <% if @welcome_notice.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@welcome_notice.errors.count, "error") %> prohibited this welcome_notice from being saved:</h2>
+
+      <ul>
+      <% @welcome_notice.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    通知标题<br />
+    <%= f.text_field :title %>
+  </div>
+  <div class="field">
+    是否精华<br />
+    <%= f.select :red, options_for_select([["否",0],["是",1]] , @welcome_notice.red) %>
+  </div>
+  <div class="field">
+    置顶等级<br />
+    <%= f.select :top, options_for_select(["0","1","2","3","4","5","6","7","8","9"], @welcome_notice.top) %>
+  </div>
+  <div class="field">
+    通知文件<br />
+    <%= f.file_field :attachment_path_file %>
+    <span class="text-danger">(请上传10M以内文件)</span>
+  </div>
+  <div class="field">
+    <br />链接地址<font style="font-size:10px;color:#666;">(文件型通知此处请留空)</font><br />
+    <%= f.text_field :url %>
+  </div>
+  <div class="actions">
+    <%= f.submit "保存", :class => "btn btn-primary btn-sm bctz"%>
+  </div>
+<% end %>

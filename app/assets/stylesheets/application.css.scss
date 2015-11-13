@@ -1,0 +1,65 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the top of the
+ * compiled file, but it's generally better to create a new file per style scope.
+ *
+ *= require_self
+ *= require jquery-ui
+ *= require main
+ *= require defaultTheme
+ *= require myTheme
+ *= require bootstrap
+ *= require xeditable
+ *= require bootstrap-theme
+ *= require 960
+ *= require angularjs/select
+ *= require bootstrap-editable
+ *= require jquery.fileupload
+ *= require jquery.fileupload-ui
+ *= require bootstrap-table
+ *= require dragtable
+*/
+
+body{
+	text-align:left;
+}
+div#container{
+	margin-left: 0
+}
+#cnzz_stat_icon_1000354640 {
+	display: none;
+}
+
+.table-bordered-black {
+  td, th {
+    border: 1px solid black !important;
+  }
+}
+
+.pagination {
+  a {
+    border: 1px solid #cecece;
+    padding: 3px 5px;
+  }
+  em {
+    padding: 3px 5px;
+    background: green;
+    color: white;
+  }
+}
+.list-ctner {
+  overflow-x: scroll;
+  overflow-y: hidden;
+  
+}
+.table-sm {
+  th,td {
+    font-size: 12px;
+    vertical-align: middle !important;
+  }
+}
