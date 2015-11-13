@@ -5,12 +5,12 @@ require 'net/http'
 class SpBsbsController < ApplicationController
   include ApplicationHelper
 
-  before_filter :init
+  before_action :init, only: [:new, :edit]
 
   def print
     @spbsb = SpBsb.find(params[:id])
     @jg_bsb = JgBsb.find_by_jg_name(@spbsb.sp_s_43)
-    @jyxm_str = Spdatum.where("sp_bsb_id= ? and spdata_2 <> ?", @spbsb.id, '未检验').limit(3).map { |s| s.spdata_0 }.join(",") + "等#{Spdatum.where("sp_bsb_id= ? and spdata_2 <> ?", @spbsb.id, '未检验').count}项。"
+    @jyxm_str = Spdatum.where('sp_bsb_id= ? and spdata_2 <> ?', @spbsb.id, '未检验').limit(3).map { |s| s.spdata_0 }.join(",") + "等#{Spdatum.where("sp_bsb_id= ? and spdata_2 <> ?", @spbsb.id, '未检验').count}项。"
     #@jyjy_str = Spdatum.where(:sp_bsb_id => @spbsb.id,!spdata_4.eql?('/')).limit(2).map{|s| s.spdata_3}.join(",")
     @jyjy_str = Spdatum.where("sp_bsb_id= ? and spdata_4 <> ?", @spbsb.id, '/').limit(2).map { |s| s.spdata_3 }.join(",")
     @jyjy_str4 = Spdatum.where("sp_bsb_id= ? and spdata_4 <> ?", @spbsb.id, '/').limit(2).map { |s| s.spdata_4 }.join(",")
@@ -143,29 +143,26 @@ class SpBsbsController < ApplicationController
   end
 
   def init
-    if session[:user_name]=='admin'
-      @admin_user=1
-    else
-      @admin_user=0
-    end
-    @avala=[17, 18, 19, 20, 21, 23, 24, 30, 31, 33, 36, 44, 59, 61, 62, 63, 66, 67, 68, 70, 71, 201, 203, 205, 214]
+    @avala=[21, 24, 30, 33, 36, 44, 61, 62, 63, 68, 201, 203, 205]
     @options=[]
     @avala.each do |i|
-      @options[i]=Flexcontent.find_all_by_flex_field("sp_bsb_sp_s_#{i}", :order => "flex_sortid ASC")
-      @options[i]=@options[i].map { |option| [option[:flex_name], option[:flex_id]] }
+      @options[i] = Flexcontent.where(flex_field: "sp_bsb_sp_s_#{i}").order("flex_sortid ASC")
+      @options[i] = @options[i].map { |option| [option[:flex_name], option[:flex_id]] }
     end
-    @xkz_options=[["请选择", "请选择"], ["流通许可证", "流通许可证"], ["餐饮服务许可证", "餐饮服务许可证"]]
+
+    @xkz_options=[['请选择', '请选择'], ['流通许可证', '流通许可证'], ['餐饮服务许可证', '餐饮服务许可证']]
 
     # 这里做两遍，可能是为了将属于自己省份的排序到前面
-    temp=JgBsb.find(:all, :conditions => ["status = 0 and jg_province=? and jg_sp_permission=1 and jg_detection=1", session[:user_province]], :order => "jg_province")
-    @options[100]=temp.map { |option| [option.jg_name, option.jg_name] }
-    @options[101]=temp.map { |option| [option[:jg_contacts], option[:jg_tel], option[:jg_email]] }
-    temp=JgBsb.find(:all, :conditions => ["status = 0 and jg_province<>? and jg_sp_permission=1 and jg_detection=1", session[:user_province]], :order => "jg_province")
+    temp = JgBsb.where('status = 0 and jg_province=? and jg_sp_permission=1 and jg_detection=1', session[:user_province]).order('jg_province')
+    @options[100] = temp.map { |option| [option.jg_name, option.jg_name] }
+    @options[101] = temp.map { |option| [option[:jg_contacts], option[:jg_tel], option[:jg_email]] }
+    temp = JgBsb.where('status = 0 and jg_province <> ? and jg_sp_permission = 1 and jg_detection = 1', session[:user_province]).order('jg_province')
 
-    temp1=temp.map { |option| [option.jg_name, option.jg_name] }
-    temp2=temp.map { |option| [option[:jg_contacts], option[:jg_tel], option[:jg_email]] }
-    @options[100]=@options[100]+temp1
-    @options[101]=@options[101]+temp2
+    temp1 = temp.map { |option| [option.jg_name, option.jg_name] }
+    temp2 = temp.map { |option| [option[:jg_contacts], option[:jg_tel], option[:jg_email]] }
+
+    @options[100] = @options[100]+temp1
+    @options[101] = @options[101]+temp2
   end
 
   #2014-01-12
@@ -201,7 +198,7 @@ class SpBsbsController < ApplicationController
   end
 
   def download_file
-    send_file(params[:filename], :disposition => "attachment")
+    send_file(params[:filename], :disposition => 'attachment')
   end
 
   # 24H限时报告
@@ -216,7 +213,7 @@ class SpBsbsController < ApplicationController
       @xsbg = XsbgTt.find_by_sp_bsb_id(@sp_bsb.id)
       @xsbg = XsbgTt.new(CJBH: @sp_bsb.sp_s_16, sp_bsb_id: @sp_bsb.id, GJMC: @sp_bsb.sp_s_202) if @xsbg.nil?
 
-      @items = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE ? OR spdata_2 LIKE ?)", @sp_bsb.id, "%不合格%", "%问题%")
+      @items = Spdatum.where('sp_bsb_id = ? AND (spdata_2 LIKE ? OR spdata_2 LIKE ?)', @sp_bsb.id, '%不合格%', '%问题%')
     end
   end
 
@@ -235,7 +232,7 @@ class SpBsbsController < ApplicationController
     end
     @sp_bsb=sp_bsb
     @sp_jcxcount=@sp_bsb.sp_n_jcxcount
-    @sp_data=Spdatum.find_all_by_sp_bsb_id(params[:id])
+    @sp_data=Spdatum.where(sp_bsb_id: params[:id])
 
     unless @sp_bsb.sp_s_70.blank?
       @sp_s_67s = BaosongB.where(baosong_a_id: BaosongA.find_by_name(@sp_bsb.sp_s_70).id)
@@ -366,7 +363,7 @@ class SpBsbsController < ApplicationController
       @sp_bsb.sp_s_87=session[:user_tel]
       @sp_bsb.sp_s_88=session[:user_mail]
     end
-    @sp_data=Spdatum.find_all_by_sp_bsb_id(params[:id])
+    @sp_data=Spdatum.where(sp_bsb_id: params[:id])
 
     unless @sp_bsb.sp_s_70.blank?
       @sp_s_67s = BaosongB.where(baosong_a_id: BaosongA.find_by_name(@sp_bsb.sp_s_70).id)
@@ -416,101 +413,103 @@ class SpBsbsController < ApplicationController
   # POST /sp_bsbs
   # POST /sp_bsbs.json
   def create
-    @sp_bsb = SpBsb.new(params[:sp_bsb])
-    @sp_bsb.tname=session[:user_name]
-    @sp_bsb.sp_s_52=session[:user_province]
-    if @sp_bsb.sp_s_2==nil
-      @sp_bsb.sp_s_2=''
-    end
-    if @sp_bsb.sp_s_3==nil
-      @sp_bsb.sp_s_3=''
-    end
-    if @sp_bsb.sp_s_14==nil
-      @sp_bsb.sp_s_14=''
-    end
-    if @sp_bsb.sp_s_16==nil
-      @sp_bsb.sp_s_16=''
-    end
-    if @sp_bsb.sp_s_17==nil
-      @sp_bsb.sp_s_17=''
-    end
-    if @sp_bsb.sp_s_20==nil
-      @sp_bsb.sp_s_20=''
-    end
-    if @sp_bsb.sp_s_35==nil
-      @sp_bsb.sp_s_35=''
-    end
-    if @sp_bsb.sp_s_43==nil
-      @sp_bsb.sp_s_43=''
-    end
-    if @sp_bsb.sp_s_85==nil
-      @sp_bsb.sp_s_85=''
-    end
+    ActiveRecord::Base.transaction do
+      @sp_bsb = SpBsb.new(sp_bsb_params)
+      @sp_bsb.tname=session[:user_name]
+      @sp_bsb.sp_s_52=session[:user_province]
+      if @sp_bsb.sp_s_2==nil
+        @sp_bsb.sp_s_2=''
+      end
+      if @sp_bsb.sp_s_3==nil
+        @sp_bsb.sp_s_3=''
+      end
+      if @sp_bsb.sp_s_14==nil
+        @sp_bsb.sp_s_14=''
+      end
+      if @sp_bsb.sp_s_16==nil
+        @sp_bsb.sp_s_16=''
+      end
+      if @sp_bsb.sp_s_17==nil
+        @sp_bsb.sp_s_17=''
+      end
+      if @sp_bsb.sp_s_20==nil
+        @sp_bsb.sp_s_20=''
+      end
+      if @sp_bsb.sp_s_35==nil
+        @sp_bsb.sp_s_35=''
+      end
+      if @sp_bsb.sp_s_43==nil
+        @sp_bsb.sp_s_43=''
+      end
+      if @sp_bsb.sp_s_85==nil
+        @sp_bsb.sp_s_85=''
+      end
 
-    unless @sp_bsb.sp_s_70.blank?
-      @sp_s_67s = BaosongB.where(baosong_a_id: BaosongA.find_by_name(@sp_bsb.sp_s_70).id)
-    else
-      @sp_s_67s = []
-    end
-
-    if !@sp_s_67s.blank? and !@sp_bsb.sp_s_67.blank?
-      @sp_s_67 = @sp_s_67s.where(name: @sp_bsb.sp_s_67).first
-    end
-
-    unless @sp_s_67.nil?
-      @a_categories = ACategory.where(:identifier => @sp_s_67.identifier)
-    else
-      @a_categories = []
-    end
-
-    if !@sp_bsb.sp_s_17.blank? and !@sp_bsb.sp_s_17.eql?("请选择")
-      @b_categories = BCategory.where(:identifier => @sp_s_67.identifier, a_category_id: @a_categories.where(name: @sp_bsb.sp_s_17).first.id)
-    else
-      @b_categories = []
-    end
-
-    if !@sp_bsb.sp_s_18.blank? and !@sp_bsb.sp_s_18.eql?("请选择")
-      @c_categories = CCategory.where(:identifier => @sp_s_67.identifier, b_category_id: @b_categories.where(name: @sp_bsb.sp_s_18).first.id)
-    else
-      @c_categories = []
-    end
-
-    if !@sp_bsb.sp_s_19.blank? and !@sp_bsb.sp_s_19.eql?("请选择")
-      @d_categories = DCategory.where(:identifier => @sp_s_67.identifier, c_category_id: @c_categories.where(name: @sp_bsb.sp_s_19).first.id)
-    else
-      @d_categories = []
-    end
-
-    result_record=SpBsb.find(:first, :conditions => ["sp_s_16=?", params[:sp_bsb][:sp_s_16]])
-    respond_to do |format|
-      if result_record!=nil
-        flash[:import_result] = "保存不成功，数据库中已有该样品编号!"
-        format.json { render :json => {:status => "保存出错!", :msg => "保存不成功，数据库中已有该样品编号!"} }
-        format.html { render action: "new" }
+      unless @sp_bsb.sp_s_70.blank?
+        @sp_s_67s = BaosongB.where(baosong_a_id: BaosongA.find_by_name(@sp_bsb.sp_s_70).id)
       else
-        # if @sp_bsb.sp_s_70=='抽检监测(总局本级)'
-        #   rwly=SpStandard.find(:first, :conditions => ["sp_sta_0=?", @sp_bsb.sp_s_20])
-        #   if rwly
-        #     @sp_bsb.sp_s_56=rwly.sp_sta_1
-        #   end
-        # else
-        #   @sp_bsb.sp_s_56='三司'
-        # end
-        @sp_bsb.submit_d_flag=@sp_bsb.updated_at
-        if @sp_bsb.save
-          unless params[:spdata].blank?
-            params[:spdata].delete_if { |data| data.keys.length == 1 }
-            params[:spdata].each do |data|
-              data.delete(:id)
-              data[:sp_bsb_id] = @sp_bsb.id
-              Spdatum.create!(data)
-            end
-          end
-          format.json { render :json => {:status => "保存成功!", :msg => "保存成功!"} }
-          format.html { redirect_to "/sp_bsbs/#{@sp_bsb.id}" }
-        else
-          format.json { render :json => {:status => "保存出错!", :msg => "发生异常，保存不成功!"} }
+        @sp_s_67s = []
+      end
+
+      if !@sp_s_67s.blank? and !@sp_bsb.sp_s_67.blank?
+        @sp_s_67 = @sp_s_67s.where(name: @sp_bsb.sp_s_67).first
+      end
+
+      unless @sp_s_67.nil?
+        @a_categories = ACategory.where(:identifier => @sp_s_67.identifier)
+      else
+        @a_categories = []
+      end
+
+      if !@sp_bsb.sp_s_17.blank? and !@sp_bsb.sp_s_17.eql?("请选择")
+        @b_categories = BCategory.where(:identifier => @sp_s_67.identifier, a_category_id: @a_categories.where(name: @sp_bsb.sp_s_17).first.id)
+      else
+        @b_categories = []
+      end
+
+      if !@sp_bsb.sp_s_18.blank? and !@sp_bsb.sp_s_18.eql?("请选择")
+        @c_categories = CCategory.where(:identifier => @sp_s_67.identifier, b_category_id: @b_categories.where(name: @sp_bsb.sp_s_18).first.id)
+      else
+        @c_categories = []
+      end
+
+      if !@sp_bsb.sp_s_19.blank? and !@sp_bsb.sp_s_19.eql?("请选择")
+        @d_categories = DCategory.where(:identifier => @sp_s_67.identifier, c_category_id: @c_categories.where(name: @sp_bsb.sp_s_19).first.id)
+      else
+        @d_categories = []
+      end
+
+      result_record=SpBsb.where("sp_s_16=?", params[:sp_bsb][:sp_s_16]).last
+      respond_to do |format|
+        if result_record!=nil
+          flash[:import_result] = "保存不成功，数据库中已有该样品编号!"
+          format.json { render :json => {:status => "保存出错!", :msg => "保存不成功，数据库中已有该样品编号!"} }
           format.html { render action: "new" }
+        else
+          # if @sp_bsb.sp_s_70=='抽检监测(总局本级)'
+          #   rwly=SpStandard.find(:first, :conditions => ["sp_sta_0=?", @sp_bsb.sp_s_20])
+          #   if rwly
+          #     @sp_bsb.sp_s_56=rwly.sp_sta_1
+          #   end
+          # else
+          #   @sp_bsb.sp_s_56='三司'
+          # end
+          @sp_bsb.submit_d_flag=@sp_bsb.updated_at
+          if @sp_bsb.save
+            unless params[:spdata].blank?
+              params[:spdata].delete_if { |data| data.keys.length == 1 }
+              params[:spdata].each do |data|
+                data.delete(:id)
+                data[:sp_bsb_id] = @sp_bsb.id
+                Spdatum.create!(data.as_json)
+              end
+            end
+            format.json { render :json => {:status => "保存成功!", :msg => "保存成功!"} }
+            format.html { redirect_to "/sp_bsbs/#{@sp_bsb.id}" }
+          else
+            format.json { render :json => {:status => "保存出错!", :msg => "发生异常，保存不成功!"} }
+            format.html { render action: "new" }
+          end
         end
       end
     end
@@ -520,7 +519,7 @@ class SpBsbsController < ApplicationController
   # PUT /sp_bsbs/1.json
   def update
     @sp_bsb=SpBsb.find(params[:id])
-    result_record=SpBsb.find(:first, :conditions => ["sp_s_16=?", params[:sp_bsb][:sp_s_16]])
+    result_record = SpBsb.where("sp_s_16=?", params[:sp_bsb][:sp_s_16]).last
     if (@sp_bsb.sp_s_16==params[:sp_bsb][:sp_s_16])||(result_record==nil)
       respond_to do |format|
         @original_updated_at = nil
@@ -597,7 +596,7 @@ class SpBsbsController < ApplicationController
           @sp_bsb.update_attribute(:submit_d_flag, (Time.now.ago(3600*8)).to_s(:db))
         end
 
-        if @sp_bsb.update_attributes(params[:sp_bsb])
+        if @sp_bsb.update_attributes(sp_bsb_params)
           # 如果original 存在，则回退updated_at时间
           if @original_updated_at.present?
             SpBsb.record_timestamps = false
@@ -640,12 +639,12 @@ class SpBsbsController < ApplicationController
                 params[:spdata].each do |data|
                   data.delete(:id)
                   data[:sp_bsb_id] = params[:id]
-                  Spdatum.create!(data)
+                  Spdatum.create!(data.as_json)
                 end
               else
                 params[:spdata].each do |data|
                   @spdata = Spdatum.find(data[:id])
-                  @spdata.update_attributes(data)
+                  @spdata.update_attributes(data.as_json)
                 end
               end
             end
@@ -1383,5 +1382,360 @@ class SpBsbsController < ApplicationController
         end
       end
     end
+  end
+
+  private
+  def sp_bsb_params
+    params.require(:sp_bsb).permit(
+        :report_path, :sp_s_1, :sp_s_2, :sp_s_3, :sp_s_4, :sp_s_5, :sp_s_6, :sp_s_7, :sp_s_8, :sp_s_9, :sp_s_10, :sp_s_11, :sp_s_12, :sp_s_13, :sp_s_14, :sp_n_15, :sp_s_16, :sp_s_17, :sp_s_18, :sp_s_19, :sp_s_20, :sp_s_21, :sp_d_22, :sp_s_23, :sp_s_24, :sp_s_25, :sp_s_26, :sp_s_27, :sp_d_28, :sp_n_29, :sp_s_30, :sp_n_31, :sp_n_32, :sp_s_33, :sp_s_34, :sp_s_35, :sp_s_36, :sp_s_37, :sp_d_38, :sp_s_39, :sp_s_40, :sp_s_41, :sp_s_42, :sp_s_43, :sp_s_44, :sp_s_45, :sp_d_46, :sp_d_47, :sp_s_48, :sp_s_49, :sp_s_50, :sp_s_51, :sp_s_52, :sp_s_53, :sp_s_54, :sp_s_55, :sp_s_56, :sp_s_57, :sp_s_58, :sp_s_59, :sp_s_60, :sp_s_61, :sp_s_62, :sp_s_63, :sp_s_64, :sp_s_65, :sp_s_66, :sp_s_67, :sp_s_68, :sp_s_69, :sp_s_70, :sp_s_71, :sp_s_72, :sp_s_73, :sp_s_74, :sp_s_75, :sp_s_76, :sp_s_77, :sp_s_78, :sp_s_79, :sp_s_80, :sp_s_81, :sp_s_82, :sp_s_83, :sp_s_84, :sp_s_85, :sp_d_86, :sp_s_87, :sp_s_88, :tname,
+        :sp_n_jcxcount,
+        :cyd_file, :cyjygzs_file,
+        :yydj_enabled_by_admin_at,
+        :sp_s_bsfl,
+        :sp_s_2_1,
+        :sp_s_18_1,
+        :sp_s_30_1,
+        :sp_s_33_1,
+        :sp_s_110_1,
+        :sp_s_110_2,
+        :sp_s_110_3,
+        :sp_s_110_4,
+        :sp_s_110_5,
+        :sp_s_110_6,
+        :sp_s_110_7,
+        :sp_s_110_8,
+        :sp_s_111_1,
+        :sp_s_111_2,
+        :sp_s_111_3,
+        :sp_s_111_4,
+        :sp_s_111_5,
+        :sp_s_111_6,
+        :sp_s_111_7,
+        :sp_s_111_8,
+        :sp_s_112_1,
+        :sp_s_112_2,
+        :sp_s_112_3,
+        :sp_s_112_4,
+        :sp_s_112_5,
+        :sp_s_112_6,
+        :sp_s_112_7,
+        :sp_s_112_8,
+        :sp_s_113_1,
+        :sp_s_113_2,
+        :sp_s_113_3,
+        :sp_s_113_4,
+        :sp_s_113_5,
+        :sp_s_113_6,
+        :sp_s_113_7,
+        :sp_s_113_8,
+        :sp_s_114_1,
+        :sp_s_114_2,
+        :sp_s_114_3,
+        :sp_s_114_4,
+        :sp_s_114_5,
+        :sp_s_114_6,
+        :sp_s_114_7,
+        :sp_s_114_8,
+        :sp_s_115_1,
+        :sp_s_115_2,
+        :sp_s_115_3,
+        :sp_s_115_4,
+        :sp_s_115_5,
+        :sp_s_115_6,
+        :sp_s_115_7,
+        :sp_s_115_8,
+        :sp_s_116_1,
+        :sp_s_116_2,
+        :sp_s_116_3,
+        :sp_s_116_4,
+        :sp_s_116_5,
+        :sp_s_116_6,
+        :sp_s_116_7,
+        :sp_s_116_8,
+        :sp_s_117_1,
+        :sp_s_117_2,
+        :sp_s_117_3,
+        :sp_s_117_4,
+        :sp_s_117_5,
+        :sp_s_117_6,
+        :sp_s_117_7,
+        :sp_s_117_8,
+        :sp_s_118_1,
+        :sp_s_118_2,
+        :sp_s_118_3,
+        :sp_s_118_4,
+        :sp_s_118_5,
+        :sp_s_118_6,
+        :sp_s_118_7,
+        :sp_s_118_8,
+        :sp_s_119_1,
+        :sp_s_119_2,
+        :sp_s_119_3,
+        :sp_s_119_4,
+        :sp_s_119_5,
+        :sp_s_119_6,
+        :sp_s_119_7,
+        :sp_s_119_8,
+        :sp_s_120_1,
+        :sp_s_120_2,
+        :sp_s_120_3,
+        :sp_s_120_4,
+        :sp_s_120_5,
+        :sp_s_120_6,
+        :sp_s_120_7,
+        :sp_s_120_8,
+        :sp_s_121_1,
+        :sp_s_121_2,
+        :sp_s_121_3,
+        :sp_s_121_4,
+        :sp_s_121_5,
+        :sp_s_121_6,
+        :sp_s_121_7,
+        :sp_s_121_8,
+        :sp_s_122_1,
+        :sp_s_122_2,
+        :sp_s_122_3,
+        :sp_s_122_4,
+        :sp_s_122_5,
+        :sp_s_122_6,
+        :sp_s_122_7,
+        :sp_s_122_8,
+        :sp_s_123_1,
+        :sp_s_123_2,
+        :sp_s_123_3,
+        :sp_s_123_4,
+        :sp_s_123_5,
+        :sp_s_123_6,
+        :sp_s_123_7,
+        :sp_s_123_8,
+        :sp_s_124_1,
+        :sp_s_124_2,
+        :sp_s_124_3,
+        :sp_s_124_4,
+        :sp_s_124_5,
+        :sp_s_124_6,
+        :sp_s_124_7,
+        :sp_s_124_8,
+        :sp_s_125_1,
+        :sp_s_125_2,
+        :sp_s_125_3,
+        :sp_s_125_4,
+        :sp_s_125_5,
+        :sp_s_125_6,
+        :sp_s_125_7,
+        :sp_s_125_8,
+        :sp_s_126_1,
+        :sp_s_126_2,
+        :sp_s_126_3,
+        :sp_s_126_4,
+        :sp_s_126_5,
+        :sp_s_126_6,
+        :sp_s_126_7,
+        :sp_s_126_8,
+        :sp_s_127_1,
+        :sp_s_127_2,
+        :sp_s_127_3,
+        :sp_s_127_4,
+        :sp_s_127_5,
+        :sp_s_127_6,
+        :sp_s_127_7,
+        :sp_s_127_8,
+        :sp_s_128_1,
+        :sp_s_128_2,
+        :sp_s_128_3,
+        :sp_s_128_4,
+        :sp_s_128_5,
+        :sp_s_128_6,
+        :sp_s_128_7,
+        :sp_s_128_8,
+        :sp_s_129_1,
+        :sp_s_129_2,
+        :sp_s_129_3,
+        :sp_s_129_4,
+        :sp_s_129_5,
+        :sp_s_129_6,
+        :sp_s_129_7,
+        :sp_s_129_8,
+        :sp_s_130_1,
+        :sp_s_130_2,
+        :sp_s_130_3,
+        :sp_s_130_4,
+        :sp_s_130_5,
+        :sp_s_130_6,
+        :sp_s_130_7,
+        :sp_s_130_8,
+        :sp_s_131_1,
+        :sp_s_131_2,
+        :sp_s_131_3,
+        :sp_s_131_4,
+        :sp_s_131_5,
+        :sp_s_131_6,
+        :sp_s_131_7,
+        :sp_s_131_8,
+        :sp_s_132_1,
+        :sp_s_132_2,
+        :sp_s_132_3,
+        :sp_s_132_4,
+        :sp_s_132_5,
+        :sp_s_132_6,
+        :sp_s_132_7,
+        :sp_s_132_8,
+        :sp_s_133_1,
+        :sp_s_133_2,
+        :sp_s_133_3,
+        :sp_s_133_4,
+        :sp_s_133_5,
+        :sp_s_133_6,
+        :sp_s_133_7,
+        :sp_s_133_8,
+        :sp_s_134_1,
+        :sp_s_134_2,
+        :sp_s_134_3,
+        :sp_s_134_4,
+        :sp_s_134_5,
+        :sp_s_134_6,
+        :sp_s_134_7,
+        :sp_s_134_8,
+        :sp_s_135_1,
+        :sp_s_135_2,
+        :sp_s_135_3,
+        :sp_s_135_4,
+        :sp_s_135_5,
+        :sp_s_135_6,
+        :sp_s_135_7,
+        :sp_s_135_8,
+        :sp_s_136_1,
+        :sp_s_136_2,
+        :sp_s_136_3,
+        :sp_s_136_4,
+        :sp_s_136_5,
+        :sp_s_136_6,
+        :sp_s_136_7,
+        :sp_s_136_8,
+        :sp_s_137_1,
+        :sp_s_137_2,
+        :sp_s_137_3,
+        :sp_s_137_4,
+        :sp_s_137_5,
+        :sp_s_137_6,
+        :sp_s_137_7,
+        :sp_s_137_8,
+        :sp_s_138_1,
+        :sp_s_138_2,
+        :sp_s_138_3,
+        :sp_s_138_4,
+        :sp_s_138_5,
+        :sp_s_138_6,
+        :sp_s_138_7,
+        :sp_s_138_8,
+        :sp_s_139_1,
+        :sp_s_139_2,
+        :sp_s_139_3,
+        :sp_s_139_4,
+        :sp_s_139_5,
+        :sp_s_139_6,
+        :sp_s_139_7,
+        :sp_s_139_8,
+        :sp_s_140_1,
+        :sp_s_140_2,
+        :sp_s_140_3,
+        :sp_s_140_4,
+        :sp_s_140_5,
+        :sp_s_140_6,
+        :sp_s_140_7,
+        :sp_s_140_8,
+        :sp_s_110_9,
+        :sp_s_111_9,
+        :sp_s_112_9,
+        :sp_s_113_9,
+        :sp_s_114_9,
+        :sp_s_115_9,
+        :sp_s_116_9,
+        :sp_s_117_9,
+        :sp_s_118_9,
+        :sp_s_119_9,
+        :sp_s_120_9,
+        :sp_s_121_9,
+        :sp_s_122_9,
+        :sp_s_123_9,
+        :sp_s_124_9,
+        :sp_s_125_9,
+        :sp_s_126_9,
+        :sp_s_127_9,
+        :sp_s_128_9,
+        :sp_s_129_9,
+        :sp_s_130_9,
+        :sp_s_131_9,
+        :sp_s_132_9,
+        :sp_s_133_9,
+        :sp_s_134_9,
+        :sp_s_135_9,
+        :sp_s_136_9,
+        :sp_s_137_9,
+        :sp_s_138_9,
+        :sp_s_139_9,
+        :sp_s_140_9,
+        :sp_s_110_0,
+        :sp_s_111_0,
+        :sp_s_112_0,
+        :sp_s_113_0,
+        :sp_s_114_0,
+        :sp_s_115_0,
+        :sp_s_116_0,
+        :sp_s_117_0,
+        :sp_s_118_0,
+        :sp_s_119_0,
+        :sp_s_120_0,
+        :sp_s_121_0,
+        :sp_s_122_0,
+        :sp_s_123_0,
+        :sp_s_124_0,
+        :sp_s_125_0,
+        :sp_s_126_0,
+        :sp_s_127_0,
+        :sp_s_128_0,
+        :sp_s_129_0,
+        :sp_s_130_0,
+        :sp_s_131_0,
+        :sp_s_132_0,
+        :sp_s_133_0,
+        :sp_s_134_0,
+        :sp_s_135_0,
+        :sp_s_136_0,
+        :sp_s_137_0,
+        :sp_s_138_0,
+        :sp_s_139_0,
+        :sp_s_140_0,
+        :sp_i_state,
+        :sp_i_jgback,
+        :sp_i_backtimes,
+        :sp_s_reason,
+        :submit_d_flag,
+        :sp_t_procedure,
+        :sp_s_200,
+        :sp_s_201,
+        :sp_s_202,
+        :sp_s_203,
+        :sp_s_204,
+        :sp_s_205,
+        :sp_s_206,
+        :sp_s_207,
+        :sp_s_208,
+        :sp_s_209,
+        :sp_s_210,
+        :sp_s_211,
+        :sp_s_212,
+        :sp_s_213,
+        :sp_s_214,
+        :sp_s_215,
+        :fail_report_path,
+        :fail_report_at,
+        :bgfl,
+        :sp_xkz,
+        :sp_xkz_id,
+        :updated_at,
+        :czb_reverted_flag,
+        :synced, :ca_source, :ca_sign
+    )
   end
 end

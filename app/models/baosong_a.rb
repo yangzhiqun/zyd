@@ -1,5 +1,5 @@
 class BaosongA < ActiveRecord::Base
-  attr_accessible :name, :note, :rwlylx, :prov
+  # attr_accessible :name, :note, :rwlylx, :prov
   has_many :baosong_bs, dependent: :delete_all
 
   # 通过identifier获取

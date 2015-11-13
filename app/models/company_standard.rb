@@ -1,6 +1,6 @@
 #encoding: utf-8
 class CompanyStandard < ActiveRecord::Base
-  attr_accessible :attachment_id, :author_company, :name, :number, :valid_at, :user_id, :attachment_path_file
+  # attr_accessible :attachment_id, :author_company, :name, :number, :valid_at, :user_id, :attachment_path_file
 
   def attachments_dir(folder)
     "#{Rails.application.config.attachment_path}/#{folder}"

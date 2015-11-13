@@ -1,6 +1,6 @@
 #encoding: utf-8
 class JgBsbName < ActiveRecord::Base
-  attr_accessible :creator_user_id, :jg_bsb_id, :name, :note
+  # attr_accessible :creator_user_id, :jg_bsb_id, :name, :note
 
   validates_uniqueness_of :name, :message => '此名称已存在'
   validates_presence_of :name, :message => '请提供名称'

@@ -27,20 +27,20 @@ class PadSpBsbsController < ApplicationController
     @avala=[17, 18, 19, 20, 21, 23, 24, 30, 31, 33, 36, 44, 59, 61, 62, 63, 66, 67, 68, 70, 71, 201, 203, 205, 214]
     @options=[]
     @avala.each do |i|
-      @options[i]=Flexcontent.find_all_by_flex_field("sp_bsb_sp_s_#{i}", :order => "flex_sortid ASC")
+      @options[i]=Flexcontent.where(flex_field: "sp_bsb_sp_s_#{i}").order("flex_sortid ASC")
       @options[i]=@options[i].map { |option| [option[:flex_name], option[:flex_id]] }
       @xkz_options=[["请选择", "请选择"], ["流通许可证", "流通许可证"], ["餐饮服务许可证", "餐饮服务许可证"]]
     end
     @options_68=[]
     @options[68].each_index do |i|
-      temp=Flexcontent.all(:conditions => ["flex_field=? and flex_groupid=?", "sp_bsb_sp_s_2", i], :order => "flex_sortid ASC")
+      temp=Flexcontent.where("flex_field=? and flex_groupid=?", "sp_bsb_sp_s_2", i).order("flex_sortid ASC")
       @options_68[i]=temp.map { |option| option[:flex_name] }
     end
 
-    temp=JgBsb.find(:all, :conditions => ["status = 0 and jg_province=? and jg_sp_permission=1 and jg_detection=1", session[:user_province]], :order => "jg_province")
+    temp=JgBsb.where("status = 0 and jg_province=? and jg_sp_permission=1 and jg_detection=1", session[:user_province]).order("jg_province")
     @options[100]=temp.map { |option| [option.jg_name, option.jg_name] }
     @options[101]=temp.map { |option| [option[:jg_contacts], option[:jg_tel], option[:jg_email]] }
-    temp=JgBsb.find(:all, :conditions => ["status = 0 and jg_province<>? and jg_sp_permission=1 and jg_detection=1", session[:user_province]], :order => "jg_province")
+    temp=JgBsb.where("status = 0 and jg_province<>? and jg_sp_permission=1 and jg_detection=1", session[:user_province]).order("jg_province")
 
     temp1=temp.map { |option| [option.jg_name, option.jg_name] }
     temp2=temp.map { |option| [option[:jg_contacts], option[:jg_tel], option[:jg_email]] }
@@ -120,7 +120,7 @@ class PadSpBsbsController < ApplicationController
     end
     @sp_bsb=sp_bsb
     @sp_jcxcount=@sp_bsb.sp_n_jcxcount
-    @sp_data=Spdatum.find_all_by_sp_bsb_id(params[:id])
+    @sp_data=Spdatum.where(sp_bsb_id: params[:id])
     if @sp_jcxcount==nil
       @sp_jcxcount=1
     end
@@ -301,7 +301,7 @@ class PadSpBsbsController < ApplicationController
       @sp_bsb.sp_s_87=session[:user_tel]
       @sp_bsb.sp_s_88=session[:user_mail]
     end
-    @sp_data=Spdatum.find_all_by_sp_bsb_id(params[:id])
+    @sp_data=Spdatum.where(sp_bsb_id: params[:id])
 
     unless @sp_bsb.sp_s_70.blank?
       @sp_s_67s = BaosongB.where(baosong_a_id: BaosongA.find_by_name(@sp_bsb.sp_s_70).id)

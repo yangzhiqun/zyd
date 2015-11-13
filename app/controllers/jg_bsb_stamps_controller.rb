@@ -54,7 +54,7 @@ class JgBsbStampsController < ApplicationController
   # POST /jg_bsb_stamps
   # POST /jg_bsb_stamps.json
   def create
-    @jg_bsb_stamp = JgBsbStamp.new(params[:jg_bsb_stamp])
+    @jg_bsb_stamp = JgBsbStamp.new(jg_bsb_stamp_params)
 
     respond_to do |format|
       if @jg_bsb_stamp.save
@@ -73,7 +73,7 @@ class JgBsbStampsController < ApplicationController
     @jg_bsb_stamp = JgBsbStamp.find(params[:id])
 
     respond_to do |format|
-      if @jg_bsb_stamp.update_attributes(params[:jg_bsb_stamp])
+      if @jg_bsb_stamp.update_attributes(jg_bsb_stamp_params)
         format.html { redirect_to @jg_bsb_stamp, notice: 'Jg bsb stamp was successfully updated.' }
         format.json { head :no_content }
       else
@@ -93,5 +93,10 @@ class JgBsbStampsController < ApplicationController
       format.html { redirect_to jg_bsb_stamps_url }
       format.json { head :no_content }
     end
+  end
+
+  private
+  def jg_bsb_stamp_params
+    params.require(:jg_bsb_stamp).permit(:jg_bsb_id, :note, :stamp_no, :image_path, :image_file)
   end
 end

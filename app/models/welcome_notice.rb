@@ -1,6 +1,7 @@
 #encoding: utf-8
 class WelcomeNotice < ActiveRecord::Base
-  attr_accessible :attachment_path_file, :red, :title, :top, :url
+  # attr_accessible :attachment_path_file, :red, :title, :top, :url
+
    def attachments_dir(folder)
     "#{Rails.application.config.attachment_path}/#{folder}"
   end 

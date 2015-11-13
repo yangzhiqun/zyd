@@ -123,7 +123,7 @@ class UsersController < ApplicationController
   # POST /users
   # POST /users.xml
   def create
-    @user = User.new(params[:user])
+    @user = User.new(user_params)
 
     respond_to do |format|
       if @user.save
@@ -145,7 +145,7 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
 
     respond_to do |format|
-      if @user.update_attributes(params[:user])
+      if @user.update_attributes(user_params)
         flash[:notice] = "User #{@user.name} was successfully updated."
         format.html { redirect_to(:action => 'index') }
         format.xml { head :ok }
@@ -323,5 +323,10 @@ class UsersController < ApplicationController
     savetempfile="public/#{(Time.now).year.to_s}年用户信息.xls"
     book.write(savetempfile)
     send_file(savetempfile, :disposition => "attachment")
+  end
+
+  private
+  def user_params
+    params.require(:user).permit(:jg_bsb_id, :id_card, :user_sign, :pub_xxfb, :pub_xxfb_sh, :user_s_city, :user_s_lcity, :yyadmin, :jsyp, :hcz_admin, :car_sys_id, :zxcy, :rwbs, :rwxd, :enable_api,:hcz_sc, :hcz_lt, :hcz_czap, :hcz_czbl, :hcz_czsh, :yysl, :zhxt, :yybl, :yysh, :yycz_permission, :name, :password, :password_confirmation,:tname,:tel,:eaddress,:company,:user_s_province,:user_d_authority,:user_d_authority_1,:user_jcjg,:user_jcjg_lxr,:user_jcjg_tel,:user_jcjg_mail,:user_cyjg,:user_cyjg_lxr,:user_cyjg_tel,:user_cyjg_mail,:user_d_authority_2,:user_d_authority_3,:user_d_authority_4,:user_d_authority_5,:user_i_js,:user_i_switch,:user_i_sp,:user_i_hzp,:user_i_bjp,:user_s_dl,:user_i_spys,:user_i_spss)
   end
 end

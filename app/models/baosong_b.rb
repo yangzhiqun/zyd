@@ -1,6 +1,6 @@
 #encoding: utf-8
 class BaosongB < ActiveRecord::Base
-  attr_accessible :baosong_a_id, :name, :note, :identifier, :file, :prov
+  # attr_accessible :baosong_a_id, :name, :note, :identifier, :file, :prov
 
   validates_presence_of :baosong_a_id, :message => "报送分类A不可为空"
   validates_presence_of :name, :message => "名称不可为空"

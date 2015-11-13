@@ -1,7 +1,7 @@
 #encoding: utf-8
 class Attachment < ActiveRecord::Base
 
-	attr_accessible :tmp_file, :filename, :content_type, :md5, :path
+	# attr_accessible :tmp_file, :filename, :content_type, :md5, :path
 
 	attr_accessor :tmp_file
 

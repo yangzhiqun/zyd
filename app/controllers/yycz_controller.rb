@@ -7,7 +7,7 @@ class YyczController < ApplicationController
   end
 
   def create
-    @yydjb = SpYydjb.new(params[:yycz])
+    @yydjb = SpYydjb.new(yydjb_params)
     # @yydjb.current_state = SpYydjb::State::LOGGED
     @yydjb.yytcsj = Time.now
     @yydjb.yysdsj = Time.now
@@ -270,7 +270,11 @@ class YyczController < ApplicationController
     end unless params[:data].blank?
 
     respond_to do |format|
-      @djb.update_attributes(params[:djb])
+      if params[:djb].blank?
+        @djb.save
+      else
+        @djb.update_attributes(djb_params)
+      end
 
       if params[:current_step_finished].to_i == 0
         format.html { redirect_to :back }
@@ -380,5 +384,14 @@ class YyczController < ApplicationController
     respond_to do |format|
       format.json { render :json => { :status => 'OK', :msg => ''}}
     end
+  end
+
+  private
+  def yydjb_params
+    params.require(:yycz).permit(:attachments, :attachment_file, :sp_bsb_id, :yyczqk, :yyczzt, :yyczjg, :fjzt, :fjsqqk, :bcydw, :bcydwsf, :cydw, :cydwsf, :bsscqy, :bsscqysf, :yysdsj, :yytcsj, :yyfl, :yyczbm, :yyczfzr, :cjbh, :ypmc, :ypgg, :ypph, :jyjl, :scrq, :yytcr, :yynr, :fjsqr, :fjsqsj, :fjslrq, :fjwcsj, :fjjg, :bljg, :djbm, :djr, :djsj, :blbm, :blr, :blsj, :tbbm, :tbr, :tbsj, :shbm, :shr, :shsj, :dj_delayed,:gzscqyrq,:gzbcydwrq)
+  end
+
+  def djb_params
+    params.require(:djb).permit(:attachments, :attachment_file, :sp_bsb_id, :yyczqk, :yyczzt, :yyczjg, :fjzt, :fjsqqk, :bcydw, :bcydwsf, :cydw, :cydwsf, :bsscqy, :bsscqysf, :yysdsj, :yytcsj, :yyfl, :yyczbm, :yyczfzr, :cjbh, :ypmc, :ypgg, :ypph, :jyjl, :scrq, :yytcr, :yynr, :fjsqr, :fjsqsj, :fjslrq, :fjwcsj, :fjjg, :bljg, :djbm, :djr, :djsj, :blbm, :blr, :blsj, :tbbm, :tbr, :tbsj, :shbm, :shr, :shsj, :dj_delayed,:gzscqyrq,:gzbcydwrq)
   end
 end

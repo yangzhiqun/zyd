@@ -1,5 +1,5 @@
 class SpBsbPicture < ActiveRecord::Base
-  attr_accessible :desc, :md5, :path, :sort_index, :sp_bsb_id
+  # attr_accessible :desc, :md5, :path, :sort_index, :sp_bsb_id
 
 	before_save :move_file
   after_destroy :remove_file

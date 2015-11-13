@@ -1,6 +1,6 @@
 #encoding: utf-8
 class SysProvince < ActiveRecord::Base
-  attr_accessible :name, :note, :code, :level
+  # attr_accessible :name, :note, :code, :level
 
   scope :level1, -> { where("level LIKE '_' or level LIKE '__'") }
 

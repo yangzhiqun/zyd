@@ -1,6 +1,6 @@
 #encoding: utf-8
 class TaskJgBsb < ActiveRecord::Base
-  attr_accessible :identifier, :sys_province_id, :a_category_id, :b_category_id, :c_category_id, :d_category_id, :jg_bsb_id, :note, :quota
+  # attr_accessible :identifier, :sys_province_id, :a_category_id, :b_category_id, :c_category_id, :d_category_id, :jg_bsb_id, :note, :quota
 
   validate :check_quota_amount
 

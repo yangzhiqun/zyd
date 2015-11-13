@@ -26,13 +26,13 @@ class ApplicationController < ActionController::Base
   # See ActionController::RequestForgeryProtection for details
   # Uncomment the :secret if you're not using the cookie session store
   protect_from_forgery :secret => '8fc080370e56e929a2d5afca5540a0f7'
-  
+
   # See ActionController::Base for details 
   # Uncomment this to filter the contents of submitted sensitive data parameters
   # from your application log (in this case, all fields with names like "password"). 
   # filter_parameter_logging :password
-    
-protected
+
+  protected
 
   def check_user_info_completeness
     if !current_user.nil? and !current_user.is_info_complete?
@@ -43,7 +43,7 @@ protected
   end
 
   def authorize
-      #logger.debug "authorize#{Time.now}\nhello#{Time.now}\nhello#{Time.now}\nhello#{Time.now}\n"
+    #logger.debug "authorize#{Time.now}\nhello#{Time.now}\nhello#{Time.now}\nhello#{Time.now}\n"
     unless User.find_by_id(session[:user_id])
       flash[:notice] = "Please log in"
       redirect_to :controller => 'admin', :action => 'login'
@@ -52,19 +52,20 @@ protected
 end
 
 def session_expiry
-    
-    #logger.debug "session_expiry#{Time.now}\nhello#{Time.now}\nhello#{Time.now}\nhello#{Time.now}\n"
-    @time_left = (session[:expires_at]-Time.now).to_i
-    
-    unless @time_left > 0
-        reset_session
-        flash[:error] = '连接超时.'
-        # render :js => parent.location.reload();
-        # redirect_to(:controller => 'main',:action => 're')
-        redirect_to "/users/timeout"
-    end
+
+  #logger.debug "session_expiry#{Time.now}\nhello#{Time.now}\nhello#{Time.now}\nhello#{Time.now}\n"
+  @time_left = session[:expires_at].to_i - Time.now.to_i
+
+  unless @time_left > 0
+    reset_session
+    flash[:error] = '连接超时.'
+    # render :js => parent.location.reload();
+    # redirect_to(:controller => 'main',:action => 're')
+    redirect_to "/users/timeout"
+  end
 end
+
 def update_activity_time
-    #logger.debug "update_activity_time#{Time.now}\nhello#{Time.now}\nhello#{Time.now}\nhello#{Time.now}\n"
-    session[:expires_at] = 3.hour.from_now
+  #logger.debug "update_activity_time#{Time.now}\nhello#{Time.now}\nhello#{Time.now}\nhello#{Time.now}\n"
+  session[:expires_at] = 3.hour.from_now.to_i
 end

@@ -6,7 +6,7 @@ class JgBsbsController < ApplicationController
   # GET /jg_bsbs
   # GET /jg_bsbs.json
   def index
-    @jg_bsbs = JgBsb.select("*").where(status: 0)
+    @jg_bsbs = JgBsb.where(status: 0)
 
     unless params[:name].blank?
       @jg_bsbs = @jg_bsbs.where("jg_name LIKE ?", "%#{params[:name]}%")
@@ -20,7 +20,7 @@ class JgBsbsController < ApplicationController
       @jg_bsbs = @jg_bsbs.where("jg_province LIKE ?", "%#{params[:province]}%")
     end
 
-    @jg_bsbs = @jg_bsbs.paginate(:order => 'jg_province', :page => params[:page], :per_page => 10)
+    @jg_bsbs = @jg_bsbs.order('jg_province').paginate(:page => params[:page], :per_page => 10)
 
     respond_to do |format|
       format.html # index.html.erb

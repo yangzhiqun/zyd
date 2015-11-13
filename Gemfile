@@ -45,7 +45,7 @@ group :development do
   gem 'spring'
 end
 
-gem 'mysql2'
+gem 'mysql2', '~>0.3.18'
 
 gem 'rmagick', '~> 2.13.3'
 gem 'jquery-rails'

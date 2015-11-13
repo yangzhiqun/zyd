@@ -1,7 +1,7 @@
 #encoding: utf-8
 class SpYydjb < ActiveRecord::Base
   # attr_accessible :title, :body
-  attr_accessible :attachments, :attachment_file, :sp_bsb_id, :yyczqk, :yyczzt, :yyczjg, :fjzt, :fjsqqk, :bcydw, :bcydwsf, :cydw, :cydwsf, :bsscqy, :bsscqysf, :yysdsj, :yytcsj, :yyfl, :yyczbm, :yyczfzr, :cjbh, :ypmc, :ypgg, :ypph, :jyjl, :scrq, :yytcr, :yynr, :fjsqr, :fjsqsj, :fjslrq, :fjwcsj, :fjjg, :bljg, :djbm, :djr, :djsj, :blbm, :blr, :blsj, :tbbm, :tbr, :tbsj, :shbm, :shr, :shsj, :dj_delayed,:gzscqyrq,:gzbcydwrq
+  # attr_accessible :attachments, :attachment_file, :sp_bsb_id, :yyczqk, :yyczzt, :yyczjg, :fjzt, :fjsqqk, :bcydw, :bcydwsf, :cydw, :cydwsf, :bsscqy, :bsscqysf, :yysdsj, :yytcsj, :yyfl, :yyczbm, :yyczfzr, :cjbh, :ypmc, :ypgg, :ypph, :jyjl, :scrq, :yytcr, :yynr, :fjsqr, :fjsqsj, :fjslrq, :fjwcsj, :fjjg, :bljg, :djbm, :djr, :djsj, :blbm, :blr, :blsj, :tbbm, :tbr, :tbsj, :shbm, :shr, :shsj, :dj_delayed,:gzscqyrq,:gzbcydwrq
   attr_accessor :session
 	validates_presence_of :cjbh, message: "抽样单号务必填写"
 

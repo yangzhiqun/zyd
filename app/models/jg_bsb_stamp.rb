@@ -1,5 +1,5 @@
 class JgBsbStamp < ActiveRecord::Base
-  attr_accessible :jg_bsb_id, :note, :stamp_no, :image_path, :image_file
+  # attr_accessible :jg_bsb_id, :note, :stamp_no, :image_path, :image_file
 
   validates_presence_of :stamp_no, message: '签章规则号不可为空'
   validates_presence_of :jg_bsb_id, message: '机构信息不可为空'

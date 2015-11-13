@@ -49,7 +49,7 @@ class AdminController < ApplicationController
           session[:user_dl]=''
           session[:user_i_switch]=0
         end
-        session[:expires_at] = 180.minutes.from_now
+        session[:expires_at] = 180.minutes.from_now.to_i
         if session[:user_js]==1&&session[:user_authority_1]==1 #药监局数据采样
           session[:change_js]=1
         end
@@ -184,7 +184,7 @@ class AdminController < ApplicationController
             session[:user_dl]=''
             session[:user_i_switch]=0
           end
-          session[:expires_at] = 180.minutes.from_now
+          session[:expires_at] = 180.minutes.from_now.to_i
           if session[:user_js]==1&&session[:user_authority_1]==1 #药监局数据采样
             session[:change_js]=1
           end
