@@ -1,5 +1,5 @@
 class XsbgTt < ActiveRecord::Base
-  attr_accessible :CJBH, :GJMC, :sp_bsb_id, :spdata_ids
+  #attr_accessible :CJBH, :GJMC, :sp_bsb_id, :spdata_ids
 	attr_accessor :spdata_ids
 
 	validates_uniqueness_of :sp_bsb_id, :message => "已存在该条报告信息"

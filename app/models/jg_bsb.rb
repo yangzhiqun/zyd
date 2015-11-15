@@ -40,7 +40,11 @@ class JgBsb < ActiveRecord::Base
   end
 #=begin
   def jg_name
-    self.current.name
+    if self.current.nil?
+      '<span class="text-danger"><未设置></span>'.html_safe
+    else
+      self.current.name
+    end
   end
 
   def self.find_by_jg_name(name)

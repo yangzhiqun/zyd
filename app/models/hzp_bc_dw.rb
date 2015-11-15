@@ -1,6 +1,6 @@
 #encoding=UTF-8
 class HzpBcDw < ActiveRecord::Base
-    attr_accessible :dwdq, :dwdz, :dwfr, :dwfrdh, :dwfzr, :dwfzrdh, :dwlx, :dwlxzdy,:dwname, :dwsf, :dwxs, :dwxz, :dwyb
+    #attr_accessible :dwdq, :dwdz, :dwfr, :dwfrdh, :dwfzr, :dwfzrdh, :dwlx, :dwlxzdy,:dwname, :dwsf, :dwxs, :dwxz, :dwyb
     OPTIONS1=[
         {:name=>'生产企业',:id=>'生产企业'},
         {:name=>'商场',:id=>'商场'},

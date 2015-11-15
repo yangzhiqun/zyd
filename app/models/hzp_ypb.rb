@@ -1,6 +1,6 @@
 #encoding=UTF-8
 class HzpYpb < ActiveRecord::Base
-  attr_accessible :dwname, :ypflei, :ypleib, :ypleibzdy, :ypname, :ypno
+  #attr_accessible :dwname, :ypflei, :ypleib, :ypleibzdy, :ypname, :ypno
     OPTIONS1=[
     {:name=>'国产特殊',:id=>'生产企业'},
     {:name=>'国产非特殊',:id=>'商场'},

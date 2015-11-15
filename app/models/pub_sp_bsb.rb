@@ -1,4 +1,5 @@
 class PubSpBsb < ActiveRecord::Base
+=begin
   attr_accessible :title, :user_id, :username, :publication_type, :sp_bsb_id,
     :sp_s_1,:sp_s_2,:sp_s_3,:sp_s_4,:sp_s_5,:sp_s_6,:sp_s_7,:sp_s_8,:sp_s_9,:sp_s_10,:sp_s_11,:sp_s_12,:sp_s_13,:sp_s_14,:sp_n_15,:sp_s_16,:sp_s_17,:sp_s_18,:sp_s_19,:sp_s_20,:sp_s_21,:sp_d_22,:sp_s_23,:sp_s_24,:sp_s_25,:sp_s_26,:sp_s_27,:sp_d_28,:sp_n_29,:sp_s_30,:sp_n_31,:sp_n_32,:sp_s_33,:sp_s_34,:sp_s_35,:sp_s_36,:sp_s_37,:sp_d_38,:sp_s_39,:sp_s_40,:sp_s_41,:sp_s_42,:sp_s_43,:sp_s_44,:sp_s_45,:sp_d_46,:sp_d_47,:sp_s_48,:sp_s_49,:sp_s_50,:sp_s_51,:sp_s_52,:sp_s_53,:sp_s_54,:sp_s_55,:sp_s_56,:sp_s_57,:sp_s_58,:sp_s_59,:sp_s_60,:sp_s_61,:sp_s_62,:sp_s_63,:sp_s_64,:sp_s_65,:sp_s_66,:sp_s_67,:sp_s_68,:sp_s_69,:sp_s_70,:sp_s_71,:sp_s_72,:sp_s_73,:sp_s_74,:sp_s_75,:sp_s_76,:sp_s_77,:sp_s_78,:sp_s_79,:sp_s_80,:sp_s_81,:sp_s_82,:sp_s_83,:sp_s_84,:sp_s_85,:sp_d_86,:sp_s_87,:sp_s_88,:tname,
   :sp_n_jcxcount,
@@ -347,6 +348,7 @@ class PubSpBsb < ActiveRecord::Base
   :updated_at,
   :czb_reverted_flag,
   :synced
+=end
 
   module State
     INITED      = 0

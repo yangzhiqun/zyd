@@ -1,4 +1,5 @@
 class BjpBsb < ActiveRecord::Base
+=begin
     attr_accessible :bjp_s_1, :bjp_s_2, :bjp_s_3, :bjp_s_4, :bjp_s_5, :bjp_s_6, :bjp_s_7, :bjp_s_8, :bjp_s_9, :bjp_s_10, :bjp_s_11, :bjp_s_12, :bjp_s_13, :bjp_s_14, :bjp_s_15, :bjp_s_16, :bjp_s_17, :bjp_s_18, :bjp_s_19, :bjp_s_20,:bjp_d_21,:bjp_s_22, :bjp_s_23, :bjp_n_24, :bjp_s_25, :bjp_n_26, :bjp_s_27, :bjp_s_28, :bjp_s_29, :bjp_s_30, :bjp_s_31, :bjp_s_32, :bjp_s_33, :bjp_d_34, :bjp_s_35, :bjp_s_36, :bjp_s_37, :bjp_s_38, :bjp_s_39, :bjp_s_40, :bjp_s_41, :bjp_d_42,:bjp_d_43,:bjp_s_44, :bjp_s_45, :bjp_s_46, :bjp_s_47, :bjp_s_48, :bjp_s_49, :bjp_s_50, :bjp_s_51, :bjp_s_52, :bjp_s_53, :bjp_s_54, :bjp_s_55, :bjp_s_56, :bjp_s_57,:bjp_s_58, :bjp_s_59, :bjp_s_60, :bjp_s_61, :bjp_s_62, :bjp_s_63, :bjp_s_64, :bjp_s_65,:bjp_s_66,:bjp_s_67, :bjp_s_68, :bjp_s_69, :bjp_s_70, :bjp_s_71, :bjp_s_72, :bjp_s_73, :bjp_s_74, :bjp_s_75, :bjp_s_76, :bjp_s_77, :bjp_s_78, :bjp_s_79, :bjp_s_80, :bjp_s_81, :bjp_s_82, :bjp_s_83, :bjp_s_84, :bjp_s_85, :bjp_s_86, :bjp_s_87,:bjp_s_88,:bjp_s_89, :bjp_s_90, :bjp_s_91,:bjp_s_92,:bjp_s_93, :bjp_s_94, :bjp_d_95,:bjp_s_96,:bjp_s_97,:tname,:bjp_n_jcxcount,:bjp_s_bsfl,:bjp_s_2_1,:bjp_s_40_1,:bjp_s_110_1,
     :bjp_s_110_2,
     :bjp_s_110_3,
@@ -342,12 +343,6 @@ class BjpBsb < ActiveRecord::Base
     :bjp_s_139_10,
     :bjp_s_140_10,
     :bjp_i_state
+=end
     has_many :bjpdata, :dependent => :delete_all
-
-    
-    
-    
-    
-
-
 end

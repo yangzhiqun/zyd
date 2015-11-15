@@ -1,4 +1,5 @@
 class XsbgTtDatum < ActiveRecord::Base
+=begin
   attr_accessible :xsbg_tt_id,
 		:spdata_0, 
 		:spdata_1,
@@ -22,4 +23,5 @@ class XsbgTtDatum < ActiveRecord::Base
 		:CJBH, 
 		:sp_bsb_id,
 		:spdata_id
+=end
 end

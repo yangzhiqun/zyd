@@ -1,6 +1,6 @@
 #encoding: utf-8
 class SampleMember < ActiveRecord::Base
-  attr_accessible :attachment_id, :gender, :edu_bg, :jg_name, :major, :mobile, :note, :title, :uid, :username, :work_history, :portrait_file
+  #attr_accessible :attachment_id, :gender, :edu_bg, :jg_name, :major, :mobile, :note, :title, :uid, :username, :work_history, :portrait_file
 
 	validates_uniqueness_of :uid, :message => "已存在该用户", on: :create
 

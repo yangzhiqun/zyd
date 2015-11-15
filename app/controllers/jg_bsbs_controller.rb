@@ -51,6 +51,7 @@ class JgBsbsController < ApplicationController
     @jg_bsb.jg_sampling=0
     @jg_bsb.jg_detection=0
     @jg_bsb.jg_enable=0
+
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @jg_bsb }
@@ -65,8 +66,8 @@ class JgBsbsController < ApplicationController
   # POST /jg_bsbs
   # POST /jg_bsbs.json
   def create
-    @jg_bsb = JgBsb.new(params[:jg_bsb])
-    result_record=JgBsb.find(:first, :conditions => ["jg_name=? and status = 0", params[:jg_bsb][:jg_name]])
+    @jg_bsb = JgBsb.new(jg_bsb_params)
+    result_record = JgBsb.where("jg_name=? and status = 0", params[:jg_bsb][:jg_name]).last
     respond_to do |format|
       ActiveRecord::Base.transaction do
         if result_record!=nil
@@ -129,7 +130,7 @@ class JgBsbsController < ApplicationController
     @jg_bsb = JgBsb.find(params[:id])
 
     respond_to do |format|
-      if @jg_bsb.update_attributes(params[:jg_bsb])
+      if @jg_bsb.update_attributes(jg_bsb_params)
 
         format.html { redirect_to jg_bsbs_url, notice: 'Jg bsb was successfully updated.' }
         format.json { head :no_content }
@@ -225,5 +226,11 @@ class JgBsbsController < ApplicationController
   private
   def check_user_role
     return not_found if current_user.nil? or !current_user.is_admin?
+  end
+
+  def jg_bsb_params
+    params.require(:jg_bsb).permit(
+        :status, :pdf_sign_rules, :attachment_path_file, :gpsname, :gpspassword, :api_ip_address, :code, :jg_address, :jg_administrion, :jg_bjp_permission, :jg_certification, :jg_contacts, :jg_detection, :jg_enable, :jg_group, :jg_group_category, :jg_higher_level, :jg_hzp_permission, :jg_leader, :jg_name, :jg_sampling, :jg_sp_permission, :jg_tel, :jg_word_area, :jg_province, :jg_email
+    )
   end
 end
