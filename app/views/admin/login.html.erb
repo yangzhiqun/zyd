@@ -36,7 +36,7 @@
 
     $(function () {
         <% unless flash[:error].blank? %>
-        setTimeout(function(){
+        setTimeout(function () {
             alert('<%= flash[:error] %>');
         }, 500);
         <% end %>
@@ -113,7 +113,7 @@
                 </div>
                 <br>
                 <br>
-                <INPUT id="cert-login" type="image" src="/assets/bt2.jpg" onclick="submit"><br>
+                <INPUT id="cert-login" type="image" src="<%= asset_path('bt2.jpg')%>" onclick="submit"><br>
                 <a style="color: red; font-size: 12px;" href="http://7xjza1.com1.z0.glb.clouddn.com/BJCA证书助手.v1.zip">安装证书助手</a>
                 <br>
             <% end %>
@@ -129,9 +129,8 @@
         <DIV class="fm1r"><INPUT style="WIDTH: 150px" name="name" id="name"></DIV>
         <DIV class="fm1l">密 码</DIV>
         <DIV class="fm1r"><INPUT style="WIDTH: 150px" type="password" name="password" id="password"></DIV>
-        <DIV class="fm2l"><INPUT type="image" src="/assets/bt2.jpg" onclick="submit"></DIV>
-        <!--%= link_to(image_tag("bt2-02.jpg"),{:controller=>"users",:action=>"new"},:method=>"get",:class=>"fm2r")%-->
-        <DIV class="fm2r"><INPUT type="image" src="/assets/bt2-02.jpg"></DIV>
+        <DIV class="fm2l"><INPUT type="image" src="<%= asset_path('bt2.jpg') %>" onclick="submit"></DIV>
+        <DIV class="fm2r"><INPUT type="image" src="<%= asset_path('bt2-02.jpg')%>"></DIV>
         <% if Rails.application.config.site[:enable_ca_login] %>
             <br>
             <br>
