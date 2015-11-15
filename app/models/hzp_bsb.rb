@@ -1,4 +1,5 @@
 class HzpBsb < ActiveRecord::Base
+=begin
   attr_accessible :hzp_s_1, :hzp_s_2, :hzp_s_3, :hzp_s_4, :hzp_s_5, :hzp_s_6, :hzp_s_7, :hzp_s_8, :hzp_s_9, :hzp_s_10, :hzp_s_11, :hzp_s_12, :hzp_s_13, :hzp_s_14, :hzp_s_15, :hzp_s_16, :hzp_s_17, :hzp_s_18, :hzp_s_19, :hzp_d_20,:hzp_s_21,:hzp_s_22, :hzp_s_23, :hzp_s_24, :hzp_s_25, :hzp_n_26, :hzp_s_27, :hzp_n_28, :hzp_s_29, :hzp_s_30, :hzp_s_31, :hzp_s_32, :hzp_s_33, :hzp_d_34, :hzp_s_35, :hzp_s_36, :hzp_s_37, :hzp_s_38, :hzp_s_39, :hzp_s_40, :hzp_s_41, :hzp_d_42,:hzp_d_43,:hzp_s_44, :hzp_s_45, :hzp_s_46, :hzp_s_47, :hzp_s_48, :hzp_s_49, :hzp_s_50, :hzp_s_51, :hzp_s_52, :hzp_s_53, :hzp_s_54, :hzp_s_55, :hzp_s_56, :hzp_s_57,:hzp_s_58, :hzp_s_59, :hzp_s_60, :hzp_s_61, :hzp_s_62, :hzp_s_63, :hzp_s_64, :hzp_s_65,:hzp_s_66,:hzp_s_67, :hzp_s_68, :hzp_s_69, :hzp_s_70, :hzp_s_71, :hzp_s_72, :hzp_s_73, :hzp_s_74, :hzp_s_75, :hzp_s_76, :hzp_s_77, :hzp_s_78, :hzp_s_79, :hzp_s_80, :hzp_s_81, :hzp_s_82, :hzp_s_83, :hzp_s_84, :hzp_s_85, :hzp_s_86, :hzp_s_87,:hzp_s_88,:hzp_s_89, :hzp_d_90, :hzp_s_91,:hzp_s_92,:hzp_s_93, :hzp_s_94, :hzp_s_95,:hzp_s_96,:hzp_s_97,:tname,
     
     
@@ -349,5 +350,6 @@ class HzpBsb < ActiveRecord::Base
     :hzp_s_139_10,
     :hzp_s_140_10,
     :hzp_i_state
+=end
     has_many :hzpdata, :dependent => :delete_all
 end

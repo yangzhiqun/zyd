@@ -38,7 +38,7 @@ class JgBsbStampsController < ApplicationController
     @jg_bsb_stamp = JgBsbStamp.find(params[:id])
   end
 
-  require 'rmagick'
+  #require 'rmagick'
   def cover
     @jg_bsb_stamp = JgBsbStamp.find(params[:jg_bsb_stamp_id])
     md5 = Digest::MD5.file(@jg_bsb_stamp.image_file).hexdigest.upcase

@@ -1,6 +1,6 @@
 class DebanCategory < ActiveRecord::Base
-	establish_connection 'deban'
-	self.table_name = 'am_type'
+	#establish_connection 'deban'
+	#self.table_name = 'am_type'
 
 	def self.a_categories
 		DebanCategory.where(type_layer: CategoryLayer::A)

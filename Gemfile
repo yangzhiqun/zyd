@@ -60,7 +60,7 @@ gem 'wicked_pdf'
 gem 'wkhtmltopdf-binary'
 gem 'rest-client'
 gem "jquery-fileupload-rails"
-#gem 'sidekiq'
+gem 'sidekiq'
 gem 'unicorn'
 gem 'savon'
 gem 'exception_notification'
