@@ -54,18 +54,18 @@
 //= require sp_bsb_publications
 
 //= require provincesdata
-//= require spfldata
-//= require spdata1
-//= require spdata2
-//= require spdata3
-//= require spdata4
-//= require spdata5
-//= require spdata6
-//= require spdata7
-//= require spdata8
-//= require spdata10
-//= require bjpdata
-//= require hzpdata
+// require spfldata
+// require spdata1
+// require spdata2
+// require spdata3
+// require spdata4
+// require spdata5
+// require spdata6
+// require spdata7
+// require spdata8
+// require spdata10
+// require bjpdata
+// require hzpdata
 
 $(function(){
   $('#preview').iframeAutoHeight({debug: false});
