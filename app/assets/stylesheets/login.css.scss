@@ -4,7 +4,7 @@ body {
 	margin:0px;
 	padding:0px;
 	text-align:center;
-	background:#fff url(/assets/line_main.gif) repeat-x 0 0;
+	background:#fff url(asset_path('line_main.gif')) repeat-x 0 0;
 	font-family: "宋体" Arial, Helvetica, sans-serif;
 }
 img { border:none; }
@@ -13,7 +13,7 @@ img { border:none; }
 	margin:0 auto;
 	width:500px;
 	height:120px;
-	background: url(/assets/logologin.jpg) no-repeat 0 42px;
+	background: url(asset_path('.logologin.jpg')) no-repeat 0 42px;
 }
 
 .logmainbox {
@@ -34,13 +34,13 @@ img { border:none; }
 	float:left;
 	width:335px;
 	height:388px;
-	background:url(/assets/main_img1.jpg) no-repeat 0 0;
+	background:url(asset_path('main_img1.jpg')) no-repeat 0 0;
 }
 .right {
 	float:right;
 	width:345px;
 	height:388px;
-	background:url(/assets/main_img2.jpg) no-repeat 0 0;
+	background:url(asset_path('main_img2.jpg')) no-repeat 0 0;
 	font:bold 15px "宋体";
 	text-align:left;
 	color:#fff;
@@ -95,7 +95,7 @@ img { border:none; }
 	font-size:12px;
 	line-height:23px;
 	text-align:left;
-	background:url(/assets/tips.gif) no-repeat 0 -3px;
+	background:url(asset_path('tips.gif')) no-repeat 0 -3px;
 }
 .tips p {
 	margin-top:15px;
