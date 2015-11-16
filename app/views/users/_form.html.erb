@@ -23,10 +23,6 @@
         <% end %>
         <script>
             $(document).ready(function () {
-                $.each(SPDL1, function (index, data) {
-                    $("#user_user_s_dl").append("<option value='" + data + "'>" + data + "</option>");
-                });
-                $("#user_user_s_dl").val('<%=@user["user_s_dl"]%>');
 
                 $(".region").ProvinceCity({
                     dprovince: "<%= @user.user_s_province %>",
@@ -99,7 +95,7 @@
             <div class="checkbox">
               <label><%= f.check_box :user_i_switch, options = {}, checked_value = "1", unchecked_value = "0" %>
                 是否为工作组</label></div>
-            <%= f.select :user_s_dl, '', {}, :class => "form-control input-sm" %>
+            <%= f.select :user_s_dl, options_for_select(ACategory.select('distinct name').map{|c| [c.name, c.name]}, @user.user_s_dl), {}, :class => "form-control input-sm" %>
             <br>
 
             <div class="form-inline">

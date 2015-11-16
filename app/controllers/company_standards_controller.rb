@@ -49,7 +49,7 @@ class CompanyStandardsController < ApplicationController
   # POST /company_standards
   # POST /company_standards.json
   def create
-    @company_standard = CompanyStandard.new(params[:company_standard])
+    @company_standard = CompanyStandard.new(company_standard_params)
     @company_standard.user_id = current_user.id
 
     respond_to do |format|
@@ -72,7 +72,7 @@ class CompanyStandardsController < ApplicationController
     end
 
     respond_to do |format|
-      if @company_standard.update_attributes(params[:company_standard])
+      if @company_standard.update_attributes(company_standard_params)
         format.html { redirect_to @company_standard, notice: '更新成功！' }
         format.json { head :no_content }
       else
@@ -107,5 +107,9 @@ class CompanyStandardsController < ApplicationController
   private
   def require_authorization
     return not_found if current_user.nil?
+  end
+
+  def company_standard_params
+    params.require(:company_standard).permit(:attachment_id, :author_company, :name, :number, :valid_at, :user_id, :attachment_path_file)
   end
 end

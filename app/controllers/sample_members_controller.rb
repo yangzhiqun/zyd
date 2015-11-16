@@ -53,7 +53,7 @@ class SampleMembersController < ApplicationController
   # POST /sample_members.json
   def create
 		return not_found unless current_user.is_admin?
-    @sample_member = SampleMember.new(params[:sample_member])
+    @sample_member = SampleMember.new(member_params)
 
     respond_to do |format|
       if @sample_member.save
@@ -73,7 +73,7 @@ class SampleMembersController < ApplicationController
     @sample_member = SampleMember.find(params[:id])
 
     respond_to do |format|
-      if @sample_member.update_attributes(params[:sample_member])
+      if @sample_member.update_attributes(member_params)
         format.html { redirect_to @sample_member, notice: 'Sample member was successfully updated.' }
         format.json { head :no_content }
       else
@@ -100,5 +100,12 @@ class SampleMembersController < ApplicationController
     @sample_member = SampleMember.find(params[:id])
 		@attachment = Attachment.find(@sample_member.attachment_id)
 		send_file("#{@attachment.absolute_path}", :filename => "#{@sample_member.username}", :disposition => 'inline')
-	end
+  end
+
+  private
+  def member_params
+    params.require(:sample_member).permit(
+        :attachment_id, :gender, :edu_bg, :jg_name, :major, :mobile, :note, :title, :uid, :username, :work_history, :portrait_file
+    )
+  end
 end

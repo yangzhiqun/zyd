@@ -43,7 +43,7 @@ class BaosongAsController < ApplicationController
   # POST /baosong_as
   # POST /baosong_as.json
   def create
-    @baosong_a = BaosongA.new(params[:baosong_a])
+    @baosong_a = BaosongA.new(baosong_a_params)
 
     respond_to do |format|
       if @baosong_a.save
@@ -62,7 +62,7 @@ class BaosongAsController < ApplicationController
     @baosong_a = BaosongA.find(params[:id])
 
     respond_to do |format|
-      if @baosong_a.update_attributes(params[:baosong_a])
+      if @baosong_a.update_attributes(baosong_a_params)
         format.html { redirect_to @baosong_a, notice: 'Baosong a was successfully updated.' }
         format.json { head :no_content }
       else
@@ -82,5 +82,10 @@ class BaosongAsController < ApplicationController
       format.html { redirect_to baosong_as_url }
       format.json { head :no_content }
     end
+  end
+
+  private
+  def baosong_a_params
+    params.require(:baosong_a).permit(:name, :note, :rwlylx, :prov)
   end
 end

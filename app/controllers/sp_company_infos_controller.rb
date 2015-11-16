@@ -40,14 +40,14 @@ class SpCompanyInfosController < ApplicationController
   def edit
     @sp_company_info = SpCompanyInfo.find(params[:id])
     @options = []
-    @options[68]=Flexcontent.find_all_by_flex_field("sp_bsb_sp_s_68",:order=>"flex_sortid ASC")
+    @options[68] = Flexcontent.where(flex_field: "sp_bsb_sp_s_68").order("flex_sortid ASC")
     @options[68]=@options[68].map{|option|[option[:flex_name],option[:flex_id]]}
   end
 
   # POST /sp_company_infos
   # POST /sp_company_infos.json
   def create
-    @sp_company_info = SpCompanyInfo.new(params[:sp_company_info])
+    @sp_company_info = SpCompanyInfo.new(sp_company_info_params)
 
     respond_to do |format|
       if @sp_company_info.save
@@ -66,7 +66,7 @@ class SpCompanyInfosController < ApplicationController
     @sp_company_info = SpCompanyInfo.find(params[:id])
 
     respond_to do |format|
-      if @sp_company_info.update_attributes(params[:sp_company_info])
+      if @sp_company_info.update_attributes(sp_company_info_params)
         format.html { redirect_to "/sp_company_infos" }
         format.json { head :no_content }
       else
@@ -151,5 +151,9 @@ class SpCompanyInfosController < ApplicationController
         format.json { render :json => { :status => 'OK', :msg => nil, :sql => @companies.to_sql, :companies => @companies.map{|record| {:id => record.id, :title => "#{record.sp_s_1}", :count => record.cnt, :sp_s_68 => record.sp_s_68}}} }
       end
     end
+  end
+
+  def sp_company_info_params
+    params.require(:sp_company_info).permit(:sp_s_1, :sp_s_2, :sp_s_10, :sp_s_11, :sp_s_12, :sp_s_201, :sp_s_215, :sp_s_23, :sp_s_3, :sp_s_4, :sp_s_5, :sp_s_68, :sp_s_7, :sp_s_8, :sp_s_9, :sp_s_bsfl)
   end
 end
