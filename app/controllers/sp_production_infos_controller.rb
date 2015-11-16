@@ -26,7 +26,7 @@ class SpProductionInfosController < ApplicationController
   # POST /sp_production_infos
   # POST /sp_production_infos.json
   def create
-    @sp_production_info = SpProductionInfo.new(params[:sp_production_info])
+    @sp_production_info = SpProductionInfo.new(sp_production_info_params)
     
     respond_to do |format|
       if @sp_production_info.save
@@ -45,7 +45,7 @@ class SpProductionInfosController < ApplicationController
     @sp_production_info = SpProductionInfo.find(params[:id])
     
     respond_to do |format|
-      if @sp_production_info.update_attributes(params[:sp_production_info])
+      if @sp_production_info.update_attributes(sp_production_info_params)
         format.html { redirect_to "/sp_production_infos" }
         format.json { head :no_content }
         else
@@ -102,4 +102,8 @@ class SpProductionInfosController < ApplicationController
     end
   end
 
+	private
+	def sp_production_info_params
+		params.require(:sp_production_info).permit(:cpmc, :fzdw, :fzrq, :jyfs, :qymc, :scbh, :scdz, :zs, :zsyxq, :sp_s_3, :sp_s_4, :sp_s_5, :spdl,:spyl,:spcyl,:spxl)
+	end
 end

@@ -81,10 +81,6 @@
             $("#jg_bsb_jg_province").append("<option value='" + data + "'>" + data + "</option>");
         });
         $("#jg_bsb_jg_province").val('<%=@jg_bsb["jg_province"]%>');
-        $.each(SPDL1, function (index, data) {
-            $("#jg_bsb_jg_group_category").append("<option value='" + data + "'>" + data + "</option>");
-        });
-        $("#jg_bsb_jg_group_category").val('<%=@jg_bsb["jg_group_category"]%>');
 
         $('#btn-modify').click(function () {
             $(this).addClass('hidden');
@@ -229,7 +225,7 @@
             </label>
           </p>
         </td>
-        <td colspan="10" class="form-inline">牵头:<%= f.select :jg_group_category, '', {}, {class: 'form-control input-sm'} %></td>
+        <td colspan="10" class="form-inline">牵头:<%= f.select :jg_group_category, options_for_select(ACategory.select('distinct name').map{|c| [c.name, c.name]}, @jg_bsb.jg_group_category), {}, {style: 'width: 100px', class: 'form-control input-sm'} %></td>
       </tr>
       <tr>
         <td colspan="6">
@@ -305,8 +301,6 @@
           <tr>
             <td colspan="40">
               <%= f.submit(vaule="保存并退出", options={"id" => "save_and_exit", :class => "btn btn-xs btn-primary"}) %>
-              &nbsp;&nbsp;&nbsp;
-              <%= f.submit(vaule="保存并新建", options={"id" => "save_and_new", :class => "btn btn-xs btn-success"}) %>
             </td>
           </tr>
       <% end %>

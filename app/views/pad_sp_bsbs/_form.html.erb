@@ -333,8 +333,10 @@
             $("#pad_sp_bsb_sp_s_50").val(jg_data[index_jg][1]);
             $("#pad_sp_bsb_sp_s_51").val(jg_data[index_jg][2]);
         });
+				<% if @sp_bsb.sp_s_43.blank? %>
         $("#jg_jg_id").val("<%= current_user.jg_bsb.jg_name %>")
         $('#jg_jg_id').trigger('change');
+				<% end %>
     });
 </script>
 <style type="text/css">

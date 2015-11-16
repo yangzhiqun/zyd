@@ -152,17 +152,7 @@ class SpBsbsController < ApplicationController
 
     @xkz_options=[['请选择', '请选择'], ['流通许可证', '流通许可证'], ['餐饮服务许可证', '餐饮服务许可证']]
 
-    # 这里做两遍，可能是为了将属于自己省份的排序到前面
-    temp = JgBsb.where('status = 0 and jg_province=? and jg_sp_permission=1 and jg_detection=1', session[:user_province]).order('jg_province')
-    @options[100] = temp.map { |option| [option.jg_name, option.jg_name] }
-    @options[101] = temp.map { |option| [option[:jg_contacts], option[:jg_tel], option[:jg_email]] }
-    temp = JgBsb.where('status = 0 and jg_province <> ? and jg_sp_permission = 1 and jg_detection = 1', session[:user_province]).order('jg_province')
-
-    temp1 = temp.map { |option| [option.jg_name, option.jg_name] }
-    temp2 = temp.map { |option| [option[:jg_contacts], option[:jg_tel], option[:jg_email]] }
-
-    @options[100] = @options[100]+temp1
-    @options[101] = @options[101]+temp2
+		@jg_bsbs = JgBsb.where('status = 0 and jg_sp_permission = 1 and jg_detection = 1', session[:user_province]).order('jg_province')
   end
 
   #2014-01-12

@@ -40,7 +40,7 @@ class UsersController < ApplicationController
     if session[:user_name]=='admin'
       @users = User.paginate_by_sql([str, province, username], :page => params[:page], :per_page => 10)
     else
-      @users = User.find_all_by_name(session[:user_name])
+      @users = User.where(name: session[:user_name])
     end
 
 
@@ -293,7 +293,7 @@ class UsersController < ApplicationController
       sheet[count_row, 2]=info.tel
       sheet[count_row, 3]=info.eaddress
       sheet[count_row, 4]=info.user_s_province
-      sheet[count_row, 5]=info.jg_bsb.jg_name
+      sheet[count_row, 5]=info.jg_bsb.jg_name unless info.jg_bsb.nil?
       sheet[count_row, 6]=info.user_i_switch
       sheet[count_row, 7]=info.user_i_js
       sheet[count_row, 8]=info.user_i_spys

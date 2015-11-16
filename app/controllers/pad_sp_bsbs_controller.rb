@@ -413,7 +413,7 @@ class PadSpBsbsController < ApplicationController
 
       if (@sp_bsb.sp_s_16 == params[:pad_sp_bsb][:sp_s_16]) || (@check_existance == nil)
         respond_to do |format|
-          if @sp_bsb.update_attributes(params[:pad_sp_bsb])
+          if @sp_bsb.update_attributes(pad_sp_bsb_params)
 =begin
             params[:spdata].delete_if{|data| data.keys.length == 1}
             createlog=0
@@ -463,7 +463,7 @@ class PadSpBsbsController < ApplicationController
         if current_user.user_d_authority == 1 and current_user.jg_bsb.all_names.include?(@sp_bsb.sp_s_43) and @sp_bsb.sp_i_state == ::PadSpBsb::Step::FINISHED
           params[:pad_sp_bsb][:sp_i_state] = ::PadSpBsb::Step::SAMPLE_ACCEPTED
 
-          if @sp_bsb.update_attributes(params[:pad_sp_bsb])
+          if @sp_bsb.update_attributes(pad_sp_bsb_params)
             @sp_bsb_new = SpBsb.new
             @sp_bsb.attributes.keys.each do |key|
               if !['updated_at', 'created_at', 'id', 'sp_i_state'].include?(key) and @sp_bsb_new.respond_to?("#{key}=")
@@ -493,7 +493,7 @@ class PadSpBsbsController < ApplicationController
 
             params[:pad_sp_bsb][:sp_i_state] = ::PadSpBsb::Step::SAMPLE_REFUSED
 
-            if @sp_bsb.update_attributes(params[:pad_sp_bsb])
+            if @sp_bsb.update_attributes(pad_sp_bsb_params)
               redirect_to :back, :flash => {:notice => "成功拒收该样品！"}
             else
               redirect_to :back, :flash => {:error => "拒收样品失败！#{@sp_bsb.errors.first.last.as_json}"}
