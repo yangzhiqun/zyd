@@ -5,7 +5,7 @@ require 'net/http'
 class SpBsbsController < ApplicationController
   include ApplicationHelper
 
-  before_action :init, only: [:new, :edit]
+  before_action :init, only: [:new, :edit, :update, :create, :show]
 
   def print
     @spbsb = SpBsb.find(params[:id])

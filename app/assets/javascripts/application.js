@@ -54,7 +54,7 @@
 //= require sp_bsb_publications
 
 //= require provincesdata
-// require spfldata
+//= require spfldata
 // require spdata1
 // require spdata2
 // require spdata3
