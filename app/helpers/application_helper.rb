@@ -39,7 +39,10 @@ module ApplicationHelper
     if session[:user_id].blank?
       nil
     else
-      User.find(session[:user_id])
+      if @current_user.nil? 
+				@current_user = User.find(session[:user_id])
+			end
+			@current_user
     end
   end
 
