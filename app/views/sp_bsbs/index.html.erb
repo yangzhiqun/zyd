@@ -63,9 +63,13 @@ $(function() {
 		changeMonth: true,
 		changeYear: true
 	});
+
+	<% cache 'SPDL' do %>
+	var SPDL1 = <%= ACategory.all.select('distinct name').where('length(name) < 18').to_json.html_safe%>
+	<% end %>
 			
   $.each(SPDL1, function(index, data){
-    $("#sp_dl").append("<option value='"+data+"'>"+data+"</option>");
+    $("#sp_dl").append("<option value='"+data.name+"'>"+data.name+"</option>");
   });
   
   $("#tabs_4").click(function(){
