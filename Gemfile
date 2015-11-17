@@ -48,7 +48,6 @@ end
 gem 'mysql2', '~>0.3.18'
 
 gem 'rmagick', '~> 2.13.3'
-gem 'jquery-rails'
 gem 'jquery-ui-rails', '~>5.0.0'
 
 
@@ -61,10 +60,10 @@ gem 'wkhtmltopdf-binary'
 gem 'rest-client'
 gem "jquery-fileupload-rails"
 gem 'sidekiq'
-gem 'unicorn'
+#gem 'unicorn'
 gem 'savon'
-gem 'exception_notification'
-gem 'unicorn-worker-killer'
+#gem 'exception_notification'
+#gem 'unicorn-worker-killer'
 gem 'browser'
 gem 'angularjs-rails'
 gem 'underscore-rails'
@@ -72,3 +71,4 @@ gem 'angular-ui-bootstrap-rails'
 gem 'angular_rails_csrf'
 gem 'puma'
 gem 'activerecord-session_store'
+gem 'newrelic_rpm'
