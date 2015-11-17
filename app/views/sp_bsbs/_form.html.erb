@@ -1361,7 +1361,7 @@
         </tr>
         <tr>
           <td colspan="5">标识生产企业省份*</td>
-          <td colspan="4"><%= f.select :sp_s_202, options_for_select(SysProvince.level1.map { |prov| [prov.name, prov.name] }, @sp_bsb.sp_s_202) , :style => "width: 100%;" %></p></td>
+          <td colspan="4" align="center"><%= f.select :sp_s_202, options_for_select(SysProvince.level1.map { |prov| [prov.name, prov.name] }, @sp_bsb.sp_s_202) %></td>
           <td colspan="4">生产企业联系人*</td>
           <td colspan="5"><%= f.text_field :sp_s_75, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
           <td colspan="4">生产企业电话*</td>
