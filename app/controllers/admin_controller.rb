@@ -138,7 +138,7 @@ class AdminController < ApplicationController
   def ca_login
     client = Savon.client(wsdl: "http://#{Rails.application.config.site[:ca_auth_address]}/webservice/services/SecurityEngineDeal?wsdl")
     response = client.call(:validate_cert, message: {appName: "SVSDefault", password: params[:userCert]})
-    response_code = response.as_json[:validate_cert_response][:out].to_i
+    response_code = response.as_json['validate_cert_response']['out'].to_i
 
     respond_to do |format|
       if response_code == 1
@@ -149,7 +149,7 @@ class AdminController < ApplicationController
           logger.error error
         end
 
-        @SFid = response.as_json[:get_cert_info_by_oid_response][:out].gsub(/SF/, '') unless response.as_json[:get_cert_info_by_oid_response][:out].nil?
+        @SFid = response.as_json['get_cert_info_by_oid_response']['out'].gsub(/SF/, '') unless response.as_json['get_cert_info_by_oid_response']['out'].nil?
         session[:sfid] = @SFid
         @user = User.find_by_id_card(@SFid)
         if @user.nil? or @user.user_sign.blank?

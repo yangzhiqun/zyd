@@ -281,7 +281,7 @@ Rails.application.routes.draw do
   get "users_by_jcjg" => "users#users_by_jcjg"
   get "users/timeout"
   get 'complete_user_info' => 'users#complete_user_info'
-  match "bind_ca_key" => "users#bind_ca_key", via: [:get]
+  match "bind_ca_key" => "users#bind_ca_key", via: [:get, :post]
 
   resources :products
 
