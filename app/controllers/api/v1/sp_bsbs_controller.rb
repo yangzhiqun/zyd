@@ -103,7 +103,7 @@ class Api::V1::SpBsbsController < ApplicationController
     end
 
     respond_to do |format|
-      if @sp_bsb.update_attributes(params[:sp_bsb])
+      if @sp_bsb.update_attributes(params[:sp_bsb].as_json)
         if @sp_bsb.sp_i_state == 15 and !@user.car_sys_id.blank?
           # 采样完成
           result = RestClient.get(GPS_API_URL % [URI.escape(@user.car_sys_id), @sp_bsb.sp_s_16, 1, URI.escape(Time.now.strftime("%Y-%m-%d %H:%M:%S"))])
@@ -179,7 +179,7 @@ class Api::V1::SpBsbsController < ApplicationController
         # 处理抽样信息
         if !@sp_bsbs.blank?
           @sp_bsbs.each do |sp_bsb|
-            if !PadSpBsb.find(sp_bsb.delete(:id)).update_attributes(sp_bsb)
+            if !PadSpBsb.find(sp_bsb.delete(:id)).update_attributes(sp_bsb.as_json)
               @result[:status] = 'ERR'
               @result[:msg] = '同步失败，请稍后重试'
               raise ActiveRecord::Rollback
