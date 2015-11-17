@@ -5,7 +5,7 @@ require 'RMagick'
 
 class PadSpBsbsController < ApplicationController
   include ApplicationHelper
-  before_filter :init
+  before_action :init, only: [:new, :edit, :update, :create, :show]
   # 食品标准
   def checkout_standard
     result = RestClient.get("http://221.194.147.38:8081/spaqk/webservice/getInfo?name=%s&flag=#{params[:flag]}" % [URI.escape(params[:name])])
@@ -37,15 +37,7 @@ class PadSpBsbsController < ApplicationController
       @options_68[i]=temp.map { |option| option[:flex_name] }
     end
 
-    temp=JgBsb.where("status = 0 and jg_province=? and jg_sp_permission=1 and jg_detection=1", session[:user_province]).order("jg_province")
-    @options[100]=temp.map { |option| [option.jg_name, option.jg_name] }
-    @options[101]=temp.map { |option| [option[:jg_contacts], option[:jg_tel], option[:jg_email]] }
-    temp=JgBsb.where("status = 0 and jg_province<>? and jg_sp_permission=1 and jg_detection=1", session[:user_province]).order("jg_province")
-
-    temp1=temp.map { |option| [option.jg_name, option.jg_name] }
-    temp2=temp.map { |option| [option[:jg_contacts], option[:jg_tel], option[:jg_email]] }
-    @options[100]=@options[100]+temp1
-    @options[101]=@options[101]+temp2
+		@jg_bsbs = JgBsb.where('status = 0 and jg_sp_permission = 1 and jg_detection = 1', session[:user_province]).order('jg_province')
   end
 
   #2014-01-12

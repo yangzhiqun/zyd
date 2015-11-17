@@ -2,7 +2,9 @@
 <script type="text/javascript">
     ///////////////////
     var spdata = <%=@sp_data.to_json.html_safe%>;
-    var jg_data = <%=@options[101].to_json.html_safe%>;
+    <% cache @jg_bsbs do %>
+    var jg_data = <%= @jg_bsbs.select('id, jg_name, jg_contacts, jg_tel, jg_email').to_json.html_safe%>;
+    <% end %>
     ///////////////////
 
     $(function () {
@@ -326,17 +328,23 @@
             return false;
         });
 
+        $.each(jg_data, function () {
+            $('#jg_jg_id').append($('<option/>').attr('value', this.jg_name).text(this.jg_name));
+        });
+
         $('#jg_jg_id').change(function () {
             index_jg = this.selectedIndex;
-            $("#pad_sp_bsb_sp_s_43").val($("#jg_jg_id").val());
-            $("#pad_sp_bsb_sp_s_49").val(jg_data[index_jg][0]);
-            $("#pad_sp_bsb_sp_s_50").val(jg_data[index_jg][1]);
-            $("#pad_sp_bsb_sp_s_51").val(jg_data[index_jg][2]);
+            if (index_jg != -1) {
+                $("#pad_sp_bsb_sp_s_43").val($("#jg_jg_id").val());
+                $("#pad_sp_bsb_sp_s_49").val(jg_data[index_jg].jg_contacts);
+                $("#pad_sp_bsb_sp_s_50").val(jg_data[index_jg].jg_tel);
+                $("#pad_sp_bsb_sp_s_51").val(jg_data[index_jg].jg_email);
+            }
         });
-				<% if @sp_bsb.sp_s_43.blank? %>
+        <% if @sp_bsb.sp_s_43.blank? %>
         $("#jg_jg_id").val("<%= current_user.jg_bsb.jg_name %>")
         $('#jg_jg_id').trigger('change');
-				<% end %>
+        <% end %>
     });
 </script>
 <style type="text/css">
@@ -638,7 +646,7 @@
           <td colspan="30" style="background: #FFFF99;"><span style="font-family:宋体">△――检验信息部分</span></td>
         </tr>
         <tr>
-          <td colspan="30">请选择送检机构*:<span style="font-size:12px;">&nbsp;&nbsp;</span><%= select("jg", "jg_id", @options[100], {}, {:style => "width:450px; height: 19px"}) %>
+          <td colspan="30">请选择送检机构*:<span style="font-size:12px;">&nbsp;&nbsp;</span><%= select("jg", "jg_id", [], {}, {:style => "width:450px; height: 19px"}) %>
           </td>
         </tr>
         <tr>
