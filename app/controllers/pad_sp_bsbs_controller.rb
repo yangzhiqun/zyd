@@ -902,6 +902,7 @@ class PadSpBsbsController < ApplicationController
         :sp_s_215,
         :fail_report_path,
         :fail_report_at,
+				:sys_province_id,
         :bgfl,
         :sp_xkz,
         :sp_xkz_id,
