@@ -152,7 +152,7 @@ class SpBsbsController < ApplicationController
 
     @xkz_options=[['请选择', '请选择'], ['流通许可证', '流通许可证'], ['餐饮服务许可证', '餐饮服务许可证']]
 
-		@jg_bsbs = JgBsb.where('status = 0 and jg_sp_permission = 1 and jg_detection = 1', session[:user_province]).order('jg_province')
+    @jg_bsbs = JgBsb.where('status = 0 and jg_sp_permission = 1 and jg_detection = 1', session[:user_province]).order('jg_province')
   end
 
   #2014-01-12
@@ -509,171 +509,173 @@ class SpBsbsController < ApplicationController
   # PUT /sp_bsbs/1.json
   def update
     @sp_bsb=SpBsb.find(params[:id])
-    result_record = SpBsb.where("sp_s_16=?", params[:sp_bsb][:sp_s_16]).last
-    if (@sp_bsb.sp_s_16==params[:sp_bsb][:sp_s_16])||(result_record==nil)
-      respond_to do |format|
-        @original_updated_at = nil
+    ActiveRecord::Base.transaction do
+      result_record = SpBsb.where("sp_s_16=?", params[:sp_bsb][:sp_s_16]).last
+      if (@sp_bsb.sp_s_16==params[:sp_bsb][:sp_s_16])||(result_record==nil)
+        respond_to do |format|
+          @original_updated_at = nil
 
-        if (params[:sp_bsb][:sp_i_state]=='9'&&session[:user_name]=='admin')
-          @role_name="秘书处直接修改"
+          if (params[:sp_bsb][:sp_i_state]=='9'&&session[:user_name]=='admin')
+            @role_name="秘书处直接修改"
+            SpLog.create(
+                [{:sp_bsb_id => params[:id],
+                  :sp_i_state => params[:sp_bsb][:sp_i_state],
+                  :remark => @role_name,
+                  :user_id => session[:user_id]
+                 }])
+
+            # 时间不改变
+            @original_updated_at = @sp_bsb.updated_at
+
+            if @sp_bsb.sp_i_backtimes
+              params[:sp_bsb][:sp_i_backtimes]=@sp_bsb.sp_i_backtimes+1
+            else
+              params[:sp_bsb][:sp_i_backtimes]=1
+            end
+            if @sp_bsb.sp_s_reason
+              params[:sp_bsb][:sp_s_reason]=@sp_bsb.sp_s_reason+(Time.now).to_s+","+@role_name+":"+params[:sp_bsb][:sp_s_55]+"\n"
+            else
+              params[:sp_bsb][:sp_s_reason]=(Time.now).to_s+","+@role_name+":"+params[:sp_bsb][:sp_s_55]+"\n"
+            end
+          end
+
+          if (params[:sp_bsb][:sp_i_state]=='3' or params[:sp_bsb][:sp_i_state]=='1') and !params[:sp_bsb][:sp_s_55].blank?
+            if session[:user_name]=='admin'
+              @role_name="秘书处退回"
+              if @sp_bsb.sp_i_state==9
+                if @sp_bsb.sp_i_backtimes
+                  params[:sp_bsb][:sp_i_backtimes]=@sp_bsb.sp_i_backtimes+1
+                else
+                  params[:sp_bsb][:sp_i_backtimes]=1
+                end
+              end
+            elsif session[:change_js]==2
+              @role_name="药监局_"+session[:user_name]+"_退回"
+            elsif session[:change_js]==6
+              @role_name="检测机构_填报检验数据_"+session[:user_name]+"_退回"
+            elsif session[:change_js]==7
+              @role_name="检测机构_"+session[:user_name]+"_退回"
+            elsif session[:change_js]==8
+              @role_name="牵头机构_"+session[:user_name]+"_退回"
+            end
+            if @sp_bsb.sp_i_jgback
+              params[:sp_bsb][:sp_i_jgback]=@sp_bsb.sp_i_jgback+1
+            else
+              params[:sp_bsb][:sp_i_jgback]=1
+            end
+            if @sp_bsb.sp_s_reason
+              params[:sp_bsb][:sp_s_reason]=@sp_bsb.sp_s_reason.to_s + (Time.now).to_s + "," + @role_name.to_s + ":" + params[:sp_bsb][:sp_s_55] + "\n"
+            else
+              params[:sp_bsb][:sp_s_reason]=(Time.now).to_s+"," + @role_name.to_s + ":" + params[:sp_bsb][:sp_s_55]+"\n"
+            end
+          end
+
+          # if params[:sp_bsb][:sp_s_70]=='抽检监测(总局本级)'
+          #   rwly=SpStandard.find(:first, :conditions => ["sp_sta_0=?", params[:sp_bsb][:sp_s_20]])
+          #   if rwly
+          #     params[:sp_bsb][:sp_s_56]=rwly.sp_sta_1
+          #   end
+          # else
+          #   if params[:sp_bsb][:sp_s_70]=='2015年本级一司'
+          #     params[:sp_bsb][:sp_s_56]='一司'
+          #   else
+          #     params[:sp_bsb][:sp_s_56]='三司'
+          #   end
+          # end
+
+          if @sp_bsb.sp_i_state!=9&&@sp_bsb.sp_i_backtimes==nil
+            @sp_bsb.update_attribute(:submit_d_flag, (Time.now.ago(3600*8)).to_s(:db))
+          end
+
+          if @sp_bsb.update_attributes(sp_bsb_params)
+            # 如果original 存在，则回退updated_at时间
+            if @original_updated_at.present?
+              SpBsb.record_timestamps = false
+              @sp_bsb.update_attributes(updated_at: @original_updated_at)
+              SpBsb.record_timestamps = true
+            end
+            # 如果报告分类为24小时限时报告，则自动生成问题处置
+            # if !@sp_bsb.bgfl.blank? and @sp_bsb.bgfl.eql?("24小时限时报告")
+            # @wtyp_czb = WtypCzb.new
+            # @wtyp_czb.cjbh = @sp_bsb.sp_s_16
+            # @wtyp_czb.ypmc = @sp_bsb.sp_s_14
+            # @wtyp_czb.ypgg = @sp_bsb.sp_s_26
+            # @wtyp_czb.ypph = @sp_bsb.sp_s_27
+            # @wtyp_czb.bcydwmc = @sp_bsb.sp_s_1
+            # @wtyp_czb.bcydw_sheng = @sp_bsb.sp_s_3
+            # @wtyp_czb.cydwmc = @sp_bsb.sp_s_35
+            # @wtyp_czb.cydwsf = @sp_bsb.sp_s_52
+            # @wtyp_czb.bsscqymc = @sp_bsb.sp_s_64
+            # @wtyp_czb.bsscqy_sheng = @sp_bsb.sp_s_202
+            # @wtyp_czb.scrq = @sp_bsb.sp_d_28
+            # @wtyp_czb.bgfl = @sp_bsb.bgfl
+            # @wtyp_czb.jyjl = @sp_bsb.sp_s_71
+            # @wtyp_czb.current_state = ::WtypCzb::State::LOGGED
+            # @wtyp_czb.wtyp_sp_bsbs_id = @sp_bsb.id
+            # @wtyp_czb.save
+            # end
+
+            if params[:sp_bsb][:sp_i_state]<='4'||(params[:sp_bsb][:sp_i_state]=='9'&&session[:user_name]=='admin')
+              unless params[:spdata].blank?
+                params[:spdata].delete_if { |data| data.keys.length == 1 }
+                createlog=0
+                params[:spdata].each do |data|
+                  if data[:id]==nil
+                    createlog=1
+                    break
+                  end
+                end
+                if createlog==1
+                  @sp_bsb.spdata.destroy_all
+                  params[:spdata].each do |data|
+                    data.delete(:id)
+                    data[:sp_bsb_id] = params[:id]
+                    Spdatum.create!(data.as_json)
+                  end
+                else
+                  params[:spdata].each do |data|
+                    @spdata = Spdatum.find(data[:id])
+                    @spdata.update_attributes(data.as_json)
+                  end
+                end
+              end
+            end
+
+            # 记录CA记录
+            if !session[:userCert].blank? and !@sp_bsb.ca_sign.blank?
+              SpBsbCert.create(source: @sp_bsb.ca_source, user_cert: session[:userCert], sign: @sp_bsb.ca_sign, user_id: current_user.id, sp_i_state: @sp_bsb.sp_i_state, sp_bsb_id: @sp_bsb.id)
+            end
+
+            format.json { render :json => {:status => "保存成功!", :msg => "保存成功!"} }
+            format.html { redirect_to("/sp_bsbs_spsearch?#{session[:query]}") }
+          else
+            format.html { render action: "edit" }
+            format.json { render json: {status: '保存出错!', msg: '修改不成功!'} }
+          end
+        end
+        if @role_name.blank?
+          @role_name = params[:commit]
+        end
+        if !@role_name.blank?
           SpLog.create(
               [{:sp_bsb_id => params[:id],
                 :sp_i_state => params[:sp_bsb][:sp_i_state],
                 :remark => @role_name,
                 :user_id => session[:user_id]
                }])
-
-          # 时间不改变
-          @original_updated_at = @sp_bsb.updated_at
-
-          if @sp_bsb.sp_i_backtimes
-            params[:sp_bsb][:sp_i_backtimes]=@sp_bsb.sp_i_backtimes+1
-          else
-            params[:sp_bsb][:sp_i_backtimes]=1
-          end
-          if @sp_bsb.sp_s_reason
-            params[:sp_bsb][:sp_s_reason]=@sp_bsb.sp_s_reason+(Time.now).to_s+","+@role_name+":"+params[:sp_bsb][:sp_s_55]+"\n"
-          else
-            params[:sp_bsb][:sp_s_reason]=(Time.now).to_s+","+@role_name+":"+params[:sp_bsb][:sp_s_55]+"\n"
+          if @role_name == "检测机构批准"
+            @sp_bsb.update_attribute(:sp_d_47, Time.now)
+            @sp_bsb.update_attribute(:sp_s_48, session[:user_tname])
           end
         end
-
-        if (params[:sp_bsb][:sp_i_state]=='3' or params[:sp_bsb][:sp_i_state]=='1') and !params[:sp_bsb][:sp_s_55].blank?
-          if session[:user_name]=='admin'
-            @role_name="秘书处退回"
-            if @sp_bsb.sp_i_state==9
-              if @sp_bsb.sp_i_backtimes
-                params[:sp_bsb][:sp_i_backtimes]=@sp_bsb.sp_i_backtimes+1
-              else
-                params[:sp_bsb][:sp_i_backtimes]=1
-              end
-            end
-          elsif session[:change_js]==2
-            @role_name="药监局_"+session[:user_name]+"_退回"
-          elsif session[:change_js]==6
-            @role_name="检测机构_填报检验数据_"+session[:user_name]+"_退回"
-          elsif session[:change_js]==7
-            @role_name="检测机构_"+session[:user_name]+"_退回"
-          elsif session[:change_js]==8
-            @role_name="牵头机构_"+session[:user_name]+"_退回"
-          end
-          if @sp_bsb.sp_i_jgback
-            params[:sp_bsb][:sp_i_jgback]=@sp_bsb.sp_i_jgback+1
-          else
-            params[:sp_bsb][:sp_i_jgback]=1
-          end
-          if @sp_bsb.sp_s_reason
-            params[:sp_bsb][:sp_s_reason]=@sp_bsb.sp_s_reason.to_s + (Time.now).to_s + "," + @role_name.to_s + ":" + params[:sp_bsb][:sp_s_55] + "\n"
-          else
-            params[:sp_bsb][:sp_s_reason]=(Time.now).to_s+"," + @role_name.to_s + ":" + params[:sp_bsb][:sp_s_55]+"\n"
-          end
+      else
+        respond_to do |format|
+          flash[:import_result] ="修改不成功，数据库中已有该样品编号!"
+          @sp_bsb=SpBsb.new(params[:sp_bsb])
+          @sp_data=params[:spdata]
+          format.json { render json: {status: '保存出错!', msg: '修改不成功，数据库中已有该样品编号!'} }
+          format.html { redirect_to :action => "edit", :id => params[:id] }
         end
-
-        # if params[:sp_bsb][:sp_s_70]=='抽检监测(总局本级)'
-        #   rwly=SpStandard.find(:first, :conditions => ["sp_sta_0=?", params[:sp_bsb][:sp_s_20]])
-        #   if rwly
-        #     params[:sp_bsb][:sp_s_56]=rwly.sp_sta_1
-        #   end
-        # else
-        #   if params[:sp_bsb][:sp_s_70]=='2015年本级一司'
-        #     params[:sp_bsb][:sp_s_56]='一司'
-        #   else
-        #     params[:sp_bsb][:sp_s_56]='三司'
-        #   end
-        # end
-
-        if @sp_bsb.sp_i_state!=9&&@sp_bsb.sp_i_backtimes==nil
-          @sp_bsb.update_attribute(:submit_d_flag, (Time.now.ago(3600*8)).to_s(:db))
-        end
-
-        if @sp_bsb.update_attributes(sp_bsb_params)
-          # 如果original 存在，则回退updated_at时间
-          if @original_updated_at.present?
-            SpBsb.record_timestamps = false
-            @sp_bsb.update_attributes(updated_at: @original_updated_at)
-            SpBsb.record_timestamps = true
-          end
-          # 如果报告分类为24小时限时报告，则自动生成问题处置
-          # if !@sp_bsb.bgfl.blank? and @sp_bsb.bgfl.eql?("24小时限时报告")
-          # @wtyp_czb = WtypCzb.new
-          # @wtyp_czb.cjbh = @sp_bsb.sp_s_16
-          # @wtyp_czb.ypmc = @sp_bsb.sp_s_14
-          # @wtyp_czb.ypgg = @sp_bsb.sp_s_26
-          # @wtyp_czb.ypph = @sp_bsb.sp_s_27
-          # @wtyp_czb.bcydwmc = @sp_bsb.sp_s_1
-          # @wtyp_czb.bcydw_sheng = @sp_bsb.sp_s_3
-          # @wtyp_czb.cydwmc = @sp_bsb.sp_s_35
-          # @wtyp_czb.cydwsf = @sp_bsb.sp_s_52
-          # @wtyp_czb.bsscqymc = @sp_bsb.sp_s_64
-          # @wtyp_czb.bsscqy_sheng = @sp_bsb.sp_s_202
-          # @wtyp_czb.scrq = @sp_bsb.sp_d_28
-          # @wtyp_czb.bgfl = @sp_bsb.bgfl
-          # @wtyp_czb.jyjl = @sp_bsb.sp_s_71
-          # @wtyp_czb.current_state = ::WtypCzb::State::LOGGED
-          # @wtyp_czb.wtyp_sp_bsbs_id = @sp_bsb.id
-          # @wtyp_czb.save
-          # end
-
-          if params[:sp_bsb][:sp_i_state]<='4'||(params[:sp_bsb][:sp_i_state]=='9'&&session[:user_name]=='admin')
-            unless params[:spdata].blank?
-              params[:spdata].delete_if { |data| data.keys.length == 1 }
-              createlog=0
-              params[:spdata].each do |data|
-                if data[:id]==nil
-                  createlog=1
-                  break
-                end
-              end
-              if createlog==1
-                @sp_bsb.spdata.destroy_all
-                params[:spdata].each do |data|
-                  data.delete(:id)
-                  data[:sp_bsb_id] = params[:id]
-                  Spdatum.create!(data.as_json)
-                end
-              else
-                params[:spdata].each do |data|
-                  @spdata = Spdatum.find(data[:id])
-                  @spdata.update_attributes(data.as_json)
-                end
-              end
-            end
-          end
-
-          # 记录CA记录
-          if !session[:userCert].blank? and !@sp_bsb.ca_sign.blank?
-            SpBsbCert.create(source: @sp_bsb.ca_source, user_cert: session[:userCert], sign: @sp_bsb.ca_sign, user_id: current_user.id, sp_i_state: @sp_bsb.sp_i_state, sp_bsb_id: @sp_bsb.id)
-          end
-
-          format.json { render :json => {:status => "保存成功!", :msg => "保存成功!"} }
-          format.html { redirect_to("/sp_bsbs_spsearch?#{session[:query]}") }
-        else
-          format.html { render action: "edit" }
-          format.json { render json: {status: '保存出错!', msg: '修改不成功!'} }
-        end
-      end
-      if @role_name.blank?
-        @role_name = params[:commit]
-      end
-      if !@role_name.blank?
-        SpLog.create(
-            [{:sp_bsb_id => params[:id],
-              :sp_i_state => params[:sp_bsb][:sp_i_state],
-              :remark => @role_name,
-              :user_id => session[:user_id]
-             }])
-        if @role_name == "检测机构批准"
-          @sp_bsb.update_attribute(:sp_d_47, Time.now)
-          @sp_bsb.update_attribute(:sp_s_48, session[:user_tname])
-        end
-      end
-    else
-      respond_to do |format|
-        flash[:import_result] ="修改不成功，数据库中已有该样品编号!"
-        @sp_bsb=SpBsb.new(params[:sp_bsb])
-        @sp_data=params[:spdata]
-        format.json { render json: {status: '保存出错!', msg: '修改不成功，数据库中已有该样品编号!'} }
-        format.html { redirect_to :action => "edit", :id => params[:id] }
       end
     end
   end
