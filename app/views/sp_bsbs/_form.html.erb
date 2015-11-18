@@ -1198,17 +1198,6 @@
 </table>
 <h1 style="color:red"><%= flash[:import_result] unless flash[:import_result].nil? %></h1>
 <%= form_for(@sp_bsb) do |f| %>
-    <% if @sp_bsb.errors.any? %>
-        <div id="error_explanation">
-          <h2><%= pluralize(@sp_bsb.errors.count, "error") %> prohibited this sp_bsb from being saved:</h2>
-
-          <ul>
-            <% @sp_bsb.errors.full_messages.each do |msg| %>
-                <li><%= msg %></li>
-            <% end %>
-          </ul>
-        </div>
-    <% end %>
 
     <div id="my_show">
       <table border="1" cellspacing="0" cellpadding="0" width="100%" class="style1">
