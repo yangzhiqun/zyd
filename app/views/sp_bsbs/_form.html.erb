@@ -4,9 +4,9 @@
     window.SP.SP_DATA_CA_FIELDS = <%= Spdatum::CA_FIELDS.to_json.html_safe %>;
     ///////////////////
     var spdata = <%=@sp_data.to_json.html_safe%>;
-		<% cache 'jg_data' do %>
+    <% cache 'jg_data' do %>
     var jg_data = <%= @jg_bsbs.select('id, jg_name, jg_contacts, jg_tel, jg_email').to_json.html_safe%>;
-		<% end %>
+    <% end %>
     var spdata_condition = "<%= "#{@sp_bsb["sp_s_17"]}#{@sp_bsb["sp_s_18"]}#{@sp_bsb["sp_s_19"]}#{@sp_bsb["sp_s_20"]}"%>";
     SP.sp_bsb = <%= @sp_bsb.to_json.html_safe %>;
     ///////////////////
@@ -520,18 +520,18 @@
         });
 
         <% if current_user.is_admin? %>
-            <%@avala.each do |i|%>
-                var strtemp = "#sp_bsb_sp_s_" + "<%=i%>";
-                $(strtemp).bind("contextmenu", function (e) {
-                    return false;
-                });
-                $("#sp_bsb_sp_s_" +<%=i%>).mousedown(function (e) {
-                    if (e.which == 3) {
-                        digStr = "dialogHeight:400px;dialogWidth:500px;center:yes";
-                        var ReturnValue = window.open("/flexcontents?flex_fields=sp_bsb_sp_s_" + "<%=i%>", "sp_bsb_sp_s_" + "<%=i%>", digStr)
-                    }
-                });
-            <%end%>
+        <%@avala.each do |i|%>
+        var strtemp = "#sp_bsb_sp_s_" + "<%=i%>";
+        $(strtemp).bind("contextmenu", function (e) {
+            return false;
+        });
+        $("#sp_bsb_sp_s_" +<%=i%>).mousedown(function (e) {
+            if (e.which == 3) {
+                digStr = "dialogHeight:400px;dialogWidth:500px;center:yes";
+                var ReturnValue = window.open("/flexcontents?flex_fields=sp_bsb_sp_s_" + "<%=i%>", "sp_bsb_sp_s_" + "<%=i%>", digStr)
+            }
+        });
+        <%end%>
         <% end %>
 
         $('input:text:first').focus();
@@ -594,9 +594,6 @@
          * 基本信息提交入库
          * */
         $('#submit1').click(function () {
-            if (!confirm('确定提交吗？')) {
-                return false;
-            }
             //抽检检测总局本级一司/三司抽样编号需以GC1500开头
             if ($('#sp_bsb_sp_s_16').val().length != 12) {
                 alert('抽样编号应为12位');
@@ -645,6 +642,10 @@
                 return false;
             }
             <%end%>
+
+            if (!confirm('确定提交吗？')) {
+                return false;
+            }
 
             varDate = $("#sp_bsb_sp_d_86").val();
             varData = varDate.split("-");
@@ -1040,9 +1041,9 @@
         $("#sp_bsb_sp_s_55").removeAttr("readonly");
         <%end%>
 
-				$.each(jg_data, function(){
-					$('#jg_jg_id').append($('<option/>').attr('value', this.jg_name).text(this.jg_name));
-				});
+        $.each(jg_data, function () {
+            $('#jg_jg_id').append($('<option/>').attr('value', this.jg_name).text(this.jg_name));
+        });
 
         $('#jg_jg_id').change(function () {
             index_jg = this.selectedIndex;
@@ -1213,13 +1214,13 @@
       <table border="1" cellspacing="0" cellpadding="0" width="100%" class="style1">
         <tr>
           <td colspan="30" style="background: #FFFF99;"><span style="font-family:宋体">△――样品信息登记部分</span></td>
-				</tr>
-          <td colspan="5">任务来源*</td>
-          <td colspan="8"><%= f.text_field :sp_s_2_1, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
-          <td colspan="3">报送分类*</td>
-          <td colspan="14">
-            <%= f.select :sp_s_70, options_for_select(BaosongA.where("prov = ? or prov is null or prov = ''", current_user.user_s_province).map { |b| [b.name, b.name, {'parentid' => b.rwlylx}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_70), {} , {:style => "width: 167px;"}%>
-            <%= f.select :sp_s_67, options_for_select(@sp_s_67s.map { |s| [s.name, s.name, {'data-identifier' => s.identifier}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_67), {}, {:style => "width: 183px;"} %></td>
+        </tr>
+        <td colspan="5">任务来源*</td>
+        <td colspan="8"><%= f.text_field :sp_s_2_1, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        <td colspan="3">报送分类*</td>
+        <td colspan="14">
+          <%= f.select :sp_s_70, options_for_select(BaosongA.where("prov = ? or prov is null or prov = ''", current_user.user_s_province).map { |b| [b.name, b.name, {'parentid' => b.rwlylx}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_70), {}, {:style => "width: 167px;"} %>
+          <%= f.select :sp_s_67, options_for_select(@sp_s_67s.map { |s| [s.name, s.name, {'data-identifier' => s.identifier}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_67), {}, {:style => "width: 183px;"} %></td>
         </tr>
         <tr>
           <td colspan="5">被抽样单位名称*</td>
@@ -1241,17 +1242,17 @@
         <tr id="region">
           <td colspan="3" style="width: 73px">所在地区*</td>
           <td colspan="9" style="border-right:none;">
-            <span><select id='province' name='province' class="NoPrint"></select><%= f.text_field :sp_s_3, :class => "inputText", :style => "width: 60px; height: 19px", :readonly => true %>
-              省(市、自治区)
-					</td>
-					<td colspan="9" style="border-right:none; border-left:none">
+            <select id='province' name='province' class="NoPrint"></select><%= f.text_field :sp_s_3, :class => "inputText", :style => "width: 60px; height: 19px", :readonly => true %>
+            省(市、自治区)
+          </td>
+          <td colspan="9" style="border-right:none; border-left:none">
             <select id='city' name='city'></select><%= f.text_field :sp_s_4, :class => "inputText", :style => "width: 60px; height: 19px", :readonly => true %>
-              地区(市、州、盟)
-					</td>
-					<td colspan="9" style="border-left:none;">
-						<select id='lcity' name='lcity'></select><%= f.text_field :sp_s_5, :class => "inputText", :style => "width: 60px; height: 19px" %>
-              县(市、区)</span>
-					</td>
+            地区(市、州、盟)
+          </td>
+          <td colspan="9" style="border-left:none;">
+            <select id='lcity' name='lcity'></select><%= f.text_field :sp_s_5, :class => "inputText", :style => "width: 60px; height: 19px" %>
+            县(市、区)</span>
+          </td>
         </tr>
         <tr>
           <td colspan="3">单位地址*</td>
@@ -1293,7 +1294,7 @@
           <td colspan="27">
 						<span>
 							食品大类&emsp;&emsp;<%= f.select :sp_s_17, options_for_select(@a_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_17), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-							食品亚类&emsp;<%= f.select :sp_s_18, options_for_select(@b_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_18), {}, {:style => "width: 220px;"} %>
+                          食品亚类&emsp;<%= f.select :sp_s_18, options_for_select(@b_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_18), {}, {:style => "width: 220px;"} %>
 						</span>
           </td>
         </tr>
@@ -1301,7 +1302,7 @@
           <td colspan="27">
 						<span>
 							食品次亚类&emsp;<%= f.select :sp_s_19, options_for_select(@c_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_19), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-							食品细类&emsp;<%= f.select :sp_s_20, options_for_select(@d_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_20), {}, {:style => "width: 220px;"} %>
+                          食品细类&emsp;<%= f.select :sp_s_20, options_for_select(@d_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_20), {}, {:style => "width: 220px;"} %>
 						</span>
           </td>
         </tr>
@@ -1341,15 +1342,15 @@
           <td colspan="8"><%= f.text_field :sp_s_13, :class => "inputText scxkz", :style => "width: 100%; height: 19px" %></td>
           <td colspan="5">执行标准/技术文件*</td>
           <td colspan="9"><%= f.text_field :sp_s_72, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
-				</tr>
-          <td colspan="5">质量等级*</td>
-          <td colspan="2"><%= f.text_field :sp_s_73, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
-          <td colspan="2">商标*</td>
-          <td colspan="4"><%= f.text_field :sp_s_74, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
-          <td colspan="2">单价*</td>
-          <td colspan="3"><%= f.text_field :sp_s_204, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
-          <td colspan="4">是否出口*</td>
-          <td colspan="5"><%= f.select :sp_s_205, @options[205], {}, {:style => "width: 100%;"} %></td>
+        </tr>
+        <td colspan="5">质量等级*</td>
+        <td colspan="2"><%= f.text_field :sp_s_73, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        <td colspan="2">商标*</td>
+        <td colspan="4"><%= f.text_field :sp_s_74, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        <td colspan="2">单价*</td>
+        <td colspan="3"><%= f.text_field :sp_s_204, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        <td colspan="4">是否出口*</td>
+        <td colspan="5"><%= f.select :sp_s_205, @options[205], {}, {:style => "width: 100%;"} %></td>
         </tr>
         <tr>
           <td colspan="5">抽样基数/批量*</td>
@@ -1432,15 +1433,15 @@
         </tr>
         <tr>
           <td colspan="30" style="background: #FFFF99;"><span style="font-family:宋体">△――检验信息部分</span></td>
-				</tr>
-            <% if [0, 1].include? @sp_bsb.sp_i_state %>
-				<tr>
-          <td colspan="30">
+        </tr>
+        <% if [0, 1].include? @sp_bsb.sp_i_state %>
+            <tr>
+              <td colspan="30">
                 <p style="display:inline">请选择送检机构*:<span style="font-size:12px;">&nbsp;&nbsp;</span></p>
                 <%= select("jg", "jg_id", [], {}, {:style => "width: 450px; height: 19px"}) %>
-          </td>
-        </tr>
-            <% end %>
+              </td>
+            </tr>
+        <% end %>
         <tr>
           <td colspan="4">检验机构名称*</td>
           <td colspan="8"><%= f.text_field :sp_s_43, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
@@ -1458,7 +1459,7 @@
               <td colspan="4">报告签发人*</td>
               <td colspan="6"><%= f.text_field :sp_s_48, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
           <% else %>
-             <td colspan="27"><%= f.text_field :sp_d_46, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+              <td colspan="27"><%= f.text_field :sp_d_46, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
           <% end %>
         </tr>
         <tr>
