@@ -494,6 +494,7 @@ class SpBsbsController < ApplicationController
       respond_to do |format|
         @original_updated_at = nil
 
+
         if (params[:sp_bsb][:sp_i_state].to_i == 9 && current_user.is_admin?)
           @role_name = '秘书处直接修改'
 
@@ -502,8 +503,9 @@ class SpBsbsController < ApplicationController
 
           # NOTICE: 推测sp_i_backtimes用于记录秘书处修改次数?
           @sp_bsb.sp_i_backtimes = @sp_bsb.sp_i_backtimes.to_i + 1
-          @sp_bsb.sp_s_reason = "#{@sp_bsb.sp_s_reason.to_s}#{Time.now.to_s},#{@role_name}:#{params[:sp_bsb][:sp_s_55]}\n"
+          @sp_bsb.sp_s_reason = "#{@sp_bsb.sp_s_reason.to_s}#{Time.now.to_s},#{@role_name}:#{params[:sp_bsb].delete(:sp_s_55)}\n"
         end
+
 
         if (params[:sp_bsb][:sp_i_state].to_i == 3 or params[:sp_bsb][:sp_i_state].to_i == 1) and !params[:sp_bsb][:sp_s_55].blank?
           if current_user.is_admin?
@@ -524,7 +526,7 @@ class SpBsbsController < ApplicationController
           end
 
           @sp_bsb.sp_i_jgback = @sp_bsb.sp_i_jgback.to_i + 1
-          @sp_bsb.sp_s_reason = "#{@sp_bsb.sp_s_reason.to_s}#{Time.now.to_s},#{@role_name}:#{params[:sp_bsb][:sp_s_55]}\n"
+          @sp_bsb.sp_s_reason = "#{@sp_bsb.sp_s_reason.to_s}#{Time.now.to_s},#{@role_name}:#{params[:sp_bsb].delete(:sp_s_55)}\n"
         end
 
         if @sp_bsb.sp_i_state != 9 && @sp_bsb.sp_i_backtimes.nil?
@@ -535,7 +537,6 @@ class SpBsbsController < ApplicationController
           @sp_bsb.sp_d_47 = Time.now
           @sp_bsb.sp_s_48 = current_user.tname
         end
-
 
         if @sp_bsb.update_attributes(sp_bsb_params)
           # 如果original 存在，则回退updated_at时间
@@ -1646,9 +1647,6 @@ class SpBsbsController < ApplicationController
         :sp_s_140_0,
         :sp_i_state,
         :sp_i_jgback,
-        :sp_i_backtimes,
-        :sp_s_reason,
-        :submit_d_flag,
         :sp_t_procedure,
         :sp_s_200,
         :sp_s_201,
