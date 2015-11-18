@@ -66,7 +66,7 @@ class SpBsbsController < ApplicationController
           SpBsb.record_timestamps = false
           @spbsb.report_path = "#{target_path}/#{@spbsb.id}.pdf"
 
-          cmd = "java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 1 #{@jg_bsb.pdf_sign_rules} #{tmp_file} #{@spbsb.absolute_report_path}"
+          cmd = "/usr/local/java-ppc64-80/jre/bin/java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 1 #{@jg_bsb.pdf_sign_rules} #{tmp_file} #{@spbsb.absolute_report_path}"
           logger.error cmd
 
           result = `#{cmd}`
@@ -107,7 +107,7 @@ class SpBsbsController < ApplicationController
           SpBsb.record_timestamps = false
           @spbsb.report_path = "#{target_path}/#{@spbsb.id}.pdf"
 
-          cmd = "java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 1 #{@jg_bsb.pdf_sign_rules} #{tmp_file} #{@spbsb.absolute_report_path}"
+          cmd = "/usr/local/java-ppc64-80/jre/bin/java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 1 #{@jg_bsb.pdf_sign_rules} #{tmp_file} #{@spbsb.absolute_report_path}"
           logger.error cmd
 
           result = `#{cmd}`
