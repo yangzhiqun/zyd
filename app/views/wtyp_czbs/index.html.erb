@@ -172,7 +172,7 @@ $(function(){
     <!--<tr>
       <th class="col-md-2">处置部门</th>
       <td>
-        <%= select_tag :czbm, options_for_select(JgBsb.where("status = 0 and jg_province = ?", current_user.user_s_province).map{|u| [u.jg_name, u.jg_name]}), :id => 'czbm', :style => "width: 180px;", :class => "form-control input-sm"%>
+        <%= select_tag :czbm, options_for_select(JgBsb.where("status = 0 and jg_province = ?", current_user.user_s_province).map{|u| [u.jg_name, u.jg_name]}), :id => 'czbm', :style => "width: 180px;", :class => "form-control input-sm" if false%>
       </td>
       <th>处置责任人</th>
       <td><select name="czfzr" id="czfzr" class="form-control input-sm"></select></td>

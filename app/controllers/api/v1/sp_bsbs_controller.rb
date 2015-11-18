@@ -213,7 +213,12 @@ class Api::V1::SpBsbsController < ApplicationController
     if @user.jg_bsb.attachment_path_file.blank?
       render json: {status: 'OK', msg: '机构未设置签章，无法下发配置信息'}
     else
-      render json: {status: 'OK', msg: @provinces, jg_stamp: ActiveSupport::Base64.encode64(open(@user.jg_bsb.attachment_path_file).to_a.join)}
+			if File.exists?(@user.jg_bsb.attachment_path_file)
+				stmap = Base64.encode64(open(@user.jg_bsb.attachment_path_file).to_a.join)
+			else
+				stamp = nil
+			end
+      render json: {status: 'OK', msg: @provinces, jg_stamp: stamp}
     end
   end
 
