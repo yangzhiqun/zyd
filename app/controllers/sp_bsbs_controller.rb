@@ -475,7 +475,7 @@ class SpBsbsController < ApplicationController
           format.json { render :json => {:status => "保存成功!", :msg => "保存成功!"} }
           format.html { redirect_to "/sp_bsbs/#{@sp_bsb.id}" }
         else
-          format.json { render :json => {:status => "保存出错!", :msg => "提交失败！#{@sp_bsb}"} }
+          format.json { render :json => {:status => "保存出错!", :msg => "提交失败！#{@sp_bsb.errors.first.last}"} }
           format.html {
             flash[:import_result] = "提交失败，#{@sp_bsb.errors.first.last}"
             render action: 'new'
