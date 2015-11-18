@@ -352,6 +352,8 @@ class SpBsb < ActiveRecord::Base
   # :synced, :ca_source, :ca_sign
 
 	attr_accessor :ca_source, :ca_sign
+  validates_presence_of :sp_s_16, message: '请提供抽检单编号'
+  validates_uniqueness_of :sp_s_16, message: '该单号已存在', allow_nil: true
 
   # 核查处置完成情况
   def status_desc
