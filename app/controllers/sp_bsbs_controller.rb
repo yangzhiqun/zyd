@@ -928,7 +928,13 @@ class SpBsbsController < ApplicationController
     end
 
     respond_to do |format|
-      format.html { render action: "index" }
+      format.html {
+        if @sp_bsbs.respond_to?(:total_pages)
+          render action: "index"
+        else
+          render text: '账号存在异常，请联系系统维护方。'
+        end
+      }
       format.json { render json: @sp_bsbs }
     end
   end
