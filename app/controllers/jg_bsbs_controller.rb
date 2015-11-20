@@ -6,10 +6,10 @@ class JgBsbsController < ApplicationController
   # GET /jg_bsbs
   # GET /jg_bsbs.json
   def index
-    @jg_bsbs = JgBsb.where(status: 0)
+    @jg_bsbs = JgBsb.where(status: 0).order('created_at desc')
 
     unless params[:name].blank?
-      @jg_bsbs = @jg_bsbs.where("jg_name LIKE ?", "%#{params[:name]}%")
+      @jg_bsbs = @jg_bsbs.where(id: JgBsbName.where("name LIKE ?", "%#{params[:name]}%").pluck('jg_bsb_id'))
     end
 
     unless params[:contact].blank?

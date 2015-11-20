@@ -36,52 +36,8 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $('input:text:first').focus();
-        var $inp = $('input:text');
-        $inp.bind('keydown', function (e) {
-            var key = e.which;
-            if (key == 13) {
-                e.preventDefault();
-                var nxtIdx = $inp.index(this) + 1;
-                $(":input:text:eq(" + nxtIdx + ")").focus();
-                return true;
-            }
-            return true;
-        });
-        var baseIndex = 100;
-        $("#tblGrid").find("tr").each(function (r) {
-            $(this).find("td").each(function (c) {
-                $(this).find("input,select").attr("tabindex", r * 100 + c + baseIndex);
-            });
-        });
-        $("#tblGrid .form-control input-sm").bind("keydown", function (evt) {
-            var tabIndex = parseInt($(this).attr("tabindex"));
-            switch (evt.which) {
-                case 38: //上
-                    tabIndex -= 100;
-                    break;
-                case 40: //下
-                    tabIndex += 100;
-                    break;
-                case 37: //左(會導致輸入時無法使用左右移)
-                    tabIndex = tabIndex - 2;
-                    break;
-                case 39: //右(會導致輸入時無法使用左右移)
-                    tabIndex = tabIndex + 2;
-                    break;
-                default:
-                    return true;
-            }
-            if (tabIndex > 0) {
-                $(".form-control input-sm[tabindex=" + tabIndex + "]").focus();
-                return false;
-            }
-            return true;
-        });
-        $.each(GP, function (index, data) {
-            $("#jg_bsb_jg_province").append("<option value='" + data + "'>" + data + "</option>");
-        });
-        $("#jg_bsb_jg_province").val('<%=@jg_bsb["jg_province"]%>');
 
+        <% unless @jg_bsb.new_record? %>
         $('#btn-modify').click(function () {
             $(this).addClass('hidden');
             $('.modify-name-ctner').removeClass('hidden');
@@ -110,6 +66,7 @@
             }
             return false;
         });
+        <% end %>
     });
 </script>
 <%= form_for(@jg_bsb) do |f| %>
@@ -120,53 +77,61 @@
         <td colspan="6">机构名称</td>
         <td colspan="34">
           <p class="current_name">
-            <%= @jg_bsb.current.name unless @jg_bsb.current.nil? %>
-            <a href="" id="btn-modify" class="pull-right btn btn-link btn-xs">修改名称</a>
+            <% if @jg_bsb.new_record? %>
+                <i class="text-info">新建的机构信息请保存后再设置</i>
+            <% else %>
+                <%= @jg_bsb.current.name unless @jg_bsb.current.nil? %>
+                <a href="" id="btn-modify" class="pull-right btn btn-link btn-xs">修改名称</a>
+            <% end %>
           </p>
-
-          <div class="modify-name-ctner hidden">
-            <hr>
-            <div class="panel panel-default">
-              <div class="panel-heading">机构改名</div>
-              <div class="panel-body">
-                <div class="form-group">
-                  <label>机构名称：</label>
-                  <input id="new_name" type="text" class="form-control input-sm">
-                </div>
-                <div class="form-group">
-                  <label>备注：</label>
-                  <textarea id="note" type="text" class="form-control input-sm"></textarea>
-                </div>
+          <% unless @jg_bsb.new_record? %>
+              <div class="modify-name-ctner hidden">
                 <hr>
-                <button id="do-modify-jg-name" class="btn btn-xs btn-danger">确定</button>
-                <hr>
-                <table class="table">
-                  <caption>更名历史</caption>
-                  <thead>
-                  <tr>
-                    <th width="200">名称</th>
-                    <th width="200">更名时间</th>
-                    <th>备注</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <% @jg_bsb.jg_bsb_names.order('id desc').each do |name| %>
+                <div class="panel panel-default">
+                  <div class="panel-heading">机构改名</div>
+                  <div class="panel-body">
+                    <div class="form-group">
+                      <label>机构名称：</label>
+                      <input id="new_name" type="text" class="form-control input-sm">
+                    </div>
+                    <div class="form-group">
+                      <label>备注：</label>
+                      <textarea id="note" type="text" class="form-control input-sm"></textarea>
+                    </div>
+                    <hr>
+                    <button id="do-modify-jg-name" class="btn btn-xs btn-danger">确定</button>
+                    <hr>
+                    <table class="table">
+                      <caption>更名历史</caption>
+                      <thead>
                       <tr>
-                        <td><%= name.name %></td>
-                        <td><%= name.created_at.strftime('%Y/%m/%d %H:%M:%S') %></td>
-                        <td><%= name.note %></td>
+                        <th width="200">名称</th>
+                        <th width="200">更名时间</th>
+                        <th>备注</th>
                       </tr>
-                  <% end %>
-                  </tbody>
-                </table>
+                      </thead>
+                      <tbody>
+                      <% @jg_bsb.jg_bsb_names.order('id desc').each do |name| %>
+                          <tr>
+                            <td><%= name.name %></td>
+                            <td><%= name.created_at.strftime('%Y/%m/%d %H:%M:%S') %></td>
+                            <td><%= name.note %></td>
+                          </tr>
+                      <% end %>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+          <% end %>
         </td>
       </tr>
       <tr>
         <td colspan="6">地址</td>
-        <td colspan="34"><%= f.text_field :jg_address, :class => "form-control input-sm" %></td>
+        <td colspan="34">
+          <%= f.text_field :jg_address, :class => "form-control input-sm" %>
+          <%= show_error(@jg_bsb.errors, :jg_address) %>
+        </td>
       </tr>
       <tr>
         <td colspan="6">机构法人</td>
@@ -182,7 +147,10 @@
         <td colspan="6">联系电话</td>
         <td colspan="6"><%= f.text_field :jg_tel, :class => "form-control input-sm" %></td>
         <td colspan="6">所属省份</td>
-        <td colspan="10"><%= f.select :jg_province, '', {} %></td>
+        <td colspan="10">
+          <%= f.select :jg_province, options_for_select(SysProvince.level1.pluck(:name).unshift(''), @jg_bsb.jg_province), {}, class: 'form-control input-sm' %>
+          <%= show_error(@jg_bsb.errors, :jg_province) %>
+        </td>
       </tr>
       <tr>
         <td colspan="6">
@@ -225,7 +193,7 @@
             </label>
           </p>
         </td>
-        <td colspan="10" class="form-inline">牵头:<%= f.select :jg_group_category, options_for_select(ACategory.select('distinct name').map{|c| [c.name, c.name]}, @jg_bsb.jg_group_category), {}, {style: 'width: 100px', class: 'form-control input-sm'} %></td>
+        <td colspan="10" class="form-inline">牵头:<%= f.select :jg_group_category, options_for_select(ACategory.select('distinct name').map { |c| [c.name, c.name] }, @jg_bsb.jg_group_category), {}, {style: 'width: 100px', class: 'form-control input-sm'} %></td>
       </tr>
       <tr>
         <td colspan="6">
@@ -282,19 +250,27 @@
         </td>
         <td colspan="30">
           <% if @jg_bsb["attachment_path"].blank? %>
-              尚未上传公章<br/>
+              <span class="text-danger">尚未上传公章</span>
           <% else %>
               已传公章:<img src="/jg_bsbs/<%= @jg_bsb.id %>/attachment" width="200px" height="200px"><br/>
           <% end %>
-          <h1 style="color:red"><%= flash[:attachment_result] unless flash[:attachment_result].nil? %></h1>
-          <%= f.file_field :attachment_path_file, :class => 'btn btn-xs' %>
+
+          <% if flash[:attachment_result].present? %>
+              <h5 style="color:red"><%= flash[:attachment_result] %></h5>
+          <% end %>
+
+          <%= f.file_field :attachment_path_file, :class => 'form-control input-sm' %>
         </td>
       </tr>
       <tr>
         <td colspan="10">检验报告签章规则号<span style="color:#999">（多个规则号用#分隔）</span></td>
         <td colspan="30">
-          <p><%= @jg_bsb.pdf_sign_rules %></p>
-          <a href="/jg_bsb_stamps?jg_bsb_id=<%= @jg_bsb.id %>" class="btn btn-link">机构签章管理<i class="glyphicon glyphicon-arrow-right"></i></a>
+          <% if @jg_bsb.new_record? %>
+              <i class="text-info">请新建保存后再管理机构签章</i>
+          <% else %>
+              <p><%= @jg_bsb.pdf_sign_rules %></p>
+              <a href="/jg_bsb_stamps?jg_bsb_id=<%= @jg_bsb.id %>">机构签章管理<i class="glyphicon glyphicon-arrow-right"></i></a>
+          <% end %>
         </td>
       </tr>
       <% if @show==0||@show==nil %>
