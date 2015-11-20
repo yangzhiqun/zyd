@@ -348,11 +348,13 @@ class SpBsbsController < ApplicationController
     if @sp_jcxcount==nil
       @sp_jcxcount=1
     end
-    if @sp_bsb.sp_s_85==''||@sp_bsb.sp_s_85==nil
-      @sp_bsb.sp_s_85=session[:user_tname]
-      @sp_bsb.sp_s_87=session[:user_tel]
-      @sp_bsb.sp_s_88=session[:user_mail]
+
+    if @sp_bsb.sp_s_85.blank?
+      @sp_bsb.sp_s_85 = current_user.tname
+      @sp_bsb.sp_s_87 = current_user.tel
+      @sp_bsb.sp_s_88 = current_user.eaddress
     end
+
     @sp_data=Spdatum.where(sp_bsb_id: params[:id])
 
     unless @sp_bsb.sp_s_70.blank?
