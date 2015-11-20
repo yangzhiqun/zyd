@@ -342,11 +342,11 @@ class SpBsbsController < ApplicationController
       end
       return
     end
-    @sp_bsb=sp_bsb
-    @sp_jcxcount=@sp_bsb.sp_n_jcxcount
-    @sp_bsb.sp_s_55=''
-    if @sp_jcxcount==nil
-      @sp_jcxcount=1
+    @sp_bsb = sp_bsb
+    @sp_jcxcount = @sp_bsb.sp_n_jcxcount
+    @sp_bsb.sp_s_55 = ''
+    if @sp_jcxcount.nil?
+      @sp_jcxcount = 1
     end
 
     if @sp_bsb.sp_s_85.blank?
@@ -355,7 +355,7 @@ class SpBsbsController < ApplicationController
       @sp_bsb.sp_s_88 = current_user.eaddress
     end
 
-    @sp_data=Spdatum.where(sp_bsb_id: params[:id])
+    @sp_data = Spdatum.where(sp_bsb_id: params[:id])
 
     unless @sp_bsb.sp_s_70.blank?
       @sp_s_67s = BaosongB.where(baosong_a_id: BaosongA.find_by_name(@sp_bsb.sp_s_70).id)
