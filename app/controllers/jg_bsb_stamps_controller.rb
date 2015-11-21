@@ -91,7 +91,7 @@ class JgBsbStampsController < ApplicationController
     @jg_bsb_stamp.destroy
 
     respond_to do |format|
-      format.html { redirect_to jg_bsb_stamps_url }
+      format.html { redirect_to jg_bsb_stamps_url(jg_bsb_id: @jg_bsb_stamp.jg_bsb_id) }
       format.json { head :no_content }
     end
   end
