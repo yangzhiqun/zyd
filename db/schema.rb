@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151117030938) do
+ActiveRecord::Schema.define(version: 20151121020804) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -1111,6 +1111,8 @@ ActiveRecord::Schema.define(version: 20151117030938) do
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
     t.string   "image_path", limit: 255
+    t.string   "name",       limit: 255
+    t.integer  "stamp_type", limit: 4
   end
 
   create_table "jg_bsbs", force: :cascade do |t|
