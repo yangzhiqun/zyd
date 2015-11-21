@@ -80,7 +80,7 @@ $(function() {
         </tr>
         <tr>
           <td colspan="4">食品大类</td>
-          <%if session[:user_name]=='admin'||session[:change_js]!=8%>
+          <%if current_user.is_admin?||session[:change_js]!=8%>
             <td colspan="6"><select type="text" id="sp_dl" name="sp_dl" class="form-control input-sm"></select></td>
           <%else%>
             <td colspan="6"><%=session[:user_dl]%></td>
@@ -89,7 +89,7 @@ $(function() {
           <td colspan="4">食品细类</td>
           <td colspan="6"><input type="text" id="s6" value="<%= params[:s6] %>" class="form-control input-sm" name="s6"></td>
           <td colspan="4">被抽样单位省份</td>
-          <%if session[:user_name]=='admin'||session[:change_js]==8||session[:change_js]==9||session[:change_js]==10%>
+          <%if current_user.is_admin?||session[:change_js]==8||session[:change_js]==9||session[:change_js]==10%>
             <td colspan="6">
 							<%= select_tag "sp_sf", options_for_select(SysProvince.level1.map{|prov| [prov.name, prov.name]}.unshift(['请选择', '']), params[:sp_sf]), :class => "form-control"%>
 						</td> 
@@ -120,7 +120,7 @@ $(function() {
 
 <div id="tabs">
   <ul class="data-tabs">
-    <%if session[:user_name]=='admin' or session[:change_js]==10%>
+    <%if current_user.is_admin? or session[:change_js]==10%>
       <li><a class="<%= (params[:tab].to_i == 0 ? "active" : "")%>" href="?tab=0">已完成任务</a></li>
     <%elsif%>
       <li><a class="<%= (params[:tab].to_i == 0 ? "active" : "")%>" href="?tab=0">待下达</a></li>

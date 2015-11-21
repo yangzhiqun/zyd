@@ -3,7 +3,7 @@ class BjpBsbsController < ApplicationController
   before_filter :init
     
     def init
-        if session[:user_name]=='admin'
+        if current_user.is_admin?
             @admin_user=1
         else
             @admin_user=0
@@ -37,7 +37,7 @@ class BjpBsbsController < ApplicationController
         
             @ending_time=(Time.now).year.to_s+'-'+(Time.now).mon.to_s+'-'+(Time.now).day.to_s
             @begin_time=(Time.now-2592000).year.to_s+'-'+(Time.now-2592000).mon.to_s+'-'+(Time.now-2592000).day.to_s
-            if session[:user_name]=='admin'
+            if current_user.is_admin?
          
                 @bjp_bsbs= BjpBsb.select("bjp_d_95,bjp_d_34,bjp_s_3,bjp_s_14,bjp_s_13,bjp_s_31,bjp_s_39,id,bjp_i_state").paginate(:page=>params[:page],:order=>'bjp_d_95 DESC,bjp_s_14',:per_page=> 10)
                 
@@ -260,7 +260,7 @@ class BjpBsbsController < ApplicationController
             end
         end
         
-        if session[:user_name]=='admin'
+        if current_user.is_admin?
             @bjp_bsbs = BjpBsb.select("bjp_d_95,bjp_d_34,bjp_s_3,bjp_s_14,bjp_s_13,bjp_s_31,bjp_s_39,id,bjp_i_state").paginate(:page=>params[:page],:order=>'bjp_d_95 DESC',:per_page=> 10,:conditions=>[str,@begin_time,@ending_time,@s1,@s2,@s3,@s4,@s7,@s8,@s9])
             else
             @bjp_bsbs = BjpBsb.select("bjp_d_95,bjp_d_34,bjp_s_3,bjp_s_14,bjp_s_13,bjp_s_31,bjp_s_39,id,bjp_i_state").paginate(:page=>params[:page],:order=>'bjp_d_95 DESC',:per_page=> 10,:conditions=>["bjp_s_3=? and "+str,session[:user_province],@begin_time,@ending_time,@s1,@s2,@s3,@s4,@s7,@s8,@s9])
@@ -298,7 +298,7 @@ class BjpBsbsController < ApplicationController
                 sheet1.each do |row|
                     if i_num<=0
                         i_num=i_num+1
-                    elsif (session[:user_province]==row[3])||(session[:user_name]=='admin'&&row[3]!=nil)
+                    elsif (session[:user_province]==row[3])||(current_user.is_admin?&&row[3]!=nil)
                         
                         result_record=BjpBsb.find(:first, :conditions => [ "bjp_s_3 = ? and bjp_s_14=?",row[3],row[13]])
                         if result_record==nil&&row[13]!=nil
@@ -370,7 +370,7 @@ class BjpBsbsController < ApplicationController
         end
     end
     def export_excel
-        if session[:user_name]=='admin'
+        if current_user.is_admin?
             
             @bjp_bsbs= BjpBsb.all(:limit=>5,:order=>'bjp_d_95 DESC')
             
@@ -438,7 +438,7 @@ class BjpBsbsController < ApplicationController
         savetempfile="public/#{session[:user_province]}#{session[:user_name]}#{(Time.now).year.to_s}年#{(Time.now).month.to_s}月#{(Time.now).day.to_s}日保健品基本信息.xls"
         flag = FileTest::exist?(savetempfile)
         if !flag
-            if session[:user_name]=='admin'
+            if current_user.is_admin?
                 @bjp_bsbs= BjpBsb.all(:order=>'bjp_d_95 DESC')
             else
                 @bjp_bsbs = BjpBsb.all(:conditions=>["bjp_s_3=?",session[:user_province]],:order=>'bjp_d_95 DESC')
@@ -528,7 +528,7 @@ class BjpBsbsController < ApplicationController
                     sheet1.each_with_index do |row,index|
                         if i_num<=0
                             i_num=i_num+1
-                        elsif session[:user_name]=='admin'
+                        elsif current_user.is_admin?
                             if row[0]
                                 if flag_1==1
                                     temp_str=temp_str+","

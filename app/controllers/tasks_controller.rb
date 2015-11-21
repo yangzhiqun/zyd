@@ -300,7 +300,7 @@ class TasksController < ApplicationController
     @jg_bsb = current_user.jg_bsb
     case params[:tab].to_i
       when 0
-        if session[:user_name]=='admin'
+        if current_user.is_admin?
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::FINISHED)
         elsif session[:change_js]==10
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::FINISHED, :sp_s_43 => @jg_bsb.all_names)

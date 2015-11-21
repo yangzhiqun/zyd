@@ -184,7 +184,7 @@
             <% end %>
           <% end %>
         <% elsif sp_bsb.sp_i_state == 9 %>
-          <%if sp_bsb.is_bad_report? && (session[:user_name]=='admin'||session[:user_js]==1||session[:change_js]==9||session[:change_js]==10)%>
+          <%if sp_bsb.is_bad_report? && (current_user.is_admin?||session[:user_js]==1||session[:change_js]==9||session[:change_js]==10)%>
             <%if (sp_bsb.sc_wtypcz_enabled?(current_user.user_s_province) or sp_bsb.lt_wtypcz_enabled?(current_user.user_s_province))||current_user.is_admin?||session[:change_js]==10%>
               <% if sp_bsb.wtyp_cz_present? %>
                 <a href="/wtyp_czbs/<%= sp_bsb.id%>/edit" class="btn btn-danger btn-xs">问题样品处理(<%= sp_bsb.status_desc %>)</a>

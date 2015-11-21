@@ -19,7 +19,7 @@ class PadSpBsbsController < ApplicationController
   end
 
   def init
-    if session[:user_name]=='admin'
+    if current_user.is_admin?
       @admin_user=1
     else
       @admin_user=0
@@ -42,7 +42,7 @@ class PadSpBsbsController < ApplicationController
 
   #2014-01-12
   def data_owner(params_data)
-    if session[:user_name]=='admin'||session[:change_js]==9||session[:change_js]==10
+    if current_user.is_admin?||session[:change_js]==9||session[:change_js]==10
       return 1
     end
     if params_data.tname==session[:user_name]

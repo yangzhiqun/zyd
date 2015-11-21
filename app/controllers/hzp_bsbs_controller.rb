@@ -2,7 +2,7 @@
 class HzpBsbsController < ApplicationController
     before_filter :init
     def init
-        if session[:user_name]=='admin'
+        if current_user.is_admin?
             @admin_user=1
             else
             @admin_user=0
@@ -22,7 +22,7 @@ class HzpBsbsController < ApplicationController
   def index
       @ending_time=(Time.now).year.to_s+'-'+(Time.now).mon.to_s+'-'+(Time.now).day.to_s
       @begin_time=(Time.now-2592000).year.to_s+'-'+(Time.now-2592000).mon.to_s+'-'+(Time.now-2592000).day.to_s
-      if session[:user_name]=='admin'          
+      if current_user.is_admin?          
           @hzp_bsbs= HzpBsb.paginate(:page=>params[:page],:order=>'hzp_d_90 DESC,hzp_s_14',:per_page=> 10)
           
           
@@ -232,7 +232,7 @@ class HzpBsbsController < ApplicationController
             end
         end
         
-        if session[:user_name]=='admin'
+        if current_user.is_admin?
             @hzp_bsbs = HzpBsb.paginate(:page=>params[:page],:order=>'hzp_d_90 DESC',:per_page=> 10,:conditions=>[str,@begin_time,@ending_time,@s1,@s2,@s3,@s4,@s7,@s8,@s9])
             else
             @hzp_bsbs = HzpBsb.paginate(:page=>params[:page],:order=>'hzp_d_90 DESC',:per_page=> 10,:conditions=>["hzp_s_3=? and "+str,session[:user_province],@begin_time,@ending_time,@s1,@s2,@s3,@s4,@s7,@s8,@s9])
@@ -245,7 +245,7 @@ class HzpBsbsController < ApplicationController
     end
     # get /hzp_bsbs/submit
     def submit
-        if session[:user_name]=='admin'
+        if current_user.is_admin?
             @hzp_bsb = HzpBsb.find(params[:id])
             @hzp_bsb.update_attribute(:hzp_i_state,1)
         end
@@ -267,7 +267,7 @@ class HzpBsbsController < ApplicationController
                 sheet1.each do |row|
                     if i_num<=0
                         i_num=i_num+1
-                        elsif (session[:user_province]==row[3])||(session[:user_name]=='admin'&&row[3]!=nil)
+                        elsif (session[:user_province]==row[3])||(current_user.is_admin?&&row[3]!=nil)
                         
                         result_record=HzpBsb.find(:first, :conditions => [ "hzp_s_3 = ? and hzp_s_14=?",row[3],row[14]])
                         if result_record==nil&&row[14]!=nil
@@ -337,7 +337,7 @@ class HzpBsbsController < ApplicationController
         end
     end
     def export_excel
-        if session[:user_name]=='admin'
+        if current_user.is_admin?
             
             @hzp_bsbs= HzpBsb.all(:limit=>5,:order=>'hzp_d_90 DESC')
             
@@ -399,7 +399,7 @@ class HzpBsbsController < ApplicationController
         send_file(savetempfile,:disposition => "attachment")
     end
     def export_info_excel
-        if session[:user_name]=='admin'
+        if current_user.is_admin?
             
             @hzp_bsbs= HzpBsb.all(:order=>'hzp_d_90 DESC')
             
@@ -487,7 +487,7 @@ class HzpBsbsController < ApplicationController
                     sheet1.each_with_index do |row,index|
                         if i_num<=0
                             i_num=i_num+1
-                        elsif session[:user_name]=='admin'
+                        elsif current_user.is_admin?
                             if row[0]
                                 if flag_1==1
                                     temp_str=temp_str+","
@@ -564,7 +564,7 @@ class HzpBsbsController < ApplicationController
         end
     end
     def change_data_excel
-        if session[:user_name]=='admin'
+        if current_user.is_admin?
             
             @hzp_bsbs= HzpBsb.all
             else
