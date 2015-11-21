@@ -89,7 +89,7 @@
 
         <br>
         <label>机构名称：</label>
-        <%= f.select :jg_bsb_id, options_for_select(JgBsb.where(status: 0).map { |jg| [jg.current.name, jg.id] }, @user.jg_bsb_id), {}, :class => "form-control input-sm" %>
+        <%= f.select :jg_bsb_id, options_for_select(JgBsb.where(status: 0).map { |jg| [jg.jg_name, jg.id] }, @user.jg_bsb_id), {}, :class => "form-control input-sm" %>
 
         <% if session[:user_name]=='admin' %>
             <div class="checkbox">
