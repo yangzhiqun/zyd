@@ -42,7 +42,7 @@ class JgBsbStampsController < ApplicationController
   #require 'rmagick'
   def cover
     @jg_bsb_stamp = JgBsbStamp.find(params[:jg_bsb_stamp_id])
-		if File.exists?(@jg_bsb_stamp.image_file)
+		if @jg_bsb_stamp.image_file.present? and File.exists?(@jg_bsb_stamp.image_file)
 			md5 = Digest::MD5.file(@jg_bsb_stamp.image_file).hexdigest.upcase
 			thumbnail_path = Rails.root.join('tmp', "#{md5}.preview")
 			unless File.exists?(thumbnail_path)

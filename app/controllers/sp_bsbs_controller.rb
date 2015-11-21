@@ -535,13 +535,16 @@ class SpBsbsController < ApplicationController
           @sp_bsb.submit_d_flag = Time.now.ago(3600*8).to_s(:db)
         end
 
-        @sp_bsb.assign_attributes(sp_bsb_params)
+				if @role_name.blank?
+					@role_name = params[:commit]
+				end
 
         if @role_name.eql?'检测机构批准'
           @sp_bsb.sp_d_47 = Time.now
           @sp_bsb.sp_s_48 = current_user.tname
         end
 
+        @sp_bsb.assign_attributes(sp_bsb_params)
         if @sp_bsb.save
           # 如果original 存在，则回退updated_at时间
           if @original_updated_at.present?
@@ -579,10 +582,6 @@ class SpBsbsController < ApplicationController
           # 记录CA记录
           if !session[:userCert].blank? and !@sp_bsb.ca_sign.blank?
             SpBsbCert.create(source: @sp_bsb.ca_source, user_cert: session[:userCert], sign: @sp_bsb.ca_sign, user_id: current_user.id, sp_i_state: @sp_bsb.sp_i_state, sp_bsb_id: @sp_bsb.id)
-          end
-
-          if @role_name.blank?
-            @role_name = params[:commit]
           end
 
           SpLog.create(:sp_bsb_id => params[:id], :sp_i_state => params[:sp_bsb][:sp_i_state], :remark => @role_name, :user_id => session[:user_id])
