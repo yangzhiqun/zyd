@@ -62,7 +62,7 @@
         <td colspan="4"><p>检验机构名称*</p></td>
         <td colspan="6"><%=@sp_bsb.sp_s_43%></td>
      </tr>
-     <%if (session[:user_province]==@sp_bsb.sp_s_3)||session[:user_name]=='admin'||session[:change_js]==10%>
+     <%if (session[:user_province]==@sp_bsb.sp_s_3)||current_user.is_admin?||session[:change_js]==10%>
          <tr>
             <td colspan="4"><p>填报单位</p></td>
             <td colspan="26"><%= f.text_field:wtyp_jg, :class=>"inputText",:style=>"width: 360px; height: 25px"%></td>
@@ -135,7 +135,7 @@
             </td>
          </tr>
      <%end%>
-     <%if (session[:user_province]==@sp_bsb.sp_s_202&&session[:user_province]!=@sp_bsb.sp_s_3)||session[:user_name]=='admin'||session[:change_js]==10%>
+     <%if (session[:user_province]==@sp_bsb.sp_s_202&&session[:user_province]!=@sp_bsb.sp_s_3)||current_user.is_admin?||session[:change_js]==10%>
          <tr>
             <td colspan="4"><p>填报单位</p></td>
             <td colspan="26"><%= f.text_field:wtyp_jg_sc, :class=>"inputText",:style=>"width: 360px; height: 25px"%></td>

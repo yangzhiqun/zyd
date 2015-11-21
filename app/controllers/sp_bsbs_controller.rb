@@ -157,7 +157,7 @@ class SpBsbsController < ApplicationController
 
   #2014-01-12
   def data_owner(params_data)
-    if session[:user_name]=='admin'||session[:change_js]==9||session[:change_js]==10
+    if current_user.is_admin?||session[:change_js]==9||session[:change_js]==10
       return 1
     end
     if params_data.tname==session[:user_name]
@@ -535,12 +535,17 @@ class SpBsbsController < ApplicationController
           @sp_bsb.submit_d_flag = Time.now.ago(3600*8).to_s(:db)
         end
 
+				if @role_name.blank?
+					@role_name = params[:commit]
+				end
+
         if @role_name.eql?'检测机构批准'
           @sp_bsb.sp_d_47 = Time.now
           @sp_bsb.sp_s_48 = current_user.tname
         end
 
-        if @sp_bsb.update_attributes(sp_bsb_params)
+        @sp_bsb.assign_attributes(sp_bsb_params)
+        if @sp_bsb.save
           # 如果original 存在，则回退updated_at时间
           if @original_updated_at.present?
             SpBsb.record_timestamps = false
@@ -577,10 +582,6 @@ class SpBsbsController < ApplicationController
           # 记录CA记录
           if !session[:userCert].blank? and !@sp_bsb.ca_sign.blank?
             SpBsbCert.create(source: @sp_bsb.ca_source, user_cert: session[:userCert], sign: @sp_bsb.ca_sign, user_id: current_user.id, sp_i_state: @sp_bsb.sp_i_state, sp_bsb_id: @sp_bsb.id)
-          end
-
-          if @role_name.blank?
-            @role_name = params[:commit]
           end
 
           SpLog.create(:sp_bsb_id => params[:id], :sp_i_state => params[:sp_bsb][:sp_i_state], :remark => @role_name, :user_id => session[:user_id])
@@ -822,7 +823,7 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:s8]=='10'
-      if session[:user_name]=='admin'||session[:change_js]==10
+      if current_user.is_admin?||session[:change_js]==10
         @sp_bsbs = @sp_bsbs.where("sp_s_70 = '抽检监测(总局本级)'").paginate(page: params[:page], per_page: 10)
 
         respond_to do |format|
@@ -834,7 +835,7 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:s8]=='11'
-      if session[:user_name]=='admin'||session[:change_js]==10
+      if current_user.is_admin?||session[:change_js]==10
         @sp_bsbs = @sp_bsbs.where("sp_s_70 = '抽检监测（地方）'").paginate(page: params[:page], per_page: 10)
 
         respond_to do |format|
@@ -846,7 +847,7 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:s8]=='12'
-      if session[:user_name]=='admin'||session[:change_js]==10
+      if current_user.is_admin?||session[:change_js]==10
         @sp_bsbs = @sp_bsbs.where("sp_s_70 = '三司专项检验'").paginate(page: params[:page], per_page: 10)
         respond_to do |format|
           format.html { render action: "index" }
@@ -857,7 +858,7 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:s8]=='13'
-      if session[:user_name]=='admin'||session[:change_js]==10
+      if current_user.is_admin?||session[:change_js]==10
         @sp_bsbs = @sp_bsbs.where("sp_s_70 = '网络专项检验'").paginate(page: params[:page], per_page: 10)
         respond_to do |format|
           format.html { render action: "index" }
@@ -903,7 +904,7 @@ class SpBsbsController < ApplicationController
           @sp_bsbs = @sp_bsbs.where("sp_i_state = 9 AND sp_s_70 NOT LIKE '%一司%' AND sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         end
       end
-    elsif session[:user_name]=='admin'||session[:change_js]==10
+    elsif current_user.is_admin?||session[:change_js]==10
       @sp_bsbs = @sp_bsbs.paginate(page: params[:page], per_page: 10)
     else
       if session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
@@ -943,7 +944,7 @@ class SpBsbsController < ApplicationController
 
   # get /sp_bsbs/submit
   def submit
-    #if session[:user_name]=='admin'
+    #if current_user.is_admin?
     @sp_bsb = SpBsb.find(params[:id])
     @sp_bsb.update_attribute(:sp_i_state, 1)
     #end
@@ -969,7 +970,7 @@ class SpBsbsController < ApplicationController
           sheet1.each_with_index do |row, index|
             if i_num<=0
               i_num=i_num+1
-            elsif (row[9]!=nil&&("安徽','澳门','北京','福建','甘肃','广东','广西','贵州','海南','河北','河南','黑龙江','湖北','湖南','吉林','江苏','江西','辽宁','内蒙古','宁夏','青海','山东','山西','陕西','上海','四川','台湾','天津','西藏','香港','新疆','云南','浙江','重庆','兵团".include? row[9]))||(session[:user_name]=='admin'&&row[9]!=nil)
+            elsif (row[9]!=nil&&("安徽','澳门','北京','福建','甘肃','广东','广西','贵州','海南','河北','河南','黑龙江','湖北','湖南','吉林','江苏','江西','辽宁','内蒙古','宁夏','青海','山东','山西','陕西','上海','四川','台湾','天津','西藏','香港','新疆','云南','浙江','重庆','兵团".include? row[9]))||(current_user.is_admin?&&row[9]!=nil)
               result_record=SpBsb.find(:first, :conditions => ["sp_s_16=?", row[25]])
 
               if result_record==nil&&row[62]!=nil&&row[21]!=nil&&row[9]!=nil&&row[29]!=nil&&row[25]!=nil&&row[5]!=nil&&row[26]!=nil&&row[3]!=nil&&row[50]!=nil&&row[0]!=nil&&row[1]!=nil&&row[2]!=nil&&"抽检监测（总局本级三司）','抽检监测（总局本级一司）','抽检监测（三司专项）','抽检监测（省级）','抽检监测（地方）".include?(row[1])&&BaosongB.exists?(name: row[2])
@@ -1104,7 +1105,7 @@ class SpBsbsController < ApplicationController
           if i_num<=0
             i_num=i_num+1
           else
-            if (session[:user_name]=='admin')
+            if (current_user.is_admin?)
               @result_record=SpBsb.find_by_sql(["select sp_bsbs.id as id1,spdata.id as id2 from sp_bsbs,spdata where sp_s_16=? and sp_bsbs.id=spdata.sp_bsb_id and spdata_0=?", row[0], row[1]])
               if @result_record!=nil
                 ActiveRecord::Base.transaction do
@@ -1156,7 +1157,7 @@ class SpBsbsController < ApplicationController
           if i_num<=0
             i_num=i_num+1
           else
-            if (session[:user_name]=='admin')
+            if (current_user.is_admin?)
               result_record=SpBsb.find(:first, :conditions => ["sp_s_16=?", row[1]])
               if result_record!=nil
                 ActiveRecord::Base.transaction do

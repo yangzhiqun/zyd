@@ -114,7 +114,7 @@
             <td colspan="6">
               <select id="s8" name="s8" class="form-control input-sm">
                 <option value=1>全部数据</option>
-                <% if session[:user_name]=='admin'||session[:change_js]==10 %>
+                <% if current_user.is_admin?||session[:change_js]==10 %>
                     <option value=2>批量导入数据</option>
                     <option value=3>基本信息(填报中)</option>
                     <option value=4>检测数据(填报)</option>
@@ -126,7 +126,7 @@
                 <% end %>
                 <option value=9>不合格样品</option>
                 <!--
-                <% if session[:user_name]=='admin'||session[:change_js]==10 %>
+                <% if current_user.is_admin?||session[:change_js]==10 %>
                 <option value=10>局本级任务</option>
                 <option value=11>地方任务</option>
                 <option value=12>三司专项检验</option>
@@ -174,7 +174,7 @@
             <td colspan="6">
               <input type="text" class="form-control input-sm" id="s6" value="<%= params[:s6] %>" name="s6"></td>
             <td colspan="4">被抽样单位省份</td>
-            <% if session[:user_name]=='admin'||session[:change_js]==8||session[:change_js]==9||session[:change_js]==10 %>
+            <% if current_user.is_admin?||session[:change_js]==8||session[:change_js]==9||session[:change_js]==10 %>
                 <td colspan="6"><%= select_tag "sp_sf", options_for_select(SysProvince.level1.map { |prov| [prov.name, prov.name] }, params[:sp_sf]), :class => "form-control" %></td>
             <% else %>
                 <td colspan="6"><%= session[:user_province] %></td>
@@ -220,7 +220,7 @@
 
 <div id="tabs">
   <ul class="data-tabs">
-    <% if session[:user_name]=='admin' or session[:change_js]==10 %>
+    <% if current_user.is_admin? or session[:change_js]==10 %>
         <li>
           <a class="<%= (params[:flag].eql?('tabs_1') ? "active" : "") %>" style="cursor: pointer;" id="tabs_1">结果数据</a>
         </li>
@@ -270,7 +270,7 @@
                         <% end %>
                 </fieldset>
             <% end %> -->
-        <% if session[:user_name]=='admin' %>
+        <% if current_user.is_admin? %>
             <fieldset style="padding: 5px 10px;">
               <legend>临时修改数据</legend>
               <b> <%= flash[:import_result_1] unless flash[:import_result_1].nil? %> </b>
@@ -285,7 +285,7 @@
             </fieldset>
         <% end %>
 
-        <% if session[:change_js]==1||session[:change_js]==5||session[:change_js]==2||session[:change_js]==7||session[:change_js]==8||session[:user_name]=='admin'||session[:change_js]==10 %>
+        <% if session[:change_js]==1||session[:change_js]==5||session[:change_js]==2||session[:change_js]==7||session[:change_js]==8||current_user.is_admin?||session[:change_js]==10 %>
             <fieldset style="padding: 5px 10px;">
               <legend>检测结果导出成为Excel文件并下载至本地</legend>
               <%= form_tag({action: :export_excel_alldata}, multipart: true) do %>
@@ -365,7 +365,7 @@
                       <option value=1>不合格样品</option>
                     </select>
                     </td>
-                    <% if session[:user_name]=='admin' %>
+                    <% if current_user.is_admin? %>
                         <td colspan="6"><select id="sp_s8" name="sp_s8" style="width:180px">
                           <option value=11>瓶（桶）装饮用水</option>
                           <option value=12>酱卤肉制品</option>

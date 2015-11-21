@@ -12,7 +12,7 @@ class CaHelperController < ApplicationController
         flash[:error] = '请上传待验证的文件'
       else
         result_file_path = "/tmp/verify_pdf_#{Time.now.to_i}_#{rand(200000)}.result.txt"
-        cmd = "java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 2 #{@report_file.path} #{result_file_path}"
+        cmd = "/usr/local/java-ppc64-80/jre/bin/java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 2 #{@report_file.path} #{result_file_path}"
         `#{cmd}`
         @result = File.read(result_file_path).to_i
         if @result == 200

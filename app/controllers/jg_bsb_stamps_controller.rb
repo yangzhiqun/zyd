@@ -42,14 +42,18 @@ class JgBsbStampsController < ApplicationController
   #require 'rmagick'
   def cover
     @jg_bsb_stamp = JgBsbStamp.find(params[:jg_bsb_stamp_id])
-    md5 = Digest::MD5.file(@jg_bsb_stamp.image_file).hexdigest.upcase
-    thumbnail_path = Rails.root.join('tmp', "#{md5}.preview")
-    unless File.exists?(thumbnail_path)
-      image = Magick::Image::read(@jg_bsb_stamp.image_file).first
-      image.resize_to_fit!(150)
-      image.write(thumbnail_path)
-    end
-    send_file thumbnail_path, :disposition => 'inline'
+		if @jg_bsb_stamp.image_file.present? and File.exists?(@jg_bsb_stamp.image_file)
+			md5 = Digest::MD5.file(@jg_bsb_stamp.image_file).hexdigest.upcase
+			thumbnail_path = Rails.root.join('tmp', "#{md5}.preview")
+			unless File.exists?(thumbnail_path)
+				image = Magick::Image::read(@jg_bsb_stamp.image_file).first
+				image.resize_to_fit!(150)
+				image.write(thumbnail_path)
+			end
+			send_file thumbnail_path, :disposition => 'inline'
+		else
+			render text: 'no image'
+		end
   end
 
   # POST /jg_bsb_stamps

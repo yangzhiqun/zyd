@@ -170,18 +170,20 @@
             </li>
         <% end %>
         <% if current_user.is_admin? %>
-            <li>
-              <a class="collapse" href="javascript:void(0);" style="font-size: 14px; text-align: center" href="/jg_bsbs">机构信息维护</a>
-              <ul class="subnav">
-                <li><a href="/jg_bsbs">机构信息录入</a></li>
-                <li><a href="/jg_bsbs/merge_request">机构合并</a></li>
-              </ul>
-            </li>
-            <li><a style="font-size: 14px; text-align: center" href="/sp_production_infos">生产企业库维护</a></li>
-            <li><a style="font-size: 14px; text-align: center" href="/sp_company_infos">被抽样单位库维护</a></li>
+            <% if session[:user_name]=='superadmin' %>
+              <li>
+                <a class="collapse" href="javascript:void(0);" style="font-size: 14px; text-align: center" href="/jg_bsbs">机构信息维护</a>
+                <ul class="subnav">
+                  <li><a href="/jg_bsbs">机构信息录入</a></li>
+                  <li><a href="/jg_bsbs/merge_request">机构合并</a></li>
+                </ul>
+              </li>
+              <li><a style="font-size: 14px; text-align: center" href="/sp_production_infos">生产企业库维护</a></li>
+              <li><a style="font-size: 14px; text-align: center" href="/sp_company_infos">被抽样单位库维护</a></li>
+            <% end %>
             <li><a style="font-size: 14px; text-align: center" href="/baosong_as">报送分类维护</a></li>
         <% end %>
-        <% if current_user.user_d_authority_1 == 1 or current_user.is_admin? %>
+        <% if current_user.user_d_authority_1 == 1 or session[:user_name]=='superadmin' %>
             <li><a style="font-size: 14px; text-align: center" href="/company_standards">企业标准库维护</a></li>
         <% end %>
         <% if current_user.is_admin? %>

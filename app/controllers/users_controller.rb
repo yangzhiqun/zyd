@@ -37,7 +37,7 @@ class UsersController < ApplicationController
       username="%"+params[:sp_name]+"%"
     end
     str=str+"order by user_s_province"
-    if session[:user_name]=='admin'
+    if session[:user_name]=='superadmin'
       @users = User.paginate_by_sql([str, province, username], :page => params[:page], :per_page => 10)
     else
       @users = User.where(name: session[:user_name])
@@ -74,7 +74,7 @@ class UsersController < ApplicationController
   # GET /users/new.xml
   def new
 
-    if session[:user_name]=='admin'
+    if session[:user_name]=='superadmin'
       @user = User.new
       respond_to do |format|
         format.html # new.html.erb
@@ -186,7 +186,7 @@ class UsersController < ApplicationController
 
   #
   def import_data_excel
-    unless current_user.is_admin?
+    unless session[:user_name]=='superadmin'
       respond_to do |format|
         flash[:import_result] = "仅管理员可操作"
         format.html { redirect_to :back }
