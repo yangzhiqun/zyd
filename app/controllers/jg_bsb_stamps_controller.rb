@@ -3,6 +3,7 @@ class JgBsbStampsController < ApplicationController
   # GET /jg_bsb_stamps.json
   def index
     @jg_bsb_stamps = JgBsbStamp.where(jg_bsb_id: params[:jg_bsb_id])
+		@jg_bsb = JgBsb.find(params[:jg_bsb_id])
 
     respond_to do |format|
       format.html # index.html.erb
@@ -97,6 +98,6 @@ class JgBsbStampsController < ApplicationController
 
   private
   def jg_bsb_stamp_params
-    params.require(:jg_bsb_stamp).permit(:jg_bsb_id, :note, :stamp_no, :image_path, :image_file)
+    params.require(:jg_bsb_stamp).permit(:jg_bsb_id, :note, :stamp_no, :image_path, :image_file, :name, :stamp_type)
   end
 end

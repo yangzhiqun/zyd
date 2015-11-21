@@ -1112,7 +1112,7 @@ ActiveRecord::Schema.define(version: 20151121020804) do
     t.datetime "updated_at",             null: false
     t.string   "image_path", limit: 255
     t.string   "name",       limit: 255
-    t.integer  "stamp_type", limit: 4
+    t.string   "stamp_type", limit: 10
   end
 
   create_table "jg_bsbs", force: :cascade do |t|

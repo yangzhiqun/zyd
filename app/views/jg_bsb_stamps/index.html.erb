@@ -1,19 +1,22 @@
-<h1>机构签章</h1>
+<h3>
+	机构签章<br>
+	<small><%= @jg_bsb.jg_name %></small>
+</h3>
 <hr>
 
 <% unless @jg_bsb_stamps.blank? %>
     <table class="table table-bordered">
       <tr>
-        <th>机构名称</th>
         <th>签章规则号</th>
+				<th>类型</th>
         <th>备注</th>
         <th></th>
       </tr>
 
       <% @jg_bsb_stamps.each do |jg_bsb_stamp| %>
           <tr>
-            <td><%= jg_bsb_stamp.jg_bsb.jg_name %></td>
             <td><%= jg_bsb_stamp.stamp_no %></td>
+            <td><%= jg_bsb_stamp.stamp_type %></td>
             <td><%= jg_bsb_stamp.note %></td>
             <td>
               <%= link_to '查看', jg_bsb_stamp, class: 'btn btn-xs btn-primary' %>
