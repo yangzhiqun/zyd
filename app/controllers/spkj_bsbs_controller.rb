@@ -3,7 +3,7 @@ require 'csv'
 class SpkjBsbsController < ApplicationController
     before_filter :init
     def init
-        if session[:user_name]=='admin'
+        if current_user.is_admin?
             @admin_user=1
         else
             @admin_user=0

@@ -50,7 +50,7 @@
 </table>
 <h2><%= link_to '新建机构', new_jg_bsb_path, :class => "btn btn-sm btn-primary" %></h2>
 <p><%= will_paginate @sp_bsbs, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
-<% if session[:user_name]=='admin' %>
+<% if current_user.is_admin? %>
     <fieldset style="padding: 5px 10px;">
       <legend>机构用户导入</legend>
       <b> <%= flash[:import_result] unless flash[:import_result].nil? %> </b>

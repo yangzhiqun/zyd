@@ -409,7 +409,7 @@ $(document).ready(function(){
         <%elsif @spkj_bsb["sp_i_state"]==8&&session[:change_js]==8%>
             <%= f.submit(vaule="牵头单位审核通过",options={"id"=>"save_4"}) %>
             <%= f.submit(vaule="退修",options={"id"=>"back_1"}) %>
-        <%elsif @spkj_bsb["sp_i_state"]==9&&session[:user_name]=='admin'%>
+        <%elsif @spkj_bsb["sp_i_state"]==9&&current_user.is_admin?%>
             <%= f.submit(vaule="退修",options={"id"=>"back_1"}) %>
         <%elsif @spkj_bsb["sp_i_state"]==10%>
             <%= f.submit(vaule="临时保存",options={"id"=>"save"}) %>

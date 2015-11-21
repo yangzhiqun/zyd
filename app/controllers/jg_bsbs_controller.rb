@@ -179,7 +179,7 @@ class JgBsbsController < ApplicationController
           if i_num<=1
             i_num=i_num+1
           else
-            if (session[:user_name]=='admin')
+            if (current_user.is_admin?)
               result_record=JgBsb.find_by_sql(["select jg_name from jg_bsbs where jg_name=? limit 1", row[1]])
 
               if result_record[0]==nil
