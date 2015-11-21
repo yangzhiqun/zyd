@@ -31,29 +31,29 @@ class AdminController < ApplicationController
         session[:user_mail] = user.eaddress
         # session[:user_jcjg] = user.user_jcjg
         session[:user_province] = user.user_s_province
-        session[:user_authority_1]=user.user_d_authority
-        session[:user_authority_2]=user.user_d_authority_1
-        session[:user_authority_3]=user.user_d_authority_2
-        session[:user_authority_4]=user.user_d_authority_3
-        session[:user_authority_5]=user.user_d_authority_4
-        session[:user_spys]=user.user_i_spys
-        session[:user_spss]=user.user_i_spss
-        session[:user_sp]=user.user_i_sp
-        session[:user_bjp]=user.user_i_bjp
-        session[:user_hzp]=user.user_i_hzp
-        session[:user_js]=user.user_i_js
-        if user.user_i_switch==1
+        session[:user_authority_1] = user.user_d_authority
+        session[:user_authority_2] = user.user_d_authority_1
+        session[:user_authority_3] = user.user_d_authority_2
+        session[:user_authority_4] = user.user_d_authority_3
+        session[:user_authority_5] = user.user_d_authority_4
+        session[:user_spys] = user.user_i_spys
+        session[:user_spss] = user.user_i_spss
+        session[:user_sp] = user.user_i_sp
+        session[:user_bjp] = user.user_i_bjp
+        session[:user_hzp] = user.user_i_hzp
+        session[:user_js] = user.user_i_js
+        if user.user_i_switch == 1
           session[:user_dl]=user.user_s_dl
-          session[:user_i_switch]=1
+          session[:user_i_switch] = 1
         else
-          session[:user_dl]=''
-          session[:user_i_switch]=0
+          session[:user_dl].blank?
+          session[:user_i_switch] = 0
         end
         session[:expires_at] = 180.minutes.from_now.to_i
-        if session[:user_js]==1&&session[:user_authority_1]==1 #药监局数据采样
-          session[:change_js]=1
+        if session[:user_js] == 1 && session[:user_authority_1] == 1 #药监局数据采样
+          session[:change_js] = 1
         end
-        if session[:user_js]==1&&session[:user_authority_3]==1 #药监局数据审核
+        if session[:user_js] == 1 && session[:user_authority_3] == 1 #药监局数据审核
           session[:change_js]=2
         end
         if session[:user_js]==1&&session[:user_authority_4]==1 #药监局问题样品处理

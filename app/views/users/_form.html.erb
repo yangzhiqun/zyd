@@ -11,19 +11,8 @@
 <div class="row" style="margin: 0;">
   <div class="col-sm-6 col-sm-offset-3">
     <%= form_for(@user) do |f| %>
-        <% if @user.errors.any? %>
-            <div id="error_explanation">
-              <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
-              <ul>
-                <% @user.errors.full_messages.each do |msg| %>
-                    <li><%= msg %></li>
-                <% end %>
-              </ul>
-            </div>
-        <% end %>
         <script>
             $(document).ready(function () {
-
                 $(".region").ProvinceCity({
                     dprovince: "<%= @user.user_s_province %>",
                     dcity: "<%= @user.user_s_city %>",
@@ -78,6 +67,7 @@
         <%= f.text_field :eaddress, :class => "form-control input-sm" %>
 
         <% if session[:user_name]=='admin' %>
+            <br>
             <label>所在省份：</label>
 
             <div class="region form-inline">
@@ -95,7 +85,7 @@
             <div class="checkbox">
               <label><%= f.check_box :user_i_switch, options = {}, checked_value = "1", unchecked_value = "0" %>
                 是否为工作组</label></div>
-            <%= f.select :user_s_dl, options_for_select(ACategory.select('distinct name').map{|c| [c.name, c.name]}, @user.user_s_dl), {}, :class => "form-control input-sm" %>
+            <%= f.select :user_s_dl, options_for_select(ACategory::Category24.map { |c| [c, c] }.unshift(['请选择', '']), @user.user_s_dl), {}, :class => "form-control input-sm" %>
             <br>
 
             <div class="form-inline">

@@ -1,11 +1,19 @@
 #encoding: utf-8
 class JgBsb < ActiveRecord::Base
   # attr_accessible :status, :pdf_sign_rules, :attachment_path_file, :gpsname, :gpspassword, :api_ip_address, :code, :jg_address, :jg_administrion, :jg_bjp_permission, :jg_certification, :jg_contacts, :jg_detection, :jg_enable, :jg_group, :jg_group_category, :jg_higher_level, :jg_hzp_permission, :jg_leader, :jg_name, :jg_sampling, :jg_sp_permission, :jg_tel, :jg_word_area, :jg_province, :jg_email
+  validates_presence_of :jg_address, message: '请填写机构地址'
+  validates_presence_of :jg_province, message: '请填写机构省份'
+  validates_uniqueness_of :jg_address, message: '机构地址重复'
   require 'RMagick'
 
   has_many :jg_bsb_names
   has_many :jg_bsb_stamps
   has_many :users
+
+  def pdf_sign_rules
+		#return super
+    self.jg_bsb_stamps.pluck(:stamp_no).join('#')
+  end
 
   def merge(src_jg)
     return false if src_jg.id == self.id
