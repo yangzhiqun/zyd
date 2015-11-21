@@ -11,6 +11,7 @@ class JgBsb < ActiveRecord::Base
   has_many :users
 
   def pdf_sign_rules
+		#return super
     self.jg_bsb_stamps.pluck(:stamp_no).join('#')
   end
 

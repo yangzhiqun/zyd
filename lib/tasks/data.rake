@@ -2,6 +2,18 @@
 require 'pp'
 namespace :data do
 
+	# 执行该task之前请先在jg_bsb model中注释掉pdf_sign_rules
+	desc '机构签章规则号整理为stamps表'
+	task :migrate_jg_stamps => :environment do
+		ActiveRecord::Base.transaction do
+			JgBsb.where('pdf_sign_rules is not null and pdf_sign_rules <> ""').all.each do |jg|
+				jg.pdf_sign_rules.split('#').each do |rule|
+					JgBsbStamp.create(jg_bsb_id: jg.id, name: rule, stamp_no: rule, stamp_type: rule.split('_')[1], note: 'created from migration')
+				end
+			end
+		end
+	end
+
   desc '机构重名数据整理'
   task :rename_jg_bsbs_data_clean => :environment do
     JgBsb.all.each do |jg|
