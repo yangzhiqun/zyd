@@ -24,4 +24,32 @@ class TmpSpBsb < ActiveRecord::Base
   def wtyp_cz_present?
     WtypCzb.count(:conditions => ["wtyp_sp_bsbs_id = ?", self.id]) > 0
   end
+
+  # 核查处置完成情况
+  def status_desc
+    parts = WtypCzbPart.where(sp_bsb_id: self.id).select("wtyp_czb_type, current_state, id").as_json
+    if parts.empty?
+      return "未开始"
+    end 
+
+    parts.each do |part|
+      if part['wtyp_czb_type'] == ::WtypCzbPart::Type::SC
+        @sc_state = part['current_state']   
+      elsif part['wtyp_czb_type'] == ::WtypCzbPart::Type::LT
+        @lt_state = part['current_state']   
+      end
+    end
+
+    if @sc_state == ::WtypCzb::State::PASSED and @lt_state == ::WtypCzb::State::PASSED
+      "已完成"
+    elsif @sc_state == ::WtypCzb::State::PASSED and @lt_state != ::WtypCzb::State::PASSED 
+      "已完成-生产"
+    elsif @sc_state != ::WtypCzb::State::PASSED and @lt_state == ::WtypCzb::State::PASSED 
+      "已完成-流通"
+    elsif @sc_state != ::WtypCzb::State::PASSED and @lt_state != ::WtypCzb::State::PASSED 
+      "进行中"
+    else
+      "未知"
+    end
+  end
 end
