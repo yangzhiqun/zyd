@@ -654,7 +654,7 @@ class SpBsbsController < ApplicationController
       end
     end
 
-    @sp_bsbs = SpBsb.select("id, updated_at, sp_s_3, sp_s_14, sp_s_16, sp_s_43, sp_s_214, sp_s_35, sp_s_71, sp_s_202, sp_i_state, fail_report_path")
+    @sp_bsbs = TmpSpBsb.select("id, updated_at, sp_s_3, sp_s_14, sp_s_16, sp_s_43, sp_s_214, sp_s_35, sp_s_71, sp_s_202, sp_i_state, fail_report_path")
 
     if params[:r1]
       session[:change_js]=params[:r1].to_i
@@ -1214,7 +1214,11 @@ class SpBsbsController < ApplicationController
   # 抽样检验告知书
   def cyjygzs
     @sp_bsb = SpBsb.find(params[:id])
-    send_file("#{@sp_bsb.cyjygzs_file}", :filename => "#{@sp_bsb.sp_s_16}抽样检验告知书#{File.extname(@sp_bsb.cyjygzs_file)}", :disposition => 'inline')
+    if @sp_bsb.cyjygzs_file_path.blank?
+      render text: "该样品的【抽样检验告知书电子版】不存在"
+    else
+      send_file("#{@sp_bsb.cyjygzs_file}", :filename => "#{@sp_bsb.sp_s_16}抽样检验告知书#{File.extname(@sp_bsb.cyjygzs_file)}", :disposition => 'inline')
+    end
   end
 
   def fail_pdf_report
