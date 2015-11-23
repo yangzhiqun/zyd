@@ -1214,7 +1214,11 @@ class SpBsbsController < ApplicationController
   # 抽样检验告知书
   def cyjygzs
     @sp_bsb = SpBsb.find(params[:id])
-    send_file("#{@sp_bsb.cyjygzs_file}", :filename => "#{@sp_bsb.sp_s_16}抽样检验告知书#{File.extname(@sp_bsb.cyjygzs_file)}", :disposition => 'inline')
+    if @sp_bsb.cyjygzs_file_path.blank?
+      render text: "该样品的【抽样检验告知书电子版】不存在"
+    else
+      send_file("#{@sp_bsb.cyjygzs_file}", :filename => "#{@sp_bsb.sp_s_16}抽样检验告知书#{File.extname(@sp_bsb.cyjygzs_file)}", :disposition => 'inline')
+    end
   end
 
   def fail_pdf_report
