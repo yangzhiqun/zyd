@@ -654,7 +654,7 @@ class SpBsbsController < ApplicationController
       end
     end
 
-    @sp_bsbs = SpBsb.select("id, updated_at, sp_s_3, sp_s_14, sp_s_16, sp_s_43, sp_s_214, sp_s_35, sp_s_71, sp_s_202, sp_i_state, fail_report_path")
+    @sp_bsbs = TmpSpBsb.select("id, updated_at, sp_s_3, sp_s_14, sp_s_16, sp_s_43, sp_s_214, sp_s_35, sp_s_71, sp_s_202, sp_i_state, fail_report_path")
 
     if params[:r1]
       session[:change_js]=params[:r1].to_i
