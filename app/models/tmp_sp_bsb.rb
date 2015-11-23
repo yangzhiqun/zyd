@@ -15,4 +15,13 @@ class TmpSpBsb < ActiveRecord::Base
     return false if user_prov.nil?
     self.sp_s_3.eql?(user_prov)
   end
+
+  def yydjb
+    SpYydjb.find_by_cjbh(self.sp_s_16)
+  end
+
+  # 是否已经存在问题样品处理
+  def wtyp_cz_present?
+    WtypCzb.count(:conditions => ["wtyp_sp_bsbs_id = ?", self.id]) > 0
+  end
 end
