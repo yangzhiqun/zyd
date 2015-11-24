@@ -2,7 +2,7 @@
 # While you can edit this file, any changes you make to the definitions here
 # will be undone by the next auto-generated trigger migration.
 
-class CreateTriggersSpBsbsInsertOrSpBsbsUpdate < ActiveRecord::Migration
+class CreateTriggersSpBsbsInsertOrSpBsbsUpdate23 < ActiveRecord::Migration
   def up
     drop_trigger("sp_bsbs_after_update_of_sp_i_state_sp_s_16_sp_s_3_sp_s_202_s_tr", "sp_bsbs", :generated => true)
 
