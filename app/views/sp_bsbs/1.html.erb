@@ -242,7 +242,7 @@
       <table class="table-bordered" border="1" cellspacing="0" cellpadding="0" style="height:22cm">
         <tr>
           <th height="40" width="50">序号</th>
-          <th colspan="2" width="220">检验项目</th>
+          <th colspan="2" width="240">检验项目</th>
           <th>标准指标</th>
           <th>实测值</th>
           <th width = "80">单项判定</th>
@@ -253,7 +253,7 @@
               <td colspan="2" style="<%= auto_adjust_text_size(product.spdata_0, 9) %>"><%= product.spdata_0 %>
                 <% if !['-', '/', '_'].include?(product.spdata_18) %>,<%= product.spdata_18 %>
                 <% end %></td>
-              <td style="<%= auto_adjust_text_size(product.spdata_15, 1) %>">
+              <td style="<%= auto_adjust_text_size(product.spdata_11+product.spdata_15, 9) %>">
                 <% if ['0', '0.0'].include?(product.spdata_11) and ['0', '0.0'].include?(product.spdata_15) %>不得检出
                 <% elsif ['-', '/', '_', '0', '0.0'].include?(product.spdata_11) %>≤<%= product.spdata_15 %>
                 <% elsif ['-', '/', '_'].include?(product.spdata_15) %>≥<%= product.spdata_11 %>
@@ -261,7 +261,7 @@
                 <% end %>
               </td>
               <% if product.spdata_1 == '未检出' %>
-                  <td style="<%= auto_adjust_text_size(product.spdata_1+product.spdata_5, 5) %>">
+                  <td style="<%= auto_adjust_text_size(product.spdata_1+product.spdata_5+product.spdata_6, 5) %>">
                     <%= product.spdata_1 %>(检出限:<%= product.spdata_5 %><%= product.spdata_6 %>)
                   </td>
               <% else %>
