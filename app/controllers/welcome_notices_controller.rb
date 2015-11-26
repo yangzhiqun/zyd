@@ -49,7 +49,9 @@ class WelcomeNoticesController < ApplicationController
   # POST /welcome_notices
   # POST /welcome_notices.json
   def create
-    @welcome_notice = WelcomeNotice.new(params[:welcome_notice])
+    #@user = User.new(user_params)
+    #@welcome_notice = WelcomeNotice.new(params[:welcome_notice])
+    @welcome_notice = WelcomeNotice.new(welcome_notice_params)
 
     respond_to do |format|
       if @welcome_notice.save
@@ -97,4 +99,8 @@ class WelcomeNoticesController < ApplicationController
       format.json { head :no_content }
     end
   end
+  private
+    def welcome_notice_params
+      params.require(:welcome_notice).permit(:attachment_path_file, :red, :title, :top, :url)
+    end
 end
