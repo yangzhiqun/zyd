@@ -49,7 +49,6 @@ class WelcomeNoticesController < ApplicationController
   # POST /welcome_notices
   # POST /welcome_notices.json
   def create
-    #@user = User.new(user_params)
     #@welcome_notice = WelcomeNotice.new(params[:welcome_notice])
     @welcome_notice = WelcomeNotice.new(welcome_notice_params)
 
