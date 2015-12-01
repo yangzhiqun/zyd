@@ -195,7 +195,7 @@
         </tr>
         <tr>
           <th height="80" colspan="2">检验依据</th>
-          <td align="left" colspan="6"><%= @jyjy_struni %></td>
+          <td align="left" colspan="6" style="<%= auto_adjust_text_size(@jyjy_struni, 120) %>"><%= @jyjy_struni %></td>
         </tr>
         <tr>
           <th height="150" colspan="2">检验结论</th>
@@ -255,9 +255,9 @@
                 <% end %></td>
               <td style="<%= auto_adjust_text_size(product.spdata_11+product.spdata_15, 9) %>">
                 <% if ['0', '0.0'].include?(product.spdata_11) and ['0', '0.0'].include?(product.spdata_15) %>不得检出
-                <% elsif ['-', '/', '_', '0', '0.0'].include?(product.spdata_11) %>≤<%= product.spdata_15 %>
-                <% elsif ['-', '/', '_'].include?(product.spdata_15) %>≥<%= product.spdata_11 %>
-                    <% else %><%= product.spdata_11 %>～<%= product.spdata_15 %>
+                <% elsif ['-','—', '/', '_', '0', '0.0'].include?(product.spdata_11) %>≤<%= product.spdata_15 %>
+                <% elsif ['-','—', '/', '_'].include?(product.spdata_15) %>≥<%= product.spdata_11 %>
+                <% else %><%= product.spdata_11 %>～<%= product.spdata_15 %>
                 <% end %>
               </td>
               <% if product.spdata_1 == '未检出' %>
@@ -309,8 +309,8 @@
                     <% end %></td>
                   <td style="<%= auto_adjust_text_size(product.spdata_11+product.spdata_15, 9) %>">
                     <% if ['0', '0.0'].include?(product.spdata_11) and ['0', '0.0'].include?(product.spdata_15) %>不得检出
-                    <% elsif ['-', '/', '_', '0', '0.0'].include?(product.spdata_11) %>≤<%= product.spdata_15 %>
-                    <% elsif ['-', '/', '_'].include?(product.spdata_15) %>≥<%= product.spdata_11 %>
+                    <% elsif ['-','—', '/', '_', '0', '0.0'].include?(product.spdata_11) %>≤<%= product.spdata_15 %>
+                    <% elsif ['-','—', '/', '_'].include?(product.spdata_15) %>≥<%= product.spdata_11 %>
                         <% else %><%= product.spdata_11 %>～
                         <%= product.spdata_15 %>
                     <% end %>
