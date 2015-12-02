@@ -18,6 +18,8 @@ class SpBsb < ActiveRecord::Base
   validates_presence_of :sp_s_16, message: '请提供抽检单编号'
   validates_uniqueness_of :sp_s_16, message: '该单号已存在', allow_nil: true
 
+	before_save :check_bsb_validity
+
   # 核查处置完成情况
   def status_desc
     parts = WtypCzbPart.where(sp_bsb_id: self.id).select("wtyp_czb_type, current_state, id").as_json
