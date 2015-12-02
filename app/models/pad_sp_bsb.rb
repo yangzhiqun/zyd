@@ -461,31 +461,31 @@ class PadSpBsb < ActiveRecord::Base
   # 2. 同一生产企业(sp_s_13: 生产号)，无论环节，不同产品，最多上传5个任务；
   # 3. 同一生产企业，同一样品名称，同一生产批次，不能下达第二次；
   def check_bsb_validity
-    return true if self.sp_s_215.blank? or ![1, 12].include? self.sp_i_state
+    return true if self.sp_s_215.blank? or self.sp_s_13.blank?
     now = Time.now
 
     # 条件: 1
     sp_bsb_count = SpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)", self.sp_s_215, (now - 60.days), now).count
-    pad_sp_bsb_count = PadSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state=15", self.sp_s_215, (now - 60.days), now).count
+    pad_sp_bsb_count = PadSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (1, 16, 18)", self.sp_s_215, (now - 60.days), now).count
     if sp_bsb_count + pad_sp_bsb_count >= 5
-      errors.add(:base, "同一被抽样单位，同一个抽样周期内，流通环节，只能下达5批")
+      errors.add(:base, '同一被抽样单位，同一个抽样周期内，流通环节，只能下达5批')
       return false
     end
 
     # 条件: 2
-    sp_bsb_count = SpBsb.where("sp_s_13 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)", self.sp_s_13, (now - 60.days), now).count
-    pad_sp_bsb_count = PadSpBsb.where("sp_s_13 = ? AND created_at BETWEEN ? AND ? AND sp_i_state=15", self.sp_s_13, (now - 60.days), now).count
+    sp_bsb_count = SpBsb.where('sp_s_13 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', self.sp_s_13, (now - 60.days), now).count
+    pad_sp_bsb_count = PadSpBsb.where('sp_s_13 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (1, 16, 18)', self.sp_s_13, (now - 60.days), now).count
     if sp_bsb_count + pad_sp_bsb_count >= 4
-      errors.add(:base, "同一生产企业，同一个抽样周期内, 无论环节，不同产品，最多下达4个任务")
+      errors.add(:base, '同一生产企业，同一个抽样周期内, 无论环节，不同产品，最多下达4个任务')
       return false
     end
 
     # 条件: 3
-    sp_bsb_count = SpBsb.where("sp_s_14 = ? AND sp_s_13 = ? AND sp_s_27 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)", self.sp_s_14, self.sp_s_13, self.sp_s_27, (now - 60.days), now).count
-    pad_sp_bsb_count = PadSpBsb.where("sp_s_14 = ? AND sp_s_13 = ? AND sp_s_27 = ? AND created_at BETWEEN ? AND ? AND sp_i_state=12", self.sp_s_14, self.sp_s_13, self.sp_s_27, (now - 60.days), now).count
+    sp_bsb_count = SpBsb.where('sp_s_14 = ? AND sp_s_13 = ? AND sp_s_27 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', self.sp_s_14, self.sp_s_13, self.sp_s_27, (now - 60.days), now).count
+    pad_sp_bsb_count = PadSpBsb.where('sp_s_14 = ? AND sp_s_13 = ? AND sp_s_27 = ? AND created_at BETWEEN ? AND ? AND sp_i_state not in (1, 16, 18)', self.sp_s_14, self.sp_s_13, self.sp_s_27, (now - 60.days), now).count
 
     if sp_bsb_count + pad_sp_bsb_count >= 2
-      errors.add(:base, "同一生产企业，同一个抽样周期内, 同一样品名称，同一生产批次，不能下达第二批")
+      errors.add(:base, '同一生产企业，同一个抽样周期内, 同一样品名称，同一生产批次，不能下达第二批')
       return false
     end
   end
