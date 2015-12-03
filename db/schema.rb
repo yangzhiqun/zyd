@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151201130054) do
+ActiveRecord::Schema.define(version: 20151203132707) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -2178,16 +2178,23 @@ ActiveRecord::Schema.define(version: 20151201130054) do
     t.string   "tname",            limit: 255
     t.string   "sp_s_18",          limit: 255
     t.string   "sp_s_70",          limit: 255
+    t.string   "sp_s_215",         limit: 255
+    t.string   "sp_s_68",          limit: 255
+    t.string   "sp_s_13",          limit: 255
+    t.string   "sp_s_27",          limit: 255
   end
 
   add_index "tmp_sp_bsbs", ["sp_i_state"], name: "index_tmp_sp_bsbs_on_sp_i_state", using: :btree
   add_index "tmp_sp_bsbs", ["sp_s_1"], name: "index_tmp_sp_bsbs_on_sp_s_1", using: :btree
+  add_index "tmp_sp_bsbs", ["sp_s_13", "sp_i_state", "created_at"], name: "13_state_created_at", using: :btree
+  add_index "tmp_sp_bsbs", ["sp_s_13", "sp_s_14", "sp_s_27", "sp_i_state", "created_at"], name: "14_27_state_created_at", using: :btree
   add_index "tmp_sp_bsbs", ["sp_s_14"], name: "index_tmp_sp_bsbs_on_sp_s_14", using: :btree
   add_index "tmp_sp_bsbs", ["sp_s_16"], name: "index_tmp_sp_bsbs_on_sp_s_16", using: :btree
   add_index "tmp_sp_bsbs", ["sp_s_17"], name: "index_tmp_sp_bsbs_on_sp_s_17", using: :btree
   add_index "tmp_sp_bsbs", ["sp_s_20"], name: "index_tmp_sp_bsbs_on_sp_s_20", using: :btree
   add_index "tmp_sp_bsbs", ["sp_s_202"], name: "index_tmp_sp_bsbs_on_sp_s_202", using: :btree
   add_index "tmp_sp_bsbs", ["sp_s_214"], name: "index_tmp_sp_bsbs_on_sp_s_214", using: :btree
+  add_index "tmp_sp_bsbs", ["sp_s_215", "sp_s_68", "created_at", "sp_i_state"], name: "215_68_created_at_state", using: :btree
   add_index "tmp_sp_bsbs", ["sp_s_2_1"], name: "index_tmp_sp_bsbs_on_sp_s_2_1", using: :btree
   add_index "tmp_sp_bsbs", ["sp_s_3"], name: "index_tmp_sp_bsbs_on_sp_s_3", using: :btree
   add_index "tmp_sp_bsbs", ["sp_s_35"], name: "index_tmp_sp_bsbs_on_sp_s_35", using: :btree
@@ -2602,14 +2609,14 @@ ActiveRecord::Schema.define(version: 20151201130054) do
   create_trigger("sp_bsbs_after_insert_row_tr", :generated => true, :compatibility => 1).
       on("sp_bsbs").
       after(:insert) do
-    "INSERT INTO tmp_sp_bsbs(id, sp_i_state, sp_s_16, sp_s_3, sp_s_202, sp_s_14, sp_s_43, sp_s_2_1, sp_s_35, sp_s_64, sp_s_1, sp_s_17, sp_s_20, sp_s_85, created_at, updated_at, sp_s_214, sp_s_71, fail_report_path, tname, sp_s_18, sp_s_70) values(NEW.id, NEW.sp_i_state, NEW.sp_s_16, NEW.sp_s_3, NEW.sp_s_202, NEW.sp_s_14, NEW.sp_s_43, NEW.sp_s_2_1, NEW.sp_s_35, NEW.sp_s_64, NEW.sp_s_1, NEW.sp_s_17, NEW.sp_s_20, NEW.sp_s_85, NEW.created_at, NEW.updated_at, NEW.sp_s_214, NEW.sp_s_71, NEW.fail_report_path, NEW.tname, NEW.sp_s_18, NEW.sp_s_70);"
+    "INSERT INTO tmp_sp_bsbs(id, sp_i_state, sp_s_16, sp_s_3, sp_s_202, sp_s_14, sp_s_43, sp_s_2_1, sp_s_35, sp_s_64, sp_s_1, sp_s_17, sp_s_20, sp_s_85, created_at, updated_at, sp_s_214, sp_s_71, fail_report_path, tname, sp_s_18, sp_s_70, sp_s_215, sp_s_68, sp_s_13, sp_s_27) values(NEW.id, NEW.sp_i_state, NEW.sp_s_16, NEW.sp_s_3, NEW.sp_s_202, NEW.sp_s_14, NEW.sp_s_43, NEW.sp_s_2_1, NEW.sp_s_35, NEW.sp_s_64, NEW.sp_s_1, NEW.sp_s_17, NEW.sp_s_20, NEW.sp_s_85, NEW.created_at, NEW.updated_at, NEW.sp_s_214, NEW.sp_s_71, NEW.fail_report_path, NEW.tname, NEW.sp_s_18, NEW.sp_s_70, NEW.sp_s_215, NEW.sp_s_68, NEW.sp_s_13, NEW.sp_s_27);"
   end
 
   create_trigger("sp_bsbs_after_update_of_updated_at_sp_i_state_row_tr", :generated => true, :compatibility => 1).
       on("sp_bsbs").
       after(:update).
       of(:updated_at, :sp_i_state) do
-    "UPDATE tmp_sp_bsbs SET sp_i_state=NEW.sp_i_state, sp_s_16=NEW.sp_s_16, sp_s_3=NEW.sp_s_3, sp_s_202=NEW.sp_s_202, sp_s_14=NEW.sp_s_14, sp_s_43=NEW.sp_s_43, sp_s_2_1=NEW.sp_s_2_1, sp_s_35=NEW.sp_s_35, sp_s_64=NEW.sp_s_64, sp_s_1=NEW.sp_s_1, sp_s_17=NEW.sp_s_17, sp_s_20=NEW.sp_s_20, sp_s_85=NEW.sp_s_85, created_at=NEW.created_at, updated_at=NEW.updated_at, sp_s_214=NEW.sp_s_214, sp_s_71=NEW.sp_s_71, fail_report_path=NEW.fail_report_path, tname=NEW.tname, sp_s_18=NEW.sp_s_18, sp_s_70=NEW.sp_s_70 where id=NEW.id;"
+    "UPDATE tmp_sp_bsbs SET sp_i_state=NEW.sp_i_state, sp_s_16=NEW.sp_s_16, sp_s_3=NEW.sp_s_3, sp_s_202=NEW.sp_s_202, sp_s_14=NEW.sp_s_14, sp_s_43=NEW.sp_s_43, sp_s_2_1=NEW.sp_s_2_1, sp_s_35=NEW.sp_s_35, sp_s_64=NEW.sp_s_64, sp_s_1=NEW.sp_s_1, sp_s_17=NEW.sp_s_17, sp_s_20=NEW.sp_s_20, sp_s_85=NEW.sp_s_85, created_at=NEW.created_at, updated_at=NEW.updated_at, sp_s_214=NEW.sp_s_214, sp_s_71=NEW.sp_s_71, fail_report_path=NEW.fail_report_path, tname=NEW.tname, sp_s_18=NEW.sp_s_18, sp_s_70=NEW.sp_s_70, sp_s_215=NEW.sp_s_215, sp_s_68=NEW.sp_s_68, sp_s_13=NEW.sp_s_13, sp_s_27=NEW.sp_s_27 where id=NEW.id;"
   end
 
 end

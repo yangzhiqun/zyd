@@ -5,7 +5,7 @@ namespace :data do
 	desc '迁移sp_bsbs到tmp_sp_bsbs'
 	task :migrate_tmp_sp_bsbs => :environment do
     ActiveRecord::Base.connection.execute("TRUNCATE tmp_sp_bsbs")
-    ActiveRecord::Base.connection.execute("INSERT INTO tmp_sp_bsbs(id, sp_i_state, sp_s_16, sp_s_3, sp_s_202, sp_s_14, sp_s_43, sp_s_2_1, sp_s_35, sp_s_64, sp_s_1, sp_s_17, sp_s_20, sp_s_85, created_at, updated_at, sp_s_214, sp_s_71, fail_report_path, sp_s_18, tname, sp_s_70) select id, sp_i_state, sp_s_16, sp_s_3, sp_s_202, sp_s_14, sp_s_43, sp_s_2_1, sp_s_35, sp_s_64, sp_s_1, sp_s_17, sp_s_20, sp_s_85, created_at, updated_at, sp_s_214, sp_s_71, fail_report_path, sp_s_18, tname, sp_s_70 from sp_bsbs")
+    ActiveRecord::Base.connection.execute("INSERT INTO tmp_sp_bsbs(id, sp_i_state, sp_s_16, sp_s_3, sp_s_202, sp_s_14, sp_s_43, sp_s_2_1, sp_s_35, sp_s_64, sp_s_1, sp_s_17, sp_s_20, sp_s_85, created_at, updated_at, sp_s_214, sp_s_71, fail_report_path, sp_s_18, tname, sp_s_70, sp_s_215, sp_s_68, sp_s_13, sp_s_27) select id, sp_i_state, sp_s_16, sp_s_3, sp_s_202, sp_s_14, sp_s_43, sp_s_2_1, sp_s_35, sp_s_64, sp_s_1, sp_s_17, sp_s_20, sp_s_85, created_at, updated_at, sp_s_214, sp_s_71, fail_report_path, sp_s_18, tname, sp_s_70, sp_s_215, sp_s_68, sp_s_13, sp_s_27 from sp_bsbs")
 	end
 
 	# 执行该task之前请先在jg_bsb model中注释掉pdf_sign_rules
