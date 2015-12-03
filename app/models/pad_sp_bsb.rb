@@ -465,7 +465,7 @@ class PadSpBsb < ActiveRecord::Base
     now = Time.now
 
     # 条件: 1
-    sp_bsb_count = SpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)", self.sp_s_215, (now - 60.days), now).count
+    sp_bsb_count = TmpSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)", self.sp_s_215, (now - 60.days), now).count
     pad_sp_bsb_count = PadSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (1, 16, 18)", self.sp_s_215, (now - 60.days), now).count
     if sp_bsb_count + pad_sp_bsb_count >= 5
       errors.add(:base, '同一被抽样单位，同一个抽样周期内，流通环节，只能下达5批')
@@ -473,7 +473,7 @@ class PadSpBsb < ActiveRecord::Base
     end
 
     # 条件: 2
-    sp_bsb_count = SpBsb.where('sp_s_13 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', self.sp_s_13, (now - 60.days), now).count
+    sp_bsb_count = TmpSpBsb.where('sp_s_13 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', self.sp_s_13, (now - 60.days), now).count
     pad_sp_bsb_count = PadSpBsb.where('sp_s_13 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (1, 16, 18)', self.sp_s_13, (now - 60.days), now).count
     if sp_bsb_count + pad_sp_bsb_count >= 4
       errors.add(:base, '同一生产企业，同一个抽样周期内, 无论环节，不同产品，最多下达4个任务')
@@ -481,7 +481,7 @@ class PadSpBsb < ActiveRecord::Base
     end
 
     # 条件: 3
-    sp_bsb_count = SpBsb.where('sp_s_14 = ? AND sp_s_13 = ? AND sp_s_27 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', self.sp_s_14, self.sp_s_13, self.sp_s_27, (now - 60.days), now).count
+    sp_bsb_count = TmpSpBsb.where('sp_s_14 = ? AND sp_s_13 = ? AND sp_s_27 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', self.sp_s_14, self.sp_s_13, self.sp_s_27, (now - 60.days), now).count
     pad_sp_bsb_count = PadSpBsb.where('sp_s_14 = ? AND sp_s_13 = ? AND sp_s_27 = ? AND created_at BETWEEN ? AND ? AND sp_i_state not in (1, 16, 18)', self.sp_s_14, self.sp_s_13, self.sp_s_27, (now - 60.days), now).count
 
     if sp_bsb_count + pad_sp_bsb_count >= 2
