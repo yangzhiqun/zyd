@@ -842,7 +842,7 @@
             $("#sp_bsb_sp_s_20").removeAttr("disabled");
 
             $("#new_sp_bsb, form.edit_sp_bsb").ajaxSubmit({
-                datatype: "json",
+                dataType: "json",
                 success: function (message) {
                     if (message.status == '保存成功!') {
                         alert("您的信息已经成功存入数据库！");
@@ -1008,7 +1008,7 @@
         $("#new_sp_bsb, form.edit_sp_bsb").submit(function () {
             if (SP.sp_bsb.sp_i_state == parseInt($('#sp_bsb_sp_i_state').val())) {
                 $("#new_sp_bsb, form.edit_sp_bsb").ajaxSubmit({
-                    datatype: "json",
+                    dataType: "json",
                     success: function (message) {
                         if (message.status == '保存成功!') {
                             alert("您的信息已经成功存入数据库！");
