@@ -476,7 +476,7 @@ class PadSpBsb < ActiveRecord::Base
     sp_bsb_count = TmpSpBsb.where('sp_s_13 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', self.sp_s_13, (now - 60.days), now).count
     pad_sp_bsb_count = PadSpBsb.where('sp_s_13 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (1, 16, 18)', self.sp_s_13, (now - 60.days), now).count
     if sp_bsb_count + pad_sp_bsb_count >= 4
-      errors.add(:base, '同一生产企业，同一个抽样周期内, 无论环节，不同产品，最多下达4个任务')
+      errors.add(:base, '同一生产企业，同一个抽样周期内, 无论环节，不同产品，最多下达4批')
       return false
     end
 
@@ -485,7 +485,7 @@ class PadSpBsb < ActiveRecord::Base
     pad_sp_bsb_count = PadSpBsb.where('sp_s_14 = ? AND sp_s_13 = ? AND sp_s_27 = ? AND created_at BETWEEN ? AND ? AND sp_i_state not in (1, 16, 18)', self.sp_s_14, self.sp_s_13, self.sp_s_27, (now - 60.days), now).count
 
     if sp_bsb_count + pad_sp_bsb_count >= 2
-      errors.add(:base, '同一生产企业，同一个抽样周期内, 同一样品名称，同一生产批次，不能下达第二批')
+      errors.add(:base, '同一生产企业，同一个抽样周期内, 同一样品名称，同一生产批次，不能下达第2批')
       return false
     end
   end
