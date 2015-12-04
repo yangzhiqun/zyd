@@ -626,7 +626,7 @@ class SpBsbsController < ApplicationController
           flash[:import_result] = @sp_bsb.errors.first.last
           @sp_bsb = SpBsb.find(@sp_bsb.id)
           format.html { render action: "edit" }
-          format.json { render json: {status: '保存出错!', msg: "修改不成功! #{@sp_bsb.errors.first.last}"} }
+          format.json { render json: {status: '保存出错!', msg: "修改不成功! #{flash[:import_result]}"} }
         end
       end
     end
