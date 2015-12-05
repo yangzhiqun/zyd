@@ -241,11 +241,13 @@ class SpBsb < ActiveRecord::Base
 			end
 
 			# 条件: 2
-			sp_bsb_count = TmpSpBsb.where('sp_s_13 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', self.sp_s_13, (now - 60.days), now).count
-			pad_sp_bsb_count = PadSpBsb.where('sp_s_13 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (1, 16, 18)', self.sp_s_13, (now - 60.days), now).count
-			if sp_bsb_count + pad_sp_bsb_count >= 4
-				errors.add(:base, '同一生产企业，同一个抽样周期内, 无论环节，不同产品，最多下达4批')
-				return false
+			if !%w{/ 、- \\ 无}.include?(self.sp_s_13) and !self.sp_s_13.blank?
+				sp_bsb_count = TmpSpBsb.where('sp_s_13 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', self.sp_s_13, (now - 60.days), now).count
+				pad_sp_bsb_count = PadSpBsb.where('sp_s_13 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (1, 16, 18)', self.sp_s_13, (now - 60.days), now).count
+				if sp_bsb_count + pad_sp_bsb_count >= 4
+					errors.add(:base, '同一生产企业，同一个抽样周期内, 无论环节，不同产品，最多下达4批')
+					return false
+				end
 			end
 
 			# 条件: 3
