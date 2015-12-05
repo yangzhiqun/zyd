@@ -1108,8 +1108,8 @@ ActiveRecord::Schema.define(version: 20151203132707) do
     t.integer  "jg_bsb_id",  limit: 4
     t.string   "stamp_no",   limit: 255
     t.string   "note",       limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
     t.string   "image_path", limit: 255
     t.string   "name",       limit: 255
     t.string   "stamp_type", limit: 10
@@ -1698,7 +1698,6 @@ ActiveRecord::Schema.define(version: 20151203132707) do
   add_index "sp_bsbs", ["sp_s_5"], name: "index_sp_bsbs_on_sp_s_5", using: :btree
   add_index "sp_bsbs", ["sp_s_71"], name: "index_sp_bsbs_on_sp_s_71", using: :btree
   add_index "sp_bsbs", ["tname"], name: "index_tname", using: :btree
-  add_index "sp_bsbs", ["updated_at", "sp_i_state"], name: "updated_at_state_idx", using: :btree
   add_index "sp_bsbs", ["updated_at"], name: "update_desc", using: :btree
 
   create_table "sp_company_infos", force: :cascade do |t|
@@ -1795,6 +1794,13 @@ ActiveRecord::Schema.define(version: 20151203132707) do
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
     t.integer  "pub_type",     limit: 4,   default: -1
+  end
+
+  create_table "sp_sort_bsbs", force: :cascade do |t|
+    t.string   "sp_sort_name", limit: 255
+    t.integer  "sp_sort_num",  limit: 4
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
   end
 
   create_table "sp_sta", id: false, force: :cascade do |t|
@@ -2453,9 +2459,6 @@ ActiveRecord::Schema.define(version: 20151203132707) do
   end
 
   add_index "wtyp_czb_parts", ["cjbh"], name: "index_wtyp_czb_parts_on_cjbh", using: :btree
-  add_index "wtyp_czb_parts", ["current_state", "sp_bsb_id"], name: "state_sp_bsb_id_idx", using: :btree
-  add_index "wtyp_czb_parts", ["current_state"], name: "current_state_idx", using: :btree
-  add_index "wtyp_czb_parts", ["sp_bsb_id"], name: "sp_bsb_id_idx", using: :btree
 
   create_table "wtyp_czbs", force: :cascade do |t|
     t.string   "wtyp_jg",                limit: 255
