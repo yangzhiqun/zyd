@@ -220,6 +220,8 @@ class UsersController < ApplicationController
         next
       end
 
+      next if row[@title.index('用户名')].nil? or row[@title.index('用户名')].strip.blank?
+
       if User.exists?(name: row[@title.index('用户名')])
         user = User.find_by_name(row[@title.index('用户名')])
       else
@@ -234,6 +236,7 @@ class UsersController < ApplicationController
         user.password = pwd
       end
 
+      user.tname = row[@title.index('姓名')]
       user.tel = row[@title.index('联系电话')]
       user.eaddress = row[@title.index('E-mail')]
       user.user_s_province = row[@title.index('所在省份')]
