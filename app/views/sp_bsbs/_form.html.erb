@@ -1022,7 +1022,7 @@
                     if (message.status == '保存成功!') {
                         alert(message.msg);
                         if (SP.sp_bsb.sp_i_state != parseInt($('#sp_bsb_sp_i_state').val())) {
-                            location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe %>';
+                            location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
                         }
                     } else if (message.status == '保存出错!') {
                         alert(message.msg);
