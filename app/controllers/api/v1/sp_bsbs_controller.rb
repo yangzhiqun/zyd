@@ -113,7 +113,7 @@ class Api::V1::SpBsbsController < ApplicationController
         end
         format.json { render :json => {:status => "OK", :msg => "保存成功!", :id => @sp_bsb.id} }
       else
-        format.json { render :json => {:status => "ERR", :msg => "保存不成功，数据库中已有该样品编号!"} }
+        format.json { render :json => {:status => "ERR", :msg => "保存不成功，#{@sp_bsb.errors.first.last}!"} }
       end
     end
   end
