@@ -1005,28 +1005,31 @@
             return true;
         });
 
+        /**
+         * 提交FORM
+         * */
         $("#new_sp_bsb, form.edit_sp_bsb").submit(function () {
-            if (SP.sp_bsb.sp_i_state == parseInt($('#sp_bsb_sp_i_state').val())) {
-                $("#new_sp_bsb, form.edit_sp_bsb").ajaxSubmit({
-                    dataType: "json",
-                    success: function (message) {
-                        if (message.status == '保存成功!') {
-                            alert("您的信息已经成功存入数据库！");
-                        } else if (message.status == '保存出错!') {
-                            alert(message.msg);
-                        }
-                    }
-                });
-                return false;
-            } else {
-                <% unless session[:certId].blank? %>
+            <% unless session[:certId].blank? %>
                 var source = generateCAsrc();
                 $('#sp_bsb_ca_source').val(source);
                 var signed_data = SignedData('<%= session[:certId]%>', source);
                 $('#sp_bsb_ca_sign').val(signed_data);
-                <% end %>
-                return true;
-            }
+            <% end %>
+
+            $("#new_sp_bsb, form.edit_sp_bsb").ajaxSubmit({
+                dataType: "json",
+                success: function (message) {
+                    if (message.status == '保存成功!') {
+                        alert(message.msg);
+                        if (SP.sp_bsb.sp_i_state != parseInt($('#sp_bsb_sp_i_state').val())) {
+                            location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe %>';
+                        }
+                    } else if (message.status == '保存出错!') {
+                        alert(message.msg);
+                    }
+                }
+            });
+            return false;
         });
 
         <%if session[:user_authority_1]==0&&session[:user_authority_2]==0%>

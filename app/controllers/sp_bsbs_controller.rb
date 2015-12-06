@@ -496,7 +496,6 @@ class SpBsbsController < ApplicationController
       respond_to do |format|
         @original_updated_at = nil
 
-
         if (params[:sp_bsb][:sp_i_state].to_i == 9 && current_user.is_admin?)
           @role_name = '秘书处直接修改'
 
