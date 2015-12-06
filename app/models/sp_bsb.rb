@@ -214,7 +214,7 @@ class SpBsb < ActiveRecord::Base
 
   # 是否已经存在问题样品处理
   def wtyp_cz_present?
-    WtypCzb.count(:conditions => ["wtyp_sp_bsbs_id = ?", self.id]) > 0
+    WtypCzb.where('wtyp_sp_bsbs_id = ?', self.id).count > 0
   end
 
   has_many :spdata, :dependent => :delete_all

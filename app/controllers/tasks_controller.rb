@@ -97,14 +97,14 @@ class TasksController < ApplicationController
         end
         d_category_ids.uniq!
 
-        @d_categories = DCategory.where(id: d_category_ids).order("a_category_id, b_category_id, c_category_id")
+        @d_categories = DCategory.where(id: d_category_ids).order('a_category_id, b_category_id, c_category_id')
         @d_categories = @d_categories.where(identifier: @baosong_b.identifier) unless @baosong_b.blank?
 
         ids = TaskProvince.where(sys_province_id: @province.id).map { |b| b.a_category_id }
         @a_categories = ACategory.where(id: ids)
 
-        @delegates = TaskJgBsb.select("distinct(jg_bsb_id)").where(:sys_province_id => @province.id)
-        @count = TaskJgBsb.select("count(distinct(jg_bsb_id)) as count").where(:sys_province_id => @province.id).first.count
+        @delegates = TaskJgBsb.select('distinct(jg_bsb_id)').where(:sys_province_id => @province.id)
+        @count = @delegates.count
 
         # TODO: 如何精准筛选剩余部分
         @jcjgs = JgBsb.where(:jg_sampling => 1, status: 0)

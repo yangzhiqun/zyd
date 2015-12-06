@@ -12,12 +12,12 @@ class TaskJgBsb < ActiveRecord::Base
 
   # 按机构获取已下达任务的数量
   def assigned_count_by_jg
-    PadSpBsb.count(:conditions => ["jg_bsb_id = ? and a_category_id = ?", self.jg_bsb_id, self.a_category_id])
+    PadSpBsb.where('jg_bsb_id = ? and a_category_id = ?', self.jg_bsb_id, self.a_category_id).count
   end
 
   # 按机构获取已完成任务的数量
   def finished_count_by_jg
-    PadSpBsb.count(:conditions => ["jg_bsb_id = ? AND a_category_id = ? AND sp_i_state = 9", self.jg_bsb_id, self.a_category_id])
+    PadSpBsb.where('jg_bsb_id = ? AND a_category_id = ? AND sp_i_state = 9', self.jg_bsb_id, self.a_category_id).count
   end
 
   private

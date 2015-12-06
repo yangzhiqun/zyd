@@ -7,7 +7,7 @@ class ACategory < ActiveRecord::Base
   has_many :check_items, dependent: :delete_all
 
   def rowspan
-    DCategory.count(:conditions => ["a_category_id = ?", self.id])
+    DCategory.where('a_category_id = ?', self.id).count
   end
 
   Category24 = %w{
