@@ -95,7 +95,7 @@ Rails.application.routes.draw do
 
   get "tasks/assign"
 
-  get "tasks/check"
+  match 'tasks/check', via: [:get, :post]
 
   get "yycz/new"
   get "yycz/dj"

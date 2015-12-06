@@ -321,60 +321,61 @@ class TasksController < ApplicationController
       @begin_time = (Time.now - 30.days).beginning_of_day
     end
 
-    unless params[:begin_time].blank?
-      @end_time = DateTime.parse(params[:begin_time]).end_of_day
+    unless params[:ending_time].blank?
+      @end_time = DateTime.parse(params[:ending_time]).end_of_day
     else
       @end_time = Time.now.end_of_day
     end
 
-    unless params[:s13].blank?
-      @pad_sp_bsbs = @pad_sp_bsbs.where("sp_s_2_1 LIKE ?", "%#{params[:s13]}%")
+    unless params[:rwly].blank?
+      # @pad_sp_bsbs = @pad_sp_bsbs.where('sp_s_2_1 LIKE ?', "%#{params[:s13]}%")
+      # TODO: 完善取数据逻辑
     end
 
-    unless params[:s1].blank?
-      @pad_sp_bsbs = @pad_sp_bsbs.where("sp_s_35 LIKE ?", "%#{params[:s1]}%")
+    unless params[:sp_s_35].blank?
+      @pad_sp_bsbs = @pad_sp_bsbs.where('sp_s_35 LIKE ?', "%#{params[:sp_s_35]}%")
     end
 
-    unless params[:s2].blank?
-      @pad_sp_bsbs = @pad_sp_bsbs.where("sp_s_43 LIKE ?", "%#{params[:s2]}%")
+    unless params[:sp_s_43].blank?
+      @pad_sp_bsbs = @pad_sp_bsbs.where('sp_s_43 LIKE ?', "%#{params[:sp_s_43]}%")
     end
 
-    unless params[:s12].blank?
-      @pad_sp_bsbs = @pad_sp_bsbs.where("sp_s_64 LIKE ?", "%#{params[:s12]}%")
+    unless params[:sp_s_64].blank?
+      @pad_sp_bsbs = @pad_sp_bsbs.where('sp_s_64 LIKE ?', "%#{params[:sp_s_64]}%")
     end
 
-    unless params[:s11].blank?
-      @pad_sp_bsbs = @pad_sp_bsbs.where("sp_s_1 LIKE ?", "%#{params[:s11]}%")
+    unless params[:sp_s_1].blank?
+      @pad_sp_bsbs = @pad_sp_bsbs.where('sp_s_1 LIKE ?', "%#{params[:sp_s_1]}%")
     end
 
-    unless params[:s4].blank?
-      @pad_sp_bsbs = @pad_sp_bsbs.where("sp_s_14 LIKE ?", "%#{params[:s4]}%")
+    unless params[:sp_s_14].blank?
+      @pad_sp_bsbs = @pad_sp_bsbs.where('sp_s_14 LIKE ?', "%#{params[:sp_s_14]}%")
     end
 
-    if !params[:sp_dl].blank? and !params[:sp_dl].eql?('请选择')
-      @pad_sp_bsbs = @pad_sp_bsbs.where("sp_s_17 LIKE ?", "%#{params[:sp_dl]}%")
+    if !params[:sp_s_17].blank? and !params[:sp_s_17].eql?('请选择')
+      @pad_sp_bsbs = @pad_sp_bsbs.where('sp_s_17 LIKE ?', "%#{params[:sp_s_17]}%")
     end
 
-    unless params[:s6].blank?
-      @pad_sp_bsbs = @pad_sp_bsbs.where("sp_s_20 LIKE ?", "%#{params[:s6]}%")
+    unless params[:sp_s_20].blank?
+      @pad_sp_bsbs = @pad_sp_bsbs.where('sp_s_20 LIKE ?', "%#{params[:sp_s_20]}%")
     end
 
-    if !params[:sp_sf].blank? and !params[:sp_sf].eql?('请选择')
-      @pad_sp_bsbs = @pad_sp_bsbs.where("sp_s_3 LIKE ?", "%#{params[:sp_sf]}%")
+    if !params[:sp_s_3].blank? and !params[:sp_s_3].eql?('请选择')
+      @pad_sp_bsbs = @pad_sp_bsbs.where('sp_s_3 LIKE ?', "%#{params[:sp_s_3]}%")
     end
 
-    unless params[:s5].blank?
-      @pad_sp_bsbs = @pad_sp_bsbs.where("sp_s_2 LIKE ?", "%#{params[:s5]}%")
+    unless params[:sp_s_2].blank?
+      @pad_sp_bsbs = @pad_sp_bsbs.where('sp_s_2 LIKE ?', "%#{params[:sp_s_2]}%")
     end
 
-    unless params[:s3].blank?
-      @pad_sp_bsbs = @pad_sp_bsbs.where("sp_s_85 LIKE ?", "%#{params[:s3]}%")
+    unless params[:sp_s_85].blank?
+      @pad_sp_bsbs = @pad_sp_bsbs.where('sp_s_85 LIKE ?', "%#{params[:sp_s_85]}%")
     end
 
-    unless params[:s7].blank?
-      @pad_sp_bsbs = @pad_sp_bsbs.where("sp_s_16 LIKE ?", "%#{params[:s7]}%")
+    unless params[:sp_s_16].blank?
+      @pad_sp_bsbs = @pad_sp_bsbs.where('sp_s_16 LIKE ?', "%#{params[:sp_s_16]}%")
     end
 
-    @pad_sp_bsbs = @pad_sp_bsbs.paginate(:page => params[:page], :per_page => 10).order("updated_at DESC")
+    @pad_sp_bsbs = @pad_sp_bsbs.paginate(:page => (params[:page].present? ? params[:page].to_i : 1), :per_page => 10).order("updated_at DESC")
   end
 end
