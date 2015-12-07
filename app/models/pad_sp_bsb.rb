@@ -465,11 +465,13 @@ class PadSpBsb < ActiveRecord::Base
     now = Time.now
 
     # 条件: 1
-    sp_bsb_count = TmpSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)", self.sp_s_215, (now - 60.days), now).count
+    if !%w{餐饮}.include?(self.sp_s_68)
+		sp_bsb_count = TmpSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)", self.sp_s_215, (now - 60.days), now).count
     pad_sp_bsb_count = PadSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (1, 16, 18)", self.sp_s_215, (now - 60.days), now).count
     if sp_bsb_count + pad_sp_bsb_count >= 10
       errors.add(:base, '同一被抽样单位，同一个抽样周期内，流通环节，只能下达10批')
       return false
+    end
     end
 
     # 条件: 2
