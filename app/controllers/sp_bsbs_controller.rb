@@ -822,6 +822,9 @@ class SpBsbsController < ApplicationController
     elsif session[:change_js]==8&&params[:flag]=="tabs_4"
       @sp_bsbs = @sp_bsbs.where("sp_i_state = 9")
     end
+    if params[:flag]=="tabs_5"
+      @sp_bsbs =@sp_bsbs.where("sp_i_state = 3")
+    end
 
     if params[:s8]=='10'
       if current_user.is_admin?||session[:change_js]==10

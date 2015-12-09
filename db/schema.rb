@@ -23,6 +23,42 @@ ActiveRecord::Schema.define(version: 20151203132707) do
     t.boolean  "enable",                 default: true
   end
 
+  create_table "a_categories_provinces", force: :cascade do |t|
+    t.integer  "sys_province_id", limit: 4
+    t.integer  "a_category_id",   limit: 4
+    t.integer  "quota",           limit: 4
+    t.string   "year",            limit: 255
+    t.string   "note",            limit: 255
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.integer  "b_category_id",   limit: 4
+    t.integer  "c_category_id",   limit: 4
+    t.integer  "d_category_id",   limit: 4
+    t.string   "identifier",      limit: 255
+  end
+
+  create_table "a_category_jg_bsbs", force: :cascade do |t|
+    t.integer  "a_category_id",   limit: 4
+    t.integer  "jg_bsb_id",       limit: 4
+    t.string   "note",            limit: 255
+    t.integer  "quota",           limit: 4
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.integer  "sys_province_id", limit: 4
+    t.integer  "b_category_id",   limit: 4
+    t.integer  "c_category_id",   limit: 4
+    t.integer  "d_category_id",   limit: 4
+    t.string   "identifier",      limit: 255
+  end
+
+  create_table "a_category_testers", force: :cascade do |t|
+    t.integer  "a_category_id", limit: 4
+    t.integer  "tester_id",     limit: 4
+    t.string   "note",          limit: 255
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+  end
+
   create_table "attachments", force: :cascade do |t|
     t.string   "filename",     limit: 255
     t.string   "path",         limit: 255
@@ -1108,8 +1144,8 @@ ActiveRecord::Schema.define(version: 20151203132707) do
     t.integer  "jg_bsb_id",  limit: 4
     t.string   "stamp_no",   limit: 255
     t.string   "note",       limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "image_path", limit: 255
     t.string   "name",       limit: 255
     t.string   "stamp_type", limit: 10
@@ -1152,6 +1188,49 @@ ActiveRecord::Schema.define(version: 20151203132707) do
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
   end
+
+  create_table "oauth_access_grants", force: :cascade do |t|
+    t.integer  "resource_owner_id", limit: 4,     null: false
+    t.integer  "application_id",    limit: 4,     null: false
+    t.string   "token",             limit: 255,   null: false
+    t.integer  "expires_in",        limit: 4,     null: false
+    t.text     "redirect_uri",      limit: 65535, null: false
+    t.datetime "created_at",                      null: false
+    t.datetime "revoked_at"
+    t.string   "scopes",            limit: 255
+  end
+
+  add_index "oauth_access_grants", ["token"], name: "index_oauth_access_grants_on_token", unique: true, using: :btree
+
+  create_table "oauth_access_tokens", force: :cascade do |t|
+    t.integer  "resource_owner_id", limit: 4
+    t.integer  "application_id",    limit: 4
+    t.string   "token",             limit: 255, null: false
+    t.string   "refresh_token",     limit: 255
+    t.integer  "expires_in",        limit: 4
+    t.datetime "revoked_at"
+    t.datetime "created_at",                    null: false
+    t.string   "scopes",            limit: 255
+  end
+
+  add_index "oauth_access_tokens", ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true, using: :btree
+  add_index "oauth_access_tokens", ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id", using: :btree
+  add_index "oauth_access_tokens", ["token"], name: "index_oauth_access_tokens_on_token", unique: true, using: :btree
+
+  create_table "oauth_applications", force: :cascade do |t|
+    t.string   "name",         limit: 255,                   null: false
+    t.string   "uid",          limit: 255,                   null: false
+    t.string   "secret",       limit: 255,                   null: false
+    t.text     "redirect_uri", limit: 65535,                 null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "user_id",      limit: 4
+    t.string   "prov",         limit: 255
+    t.string   "jg",           limit: 255
+    t.boolean  "auto_submit",                default: false
+  end
+
+  add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true, using: :btree
 
   create_table "orders", force: :cascade do |t|
     t.string   "name",       limit: 255
@@ -1515,6 +1594,15 @@ ActiveRecord::Schema.define(version: 20151203132707) do
 
   add_index "sessions", ["session_id"], name: "index_sessions_on_session_id", unique: true, using: :btree
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
+
+  create_table "sp_bsb_api_logs", force: :cascade do |t|
+    t.integer  "application_id", limit: 4
+    t.integer  "sp_bsb_id",      limit: 4
+    t.text     "snapshot",       limit: 65535
+    t.string   "note",           limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "sp_bsb_certs", force: :cascade do |t|
     t.text     "source",     limit: 65535
@@ -2117,6 +2205,15 @@ ActiveRecord::Schema.define(version: 20151203132707) do
     t.string   "sp_s_215",       limit: 255
   end
 
+  create_table "static_queues", force: :cascade do |t|
+    t.string   "name",        limit: 255
+    t.integer  "user_id",     limit: 4
+    t.datetime "finished_at"
+    t.text     "msg",         limit: 65535
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+  end
+
   create_table "sys_provinces", force: :cascade do |t|
     t.string   "name",       limit: 255
     t.string   "note",       limit: 255
@@ -2160,6 +2257,15 @@ ActiveRecord::Schema.define(version: 20151203132707) do
     t.string   "b_category_name", limit: 255
     t.string   "c_category_name", limit: 255
     t.string   "d_category_name", limit: 255
+  end
+
+  create_table "testers", force: :cascade do |t|
+    t.string   "name",       limit: 255
+    t.string   "prov",       limit: 255
+    t.string   "city",       limit: 255
+    t.string   "country",    limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
   end
 
   create_table "tmp_sp_bsbs", force: :cascade do |t|
