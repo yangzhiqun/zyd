@@ -270,7 +270,7 @@ class SpBsb < ActiveRecord::Base
 
 	def callback_when_updated
 		if self.via_api
-			ApiExchangePool.create(application_id: self.application_id, sp_bsb_id: self.id, changed_attributes: self.changed_attributes.keys.join(','))
+			ApiExchangePool.create(application_id: self.application_id, sp_bsb_id: self.id, attributes_changed: self.changed_attributes.keys.join(','))
 		end
 	end
 end
