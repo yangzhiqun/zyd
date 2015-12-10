@@ -19,6 +19,7 @@ class SpBsb < ActiveRecord::Base
   validates_uniqueness_of :sp_s_16, message: '该单号已存在', allow_nil: true
 
 	before_save :check_bsb_validity
+	after_update :callback_when_updated
 
   # 核查处置完成情况
   def status_desc
@@ -218,6 +219,7 @@ class SpBsb < ActiveRecord::Base
   end
 
   has_many :spdata, :dependent => :delete_all
+  has_many :api_exchange_pools, :dependent => :delete_all
 
   def is_bad_report?
     result = sp_s_71 || ''
@@ -265,4 +267,10 @@ class SpBsb < ActiveRecord::Base
 		end
 		end
   end
+
+	def callback_when_updated
+		if self.via_api
+			ApiExchangePool.create(application_id: self.application_id, sp_bsb_id: self.id, changed_attributes: self.changed_attributes.keys.join(','))
+		end
+	end
 end
