@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151203132707) do
+ActiveRecord::Schema.define(version: 20151210024857) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -57,6 +57,14 @@ ActiveRecord::Schema.define(version: 20151203132707) do
     t.string   "note",          limit: 255
     t.datetime "created_at",                null: false
     t.datetime "updated_at",                null: false
+  end
+
+  create_table "api_exchange_pools", force: :cascade do |t|
+    t.integer  "application_id", limit: 4,                 null: false
+    t.integer  "sp_bsb_id",      limit: 4,                 null: false
+    t.boolean  "fetched",                  default: false
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
   end
 
   create_table "attachments", force: :cascade do |t|
@@ -1770,6 +1778,9 @@ ActiveRecord::Schema.define(version: 20151203132707) do
     t.string   "cyd_file_path",            limit: 255
     t.string   "cyjygzs_file_path",        limit: 255
     t.datetime "yydj_enabled_by_admin_at"
+    t.boolean  "via_api",                                               default: false
+    t.datetime "synced_at"
+    t.integer  "application_id",           limit: 4
   end
 
   add_index "sp_bsbs", ["id"], name: "index_sp_bsbs_on_id", using: :btree

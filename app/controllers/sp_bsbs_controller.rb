@@ -500,7 +500,7 @@ class SpBsbsController < ApplicationController
 					@role_name = params[:commit]
 				end
 
-        if @role_name.eql?'检测机构批准'
+        if @role_name.eql?'检测机构批准' or params[:sp_bsb][:sp_i_state].eql?'6'
           @sp_bsb.sp_d_47 = Time.now
           @sp_bsb.sp_s_48 = current_user.tname
         end
@@ -544,7 +544,12 @@ class SpBsbsController < ApplicationController
           if !session[:userCert].blank? and !@sp_bsb.ca_sign.blank?
             SpBsbCert.create(source: @sp_bsb.ca_source, user_cert: session[:userCert], sign: @sp_bsb.ca_sign, user_id: current_user.id, sp_i_state: @sp_bsb.sp_i_state, sp_bsb_id: @sp_bsb.id)
           end
-
+          
+          if @role_name.blank?
+            if params[:sp_bsb][:sp_i_state] = 6
+              @role_name = '检测机构批准'
+            end
+          end
           SpLog.create(:sp_bsb_id => params[:id], :sp_i_state => params[:sp_bsb][:sp_i_state], :remark => @role_name, :user_id => session[:user_id])
 
           format.json { render :json => {:status => "保存成功!", :msg => "保存成功!"} }
