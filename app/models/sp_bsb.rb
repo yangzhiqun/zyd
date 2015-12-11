@@ -236,7 +236,7 @@ class SpBsb < ActiveRecord::Base
 			now = Time.now
 
 			# 条件: 1
-			if !%w{餐饮}.include?(self.sp_s_68.strip) or !%w{/ 、- \ 无}.include?(self.sp_s_215.strip)
+			if !%w{餐饮 生产}.include?(self.sp_s_68.strip) or !%w{/ 、 - \ 无}.include?(self.sp_s_215.strip)
 			sp_bsb_count = TmpSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)", self.sp_s_215, (now - 60.days), now).count
 			pad_sp_bsb_count = PadSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (1, 16, 18)", self.sp_s_215, (now - 60.days), now).count
 			if sp_bsb_count + pad_sp_bsb_count >= 20
@@ -246,7 +246,7 @@ class SpBsb < ActiveRecord::Base
       end
 
 			# 条件: 2
-			if !%w{/ 、- \ 无}.include?(self.sp_s_13.strip)
+			if !%w{/ 、 - \ 无}.include?(self.sp_s_13.strip)
 				sp_bsb_count = TmpSpBsb.where('sp_s_13 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', self.sp_s_13, (now - 60.days), now).count
 				pad_sp_bsb_count = PadSpBsb.where('sp_s_13 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (1, 16, 18)', self.sp_s_13, (now - 60.days), now).count
 				if sp_bsb_count + pad_sp_bsb_count >= 10
@@ -256,7 +256,7 @@ class SpBsb < ActiveRecord::Base
 			end
 
 			# 条件: 3
-		if !%w{/ 、- \ 无}.include?(self.sp_s_13.strip)
+		if !%w{/ 、 - \ 无}.include?(self.sp_s_13.strip)
 			sp_bsb_count = TmpSpBsb.where('sp_s_14 = ? AND sp_s_13 = ? AND sp_s_27 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', self.sp_s_14, self.sp_s_13, self.sp_s_27, (now - 60.days), now).count
 			pad_sp_bsb_count = PadSpBsb.where('sp_s_14 = ? AND sp_s_13 = ? AND sp_s_27 = ? AND created_at BETWEEN ? AND ? AND sp_i_state not in (1, 16, 18)', self.sp_s_14, self.sp_s_13, self.sp_s_27, (now - 60.days), now).count
 
