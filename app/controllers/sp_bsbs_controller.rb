@@ -223,44 +223,6 @@ class SpBsbsController < ApplicationController
     @sp_bsb=sp_bsb
     @sp_jcxcount=@sp_bsb.sp_n_jcxcount
     @sp_data=Spdatum.where(sp_bsb_id: params[:id])
-
-    unless @sp_bsb.sp_s_70.blank?
-      @sp_s_67s = BaosongB.where(baosong_a_id: BaosongA.find_by_name(@sp_bsb.sp_s_70).id)
-    else
-      @sp_s_67s = []
-    end
-
-    if !@sp_s_67s.blank? and !@sp_bsb.sp_s_67.blank?
-      @sp_s_67 = @sp_s_67s.where(name: @sp_bsb.sp_s_67).first
-    end
-
-    unless @sp_s_67.nil?
-      @a_categories = ACategory.where(:identifier => @sp_s_67.identifier)
-    else
-      @a_categories = []
-    end
-
-    if !@sp_bsb.sp_s_17.blank? and !@sp_bsb.sp_s_17.eql?("请选择")
-      @b_categories = BCategory.where(:identifier => @sp_s_67.identifier, a_category_id: @a_categories.where(name: @sp_bsb.sp_s_17).first.id)
-    else
-      @b_categories = []
-    end
-
-    if !@sp_bsb.sp_s_18.blank? and !@sp_bsb.sp_s_18.eql?("请选择")
-      @c_categories = CCategory.where(:identifier => @sp_s_67.identifier, b_category_id: @b_categories.where(name: @sp_bsb.sp_s_18).first.id)
-    else
-      @c_categories = []
-    end
-
-    if !@sp_bsb.sp_s_19.blank? and !@sp_bsb.sp_s_19.eql?("请选择")
-      @d_categories = DCategory.where(:identifier => @sp_s_67.identifier, c_category_id: @c_categories.where(name: @sp_bsb.sp_s_19).first.id)
-    else
-      @d_categories = []
-    end
-
-    if @sp_jcxcount==nil
-      @sp_jcxcount=1
-    end
   end
 
   # 推送基本数据
