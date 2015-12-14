@@ -199,17 +199,18 @@
         </tr>
         <tr>
           <th height="150" colspan="2">检验结论</th>
+              <% if @wtx.blank? 
+                  @jyjl_print = @jyyj_hgx_str4
+                 else 
+                  @jyjl_print =  '经抽样检验，'
+                   @wtx.each_with_index do |wtx, index| 
+                      @jyjl_print = @jyjl_print+wtx.spdata_0+'项目不符合'+wtx.spdata_4+'要求，'
+                   end 
+                  @jyjl_print = @jyjl_print+'检验结论为不合格。'
+                end %>
           <td colspan="6">
-            <p align="left">
-              <% if @wtx.blank? %>
-                  <%= @jyyj_hgx_str4 %>
-              <% else %>
-                  经抽样检验，
-                  <% @wtx.each_with_index do |wtx, index| %>
-                      <%= wtx.spdata_0 %>项目不符合<%= wtx.spdata_4 %>要求，
-                  <% end %>
-                  检验结论为不合格。
-              <% end %>
+            <p align="left" style="<%= auto_adjust_text_size(@jyjl_print, 120) %>">
+              <%= @jyjl_print %>
             </p>
 
             <p align="center">&nbsp;</p>
