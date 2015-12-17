@@ -262,8 +262,8 @@
                 <% end %>
               </td>
               <% if product.spdata_1 == '未检出' %>
-                  <td style="<%= auto_adjust_text_size(product.spdata_1+product.spdata_5+product.spdata_6, 5) %>">
-                    <%= product.spdata_1 %>(检出限:<%= product.spdata_5 %><%= product.spdata_6 %>)
+                  <td style="<%= auto_adjust_text_size(product.spdata_1+product.spdata_7+product.spdata_8, 5) %>">
+                    <%= product.spdata_1 %>(检出限:<%= product.spdata_7 %><%= product.spdata_8 %>)
                   </td>
               <% else %>
                   <td style="<%= auto_adjust_text_size(product.spdata_1, 9) %>">
@@ -316,7 +316,15 @@
                         <%= product.spdata_15 %>
                     <% end %>
                   </td>
-                  <td><%= product.spdata_1 %></td>
+              <% if product.spdata_1 == '未检出' %>
+                  <td style="<%= auto_adjust_text_size(product.spdata_1+product.spdata_7+product.spdata_8, 5) %>">
+                    <%= product.spdata_1 %>(检出限:<%= product.spdata_7 %><%= product.spdata_8 %>)
+                  </td>
+              <% else %>
+                  <td style="<%= auto_adjust_text_size(product.spdata_1, 9) %>">
+                    <%= product.spdata_1 %>
+                  </td>
+              <% end %>
                   <td><%= product.spdata_2 %></td>
                 </tr>
             <% end %>
@@ -429,7 +437,15 @@
                         <% else %><%= product.spdata_11 %>~<%= product.spdata_15 %>
                     <% end %>
                   </td>
-                  <td><%= product.spdata_1 %></td>
+              <% if product.spdata_1 == '未检出' %>
+                  <td style="<%= auto_adjust_text_size(product.spdata_1+product.spdata_7+product.spdata_8, 5) %>">
+                    <%= product.spdata_1 %>(检出限:<%= product.spdata_7 %><%= product.spdata_8 %>)
+                  </td>
+              <% else %>
+                  <td style="<%= auto_adjust_text_size(product.spdata_1, 9) %>">
+                    <%= product.spdata_1 %>
+                  </td>
+              <% end %>
                 </tr>
             <% end %>
             <% if is_last_page %>

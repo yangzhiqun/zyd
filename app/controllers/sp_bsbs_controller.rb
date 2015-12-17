@@ -10,7 +10,7 @@ class SpBsbsController < ApplicationController
   def print
     @spbsb = SpBsb.find(params[:id])
     @jg_bsb = JgBsb.find_by_jg_name(@spbsb.sp_s_43)
-    @jyxm_str = Spdatum.where('sp_bsb_id= ? and spdata_2 <> ?', @spbsb.id, '未检验').limit(3).map { |s| s.spdata_0 }.join(",") + "等#{Spdatum.where("sp_bsb_id= ? and spdata_2 <> ?", @spbsb.id, '未检验').count}项。"
+    @jyxm_str = Spdatum.where('sp_bsb_id= ? and (spdata_2 = ? or spdata_2 = ?)', @spbsb.id,'合格项','不合格项').limit(3).map { |s| s.spdata_0 }.join(",") + "等#{Spdatum.where("sp_bsb_id= ? and (spdata_2 = ? or spdata_2 = ?)", @spbsb.id, '合格项','不合格项').count}项。"
     #@jyjy_str = Spdatum.where(:sp_bsb_id => @spbsb.id,!spdata_4.eql?('/')).limit(2).map{|s| s.spdata_3}.join(",")
     @jyjy_str = Spdatum.where("sp_bsb_id= ? and spdata_4 <> ?", @spbsb.id, '/').limit(2).map { |s| s.spdata_3 }.join(",")
     @jyjy_str4 = Spdatum.where("sp_bsb_id= ? and spdata_4 <> ?", @spbsb.id, '/').limit(2).map { |s| s.spdata_4 }.join(",")
@@ -23,13 +23,13 @@ class SpBsbsController < ApplicationController
     #风险项
     @fxx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE '%不判定项%' OR spdata_2 LIKE '%问题项%')", @spbsb.id)
     #问题项
-    @wtx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE ? OR spdata_2 LIKE ?)", @spbsb.id, "%不合格%", "%问题%")
+    @wtx = Spdatum.where("sp_bsb_id = ? AND spdata_2 LIKE ?", @spbsb.id, "%不合格%")
     #合格项检验依据，取合格项的spdata_4
     #@hgx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE ?)", @spbsb.id, "%合格项%")
     @jyyj_hgx_str4 = "经抽样检验，所检项目符合" + Spdatum.where("sp_bsb_id= ? and spdata_4 <> ? and spdata_2 like ?", @spbsb.id, '/', "%合格项%").map { |s| s.spdata_4 }.uniq.join(",")+"要求。"
 
     #问题项字符串
-    @wtx_str = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE ? OR spdata_2 LIKE ?)", @spbsb.id, "%不合格%", "%问题%").map { |s| s.spdata_0 }.join(",")
+    @wtx_str = Spdatum.where("sp_bsb_id = ? AND spdata_2 LIKE ? ", @spbsb.id, "%问题%").map { |s| s.spdata_0 }.join(",")
     #检查封样人员
     @padsplog_jcfy = PadSpLogs.where("sp_s_16 = ? AND remark = ?", @spbsb.sp_s_16, "接受样品").last
     @splog_jcfy = SpLog.where("sp_bsb_id = ? AND remark = ?", @spbsb.id, "基本信息提交入库").last
