@@ -199,17 +199,18 @@
         </tr>
         <tr>
           <th height="150" colspan="2">检验结论</th>
+              <% if @wtx.blank? 
+                  @jyjl_print = @jyyj_hgx_str4
+                 else 
+                  @jyjl_print =  '经抽样检验，'
+                   @wtx.each_with_index do |wtx, index| 
+                      @jyjl_print = @jyjl_print+wtx.spdata_0+'项目不符合'+wtx.spdata_4+'要求，'
+                   end 
+                  @jyjl_print = @jyjl_print+'检验结论为不合格。'
+                end %>
           <td colspan="6">
-            <p align="left">
-              <% if @wtx.blank? %>
-                  <%= @jyyj_hgx_str4 %>
-              <% else %>
-                  经抽样检验，
-                  <% @wtx.each_with_index do |wtx, index| %>
-                      <%= wtx.spdata_0 %>项目不符合<%= wtx.spdata_4 %>要求，
-                  <% end %>
-                  检验结论为不合格。
-              <% end %>
+            <p align="left" style="<%= auto_adjust_text_size(@jyjl_print, 90) %>">
+              <%= @jyjl_print %>
             </p>
 
             <p align="center">&nbsp;</p>
@@ -261,8 +262,8 @@
                 <% end %>
               </td>
               <% if product.spdata_1 == '未检出' %>
-                  <td style="<%= auto_adjust_text_size(product.spdata_1+product.spdata_5+product.spdata_6, 5) %>">
-                    <%= product.spdata_1 %>(检出限:<%= product.spdata_5 %><%= product.spdata_6 %>)
+                  <td style="<%= auto_adjust_text_size(product.spdata_1+product.spdata_7+product.spdata_8, 5) %>">
+                    <%= product.spdata_1 %>(检出限:<%= product.spdata_7 %><%= product.spdata_8 %>)
                   </td>
               <% else %>
                   <td style="<%= auto_adjust_text_size(product.spdata_1, 9) %>">
@@ -315,7 +316,15 @@
                         <%= product.spdata_15 %>
                     <% end %>
                   </td>
-                  <td><%= product.spdata_1 %></td>
+              <% if product.spdata_1 == '未检出' %>
+                  <td style="<%= auto_adjust_text_size(product.spdata_1+product.spdata_7+product.spdata_8, 5) %>">
+                    <%= product.spdata_1 %>(检出限:<%= product.spdata_7 %><%= product.spdata_8 %>)
+                  </td>
+              <% else %>
+                  <td style="<%= auto_adjust_text_size(product.spdata_1, 9) %>">
+                    <%= product.spdata_1 %>
+                  </td>
+              <% end %>
                   <td><%= product.spdata_2 %></td>
                 </tr>
             <% end %>
@@ -428,7 +437,15 @@
                         <% else %><%= product.spdata_11 %>~<%= product.spdata_15 %>
                     <% end %>
                   </td>
-                  <td><%= product.spdata_1 %></td>
+              <% if product.spdata_1 == '未检出' %>
+                  <td style="<%= auto_adjust_text_size(product.spdata_1+product.spdata_7+product.spdata_8, 5) %>">
+                    <%= product.spdata_1 %>(检出限:<%= product.spdata_7 %><%= product.spdata_8 %>)
+                  </td>
+              <% else %>
+                  <td style="<%= auto_adjust_text_size(product.spdata_1, 9) %>">
+                    <%= product.spdata_1 %>
+                  </td>
+              <% end %>
                 </tr>
             <% end %>
             <% if is_last_page %>
