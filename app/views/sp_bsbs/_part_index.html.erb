@@ -148,7 +148,11 @@
         <% elsif sp_bsb.sp_i_state == 6 %>
           <%= link_to '待省局审核', "/sp_bsbs/#{sp_bsb.id}/edit", :class => 'btn btn-info btn-xs center-block' %>
         <% elsif sp_bsb.sp_i_state == 8 %>
+					<% if SpBsb.find(sp_bsb.id).via_api %>
+          <%= link_to '待牵头单位审核(二)', "/sp_bsbs/#{sp_bsb.id}", :class => 'btn btn-info btn-xs center-block' %>
+					<% else %>
           <%= link_to '待牵头单位审核', "/sp_bsbs/#{sp_bsb.id}/edit", :class => 'btn btn-info btn-xs center-block' %>
+					<% end %>
         <% elsif sp_bsb.sp_i_state == 9 %>
           <%= link_to '已完全提交', "/sp_bsbs/#{sp_bsb.id}", :class => 'btn btn-info btn-xs center-block' %>
           <a href="/sp_bsbs/<%= sp_bsb.id%>/print" class="print-sp-bsb btn btn-xs btn-link center-block" target="_blank">打印</a>
