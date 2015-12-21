@@ -230,7 +230,7 @@ class SpBsb < ActiveRecord::Base
   # 2. 同一生产企业(sp_s_13: 生产号)，无论环节，不同产品，最多上传5个任务；
   # 3. 同一生产企业，同一样品名称，同一生产批次，不能下达第二次；
   def check_bsb_validity
-    return true if self.sp_s_215.blank? or self.sp_s_13.blank? or %w{抽检监测（总局本级一司） 抽检监测（总局本级三司） 抽检监测（三司专项）}.include?(self.sp_s_70)
+    return true #if self.sp_s_215.blank? or self.sp_s_13.blank? or %w{抽检监测（总局本级一司） 抽检监测（总局本级三司） 抽检监测（三司专项）}.include?(self.sp_s_70)
 		return true if self.sp_s_reason.present?
 		if self.changes[:sp_i_state].present? and [0, 1].include?(self.changes['sp_i_state'][0]) and self.changes['sp_i_state'][1] == 2
 			now = Time.now
