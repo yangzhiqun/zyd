@@ -18,6 +18,8 @@ class AdminController < ApplicationController
     @title = "登录"
     if request.post?
       user = User.authenticate(params[:name], params[:password])
+      user_agent = request.env['HTTP_USER_AGENT']
+      user_agent_parsed = UserAgent.parse(request.env['HTTP_USER_AGENT'])
       if user
         unless user.user_sign.blank?
           flash[:error] = '系统检测到您的账号已绑定证书，请使用USB-Key登录'
@@ -82,9 +84,26 @@ class AdminController < ApplicationController
         end
 
         flash[:notice] = "loggin"
+        LoginLog.create({
+            :name => params[:name],
+            :sessionid => session.id,
+            :action => '登陆成功',
+            :ip => request.env["REMOTE_ADDR"],
+            :os => user_agent_parsed.os,
+            :browser => user_agent_parsed.browser,
+            :brover => user_agent_parsed.version
+        })
         redirect_to "/welcome_notices"
       else
         flash[:error] = '用户名或密码错误！'
+        LoginLog.create({
+            :name => params[:name],
+            :action => '登陆失败',
+            :ip => request.env["REMOTE_ADDR"],
+            :os => user_agent_parsed.os,
+            :browser => user_agent_parsed.browser,
+            :brover => user_agent_parsed.version
+        })
       end
     end
   end
@@ -92,6 +111,17 @@ class AdminController < ApplicationController
 
   def logout
     #logger.debug "hello logout"
+    user_agent = request.env['HTTP_USER_AGENT']
+    user_agent_parsed = UserAgent.parse(request.env['HTTP_USER_AGENT'])
+    LoginLog.create({
+        :name => session[:user_name],
+        :sessionid => session.id,
+        :action => '退出登录',
+        :ip => request.env["REMOTE_ADDR"],
+        :os => user_agent_parsed.os,
+        :browser => user_agent_parsed.browser,
+        :brover => user_agent_parsed.version
+    })
     session[:user_id] = nil
     session[:user_name]=nil
     session[:user_province]=nil

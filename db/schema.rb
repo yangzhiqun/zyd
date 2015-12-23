@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151210114026) do
+ActiveRecord::Schema.define(version: 20151223101323) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -1156,6 +1156,18 @@ ActiveRecord::Schema.define(version: 20151210114026) do
     t.string   "attachment_path",   limit: 255
     t.string   "pdf_sign_rules",    limit: 255
     t.integer  "status",            limit: 4,   default: 0
+  end
+
+  create_table "login_logs", force: :cascade do |t|
+    t.string   "name",       limit: 255
+    t.string   "action",     limit: 255
+    t.string   "ip",         limit: 255
+    t.string   "os",         limit: 255
+    t.string   "browser",    limit: 255
+    t.string   "brover",     limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+    t.string   "sessionid",  limit: 255
   end
 
   create_table "mytests", force: :cascade do |t|
