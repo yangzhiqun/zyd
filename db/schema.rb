@@ -1706,8 +1706,8 @@ ActiveRecord::Schema.define(version: 20151223101323) do
     t.string   "cyd_file_path",            limit: 255
     t.string   "cyjygzs_file_path",        limit: 255
     t.datetime "yydj_enabled_by_admin_at"
-    t.boolean  "via_api",                                               default: false
     t.datetime "synced_at"
+    t.boolean  "via_api",                                               default: false
     t.integer  "application_id",           limit: 4
   end
 
@@ -1824,6 +1824,13 @@ ActiveRecord::Schema.define(version: 20151223101323) do
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
     t.integer  "pub_type",     limit: 4,   default: -1
+  end
+
+  create_table "sp_sort_bsbs", force: :cascade do |t|
+    t.string   "sp_sort_name", limit: 255
+    t.integer  "sp_sort_num",  limit: 4
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
   end
 
   create_table "sp_sta", id: false, force: :cascade do |t|
