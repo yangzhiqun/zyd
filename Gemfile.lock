@@ -171,7 +171,7 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
-    rmagick (2.13.3)
+    rmagick (2.15.4)
     ruby-ole (1.2.11.8)
     ruby2ruby (2.2.0)
       ruby_parser (~> 3.1)
@@ -268,7 +268,7 @@ DEPENDENCIES
   puma
   rails (= 4.2.4)
   rest-client
-  rmagick (~> 2.13.3)
+  rmagick (~> 2.15.0)
   sass-rails (~> 5.0)
   savon
   sdoc (~> 0.4.0)
