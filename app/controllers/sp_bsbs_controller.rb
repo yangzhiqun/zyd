@@ -500,7 +500,16 @@ class SpBsbsController < ApplicationController
 					@role_name = params[:commit]
 				end
         @loglaststate=SpLog.where("sp_bsb_id = ? ", params[:id]).last
-        if @role_name.eql?'检测机构批准' or params[:sp_bsb][:sp_i_state].to_s == '6' or (params[:sp_bsb][:sp_i_state].to_s == '9' and @loglaststate.sp_i_state.to_s == '5')
+        if @loglaststate.nil? 
+          @loglaststatesign = false
+        else
+          if params[:sp_bsb][:sp_i_state].to_s == '9' and @loglaststate.sp_i_state.to_s == '5'
+            @loglaststatesign = true
+          else
+            @loglaststatesign = false
+          end
+        end
+        if @role_name.eql?'检测机构批准' or params[:sp_bsb][:sp_i_state].to_s == '6' or @loglaststatesign
           @sp_bsb.sp_d_47 = Time.now
           @sp_bsb.sp_s_48 = current_user.tname
         end
