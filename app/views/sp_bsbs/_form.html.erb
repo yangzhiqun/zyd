@@ -171,11 +171,17 @@
                 copied.find('.SM').attr({'value': o.spdata_17, 'title': o.spdata_17}).val(o.spdata_17);
             }
             if (o == null) {
-                copied.find('input[type="hidden"]').remove();
+                copied.find('.id').remove();
             } else {
-                copied.find('input[type="hidden"]').val(o.id);
+                copied.find('.id').val(o.id);
             }
             copied.insertBefore($('#result'));
+        });
+
+        // 因固定检验结果导致必须刷新两边的值
+        $('body').delegate('.fht-fixed-column .JYJG', 'keyup', function(){
+            var index = $('.fht-fixed-column .JYJG').index($(this));
+            $('.fht-fixed-body .JYJG').get(index).val($(this).val());
         });
         $('#tblGrid').fixedHeaderTable("destroy");
         $('#tblGrid').fixedHeaderTable({altClass: 'odd', fixedColumns: 3});
@@ -1148,7 +1154,10 @@
 <!-- 用于容纳检测项的tr模板 -->
 <table style="display: none;" class="analysis-templ-table">
   <tr class="analysis-item-templ" style="display: none;">
-    <td colspan="2"><span class="idx" style="display:inline">、</span></td>
+    <td colspan="2">
+      <%= hidden_field_tag "spdata[][id]", nil, class: 'id' %>
+      <span class="idx" style="display:inline">、</span>
+    </td>
     <td colspan="5" style="width:10%" align="left">
       <input class="JYXM inputText" name="spdata[][spdata_0]" style="width: 160px;" readonly="readonly">
     </td>
@@ -1203,7 +1212,6 @@
       <span><input class="inputText JCXDW" name="spdata[][spdata_8]" style="width: 70px;"></span></td>
     <td colspan="2" align="left">
       <span><input class="inputText SM" name="spdata[][spdata_17]" style="width: 70px;"></span></td>
-    <%= hidden_field_tag "spdata[][id]" %>
   </tr>
 </table>
 <h1 style="color:red"><%= flash[:import_result] unless flash[:import_result].nil? %></h1>
