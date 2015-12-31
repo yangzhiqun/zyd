@@ -14,12 +14,12 @@ class SpBsbsController < ApplicationController
     #@jyjy_str = Spdatum.where(:sp_bsb_id => @spbsb.id,!spdata_4.eql?('/')).limit(2).map{|s| s.spdata_3}.join(",")
     @jyjy_str = Spdatum.where("sp_bsb_id= ? and spdata_4 <> ?", @spbsb.id, '/').limit(2).map { |s| s.spdata_3 }.join(",")
     @jyjy_str4 = Spdatum.where("sp_bsb_id= ? and spdata_4 <> ?", @spbsb.id, '/').limit(2).map { |s| s.spdata_4 }.join(",")
-    @jyjy_struni = (Spdatum.where("sp_bsb_id= ? and spdata_4 <> ?", @spbsb.id, '/').limit(2).map { |s| s.spdata_3 }+Spdatum.where("sp_bsb_id= ? and spdata_4 <> ?", @spbsb.id, '/').limit(2).map { |s| s.spdata_4 }).uniq.join(",")
     #@jyjy_str1 = Spdatum.where(:sp_bsb_id => @spbsb.id,:spdata_4 => '/').map{|s| s.spdata_3}.join(",")
     @jyjy_str1 = Spdatum.where("sp_bsb_id = ? and (spdata_4 = ? OR spdata_4 = ?)", @spbsb.id, '/', '-').map { |s| s.spdata_3 }.uniq.join(",")
     @splog = SpLog.where("sp_bsb_id = ? AND remark = ?", @spbsb.id, "检测机构批准").last
     #抽检项
     @cjx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE '%合格项%' OR spdata_2 LIKE '%不合格项%')", @spbsb.id)
+    @jyjy_struni = (@cjx.where("sp_bsb_id= ? and spdata_4 <> ?", @spbsb.id, '/').limit(2).map { |s| s.spdata_3 }).uniq.join(",")
     #风险项
     @fxx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE '%不判定项%' OR spdata_2 LIKE '%问题项%')", @spbsb.id)
     #问题项
@@ -500,7 +500,16 @@ class SpBsbsController < ApplicationController
 					@role_name = params[:commit]
 				end
         @loglaststate=SpLog.where("sp_bsb_id = ? ", params[:id]).last
-        if @role_name.eql?'检测机构批准' or params[:sp_bsb][:sp_i_state].to_s == '6' or (params[:sp_bsb][:sp_i_state].to_s == '9' and @loglaststate.sp_i_state.to_s == '5')
+        if @loglaststate.nil? 
+          @loglaststatesign = false
+        else
+          if params[:sp_bsb][:sp_i_state].to_s == '9' and @loglaststate.sp_i_state.to_s == '5'
+            @loglaststatesign = true
+          else
+            @loglaststatesign = false
+          end
+        end
+        if @role_name.eql?'检测机构批准' or params[:sp_bsb][:sp_i_state].to_s == '6' or @loglaststatesign
           @sp_bsb.sp_d_47 = Time.now
           @sp_bsb.sp_s_48 = current_user.tname
         end

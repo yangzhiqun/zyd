@@ -47,7 +47,7 @@ end
 
 gem 'mysql2', '~>0.3.18'
 
-gem 'rmagick', '~> 2.13.3'
+gem 'rmagick', '~> 2.15.0'
 gem 'jquery-ui-rails', '~>5.0.0'
 
 
@@ -71,6 +71,7 @@ gem 'angular-ui-bootstrap-rails'
 gem 'angular_rails_csrf'
 gem 'puma'
 gem 'activerecord-session_store'
-#gem 'newrelic_rpm'
+gem 'newrelic_rpm'
 gem 'hairtrigger'
-gem 'oneapm_rpm'
+#gem 'oneapm_rpm'
+gem 'useragent'

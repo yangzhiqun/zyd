@@ -256,14 +256,16 @@
                 <% end %></td>
               <td style="<%= auto_adjust_text_size(product.spdata_11+product.spdata_15, 9) %>">
                 <% if ['0', '0.0'].include?(product.spdata_11) and ['0', '0.0'].include?(product.spdata_15) %>不得检出
-                <% elsif ['-','—', '/', '_', '0', '0.0'].include?(product.spdata_11) %>≤<%= product.spdata_15 %>
+                <% elsif ['-','—', '/', '_', '0', '0.0'].include?(product.spdata_11) %>
+                <% if product.spdata_15[0,1] != "不" and product.spdata_15[0,1] != "n" %>≤<% end %>
+                <%= product.spdata_15 %>
                 <% elsif ['-','—', '/', '_'].include?(product.spdata_15) %>≥<%= product.spdata_11 %>
                 <% else %><%= product.spdata_11 %>～<%= product.spdata_15 %>
                 <% end %>
               </td>
               <% if product.spdata_1 == '未检出' %>
                   <td style="<%= auto_adjust_text_size(product.spdata_1+product.spdata_7+product.spdata_8, 5) %>">
-                    <%= product.spdata_1 %>(检出限:<%= product.spdata_7 %><%= product.spdata_8 %>)
+                    <%= product.spdata_1 %><% if product.spdata_7 != '-' and product.spdata_7 != '/' %>(检出限:<%= product.spdata_7 %><%= product.spdata_8 %>)<% end %>
                   </td>
               <% else %>
                   <td style="<%= auto_adjust_text_size(product.spdata_1, 9) %>">
@@ -310,7 +312,9 @@
                     <% end %></td>
                   <td style="<%= auto_adjust_text_size(product.spdata_11+product.spdata_15, 9) %>">
                     <% if ['0', '0.0'].include?(product.spdata_11) and ['0', '0.0'].include?(product.spdata_15) %>不得检出
-                    <% elsif ['-','—', '/', '_', '0', '0.0'].include?(product.spdata_11) %>≤<%= product.spdata_15 %>
+                    <% elsif ['-','—', '/', '_', '0', '0.0'].include?(product.spdata_11) %>
+                    <% if product.spdata_15[0,1] != "不" and product.spdata_15[0,1] != "n" %>≤<% end %>
+                    <%= product.spdata_15 %>
                     <% elsif ['-','—', '/', '_'].include?(product.spdata_15) %>≥<%= product.spdata_11 %>
                         <% else %><%= product.spdata_11 %>～
                         <%= product.spdata_15 %>
@@ -318,7 +322,7 @@
                   </td>
               <% if product.spdata_1 == '未检出' %>
                   <td style="<%= auto_adjust_text_size(product.spdata_1+product.spdata_7+product.spdata_8, 5) %>">
-                    <%= product.spdata_1 %>(检出限:<%= product.spdata_7 %><%= product.spdata_8 %>)
+                    <%= product.spdata_1 %><% if product.spdata_7 != '-' and product.spdata_7 != '/' %>(检出限:<%= product.spdata_7 %><%= product.spdata_8 %>)<% end %>
                   </td>
               <% else %>
                   <td style="<%= auto_adjust_text_size(product.spdata_1, 9) %>">
@@ -439,7 +443,7 @@
                   </td>
               <% if product.spdata_1 == '未检出' %>
                   <td style="<%= auto_adjust_text_size(product.spdata_1+product.spdata_7+product.spdata_8, 5) %>">
-                    <%= product.spdata_1 %>(检出限:<%= product.spdata_7 %><%= product.spdata_8 %>)
+                    <%= product.spdata_1 %><% if product.spdata_7 != '-' and product.spdata_7 != '/' %>(检出限:<%= product.spdata_7 %><%= product.spdata_8 %>)<% end %>
                   </td>
               <% else %>
                   <td style="<%= auto_adjust_text_size(product.spdata_1, 9) %>">

@@ -341,7 +341,7 @@ class User < ActiveRecord::Base
 
   # 当前用户是否为Admin用户
   def is_admin?
-    ['admin','superadmin'].include?name
+    ['admin','superadmin'].include? name
   end
   
 private

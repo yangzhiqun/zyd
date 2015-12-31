@@ -21,7 +21,6 @@ bin/
 excel/*
 /public/*.xls
 /.sass-cache/
-depot*.sql
 *.xls
 *.xlsx
 *.doc
@@ -32,3 +31,5 @@ depot*.sql
 *.apk
 *.orig
 dump.rdb
+*.sql
+docker_database/data/
