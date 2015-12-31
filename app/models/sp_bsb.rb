@@ -155,7 +155,8 @@ class SpBsb < ActiveRecord::Base
     else
       state = 6
     end
-    @log = SpLog.where(sp_bsb_id: self.id, sp_i_state: state).order('sp_i_state asc').last
+    @logfive = SpLog.where(sp_bsb_id: self.id, sp_i_state: 5).order('id asc').last
+    @log = SpLog.where("sp_bsb_id = ? and sp_i_state = ? and id > ?",self.id, state, @logfive.id).order('id asc').first
     if @log.nil?
       @log = SpLog.where(sp_bsb_id: self.id, sp_i_state: 8).order('sp_i_state asc').last
     end
