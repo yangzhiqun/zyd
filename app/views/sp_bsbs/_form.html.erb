@@ -62,7 +62,7 @@
 
             copied.css('display', 'table-row');
             copied.find('span.idx').text(index + 1 + "、");
-            copied.find('input:eq(0)').attr({'value': item.name, 'title': item.name}).val(item.name);
+            copied.find('.JYXM').attr({'value': item.name, 'title': item.name}).val(item.name);
 
             if (!!item.JYYJ)
                 $.each(item.JYYJ.split("#"), function (index, data) {
@@ -87,24 +87,24 @@
             // 标准方法检出限
             if (!!item.BZFFJCX)
                 $.each(item.BZFFJCX.split("#"), function (index, data) {
-                    copied.find('select:eq(3)').append("<option value='" + data + "'>" + data + "</option>");
+                    copied.find('.BZFFJCX').append("<option value='" + data + "'>" + data + "</option>");
                 });
 
-            copied.find('input:eq(3)').attr({
-                'value': copied.find('select:eq(3)').val(),
-                'title': copied.find('select:eq(3)').val()
-            }).val(copied.find('select:eq(3)').val());
+            copied.find('.FFJCX').attr({
+                'value': copied.find('.BZFFJCX').val(),
+                'title': copied.find('.BZFFJCX').val()
+            }).val(copied.find('.BZFFJCX').val());
 
             // 标准方法检出限单位
             if (!!item.BZFFJCXDW)
                 $.each(item.BZFFJCXDW.split("#"), function (index, data) {
-                    copied.find('select:eq(4)').append("<option value='" + data + "'>" + data + "</option>");
+                    copied.find('.BZJCXDW').append("<option value='" + data + "'>" + data + "</option>");
                 });
 
-            copied.find('input:eq(4)').attr({
-                'value': copied.find('select:eq(4)').val(),
-                'title': copied.find('select:eq(4)').val()
-            }).val(copied.find('select:eq(4)').val());
+            copied.find('.JCXDW').attr({
+                'value': copied.find('.BZJCXDW').val(),
+                'title': copied.find('.BZJCXDW').val()
+            }).val(copied.find('.BZJCXDW').val());
 
             if (!!item.BZZXYXX)
                 $.each(item.BZZXYXX.split("#"), function (index, data) {
@@ -118,12 +118,13 @@
 
             if (!!item.BZZXYXXDW)
                 $.each(item.BZZXYXXDW.split("#"), function (index, data) {
-                    copied.find('select:eq(6)').append("<option value='" + data + "'>" + data + "</option>");
+                    copied.find('.BZZXYXXDW').append("<option value='" + data + "'>" + data + "</option>");
                 });
-            copied.find('input:eq(6)').attr({
-                'value': copied.find('select:eq(6)').val(),
-                'title': copied.find('select:eq(6)').val()
-            }).val(copied.find('select:eq(6)').val());
+
+            copied.find('.ZXYXXDW').attr({
+                'value': copied.find('.BZZXYXXDW').val(),
+                'title': copied.find('.BZZXYXXDW').val()
+            }).val(copied.find('.BZZXYXXDW').val());
 
             if (!!item.BZZDYXX)
                 $.each(item.BZZDYXX.split("#"), function (index, data) {
@@ -136,16 +137,17 @@
 
             if (!!item.BZZDYXXDW)
                 $.each(item.BZZDYXXDW.split("#"), function (index, data) {
-                    copied.find('select:eq(8)').append("<option value='" + data + "'>" + data + "</option>");
+                    copied.find('.BZZDYXXDW').append("<option value='" + data + "'>" + data + "</option>");
                 });
-            copied.find('input:eq(8)').attr({
-                'value': copied.find('select:eq(8)').val(),
-                'title': copied.find('select:eq(8)').val()
-            }).val(copied.find('select:eq(8)').val());
-            copied.find('input:eq(2)').attr({
-                'value': copied.find('select:eq(4)').val(),
-                'title': copied.find('select:eq(4)').val()
-            }).val(copied.find('select:eq(4)').val());
+            copied.find('.ZDYXXDW').attr({
+                'value': copied.find('.BZZDYXXDW').val(),
+                'title': copied.find('.BZZDYXXDW').val()
+            }).val(copied.find('.BZZDYXXDW').val());
+
+            copied.find('.JGDW').attr({
+                'value': copied.find('.BZJCXDW').val(),
+                'title': copied.find('.BZJCXDW').val()
+            }).val(copied.find('.BZJCXDW').val());
 
             if (o != null && is_previous_data()) {
                 copied.find('.JYYJ').attr({'value': o.spdata_3, 'title': o.spdata_3}).val(o.spdata_3);
@@ -1182,12 +1184,14 @@
       <span class="idx" style="display:inline">、</span>
     </td>
     <td colspan="5" style="width:10%" align="left">
-      <input class="inputText" name="spdata[][spdata_0]" style="width: 160px;" readonly="readonly"></td>
+      <input class="JYXM inputText" name="spdata[][spdata_0]" style="width: 160px;" readonly="readonly">
+		</td>
     <td colspan="3" align="left">
       <span><input class="JYJG inputText" name="spdata[][spdata_1]" style="width: 100px;"></span>
     </td>
     <td colspan="2" align="left">
-      <span><input class="inputText" name="spdata[][spdata_18]" style="width: 70px;"></span></td>
+      <span><input class="JGDW inputText" name="spdata[][spdata_18]" style="width: 70px;"></span>
+		</td>
     <td colspan="2" align="left">
       <span><%= select_tag "spdata[][spdata_2]", '', {:style => "width: 70px;", :class => "jy_select JGPD"} %></span>
     </td>
@@ -1575,12 +1579,6 @@
             <th colspan="3">检验结果*</th>
             <th colspan="2">结果单位*</th>
             <th colspan="2">结果判定*</th>
-            <th colspan="7">检验依据*</th>
-            <th colspan="7">判定依据*</th>
-            <th colspan="2">标准方法检出限*</th>
-            <th colspan="2">标准检出限单位*</th>
-            <th colspan="2">方法检出限*</th>
-            <th colspan="2">检出限单位*</th>
             <th colspan="2">标准最小允许限*</th>
             <th colspan="2">标准最小允许限单位*</th>
             <th colspan="2">最小允许限*</th>
@@ -1589,6 +1587,12 @@
             <th colspan="2">标准最大允许限单位*</th>
             <th colspan="2">最大允许限*</th>
             <th colspan="2">最大允许限单位*</th>
+            <th colspan="7">检验依据*</th>
+            <th colspan="7">判定依据*</th>
+            <th colspan="2">标准方法检出限*</th>
+            <th colspan="2">标准检出限单位*</th>
+            <th colspan="2">方法检出限*</th>
+            <th colspan="2">检出限单位*</th>
             <th colspan="2">说明</th>
           </tr>
           </thead>
