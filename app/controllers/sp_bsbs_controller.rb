@@ -630,7 +630,7 @@ class SpBsbsController < ApplicationController
       end
     end
 
-    @sp_bsbs = TmpSpBsb.select("id, updated_at, sp_s_3, sp_s_14, sp_s_16, sp_s_43, sp_s_214, sp_s_35, sp_s_71, sp_s_202, sp_i_state, fail_report_path")
+    @sp_bsbs = TmpSpBsb.select("id, updated_at, sp_s_3, sp_s_14, sp_s_16, sp_s_43, sp_s_214, sp_s_35, sp_s_71, sp_s_202, sp_i_state, fail_report_path, czb_reverted_flag")
 
     if params[:r1]
       session[:change_js]=params[:r1].to_i
@@ -799,6 +799,9 @@ class SpBsbsController < ApplicationController
     end
     if params[:flag]=="tabs_5"
       @sp_bsbs =@sp_bsbs.where("sp_i_state = 3")
+    end
+    if params[:flag]=="tabs_6"
+      @sp_bsbs =@sp_bsbs.where("czb_reverted_flag = 1")
     end
 
     if params[:s8]=='10'
@@ -1663,6 +1666,7 @@ class SpBsbsController < ApplicationController
         :sp_xkz_id,
         :updated_at,
         :czb_reverted_flag,
+        :czb_reverted_reason,
         :synced, :ca_source, :ca_sign
     )
   end
