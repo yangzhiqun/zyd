@@ -179,7 +179,7 @@
         });
 
         // 因固定检验结果导致必须刷新两边的值
-        $('body').delegate('.fht-fixed-column .JYJG', 'keyup blur', function(){
+        $('body').delegate('.fht-fixed-column .JYJG', 'keyup blur', function () {
             var index = $('.fht-fixed-column .JYJG').index($(this));
             $($('.fht-fixed-body .JYJG').get(index)).val($(this).val()).trigger('change');
         });
@@ -187,7 +187,7 @@
         $('#tblGrid').fixedHeaderTable("destroy");
         $('#tblGrid').fixedHeaderTable({altClass: 'odd', fixedColumns: 3});
 
-        setTimeout(function(){
+        setTimeout(function () {
             $('.fht-fixed-column .JYJG, .fht-fixed-column .JYXM').attr('name', null);
         }, 1000);
 
@@ -320,7 +320,7 @@
             maxDate: new Date()
         });
         <% if [5, 9].include? @sp_bsb["sp_i_state"] %>
-                $("#sp_bsb_sp_d_47").datepicker({
+        $("#sp_bsb_sp_d_47").datepicker({
             dateFormat: "yy-mm-dd",
             changeMonth: true,
             changeYear: true,
@@ -967,6 +967,7 @@
          * 检验机构批准
          */
         $('#save_5').click(function () {
+
             <%@check=[47]%>
             <%@check.each do |i|%>
             if ($.trim($("#sp_bsb_sp_d_" +<%=i%>).val()).length == 0) {
@@ -976,7 +977,6 @@
             }
             <%end%>
             //$('#stamp-dlg').modal('show');
-            //return false;
             if (!confirm('确定提交吗？')) {
                 return false;
             }
@@ -988,6 +988,7 @@
             $("#sp_bsb_sp_s_56").removeAttr("disabled");
             $("#sp_bsb_sp_s_70").removeAttr("disabled");
             $("#sp_bsb_sp_s_20").removeAttr("disabled");
+            $("#sp_bsb_sp_d_47").removeAttr("disabled").removeAttr('readonly');
 
             if (spxlxz == "抽检监测（总局本级三司）" || spxlxz == "抽检监测（总局本级一司）" || spxlxz == "抽检监测（三司专项）") {
                 $('#sp_bsb_sp_i_state').val("9");
@@ -1041,10 +1042,10 @@
          * */
         $("#new_sp_bsb, form.edit_sp_bsb").submit(function () {
             <% unless session[:certId].blank? %>
-                var source = generateCAsrc();
-                $('#sp_bsb_ca_source').val(source);
-                var signed_data = SignedData('<%= session[:certId]%>', source);
-                $('#sp_bsb_ca_sign').val(signed_data);
+            var source = generateCAsrc();
+            $('#sp_bsb_ca_source').val(source);
+            var signed_data = SignedData('<%= session[:certId]%>', source);
+            $('#sp_bsb_ca_sign').val(signed_data);
             <% end %>
 
             $("#new_sp_bsb, form.edit_sp_bsb").ajaxSubmit({
@@ -1327,18 +1328,18 @@
         <tr>
           <td colspan="3" rowspan="2">样品分类*</td>
           <td colspan="27">
-						<span>
-							食品大类&emsp;&emsp;<%= f.select :sp_s_17, options_for_select(@a_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_17), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-                          食品亚类&emsp;<%= f.select :sp_s_18, options_for_select(@b_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_18), {}, {:style => "width: 220px;"} %>
-						</span>
+            <span>
+            食品大类&emsp;&emsp;<%= f.select :sp_s_17, options_for_select(@a_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_17), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+            食品亚类&emsp;<%= f.select :sp_s_18, options_for_select(@b_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_18), {}, {:style => "width: 220px;"} %>
+            </span>
           </td>
         </tr>
         <tr>
           <td colspan="27">
-						<span>
-							食品次亚类&emsp;<%= f.select :sp_s_19, options_for_select(@c_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_19), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-                          食品细类&emsp;<%= f.select :sp_s_20, options_for_select(@d_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_20), {}, {:style => "width: 220px;"} %>
-						</span>
+            <span>
+            食品次亚类&emsp;<%= f.select :sp_s_19, options_for_select(@c_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_19), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+            食品细类&emsp;<%= f.select :sp_s_20, options_for_select(@d_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_20), {}, {:style => "width: 220px;"} %>
+            </span>
           </td>
         </tr>
         <tr>
