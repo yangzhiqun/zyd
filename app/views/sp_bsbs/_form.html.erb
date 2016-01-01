@@ -7,7 +7,6 @@
     <% cache 'jg_data' do %>
     var jg_data = <%= @jg_bsbs.select('id, jg_name, jg_contacts, jg_tel, jg_email').to_json.html_safe%>;
     <% end %>
-
     var spdata_condition = "<%= "#{@sp_bsb["sp_s_17"]}#{@sp_bsb["sp_s_18"]}#{@sp_bsb["sp_s_19"]}#{@sp_bsb["sp_s_20"]}"%>";
     SP.sp_bsb = <%= @sp_bsb.to_json.html_safe %>;
     ///////////////////
@@ -63,7 +62,7 @@
 
             copied.css('display', 'table-row');
             copied.find('span.idx').text(index + 1 + "、");
-            copied.find('.JYXM').attr({'value': item.name, 'title': item.name}).val(item.name);
+            copied.find('input:eq(0)').attr({'value': item.name, 'title': item.name}).val(item.name);
 
             if (!!item.JYYJ)
                 $.each(item.JYYJ.split("#"), function (index, data) {
@@ -88,24 +87,24 @@
             // 标准方法检出限
             if (!!item.BZFFJCX)
                 $.each(item.BZFFJCX.split("#"), function (index, data) {
-                    copied.find('.BZFFJCX').append("<option value='" + data + "'>" + data + "</option>");
+                    copied.find('select:eq(3)').append("<option value='" + data + "'>" + data + "</option>");
                 });
 
-            copied.find('.FFJCX').attr({
-                'value': copied.find('.BZFFJCX').val(),
-                'title': copied.find('.BZFFJCX').val()
-            }).val(copied.find('.BZFFJCX').val());
+            copied.find('input:eq(3)').attr({
+                'value': copied.find('select:eq(3)').val(),
+                'title': copied.find('select:eq(3)').val()
+            }).val(copied.find('select:eq(3)').val());
 
             // 标准方法检出限单位
             if (!!item.BZFFJCXDW)
                 $.each(item.BZFFJCXDW.split("#"), function (index, data) {
-                    copied.find('.BZJCXDW').append("<option value='" + data + "'>" + data + "</option>");
+                    copied.find('select:eq(4)').append("<option value='" + data + "'>" + data + "</option>");
                 });
 
-            copied.find('.JCXDW').attr({
-                'value': copied.find('.BZJCXDW').val(),
-                'title': copied.find('.BZJCXDW').val()
-            }).val(copied.find('.BZJCXDW').val());
+            copied.find('input:eq(4)').attr({
+                'value': copied.find('select:eq(4)').val(),
+                'title': copied.find('select:eq(4)').val()
+            }).val(copied.find('select:eq(4)').val());
 
             if (!!item.BZZXYXX)
                 $.each(item.BZZXYXX.split("#"), function (index, data) {
@@ -119,13 +118,12 @@
 
             if (!!item.BZZXYXXDW)
                 $.each(item.BZZXYXXDW.split("#"), function (index, data) {
-                    copied.find('.BZZXYXXDW').append("<option value='" + data + "'>" + data + "</option>");
+                    copied.find('select:eq(6)').append("<option value='" + data + "'>" + data + "</option>");
                 });
-
-            copied.find('.ZXYXXDW').attr({
-                'value': copied.find('.BZZXYXXDW').val(),
-                'title': copied.find('.BZZXYXXDW').val()
-            }).val(copied.find('.BZZXYXXDW').val());
+            copied.find('input:eq(6)').attr({
+                'value': copied.find('select:eq(6)').val(),
+                'title': copied.find('select:eq(6)').val()
+            }).val(copied.find('select:eq(6)').val());
 
             if (!!item.BZZDYXX)
                 $.each(item.BZZDYXX.split("#"), function (index, data) {
@@ -138,17 +136,16 @@
 
             if (!!item.BZZDYXXDW)
                 $.each(item.BZZDYXXDW.split("#"), function (index, data) {
-                    copied.find('.BZZDYXXDW').append("<option value='" + data + "'>" + data + "</option>");
+                    copied.find('select:eq(8)').append("<option value='" + data + "'>" + data + "</option>");
                 });
-            copied.find('.ZDYXXDW').attr({
-                'value': copied.find('.BZZDYXXDW').val(),
-                'title': copied.find('.BZZDYXXDW').val()
-            }).val(copied.find('.BZZDYXXDW').val());
-
-            copied.find('.JGDW').attr({
-                'value': copied.find('.BZJCXDW').val(),
-                'title': copied.find('.BZJCXDW').val()
-            }).val(copied.find('.BZJCXDW').val());
+            copied.find('input:eq(8)').attr({
+                'value': copied.find('select:eq(8)').val(),
+                'title': copied.find('select:eq(8)').val()
+            }).val(copied.find('select:eq(8)').val());
+            copied.find('input:eq(2)').attr({
+                'value': copied.find('select:eq(4)').val(),
+                'title': copied.find('select:eq(4)').val()
+            }).val(copied.find('select:eq(4)').val());
 
             if (o != null && is_previous_data()) {
                 copied.find('.JYYJ').attr({'value': o.spdata_3, 'title': o.spdata_3}).val(o.spdata_3);
@@ -179,7 +176,7 @@
         });
 
         // 因固定检验结果导致必须刷新两边的值
-        $('body').delegate('.fht-fixed-column .JYJG', 'keyup blur', function(){
+        $('body').delegate('.fht-fixed-column .JYJG', 'keyup blur', function () {
             var index = $('.fht-fixed-column .JYJG').index($(this));
             $($('.fht-fixed-body .JYJG').get(index)).val($(this).val()).trigger('change');
         });
@@ -187,7 +184,7 @@
         $('#tblGrid').fixedHeaderTable("destroy");
         $('#tblGrid').fixedHeaderTable({altClass: 'odd', fixedColumns: 3});
 
-        setTimeout(function(){
+        setTimeout(function () {
             $('.fht-fixed-column .JYJG, .fht-fixed-column .JYXM').attr('name', null);
         }, 1000);
 
@@ -319,8 +316,15 @@
             changeYear: true,
             maxDate: new Date()
         });
-
-        $("#sp_bsb_sp_d_47").datepicker("disable").attr("readonly", "readonly");
+        <% if [5, 9].include? @sp_bsb["sp_i_state"] %>
+        $("#sp_bsb_sp_d_47").datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            maxDate: new Date()
+        });
+        <% end %>
+        //$("#sp_bsb_sp_d_47").datepicker("disable").attr("readonly", "readonly");
 
         var s = '#jcx';
         var count = 1;
@@ -960,8 +964,16 @@
          * 检验机构批准
          */
         $('#save_5').click(function () {
+
+            <%@check=[47]%>
+            <%@check.each do |i|%>
+            if ($.trim($("#sp_bsb_sp_d_" +<%=i%>).val()).length == 0) {
+                alert("该日期项为必填项");
+                $("#sp_bsb_sp_d_" +<%=i%>).focus();
+                return false;
+            }
+            <%end%>
             //$('#stamp-dlg').modal('show');
-            //return false;
             if (!confirm('确定提交吗？')) {
                 return false;
             }
@@ -973,6 +985,7 @@
             $("#sp_bsb_sp_s_56").removeAttr("disabled");
             $("#sp_bsb_sp_s_70").removeAttr("disabled");
             $("#sp_bsb_sp_s_20").removeAttr("disabled");
+            $("#sp_bsb_sp_d_47").removeAttr("disabled").removeAttr('readonly');
 
             if (spxlxz == "抽检监测（总局本级三司）" || spxlxz == "抽检监测（总局本级一司）" || spxlxz == "抽检监测（三司专项）") {
                 $('#sp_bsb_sp_i_state').val("9");
@@ -1026,10 +1039,10 @@
          * */
         $("#new_sp_bsb, form.edit_sp_bsb").submit(function () {
             <% unless session[:certId].blank? %>
-                var source = generateCAsrc();
-                $('#sp_bsb_ca_source').val(source);
-                var signed_data = SignedData('<%= session[:certId]%>', source);
-                $('#sp_bsb_ca_sign').val(signed_data);
+            var source = generateCAsrc();
+            $('#sp_bsb_ca_source').val(source);
+            var signed_data = SignedData('<%= session[:certId]%>', source);
+            $('#sp_bsb_ca_sign').val(signed_data);
             <% end %>
 
             $("#new_sp_bsb, form.edit_sp_bsb").ajaxSubmit({
@@ -1165,14 +1178,12 @@
       <span class="idx" style="display:inline">、</span>
     </td>
     <td colspan="5" style="width:10%" align="left">
-      <input class="JYXM inputText" name="spdata[][spdata_0]" style="width: 160px;" readonly="readonly">
-    </td>
+      <input class="inputText" name="spdata[][spdata_0]" style="width: 160px;" readonly="readonly"></td>
     <td colspan="3" align="left">
       <span><input class="JYJG inputText" name="spdata[][spdata_1]" style="width: 100px;"></span>
     </td>
     <td colspan="2" align="left">
-      <span><input class="JGDW inputText" name="spdata[][spdata_18]" style="width: 70px;"></span>
-    </td>
+      <span><input class="inputText" name="spdata[][spdata_18]" style="width: 70px;"></span></td>
     <td colspan="2" align="left">
       <span><%= select_tag "spdata[][spdata_2]", '', {:style => "width: 70px;", :class => "jy_select JGPD"} %></span>
     </td>
@@ -1312,18 +1323,18 @@
         <tr>
           <td colspan="3" rowspan="2">样品分类*</td>
           <td colspan="27">
-						<span>
-							食品大类&emsp;&emsp;<%= f.select :sp_s_17, options_for_select(@a_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_17), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-                          食品亚类&emsp;<%= f.select :sp_s_18, options_for_select(@b_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_18), {}, {:style => "width: 220px;"} %>
-						</span>
+            <span>
+            食品大类&emsp;&emsp;<%= f.select :sp_s_17, options_for_select(@a_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_17), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+            食品亚类&emsp;<%= f.select :sp_s_18, options_for_select(@b_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_18), {}, {:style => "width: 220px;"} %>
+            </span>
           </td>
         </tr>
         <tr>
           <td colspan="27">
-						<span>
-							食品次亚类&emsp;<%= f.select :sp_s_19, options_for_select(@c_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_19), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-                          食品细类&emsp;<%= f.select :sp_s_20, options_for_select(@d_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_20), {}, {:style => "width: 220px;"} %>
-						</span>
+            <span>
+            食品次亚类&emsp;<%= f.select :sp_s_19, options_for_select(@c_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_19), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+            食品细类&emsp;<%= f.select :sp_s_20, options_for_select(@d_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_20), {}, {:style => "width: 220px;"} %>
+            </span>
           </td>
         </tr>
         <tr>
@@ -1472,12 +1483,22 @@
         </tr>
         <tr>
           <td colspan="3">收检日期*</td>
-          <% if [6, 8, 9].include? @sp_bsb["sp_i_state"] %>
+          <% if [6, 8].include? @sp_bsb["sp_i_state"] %>
               <td colspan="6"><%= f.text_field :sp_d_46, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
               <td colspan="3">报告日期*</td>
               <td colspan="8"><%= f.text_field :sp_d_47, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
               <td colspan="4">报告签发人*</td>
               <td colspan="6"><%= f.text_field :sp_s_48, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+          <% elsif [9].include? @sp_bsb["sp_i_state"] %>
+              <td colspan="6"><%= f.text_field :sp_d_46, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+              <td colspan="3">报告日期*</td>
+              <td colspan="8"><%= f.text_field :sp_d_47, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+              <td colspan="4">报告签发人*</td>
+              <td colspan="6"><%= f.text_field :sp_s_48, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <% elsif [5].include? @sp_bsb["sp_i_state"] %>
+              <td colspan="16"><%= f.text_field :sp_d_46, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+              <td colspan="3">报告日期*</td>
+              <td colspan="8"><%= f.text_field :sp_d_47, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
           <% else %>
               <td colspan="27"><%= f.text_field :sp_d_46, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
           <% end %>
@@ -1550,6 +1571,12 @@
             <th colspan="3">检验结果*</th>
             <th colspan="2">结果单位*</th>
             <th colspan="2">结果判定*</th>
+            <th colspan="7">检验依据*</th>
+            <th colspan="7">判定依据*</th>
+            <th colspan="2">标准方法检出限*</th>
+            <th colspan="2">标准检出限单位*</th>
+            <th colspan="2">方法检出限*</th>
+            <th colspan="2">检出限单位*</th>
             <th colspan="2">标准最小允许限*</th>
             <th colspan="2">标准最小允许限单位*</th>
             <th colspan="2">最小允许限*</th>
@@ -1558,12 +1585,6 @@
             <th colspan="2">标准最大允许限单位*</th>
             <th colspan="2">最大允许限*</th>
             <th colspan="2">最大允许限单位*</th>
-            <th colspan="7">检验依据*</th>
-            <th colspan="7">判定依据*</th>
-            <th colspan="2">标准方法检出限*</th>
-            <th colspan="2">标准检出限单位*</th>
-            <th colspan="2">方法检出限*</th>
-            <th colspan="2">检出限单位*</th>
             <th colspan="2">说明</th>
           </tr>
           </thead>
