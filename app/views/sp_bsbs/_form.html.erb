@@ -67,22 +67,22 @@
 
             if (!!item.JYYJ)
                 $.each(item.JYYJ.split("#"), function (index, data) {
-                    copied.find('.jyyj').append("<option value='" + data + "'>" + data + "</option>");
+                    copied.find('.JYYJ').append("<option value='" + data + "'>" + data + "</option>");
                 });
 
             if (!!item.PDYJ)
                 $.each(item.PDYJ.split("#"), function (index, data) {
-                    copied.find('.pdyj').append("<option value='" + data + "'>" + data + "</option>");
+                    copied.find('.PDYJ').append("<option value='" + data + "'>" + data + "</option>");
                 });
 
             if ((item.PDYJ || "").split("#")[0].length < 4) {
-                copied.find('.jgpd').append("<option value='未检验'>未检验</option>");
-                copied.find('.jgpd').append("<option value='不判定项'>不判定项</option>");
-                copied.find('.jgpd').append("<option value='问题项'>问题项</option>");
+                copied.find('.JGPD').append("<option value='未检验'>未检验</option>");
+                copied.find('.JGPD').append("<option value='不判定项'>不判定项</option>");
+                copied.find('.JGPD').append("<option value='问题项'>问题项</option>");
             } else {
-                copied.find('.jgpd').append("<option value='未检验'>未检验</option>");
-                copied.find('.jgpd').append("<option value='合格项'>合格项</option>");
-                copied.find('.jgpd').append("<option value='不合格项'>不合格项</option>");
+                copied.find('.JGPD').append("<option value='未检验'>未检验</option>");
+                copied.find('.JGPD').append("<option value='合格项'>合格项</option>");
+                copied.find('.JGPD').append("<option value='不合格项'>不合格项</option>");
             }
 
             // 标准方法检出限
@@ -109,13 +109,13 @@
 
             if (!!item.BZZXYXX)
                 $.each(item.BZZXYXX.split("#"), function (index, data) {
-                    copied.find('.bzzxyxx').append("<option value='" + data + "'>" + data + "</option>");
+                    copied.find('.BZZXYXX').append("<option value='" + data + "'>" + data + "</option>");
                 });
 
             copied.find('.ZXYXX').attr({
-                'value': copied.find('.bzzxyxx').val(),
-                'title': copied.find('.bzzxyxx').val()
-            }).val(copied.find('.bzzxyxx').val());
+                'value': copied.find('.BZZXYXX').val(),
+                'title': copied.find('.BZZXYXX').val()
+            }).val(copied.find('.BZZXYXX').val());
 
             if (!!item.BZZXYXXDW)
                 $.each(item.BZZXYXXDW.split("#"), function (index, data) {
@@ -129,12 +129,12 @@
 
             if (!!item.BZZDYXX)
                 $.each(item.BZZDYXX.split("#"), function (index, data) {
-                    copied.find('.bzzdyxx').append("<option value='" + data + "'>" + data + "</option>");
+                    copied.find('.BZZDYXX').append("<option value='" + data + "'>" + data + "</option>");
                 });
             copied.find('.ZDYXX').attr({
-                'value': copied.find('.bzzdyxx').val(),
-                'title': copied.find('.bzzdyxx').val()
-            }).val(copied.find('.bzzdyxx').val());
+                'value': copied.find('.BZZDYXX').val(),
+                'title': copied.find('.BZZDYXX').val()
+            }).val(copied.find('.BZZDYXX').val());
 
             if (!!item.BZZDYXXDW)
                 $.each(item.BZZDYXXDW.split("#"), function (index, data) {
@@ -152,10 +152,10 @@
 
             if (o != null && is_previous_data()) {
                 copied.find('.JYYJ').attr({'value': o.spdata_3, 'title': o.spdata_3}).val(o.spdata_3);
-                copied.find('.pdyj').attr({'value': o.spdata_4, 'title': o.spdata_4}).val(o.spdata_4);
+                copied.find('.PDYJ').attr({'value': o.spdata_4, 'title': o.spdata_4}).val(o.spdata_4);
                 copied.find('.BZFFJCX').attr({'value': o.spdata_5, 'title': o.spdata_5}).val(o.spdata_5);
                 copied.find('.BZJCXDW').attr({'value': o.spdata_6, 'title': o.spdata_6}).val(o.spdata_6);
-                copied.find('.bzzxyxx').attr({'value': o.spdata_9, 'title': o.spdata_9}).val(o.spdata_9);
+                copied.find('.BZZXYXX').attr({'value': o.spdata_9, 'title': o.spdata_9}).val(o.spdata_9);
                 copied.find('.BZZXYXXDW').attr({'value': o.spdata_10, 'title': o.spdata_10}).val(o.spdata_10);
                 copied.find('.BZZDYXX').attr({'value': o.spdata_13, 'title': o.spdata_13}).val(o.spdata_13);
                 copied.find('.BZZDYXXDW').attr({'value': o.spdata_14, 'title': o.spdata_14}).val(o.spdata_14);
@@ -167,7 +167,7 @@
                 copied.find('.ZXYXXDW').attr({'value': o.spdata_12, 'title': o.spdata_12}).val(o.spdata_12);
                 copied.find('.ZDYXX').attr({'value': o.spdata_15, 'title': o.spdata_15}).val(o.spdata_15);
                 copied.find('.ZDYXXDW').attr({'value': o.spdata_16, 'title': o.spdata_16}).val(o.spdata_16);
-                copied.find('.jgpd').attr({'value': o.spdata_2, 'title': o.spdata_2}).val(o.spdata_2);
+                copied.find('.JGPD').attr({'value': o.spdata_2, 'title': o.spdata_2}).val(o.spdata_2);
                 copied.find('.SM').attr({'value': o.spdata_17, 'title': o.spdata_17}).val(o.spdata_17);
             }
             if (o == null) {
@@ -179,17 +179,23 @@
         });
 
         // 因固定检验结果导致必须刷新两边的值
-        $('body').delegate('.fht-fixed-column .JYJG', 'keyup', function(){
+        $('body').delegate('.fht-fixed-column .JYJG', 'keyup blur', function(){
             var index = $('.fht-fixed-column .JYJG').index($(this));
-            $('.fht-fixed-body .JYJG').get(index).val($(this).val());
+            $($('.fht-fixed-body .JYJG').get(index)).val($(this).val()).trigger('change');
         });
+
         $('#tblGrid').fixedHeaderTable("destroy");
         $('#tblGrid').fixedHeaderTable({altClass: 'odd', fixedColumns: 3});
+
+        setTimeout(function(){
+            $('.fht-fixed-column .JYJG, .fht-fixed-column .JYXM').attr('name', null);
+        }, 1000);
+
         //利用检验依椐和判定依椐两项分别计数，相等时为监督抽检，不等时有两种情况，一是判定依椐为零，则为风险监测，另一种情况为抽检监测[由于判定带一null行，所以程序中风险监测以1做判断]
         if ($('#sp_bsb_sp_s_44').val() == '请选择' || $('#sp_bsb_sp_s_44').val() == '') {
-            var jyyj_num = $('.jyyj').length;
+            var jyyj_num = $('.JYYJ').length;
             var pdyj_num = 0;
-            $('.pdyj').each(function () {
+            $('.PDYJ').each(function () {
                 if (($(this).val() != '-') && ($(this).val() != '/')) {
                     pdyj_num = pdyj_num + 1;
                 }
@@ -259,12 +265,12 @@
         //通过比较标准最大、小允许限和检验结果自动调整结果判定[等于算合格，响应blur、keyup事件，单条件只判断有条件的，只影响合格、不合格项不影响不判定项问题项]
         //检验结果非数字不自动判断 最大最小允许限中包含非-及数字内容时不自动判断
         <% if(session[:user_authority_1]==1) || (session[:user_authority_2]==1) %>
-        $('.fancyTable').delegate('.jyjg', 'blur keyup', function () {
+        $('body').delegate('.fht-fixed-body .JYJG', 'change', function () {
             var o = $(this);
-            var jgpd = o.parents('tr').find('.jgpd')
-            var bzzdyxxval = o.parents('tr').find('.bzzdyxx').val();
+            var jgpd = o.parents('tr').find('.JGPD');
+            var bzzdyxxval = o.parents('tr').find('.BZZDYXX').val();
             var bzzdyxxnum = parseFloat(bzzdyxxval);
-            var bzzxyxxval = o.parents('tr').find('.bzzxyxx').val();
+            var bzzxyxxval = o.parents('tr').find('.BZZXYXX').val();
             var bzzxyxxnum = parseFloat(bzzxyxxval);
             var jyjgnum = parseFloat(o.val());
             if ((isNaN(bzzdyxxval) && bzzdyxxval != '-') || (isNaN(bzzxyxxval) && bzzxyxxval != '-')) {
@@ -1177,16 +1183,16 @@
       <input class="JYXM inputText" name="spdata[][spdata_0]" style="width: 160px;" readonly="readonly">
     </td>
     <td colspan="3" align="left">
-      <span><input class="JYJG inputText jyjg" name="spdata[][spdata_1]" style="width: 100px;"></span>
+      <span><input class="JYJG inputText" name="spdata[][spdata_1]" style="width: 100px;"></span>
     </td>
     <td colspan="2" align="left">
       <span><input class="JGDW inputText" name="spdata[][spdata_18]" style="width: 70px;"></span>
     </td>
     <td colspan="2" align="left">
-      <span><%= select_tag "spdata[][spdata_2]", '', {:style => "width: 70px;", :class => "jy_select jgpd"} %></span>
+      <span><%= select_tag "spdata[][spdata_2]", '', {:style => "width: 70px;", :class => "jy_select JGPD"} %></span>
     </td>
     <td colspan="2" align="left">
-      <span><%= select_tag "spdata[][spdata_9]", '', {:style => "width: 70px;", :class => "tb_select bzzxyxx"} %></span>
+      <span><%= select_tag "spdata[][spdata_9]", '', {:style => "width: 70px;", :class => "tb_select BZZXYXX"} %></span>
     </td>
     <td colspan="2" align="left">
       <span><%= select_tag "spdata[][spdata_10]", '', {:style => "width: 70px;", :class => "tb_select BZZXYXXDW"} %></span>
@@ -1196,37 +1202,44 @@
     <td colspan="2" align="left">
       <span><input class="ZXYXXDW inputText" name="spdata[][spdata_12]" style="width: 70px;"></span></td>
     <td colspan="2" align="left">
-      <span><%= select_tag "spdata[][spdata_13]", '', {:style => "width: 70px;", :class => "tb_select bzzdyxx"} %></span>
+      <span><%= select_tag "spdata[][spdata_13]", '', {:style => "width: 70px;", :class => "tb_select BZZDYXX"} %></span>
     </td>
     <td colspan="2" align="left">
       <span><%= select_tag "spdata[][spdata_14]", '', {:style => "width: 70px;", :class => "tb_select BZZDYXXDW"} %></span>
     </td>
     <td colspan="2" align="left">
-      <span><input class="inputText ZDYXX" name="spdata[][spdata_15]" style="width: 70px;"></span></td>
+      <span><input class="inputText ZDYXX" name="spdata[][spdata_15]" style="width: 70px;"></span>
+    </td>
     <td colspan="2" align="left">
-      <span><input class="inputText ZDYXXDW" name="spdata[][spdata_16]" style="width: 70px;"></span></td>
+      <span><input class="inputText ZDYXXDW" name="spdata[][spdata_16]" style="width: 70px;"></span>
+    </td>
     <td colspan="7" align="left">
         <span style="display: block; width: 300px;">
-        <%= select_tag "spdata[][spdata_3]", '', {:style => "width: 260px;", :class => "jyyj"} %>
+        <%= select_tag "spdata[][spdata_3]", '', {:style => "width: 260px;", :class => "JYYJ"} %>
           <a href="javascript:void(0);" class="check-detail" data-flag="0">查看</a>
         </span>
     </td>
     <td colspan="7" align="left">
         <span style="display: block; width: 300px;">
-        <%= select_tag "spdata[][spdata_4]", '', {:style => "width: 260px;", :class => "pdyj"} %>
+        <%= select_tag "spdata[][spdata_4]", '', {:style => "width: 260px;", :class => "PDYJ"} %>
           <a href="javascript:void(0);" class="check-detail" data-flag="1">查看</a>
         </span>
     </td>
     <td colspan="2" align="left">
-      <span><%= select_tag "spdata[][spdata_5]", '', {:style => "width: 70px;", :class => "BZFFJCX tb_select"} %></span></td>
+      <span><%= select_tag "spdata[][spdata_5]", '', {:style => "width: 70px;", :class => "BZFFJCX tb_select"} %></span>
+    </td>
     <td colspan="2" align="left">
-      <span><%= select_tag "spdata[][spdata_6]", '', {:style => "width: 70px;", :class => "BZJCXDW tb_select"} %></span></td>
+      <span><%= select_tag "spdata[][spdata_6]", '', {:style => "width: 70px;", :class => "BZJCXDW tb_select"} %></span>
+    </td>
     <td colspan="2" align="left">
-      <span><input class="inputText FFJCX" name="spdata[][spdata_7]" style="width: 70px;"></span></td>
+      <span><input class="inputText FFJCX" name="spdata[][spdata_7]" style="width: 70px;"></span>
+    </td>
     <td colspan="2" align="left">
-      <span><input class="inputText JCXDW" name="spdata[][spdata_8]" style="width: 70px;"></span></td>
+      <span><input class="inputText JCXDW" name="spdata[][spdata_8]" style="width: 70px;"></span>
+    </td>
     <td colspan="2" align="left">
-      <span><input class="inputText SM" name="spdata[][spdata_17]" style="width: 70px;"></span></td>
+      <span><input class="inputText SM" name="spdata[][spdata_17]" style="width: 70px;"></span>
+    </td>
   </tr>
 </table>
 <h1 style="color:red"><%= flash[:import_result] unless flash[:import_result].nil? %></h1>
