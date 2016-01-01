@@ -313,8 +313,15 @@
             changeYear: true,
             maxDate: new Date()
         });
-
-        $("#sp_bsb_sp_d_47").datepicker("disable").attr("readonly", "readonly");
+        <% if [5, 9].include? @sp_bsb["sp_i_state"] %>
+                $("#sp_bsb_sp_d_47").datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            maxDate: new Date()
+        });
+        <% end %>
+        //$("#sp_bsb_sp_d_47").datepicker("disable").attr("readonly", "readonly");
 
         var s = '#jcx';
         var count = 1;
@@ -954,6 +961,14 @@
          * 检验机构批准
          */
         $('#save_5').click(function () {
+            <%@check=[47]%>
+            <%@check.each do |i|%>
+            if ($.trim($("#sp_bsb_sp_d_" +<%=i%>).val()).length == 0) {
+                alert("该日期项为必填项");
+                $("#sp_bsb_sp_d_" +<%=i%>).focus();
+                return false;
+            }
+            <%end%>
             //$('#stamp-dlg').modal('show');
             //return false;
             if (!confirm('确定提交吗？')) {
@@ -1459,12 +1474,22 @@
         </tr>
         <tr>
           <td colspan="3">收检日期*</td>
-          <% if [6, 8, 9].include? @sp_bsb["sp_i_state"] %>
+          <% if [6, 8].include? @sp_bsb["sp_i_state"] %>
               <td colspan="6"><%= f.text_field :sp_d_46, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
               <td colspan="3">报告日期*</td>
               <td colspan="8"><%= f.text_field :sp_d_47, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
               <td colspan="4">报告签发人*</td>
               <td colspan="6"><%= f.text_field :sp_s_48, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+          <% elsif [9].include? @sp_bsb["sp_i_state"] %>
+              <td colspan="6"><%= f.text_field :sp_d_46, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+              <td colspan="3">报告日期*</td>
+              <td colspan="8"><%= f.text_field :sp_d_47, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+              <td colspan="4">报告签发人*</td>
+              <td colspan="6"><%= f.text_field :sp_s_48, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <% elsif [5].include? @sp_bsb["sp_i_state"] %>
+              <td colspan="16"><%= f.text_field :sp_d_46, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+              <td colspan="3">报告日期*</td>
+              <td colspan="8"><%= f.text_field :sp_d_47, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
           <% else %>
               <td colspan="27"><%= f.text_field :sp_d_46, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
           <% end %>
