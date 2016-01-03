@@ -14,14 +14,16 @@
 class ApplicationController < ActionController::Base
   include ApplicationHelper
 
-  before_filter :authorize, :except => [:login, :bind_ca_key]
+  before_action :authenticate_user!, except: [:login, :bind_ca_key]
 
-  before_filter :session_expiry, :except => [:login, :ca_login, :logout, :timeout, :bind_ca_key]
-  before_filter :update_activity_time, :except => [:login, :logout, :ca_login, :bind_ca_key]
+  # before_filter :authorize, :except => [:login, :bind_ca_key]
+
+  # before_filter :session_expiry, :except => [:login, :ca_login, :logout, :timeout, :bind_ca_key]
+  # before_filter :update_activity_time, :except => [:login, :logout, :ca_login, :bind_ca_key]
 
   before_filter :check_user_info_completeness, :except => [:login, :bind_ca_key, :complete_user_info]
 
-  helper :all # include all helpers, all the time
+  # helper :all # include all helpers, all the time
 
   # See ActionController::RequestForgeryProtection for details
   # Uncomment the :secret if you're not using the cookie session store
