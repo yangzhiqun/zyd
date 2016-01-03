@@ -1,16 +1,5 @@
 #encoding: utf-8
-#---
-# Excerpted from "Agile Web Development with Rails, 3rd Ed.",
-# published by The Pragmatic Bookshelf.
-# Copyrights apply to this code. It may not be used to create training material, 
-# courses, books, articles, and the like. Contact us if you are in doubt.
-# We make no guarantees that this code is fit for any purpose. 
-# Visit http://www.pragmaticprogrammer.com/titles/rails3 for more book information.
-#---
 class AdminController < ApplicationController
-
-  # just display the form and wait for user to
-  # enter a name and password
   skip_before_filter :verify_authenticity_token, :only => [:login, :ca_login]
   skip_before_filter :authorize, :only => [:ca_login]
 
@@ -84,26 +73,11 @@ class AdminController < ApplicationController
         end
 
         flash[:notice] = "loggin"
-        LoginLog.create({
-            :name => params[:name],
-            :sessionid => session.id,
-            :action => '登陆成功',
-            :ip => request.env["REMOTE_ADDR"],
-            :os => user_agent_parsed.os,
-            :browser => user_agent_parsed.browser,
-            :brover => user_agent_parsed.version
-        })
+        LoginLog.create(:name => params[:name], :sessionid => session.id, :action => '登陆成功', :ip => request.env["REMOTE_ADDR"], :os => user_agent_parsed.os, :browser => user_agent_parsed.browser, :brover => user_agent_parsed.version)
         redirect_to "/welcome_notices"
       else
         flash[:error] = '用户名或密码错误！'
-        LoginLog.create({
-            :name => params[:name],
-            :action => '登陆失败',
-            :ip => request.env["REMOTE_ADDR"],
-            :os => user_agent_parsed.os,
-            :browser => user_agent_parsed.browser,
-            :brover => user_agent_parsed.version
-        })
+        LoginLog.create(:name => params[:name], :action => '登陆失败', :ip => request.env["REMOTE_ADDR"], :os => user_agent_parsed.os, :browser => user_agent_parsed.browser, :brover => user_agent_parsed.version)
       end
     end
   end
@@ -114,14 +88,14 @@ class AdminController < ApplicationController
     user_agent = request.env['HTTP_USER_AGENT']
     user_agent_parsed = UserAgent.parse(request.env['HTTP_USER_AGENT'])
     LoginLog.create({
-        :name => session[:user_name],
-        :sessionid => session.id,
-        :action => '退出登录',
-        :ip => request.env["REMOTE_ADDR"],
-        :os => user_agent_parsed.os,
-        :browser => user_agent_parsed.browser,
-        :brover => user_agent_parsed.version
-    })
+                        :name => session[:user_name],
+                        :sessionid => session.id,
+                        :action => '退出登录',
+                        :ip => request.env["REMOTE_ADDR"],
+                        :os => user_agent_parsed.os,
+                        :browser => user_agent_parsed.browser,
+                        :brover => user_agent_parsed.version
+                    })
     session[:user_id] = nil
     session[:user_name]=nil
     session[:user_province]=nil

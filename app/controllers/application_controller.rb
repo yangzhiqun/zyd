@@ -14,7 +14,7 @@
 class ApplicationController < ActionController::Base
   include ApplicationHelper
 
-  before_action :authenticate_user!, except: [:login, :bind_ca_key]
+  before_action :authenticate_user! #, except: [:login, :bind_ca_key]
 
   # before_filter :authorize, :except => [:login, :bind_ca_key]
 
@@ -38,16 +38,14 @@ class ApplicationController < ActionController::Base
 
   def check_user_info_completeness
     if !current_user.nil? and !current_user.is_info_complete?
-      #Rails.logger.error "FFFFFF"
       redirect_to '/complete_user_info'
       return
     end
   end
 
   def authorize
-    #logger.debug "authorize#{Time.now}\nhello#{Time.now}\nhello#{Time.now}\nhello#{Time.now}\n"
     unless User.find_by_id(session[:user_id])
-      flash[:notice] = "Please log in"
+      flash[:notice] = '请登录后使用系统'
       redirect_to :controller => 'admin', :action => 'login'
     end
   end
