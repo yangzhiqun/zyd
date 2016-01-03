@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  devise_for :users
   resources :jg_bsb_stamps do
     get 'cover'
   end
