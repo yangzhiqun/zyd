@@ -16,7 +16,6 @@ class AdminController < ApplicationController
           return
         end
         session[:user_id] = user.id
-
         session[:user_name] = user.name
         session[:user_tname] = user.tname
         session[:user_tel] = user.tel
@@ -34,6 +33,7 @@ class AdminController < ApplicationController
         session[:user_bjp] = user.user_i_bjp
         session[:user_hzp] = user.user_i_hzp
         session[:user_js] = user.user_i_js
+
         if user.user_i_switch == 1
           session[:user_dl]=user.user_s_dl
           session[:user_i_switch] = 1
@@ -88,15 +88,8 @@ class AdminController < ApplicationController
     #logger.debug "hello logout"
     user_agent = request.env['HTTP_USER_AGENT']
     user_agent_parsed = UserAgent.parse(request.env['HTTP_USER_AGENT'])
-    LoginLog.create({
-                        :name => session[:user_name],
-                        :sessionid => session.id,
-                        :action => '退出登录',
-                        :ip => request.env["REMOTE_ADDR"],
-                        :os => user_agent_parsed.os,
-                        :browser => user_agent_parsed.browser,
-                        :brover => user_agent_parsed.version
-                    })
+    LoginLog.create(:name => session[:user_name], :sessionid => session.id, :action => '退出登录', :ip => request.env["REMOTE_ADDR"], :os => user_agent_parsed.os, :browser => user_agent_parsed.browser, :brover => user_agent_parsed.version)
+
     session[:user_id] = nil
     session[:user_name]=nil
     session[:user_province]=nil

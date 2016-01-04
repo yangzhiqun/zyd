@@ -169,7 +169,7 @@
                   <%= select_tag 'sp_dl', options_for_select(ACategory::Category24.map { |c| [c, c] }.unshift(['请选择', '']), params[:sp_dl]), class: 'form-control input-sm' %>
                 </td>
             <% else %>
-                <td colspan="6"><%= session[:user_dl] %></td>
+                <td colspan="6"><%= current_user.user_s_dl %></td>
                 <td style="display:none">
                   <select class="form-control input-sm" type="text" id="sp_dl" name="sp_dl" style="width:123px"></select>
                 </td>
@@ -181,7 +181,7 @@
             <% if current_user.is_admin?||session[:change_js]==8||session[:change_js]==9||session[:change_js]==10 %>
                 <td colspan="6"><%= select_tag "sp_sf", options_for_select(SysProvince.level1.map { |prov| [prov.name, prov.name] }.unshift(['全部', '']), params[:sp_sf]), :class => "form-control" %></td>
             <% else %>
-                <td colspan="6"><%= session[:user_province] %></td>
+                <td colspan="6"><%= current_user.user_s_province %></td>
                 <td style="display:none">
                   <select class="form-control input-sm" type="text" id="sp_sf" name="sp_sf"></select></td>
             <% end %>
@@ -237,7 +237,7 @@
         <li>
           <a class="<%= (params[:flag].eql?('tabs_1') ? "active" : "") %>" style="cursor: pointer;" id="tabs_1">待处理数据</a>
         </li>
-        <% if session[:user_authority_2]==1 %>
+        <% if current_user.user_d_authority_1==1 %>
         <li>
           <a class="<%= (params[:flag].eql?('tabs_5') ? "active" : "") %>" style="cursor: pointer;" id="tabs_5">退修数据</a>
         </li>

@@ -118,7 +118,7 @@
                 <%= select_tag 'sp_s_3', options_for_select(SysProvince.level1.map { |prov| [prov.name, prov.name] }.unshift(['请选择', '']), params[:sp_s_3]), :class => 'form-control input-sm' %>
               </td>
           <% else %>
-              <td colspan="6"><%= session[:user_province] %></td>
+              <td colspan="6"><%= current_user.user_s_province %></td>
               <td style="display:none">
                 <select type="text" class="form-control input-sm" id="sp_s_3" name="sp_s_3"></select>
               </td>

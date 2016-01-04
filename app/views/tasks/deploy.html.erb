@@ -349,7 +349,7 @@
             });
         });
     </script>
-    <h3 class="text-center"><%= session[:user_province] %>采样任务部署</h3>
+    <h3 class="text-center"><%= current_user.user_s_province %>采样任务部署</h3>
     <div class="ctner" style="overflow-x: scroll;">
       <div class="form-inline">
         <label for="">报送分类：</label>
@@ -424,7 +424,7 @@
               <!-- 细类名称 -->
               <td><%= d.name %></td>
 
-              <%= grid3(SysProvince.level1.find_by_name(session[:user_province]), d) %>
+              <%= grid3(SysProvince.level1.find_by_name(current_user.user_s_province), d) %>
               <!-- 交叉点 -->
               <% @delegates.each do |del| %>
                   <%= grid5(del, d) %>

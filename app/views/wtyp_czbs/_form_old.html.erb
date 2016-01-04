@@ -62,122 +62,132 @@
         <td colspan="4"><p>检验机构名称*</p></td>
         <td colspan="6"><%=@sp_bsb.sp_s_43%></td>
      </tr>
-     <%if (session[:user_province]==@sp_bsb.sp_s_3)||current_user.is_admin?||session[:change_js]==10%>
+    <% if (current_user.user_s_province==@sp_bsb.sp_s_3)||current_user.is_admin?||session[:change_js]==10 %>
          <tr>
             <td colspan="4"><p>填报单位</p></td>
-            <td colspan="26"><%= f.text_field:wtyp_jg, :class=>"inputText",:style=>"width: 360px; height: 25px"%></td>
+           <td colspan="26"><%= f.text_field :wtyp_jg, :class => "inputText", :style => "width: 360px; height: 25px" %></td>
          </tr>
          <tr>
             <td colspan="4"><p>填报人</p></td>
-            <td colspan="6"><%= f.text_field:wtyp_contacts, :class=>"inputText",:style=>"width: 100px; height: 25px"%></td>
+           <td colspan="6"><%= f.text_field :wtyp_contacts, :class => "inputText", :style => "width: 100px; height: 25px" %></td>
             <td colspan="4"><p>电话</p></td>
-            <td colspan="6"><%= f.text_field:wtyp_tel, :class=>"inputText",:style=>"width: 100px; height: 25px"%></td>
+           <td colspan="6"><%= f.text_field :wtyp_tel, :class => "inputText", :style => "width: 100px; height: 25px" %></td>
             <td colspan="4"><p>传真</p></td>
-            <td colspan="6"><%= f.text_field:wtyp_fax, :class=>"inputText",:style=>"width: 100px; height: 25px"%></td>
+           <td colspan="6"><%= f.text_field :wtyp_fax, :class => "inputText", :style => "width: 100px; height: 25px" %></td>
          </tr>
          <tr>
             <td colspan="4"><p>电子邮箱</p></td>
-            <td colspan="11"><%= f.text_field:wtyp_email, :class=>"inputText",:style=>"width: 100px; height: 25px"%></td>
+           <td colspan="11"><%= f.text_field :wtyp_email, :class => "inputText", :style => "width: 100px; height: 25px" %></td>
             <td colspan="4"><p>审核人</p></td>
-            <td colspan="11"><%= f.text_field:wtyp_verify, :class=>"inputText",:style=>"width: 100px; height: 25px"%></td>
+           <td colspan="11"><%= f.text_field :wtyp_verify, :class => "inputText", :style => "width: 100px; height: 25px" %></td>
          </tr>
          <tr>
             <td colspan="4"><p>处置环节</p></td>
-            <td colspan="10"><%= f.select:wtyp_deal_segment,@czhj_options,{},:style=>"width: 150px; height: 25px"%></td>
+           <td colspan="10"><%= f.select :wtyp_deal_segment, @czhj_options, {}, :style => "width: 150px; height: 25px" %></td>
             <td colspan="4"><p>处置认定</p></td>
-            <td colspan="12"><%= f.select:wtyp_deal_affirm,@czrd_options,{},:style=>"width: 250px; height: 25px"%></td>
+           <td colspan="12"><%= f.select :wtyp_deal_affirm, @czrd_options, {}, :style => "width: 250px; height: 25px" %></td>
          </tr> 
          <tr>
             <td colspan="5"><p>核查处置状态</p></td>
-            <td colspan="10"><%= f.select:wtyp_state,@cz_options,{},:style=>"width: 150px; height: 25px"%></td>
+           <td colspan="10"><%= f.select :wtyp_state, @cz_options, {}, :style => "width: 150px; height: 25px" %></td>
             <td colspan="4"><p>报告日期</p></td>
-            <td colspan="11"><%= f.text_field:wtyp_date, :class=>"inputText",:style=>"width: 100px; height: 25px"%></td>
+           <td colspan="11"><%= f.text_field :wtyp_date, :class => "inputText", :style => "width: 100px; height: 25px" %></td>
          </tr>
          <tr>
             <td rowspan="2" colspan="4"><p>核查处置措施</p></td>
             <td colspan="26" >
-                责令企业：<%= f.select:wtyp_deal_fix1way,@czdealfix1_options,{},:style=>"width: 150px; height: 25px"%>；&nbsp;&nbsp;&nbsp;&nbsp;
-                处理：<%= f.text_field:wtyp_deal_fix2way, :class=>"inputText",:style=>"width: 100px; height: 25px"%>件次；&nbsp;&nbsp;&nbsp;&nbsp;
-                是否立案：<%= f.select:wtyp_deal_fix3way,@czdealfix2_options,{},:style=>"width: 100px; height: 25px"%>
+              责令企业：<%= f.select :wtyp_deal_fix1way, @czdealfix1_options, {}, :style => "width: 150px; height: 25px" %>；&nbsp;&nbsp;&nbsp;&nbsp;
+              处理：<%= f.text_field :wtyp_deal_fix2way, :class => "inputText", :style => "width: 100px; height: 25px" %>
+              件次；&nbsp;&nbsp;&nbsp;&nbsp;
+              是否立案：<%= f.select :wtyp_deal_fix3way, @czdealfix2_options, {}, :style => "width: 100px; height: 25px" %>
             </td>
             
          </tr>
          <tr>
             <td colspan="26" >
-                <%= f.text_area:wtyp_deal_way,:rows=>6,:cols=>80,:readonly=>"readonly"%><br/>
-                <input class="inputText" id="temp_deal" style="width:400px;height: 25px"></input>
+              <%= f.text_area :wtyp_deal_way, :rows => 6, :cols => 80, :readonly => "readonly" %><br/>
+              <input class="inputText" id="temp_deal" style="width:400px;height: 25px">
             </td>
          </tr>
          <tr>
             <td rowspan="2" colspan="4"><p>核查处置情况</p></td>
-            <td colspan="26"><%= f.text_area:wtyp_deal_detail,:rows=>6,:cols=>80,:readonly=>"readonly"%></td>
+           <td colspan="26"><%= f.text_area :wtyp_deal_detail, :rows => 6, :cols => 80, :readonly => "readonly" %></td>
          </tr>
          <tr>
-            <td colspan="26"><input class="inputText" id="temp_deal_1" style="width:400px;height: 25px"></input></td>
+           <td colspan="26"><input class="inputText" id="temp_deal_1" style="width:400px;height: 25px"></td>
          </tr>
          <tr>
             <td rowspan="2" colspan="4"><p>现场检查情况</p></td>
-            <td colspan="26"><%= f.text_area:wtyp_deal_site,:rows=>6,:cols=>80,:readonly=>"readonly"%></td>
+           <td colspan="26"><%= f.text_area :wtyp_deal_site, :rows => 6, :cols => 80, :readonly => "readonly" %></td>
          </tr>
          <tr>
-            <td colspan="26"><input class="inputText" id="temp_deal_site" style="width:400px;height: 25px"></input></td>
+           <td colspan="26"><input class="inputText" id="temp_deal_site" style="width:400px;height: 25px"></td>
          </tr>
          <tr>
             <td colspan="4"><p>处置结果</p></td>
             <td colspan="26">
-                没收违法所得：<%= f.text_field:wtyp_result_fix1way, :class=>"inputText",:style=>"width: 60px; height: 25px"%>元；&nbsp;&nbsp;
-                罚款：<%= f.text_field:wtyp_result_fix2way, :class=>"inputText",:style=>"width: 60px; height: 25px"%>元；&nbsp;&nbsp;&nbsp;
-                责令停产/停业从：<%= f.text_field:wtyp_result_fix3way, :class=>"inputText",:style=>"width: 100px; height: 25px"%>至
-                    <%= f.text_field:wtyp_result_fix4way, :class=>"inputText",:style=>"width: 100px; height: 25px"%><br/>
-                吊销许可证照：<%= f.text_field:wtyp_result_fix5way, :class=>"inputText",:style=>"width: 100px; height: 25px"%>号；&nbsp;&nbsp;
-                移送司法机关：<%= f.text_field:wtyp_result_fix6way, :class=>"inputText",:style=>"width: 120px; height: 25px"%>；&nbsp;&nbsp;
-                移送其他机关：<%= f.text_field:wtyp_result_fix7way, :class=>"inputText",:style=>"width: 120px; height: 25px"%>；    
+              没收违法所得：<%= f.text_field :wtyp_result_fix1way, :class => "inputText", :style => "width: 60px; height: 25px" %>
+              元；&nbsp;&nbsp;
+              罚款：<%= f.text_field :wtyp_result_fix2way, :class => "inputText", :style => "width: 60px; height: 25px" %>
+              元；&nbsp;&nbsp;&nbsp;
+              责令停产/停业从：<%= f.text_field :wtyp_result_fix3way, :class => "inputText", :style => "width: 100px; height: 25px" %>
+              至
+              <%= f.text_field :wtyp_result_fix4way, :class => "inputText", :style => "width: 100px; height: 25px" %>
+              <br/>
+              吊销许可证照：<%= f.text_field :wtyp_result_fix5way, :class => "inputText", :style => "width: 100px; height: 25px" %>
+              号；&nbsp;&nbsp;
+              移送司法机关：<%= f.text_field :wtyp_result_fix6way, :class => "inputText", :style => "width: 120px; height: 25px" %>
+              ；&nbsp;&nbsp;
+              移送其他机关：<%= f.text_field :wtyp_result_fix7way, :class => "inputText", :style => "width: 120px; height: 25px" %>
+              ；
             </td>
          </tr>
      <%end%>
-     <%if (session[:user_province]==@sp_bsb.sp_s_202&&session[:user_province]!=@sp_bsb.sp_s_3)||current_user.is_admin?||session[:change_js]==10%>
+    <% if (current_user.user_s_province==@sp_bsb.sp_s_202&&current_user.user_s_province!=@sp_bsb.sp_s_3)||current_user.is_admin?||session[:change_js]==10 %>
          <tr>
             <td colspan="4"><p>填报单位</p></td>
-            <td colspan="26"><%= f.text_field:wtyp_jg_sc, :class=>"inputText",:style=>"width: 360px; height: 25px"%></td>
+           <td colspan="26"><%= f.text_field :wtyp_jg_sc, :class => "inputText", :style => "width: 360px; height: 25px" %></td>
          </tr>
          <tr>
             <td colspan="4"><p>填报人</p></td>
-            <td colspan="6"><%= f.text_field:wtyp_contacts_sc, :class=>"inputText",:style=>"width: 100px; height: 25px"%></td>
+           <td colspan="6"><%= f.text_field :wtyp_contacts_sc, :class => "inputText", :style => "width: 100px; height: 25px" %></td>
             <td colspan="4"><p>电话</p></td>
-            <td colspan="6"><%= f.text_field:wtyp_tel_sc, :class=>"inputText",:style=>"width: 100px; height: 25px"%></td>
+           <td colspan="6"><%= f.text_field :wtyp_tel_sc, :class => "inputText", :style => "width: 100px; height: 25px" %></td>
             <td colspan="4"><p>传真</p></td>
-            <td colspan="6"><%= f.text_field:wtyp_fax_sc, :class=>"inputText",:style=>"width: 100px; height: 25px"%></td>
+           <td colspan="6"><%= f.text_field :wtyp_fax_sc, :class => "inputText", :style => "width: 100px; height: 25px" %></td>
          </tr>
          <tr>
             <td colspan="4"><p>电子邮箱</p></td>
-            <td colspan="11"><%= f.text_field:wtyp_email_sc, :class=>"inputText",:style=>"width: 100px; height: 25px"%></td>
+           <td colspan="11"><%= f.text_field :wtyp_email_sc, :class => "inputText", :style => "width: 100px; height: 25px" %></td>
             <td colspan="4"><p>审核人</p></td>
-            <td colspan="11"><%= f.text_field:wtyp_verify_sc, :class=>"inputText",:style=>"width: 100px; height: 25px"%></td>
+           <td colspan="11"><%= f.text_field :wtyp_verify_sc, :class => "inputText", :style => "width: 100px; height: 25px" %></td>
          </tr> 
          <tr>
             <td colspan="4"><p>处置环节</p></td>
-            <td colspan="10"><%= f.select:wtyp_deal_segment_sc,@czhj_options,{},:style=>"width: 150px; height: 25px"%></td>
+           <td colspan="10"><%= f.select :wtyp_deal_segment_sc, @czhj_options, {}, :style => "width: 150px; height: 25px" %></td>
             <td colspan="4"><p>处置认定</p></td>
-            <td colspan="12"><%= f.select:wtyp_deal_affirm_sc,@czrd_options,{},:style=>"width: 250px; height: 25px"%></td>
+           <td colspan="12"><%= f.select :wtyp_deal_affirm_sc, @czrd_options, {}, :style => "width: 250px; height: 25px" %></td>
          </tr>
          <tr>
             <td colspan="5"><p>核查处置状态</p></td>
-            <td colspan="10"><%= f.select:wtyp_state_sc,@cz_options,{},:style=>"width: 150px; height: 25px"%></td>
+           <td colspan="10"><%= f.select :wtyp_state_sc, @cz_options, {}, :style => "width: 150px; height: 25px" %></td>
             <td colspan="4"><p>报告日期</p></td>
-            <td colspan="11"><%= f.text_field:wtyp_date_sc, :class=>"inputText",:style=>"width: 100px; height: 25px"%></td>
+           <td colspan="11"><%= f.text_field :wtyp_date_sc, :class => "inputText", :style => "width: 100px; height: 25px" %></td>
          </tr>
          <tr>
             <td rowspan="2" colspan="4"><p>核查处置措施</p></td>
             <td colspan="26" >
-                责令企业：<%= f.select:wtyp_deal_fix1way_sc,@czdealfix1_options,{},:style=>"width: 150px; height: 25px"%>；&nbsp;&nbsp;&nbsp;&nbsp;
-                处理：<%= f.text_field:wtyp_deal_fix2way_sc, :class=>"inputText",:style=>"width: 100px; height: 25px"%>件次；&nbsp;&nbsp;&nbsp;&nbsp;
-                是否立案：<%= f.select:wtyp_deal_fix3way_sc,@czdealfix2_options,{},:style=>"width: 100px; height: 25px"%>
+              责令企业：<%= f.select :wtyp_deal_fix1way_sc, @czdealfix1_options, {}, :style => "width: 150px; height: 25px" %>
+              ；&nbsp;&nbsp;&nbsp;&nbsp;
+              处理：<%= f.text_field :wtyp_deal_fix2way_sc, :class => "inputText", :style => "width: 100px; height: 25px" %>
+              件次；&nbsp;&nbsp;&nbsp;&nbsp;
+              是否立案：<%= f.select :wtyp_deal_fix3way_sc, @czdealfix2_options, {}, :style => "width: 100px; height: 25px" %>
             </td>
          </tr>
          <tr>
             <td colspan="26" >
                 <%= f.text_area :wtyp_deal_way_sc,:rows=>6,:cols=>80,:readonly=>"readonly"%><br/>
-                <input class="inputText" id="temp_deal_sc" style="width:400px;height: 25px"></input>
+              <input class="inputText" id="temp_deal_sc" style="width:400px;height: 25px">
             </td>
          </tr>
          
@@ -186,14 +196,14 @@
             <td colspan="26"><%= f.text_area :wtyp_deal_detail_sc,:rows=>6,:cols=>80,:readonly=>"readonly"%></td>
          </tr>
          <tr>
-            <td colspan="26"><input class="inputText" id="temp_deal_1_sc" style="width:400px;height: 25px"></input></td>
+           <td colspan="26"><input class="inputText" id="temp_deal_1_sc" style="width:400px;height: 25px"></td>
          </tr>
          <tr>
             <td rowspan="2" colspan="4"><p>现场检查情况</p></td>
             <td colspan="26"><%= f.text_area :wtyp_deal_site_sc,:rows=>6,:cols=>80,:readonly=>"readonly"%></td>
          </tr>
          <tr>
-            <td colspan="26"><input class="inputText" id="temp_deal_site_sc" style="width:400px;height: 25px"></input></td>
+           <td colspan="26"><input class="inputText" id="temp_deal_site_sc" style="width:400px;height: 25px"></td>
          </tr>
          <tr>
             <td colspan="4"><p>处置结果</p></td>

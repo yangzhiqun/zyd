@@ -676,7 +676,7 @@
             return false;
         });
 
-        <%if session[:user_authority_1]==0&&session[:user_authority_2]==0%>
+        <%if current_user.user_d_authority==0&&current_user.user_d_authority_1==0%>
         $("select").attr("disabled", "disabled");
         $("input").attr("readonly", "readonly");
         <%end%>
@@ -1114,7 +1114,7 @@
               <td colspan="26"><%= f.text_field :sp_s_55, :class => "inputText", :style => "width: 600px;height: 19px;margin:8px" %></td>
           <% end %>
         </tr>
-        <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<=9&&(session[:user_authority_2]==1 || current_user.is_admin?) %>
+        <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<=9&&(current_user.user_d_authority_1==1 || current_user.is_admin?) %>
             <tr>
               <td colspan="4">报告分类*</td>
               <td colspan="26">
@@ -1235,12 +1235,12 @@
           <%= f.submit(vaule="保存并新建", options={"id" => "save_and_create", :class => "btn btn-xs btn-success"}) %>
       <% end %>
 
-      <% if (@sp_bsb["sp_i_state"]<2)&&session[:user_authority_1]==1 %>
+      <% if (@sp_bsb["sp_i_state"]<2)&&current_user.user_d_authority==1 %>
           <%= f.submit(vaule="临时保存", options={"id" => "save", :class => "btn btn-xs btn-default"}) %>
           <%= f.submit(vaule="基本信息提交入库", options={"id" => "submit1", :class => "btn btn-xs btn-primary"}) %>
       <% end %>
 
-      <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<4&&session[:user_authority_2]==1 %>
+      <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<4&&current_user.user_d_authority_1==1 %>
           <%= f.submit(vaule="临时保存", options={"id" => "save_1", :class => "btn btn-xs btn-default"}) %>
           <%= f.submit(vaule="检测数据提交入库", options={"id" => "submit2", :class => "btn btn-xs btn-success"}) %>
           <% if @sp_bsb.sp_i_state == 2 %>

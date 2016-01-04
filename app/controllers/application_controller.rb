@@ -49,6 +49,49 @@ class ApplicationController < ActionController::Base
   #     redirect_to :controller => 'admin', :action => 'login'
   #   end
   # end
+
+  def after_sign_in_path_for(resource)
+    if current_user.user_i_switch == 1
+      session[:user_dl]=user.user_s_dl
+      session[:user_i_switch] = 1
+    else
+      session[:user_dl].blank?
+      session[:user_i_switch] = 0
+    end
+
+    if session[:user_js] == 1 && session[:user_authority_1] == 1 #药监局数据采样
+      session[:change_js] = 1
+    end
+    if session[:user_js] == 1 && session[:user_authority_3] == 1 #药监局数据审核
+      session[:change_js]=2
+    end
+    if session[:user_js]==1&&session[:user_authority_4]==1 #药监局问题样品处理
+      session[:change_js]=3
+    end
+    if session[:user_js]==1&&session[:user_authority_5]==1 #药监局统计分析
+      session[:change_js]=4
+    end
+    if session[:user_js]==0&&session[:user_authority_1]==1 #检测机构数据采样
+      session[:change_js]=5
+    end
+    if session[:user_js]==0&&session[:user_authority_2]==1 #检测机构数据填报
+      session[:change_js]=6
+    end
+    if session[:user_js]==0&&session[:user_authority_3]==1 #检测机构数据审核
+      session[:change_js]=7
+    end
+    if session[:user_dl]!='' #检测机构牵头单位
+      session[:change_js]=8
+    end
+    if session[:user_spys]==1 #一司
+      session[:change_js]=9
+    end
+    if session[:user_spss]==1 #三司
+      session[:change_js]=10
+    end
+    LoginLog.create(:name => params[:name], :sessionid => session.id, :action => '登陆成功', :ip => request.env["REMOTE_ADDR"], :os => user_agent_parsed.os, :browser => user_agent_parsed.browser, :brover => user_agent_parsed.version)
+    request.env['omniauth.origin'] || stored_location_for(resource) || root_path
+  end
 end
 
 def session_expiry

@@ -299,21 +299,21 @@ class WtypCzbPart < ActiveRecord::Base
       case self.current_state
       when ::WtypCzb::State::LOGGED
         self.current_state = ::WtypCzb::State::ASSIGNED
-        self.blr = session[:user_tname]
+        self.blr = current_user.tname
         self.blbm = current_user.jg_bsb.jg_name
         self.blsj = Time.now
 
       when ::WtypCzb::State::ASSIGNED
         self.current_state = ::WtypCzb::State::FILLED
 
-        self.tbr = session[:user_tname]
+        self.tbr = current_user.tname
         self.tbbm = current_user.jg_bsb.jg_name
         self.tbsj = Time.now
 
       when ::WtypCzb::State::FILLED
         self.current_state = ::WtypCzb::State::PASSED
 
-        self.shr = session[:user_tname]
+        self.shr = current_user.tname
         self.shbm = current_user.jg_bsb.jg_name
         self.shsj = Time.now
 

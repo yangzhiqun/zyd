@@ -26,7 +26,7 @@ class WtypCzbsController < ApplicationController
 
     # 如果不是管理员则进行省份区分 和 安排
     if current_user.hcz_admin != 1
-      @wtyp_czbs = @wtyp_czbs.where("((wtyp_czb_type = #{::WtypCzbPart::Type::LT} OR wtyp_czb_type = #{::WtypCzbPart::Type::CY}) AND bcydw_sheng = ?) OR (wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND bsscqy_sheng = ?)", session[:user_province], session[:user_province])
+      @wtyp_czbs = @wtyp_czbs.where("((wtyp_czb_type = #{::WtypCzbPart::Type::LT} OR wtyp_czb_type = #{::WtypCzbPart::Type::CY}) AND bcydw_sheng = ?) OR (wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND bsscqy_sheng = ?)", current_user.user_s_province, current_user.user_s_province)
       if params[:state].to_i == 1
         @wtyp_czbs = @wtyp_czbs.where("czfzr = ?", current_user.id)
       end
@@ -144,7 +144,7 @@ class WtypCzbsController < ApplicationController
           @wtyp_czbs = WtypCzbPart.select('*, count(1) as count ').group('cjbh').where("current_state = ?", ::WtypCzb::State::PASSED).order("id, updated_at desc")
 
           if current_user.hcz_admin != 1
-            @wtyp_czbs = @wtyp_czbs.where("((wtyp_czb_type = #{::WtypCzbPart::Type::LT} OR wtyp_czb_type = #{::WtypCzbPart::Type::CY}) AND bcydw_sheng = ?) OR (wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND bsscqy_sheng = ?)", session[:user_province], session[:user_province])
+            @wtyp_czbs = @wtyp_czbs.where("((wtyp_czb_type = #{::WtypCzbPart::Type::LT} OR wtyp_czb_type = #{::WtypCzbPart::Type::CY}) AND bcydw_sheng = ?) OR (wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND bsscqy_sheng = ?)", current_user.user_s_province, current_user.user_s_province)
           end
 
           # 样品名称
@@ -265,7 +265,7 @@ class WtypCzbsController < ApplicationController
         @wtyp_czbs = @wtyp_czbs.select("*, count(1) as count")
 
         if current_user.hcz_admin != 1
-          @wtyp_czbs = @wtyp_czbs.where("((wtyp_czb_type = #{::WtypCzbPart::Type::LT} OR wtyp_czb_type = #{::WtypCzbPart::Type::CY}) AND bcydw_sheng = ?) OR (wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND bsscqy_sheng = ?)", session[:user_province], session[:user_province])
+          @wtyp_czbs = @wtyp_czbs.where("((wtyp_czb_type = #{::WtypCzbPart::Type::LT} OR wtyp_czb_type = #{::WtypCzbPart::Type::CY}) AND bcydw_sheng = ?) OR (wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND bsscqy_sheng = ?)", current_user.user_s_province, current_user.user_s_province)
 
           if params[:state].to_i == 1
             @wtyp_czbs = @wtyp_czbs.where("czfzr = ?", current_user.id)
@@ -381,7 +381,7 @@ class WtypCzbsController < ApplicationController
         @wtyp_czbs = WtypCzbPart.select("*, count(1) as count").group('cjbh').where("current_state = ?", ::WtypCzb::State::PASSED).order("id, updated_at desc")
 
         if current_user.hcz_admin != 1
-          @wtyp_czbs = @wtyp_czbs.where("((wtyp_czb_type = #{::WtypCzbPart::Type::LT} OR wtyp_czb_type = #{::WtypCzbPart::Type::CY}) AND bcydw_sheng = ?) OR (wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND bsscqy_sheng = ?)", session[:user_province], session[:user_province])
+          @wtyp_czbs = @wtyp_czbs.where("((wtyp_czb_type = #{::WtypCzbPart::Type::LT} OR wtyp_czb_type = #{::WtypCzbPart::Type::CY}) AND bcydw_sheng = ?) OR (wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND bsscqy_sheng = ?)", current_user.user_s_province, current_user.user_s_province)
         end
 
         # 样品名称
@@ -679,7 +679,7 @@ class WtypCzbsController < ApplicationController
     respond_to do |format|
       @czbs = WtypCzbPart.where(:id => params[:ids].split(','))
 
-      if @czbs.update_all(:czbm => params[:czbm], :czfzr => params[:czfzr], :current_state => WtypCzb::State::ASSIGNED, :blr => session[:user_tname], :blbm => current_user.jg_bsb.jg_name, :blsj => Time.now)
+      if @czbs.update_all(:czbm => params[:czbm], :czfzr => params[:czfzr], :current_state => WtypCzb::State::ASSIGNED, :blr => current_user.tname, :blbm => current_user.jg_bsb.jg_name, :blsj => Time.now)
         format.json { render :json => {:status => 'OK'} }
       else
         format.json { render :json => {:status => 'ERR', :msg => '失败！'} }
@@ -700,7 +700,7 @@ class WtypCzbsController < ApplicationController
       @wtyp_czbs = WtypCzbPart.where(:id => params[:ids].split(','))
 
       @wtyp_czbs.each do |czb|
-        czb.thyy = (czb.thyy || "") + "<br>" + "操作时间：" + Time.now.to_s + ", 原因：" + params[:thyy] + ", 操作人员：" + session[:user_tname]
+        czb.thyy = (czb.thyy || "") + "<br>" + "操作时间：" + Time.now.to_s + ", 原因：" + params[:thyy] + ", 操作人员：" + current_user.tname
         czb.session = session
         czb.reverting = true
         case czb.current_state

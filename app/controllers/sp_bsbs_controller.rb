@@ -152,7 +152,7 @@ class SpBsbsController < ApplicationController
 
     @xkz_options=[['请选择', '请选择'], ['流通许可证', '流通许可证'], ['餐饮服务许可证', '餐饮服务许可证']]
 
-    @jg_bsbs = JgBsb.where('status = 0 and jg_sp_permission = 1 and jg_detection = 1', session[:user_province]).order('jg_province')
+    @jg_bsbs = JgBsb.where('status = 0 and jg_sp_permission = 1 and jg_detection = 1', current_user.user_s_province).order('jg_province')
   end
 
   #2014-01-12
@@ -166,7 +166,7 @@ class SpBsbsController < ApplicationController
     if current_user.jg_bsb.all_names.include?(params_data.sp_s_43)
       return 1
     end
-    if (params_data.sp_s_3==session[:user_province]||params_data.sp_s_202==session[:user_province]||params_data.sp_s_52==session[:user_province])&&(session[:change_js]==2||session[:change_js]==3||session[:change_js]==4)
+    if (params_data.sp_s_3==current_user.user_s_province||params_data.sp_s_202==current_user.user_s_province||params_data.sp_s_52==current_user.user_s_province)&&(session[:change_js]==2||session[:change_js]==3||session[:change_js]==4)
       return 1
     end
     if params_data.sp_s_17==session[:user_dl]&&session[:change_js]==8
@@ -245,33 +245,33 @@ class SpBsbsController < ApplicationController
   # GET /sp_bsbs/new.json
   def new
     @province_plus = "省"
-    if ["北京", "天津", "上海", "重庆"].include?(session[:user_province])
+    if ["北京", "天津", "上海", "重庆"].include?(current_user.user_s_province)
       @province_plus = "市"
     end
 
-    if ["西藏", "内蒙古"].include?(session[:user_province])
+    if ["西藏", "内蒙古"].include?(current_user.user_s_province)
       @province_plus = "自治区"
     end
 
-    if session[:user_province] == "广西"
+    if current_user.user_s_province == "广西"
       @province_plus = "壮族自治区"
     end
 
-    if session[:user_province] == "新疆"
+    if current_user.user_s_province == "新疆"
       @province_plus = "维吾尔自治区"
     end
 
-    if session[:user_province] == "宁夏"
+    if current_user.user_s_province == "宁夏"
       @province_plus = ""
     end
     flash[:import_result] =nil
     @sp_bsb = SpBsb.new
     @sp_bsb.tname= current_user.name
-    @sp_bsb.sp_s_3=session[:user_province]
+    @sp_bsb.sp_s_3=current_user.user_s_province
     @sp_bsb.sp_s_35= current_user.jg_bsb.jg_name
-    @sp_bsb.sp_s_37=session[:user_tname]
-    @sp_bsb.sp_s_39=session[:user_tel]
-    @sp_bsb.sp_s_52=session[:user_province]
+    @sp_bsb.sp_s_37=current_user.tname
+    @sp_bsb.sp_s_39=current_user.tel
+    @sp_bsb.sp_s_52=current_user.user_s_province
     @sp_bsb.sp_s_71='未检验'
     if current_user.jg_bsb
       @sp_bsb.sp_s_40=current_user.jg_bsb.jg_contacts
@@ -864,7 +864,7 @@ class SpBsbsController < ApplicationController
         @sp_bsbs = @sp_bsbs.where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
       else
         if session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
-          @sp_bsbs = @sp_bsbs.where("sp_s_3 = ? or sp_s_202 = ?", session[:user_province], session[:user_province]).where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+          @sp_bsbs = @sp_bsbs.where("sp_s_3 = ? or sp_s_202 = ?", current_user.user_s_province, current_user.user_s_province).where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==7 #数据审核
           @sp_bsbs = @sp_bsbs.where("sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==6 #数据填报
@@ -887,7 +887,7 @@ class SpBsbsController < ApplicationController
       @sp_bsbs = @sp_bsbs.paginate(page: params[:page], per_page: 10)
     else
       if session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
-        @sp_bsbs = @sp_bsbs.where("sp_s_3=? or (sp_s_202=? and (sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'))", session[:user_province], session[:user_province]).paginate(page: params[:page], per_page: 10)
+        @sp_bsbs = @sp_bsbs.where("sp_s_3=? or (sp_s_202=? and (sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'))", current_user.user_s_province, current_user.user_s_province).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==7 #数据审核
         @sp_bsbs = @sp_bsbs.where("sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==11 #数据批准
@@ -1032,7 +1032,7 @@ class SpBsbsController < ApplicationController
                 bsb.sp_s_213=row[72]
                 bsb.sp_s_43=''
                 bsb.sp_s_85= current_user.name
-                bsb.sp_s_52="#{session[:user_province]}"
+                bsb.sp_s_52=current_user.user_s_province
                 bsb.sp_s_56=""
                 bsb.tname = current_user.name
                 bsb.sp_i_state=10
