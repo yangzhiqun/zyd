@@ -263,7 +263,6 @@
                     $("#sp_bsb_sp_s_" +<%=i%>).val('/');
                 }
                 <%end%>
-                console.log('211111111111111');
             }else if(checkText == "预包装"){
                 <%@check=[26,27,13,72,73,74]%>
                 <%@check.each do |i|%>
@@ -271,10 +270,7 @@
                     $("#sp_bsb_sp_s_" +<%=i%>).val('');
                 }
                 <%end%>
-                console.log('11111111111111');
             }
-console.log(checkText);
-            
          })
         //根据任务来源过滤报送分类A
         //$("#sp_bsb_sp_s_2_1").unbind("change", eDropLangChange).bind("change", eDropLangChange);
