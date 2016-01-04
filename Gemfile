@@ -68,4 +68,6 @@ gem 'newrelic_rpm'
 #gem 'oneapm_rpm'
 
 gem 'useragent'
+
 gem 'devise'
+gem 'devise-i18n'

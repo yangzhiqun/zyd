@@ -16,6 +16,7 @@ class AdminController < ApplicationController
           return
         end
         session[:user_id] = user.id
+
         session[:user_name] = user.name
         session[:user_tname] = user.tname
         session[:user_tel] = user.tel

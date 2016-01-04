@@ -9,19 +9,23 @@ class User < ActiveRecord::Base
 
   include ApplicationHelper
 
-  validates_presence_of     :name
-  validates_uniqueness_of   :name
-  validates_uniqueness_of   :id_card, message: "身份证号已绑定", allow_nil: true, allow_blank: true
-  validates_uniqueness_of   :user_sign, message: "签名已存在", allow_nil: true, allow_blank: true
+  validates_presence_of :uid
+  validates_uniqueness_of :uid
+  validates_presence_of :name
+  validates_uniqueness_of :name
+  validates_uniqueness_of :id_card, message: "身份证号已绑定", allow_nil: true, allow_blank: true
+  validates_format_of :id_card, with: /(^\d{15}$)|(^\d{17}([0-9]|X)$)/i, message: '身份证格式不正确'
+  validates_format_of :mobile, with: /(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}/i, message: '手机号格式不正确'
+  validates_uniqueness_of :user_sign, message: "签名已存在", allow_nil: true, allow_blank: true
   validates_confirmation_of :password
   validate :password_non_blank
 
   def is_info_complete?
     !id_card.blank? and !tname.blank? and !tel.blank?
   end
- 
+
   attr_accessor :password_confirmation
-	# attr_accessible :jg_bsb_id, :id_card, :user_sign, :pub_xxfb, :pub_xxfb_sh, :user_s_city, :user_s_lcity, :yyadmin, :jsyp, :hcz_admin, :car_sys_id, :zxcy, :rwbs, :rwxd, :enable_api,:hcz_sc, :hcz_lt, :hcz_czap, :hcz_czbl, :hcz_czsh, :yysl, :zhxt, :yybl, :yysh, :yycz_permission, :name, :password, :password_confirmation,:tname,:tel,:eaddress,:company,:user_s_province,:user_d_authority,:user_d_authority_1,:user_jcjg,:user_jcjg_lxr,:user_jcjg_tel,:user_jcjg_mail,:user_cyjg,:user_cyjg_lxr,:user_cyjg_tel,:user_cyjg_mail,:user_d_authority_2,:user_d_authority_3,:user_d_authority_4,:user_d_authority_5,:user_i_js,:user_i_switch,:user_i_sp,:user_i_hzp,:user_i_bjp,:user_s_dl,:user_i_spys,:user_i_spss
+  # attr_accessible :jg_bsb_id, :id_card, :user_sign, :pub_xxfb, :pub_xxfb_sh, :user_s_city, :user_s_lcity, :yyadmin, :jsyp, :hcz_admin, :car_sys_id, :zxcy, :rwbs, :rwxd, :enable_api,:hcz_sc, :hcz_lt, :hcz_czap, :hcz_czbl, :hcz_czsh, :yysl, :zhxt, :yybl, :yysh, :yycz_permission, :name, :password, :password_confirmation,:tname,:tel,:eaddress,:company,:user_s_province,:user_d_authority,:user_d_authority_1,:user_jcjg,:user_jcjg_lxr,:user_jcjg_tel,:user_jcjg_mail,:user_cyjg,:user_cyjg_lxr,:user_cyjg_tel,:user_cyjg_mail,:user_d_authority_2,:user_d_authority_3,:user_d_authority_4,:user_d_authority_5,:user_i_js,:user_i_switch,:user_i_sp,:user_i_hzp,:user_i_bjp,:user_s_dl,:user_i_spys,:user_i_spss
 
   belongs_to :jg_bsb
 
@@ -48,11 +52,11 @@ class User < ActiveRecord::Base
     # 处置审核
     CZSH = 0x0000000000100
     # 生产
-    SC =   0x0000000001000
+    SC = 0x0000000001000
     # 流通
-    LT =   0x0000000010000
+    LT = 0x0000000010000
     # 管理
-    GL =   0x0000000100000
+    GL = 0x0000000100000
   end
 
   module PadPermission
@@ -68,7 +72,7 @@ class User < ActiveRecord::Base
 
   module PublicationPermission
     # 信息发布人员
-    XXFB   = 0x0000000000001
+    XXFB = 0x0000000000001
     # 信息发布审核人员
     XXFBSH = 0x0000000000010
   end
@@ -311,10 +315,10 @@ class User < ActiveRecord::Base
     end
   end
 
-  def self.authenticate(name, password)
+  def self._authenticate(name, password)
     user = self.find_by_name(name)
     if user
-      expected_password = encrypted_password(password, user.salt)
+      expected_password = _encrypted_password(password, user.salt)
       if user.hashed_password != expected_password
         user = nil
       end
@@ -323,34 +327,46 @@ class User < ActiveRecord::Base
   end
 
   # 'password' is a virtual attribute
-  
-  def password
-    @password
-  end
-  
-  def password=(pwd)
-    @password = pwd
-    return if pwd.blank?
-    create_new_salt
-    self.hashed_password = User.encrypted_password(self.password, self.salt)
-  end
+
+  # def password
+  #   @password
+  # end
+
+  # def password=(pwd)
+  #   @password = pwd
+  #   return if pwd.blank?
+  #   create_new_salt
+  #   self.hashed_password = User.encrypted_password(self.password, self.salt)
+  # end
 
   # 当前用户是否为Admin用户
   def is_admin?
-    ['admin','superadmin'].include? name
+    ['admin', 'superadmin'].include? name
   end
-  
-private
 
+  def email_required?
+    false
+  end
+
+  # 生成唯一编号
+  def generate_uid
+    if self.uid.blank?
+      self.uid = "#{Time.now.strftime('%Y%m%d')}#{'%.6i' % self.id}"
+      self.save
+    end
+    self.uid
+  end
+
+  private
   def password_non_blank
     errors.add(:password, "Missing password") if hashed_password.blank?
   end
-  
+
   def create_new_salt
     self.salt = self.object_id.to_s + rand.to_s
   end
 
-  def self.encrypted_password(password, salt)
+  def self._encrypted_password(password, salt)
     string_to_hash = password + "wibble" + salt
     Digest::SHA1.hexdigest(string_to_hash)
   end

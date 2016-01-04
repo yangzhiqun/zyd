@@ -67,7 +67,7 @@ class SpkjBsbsController < ApplicationController
     
     flash[:import_result] =nil
     @spkj_bsb = SpkjBsb.new
-    @spkj_bsb.tname=session[:user_name]
+    @spkj_bsb.tname= current_user.name
     @spkj_bsb.sp_s_3=session[:user_province]
     @spkj_bsb.sp_s_35=session[:user_jcjg]
     @spkj_bsb.sp_s_37=session[:user_tname]
@@ -118,7 +118,7 @@ class SpkjBsbsController < ApplicationController
   # POST /spkj_bsbs.json
   def create
     @spkj_bsb = SpkjBsb.new(params[:spkj_bsb])
-    @spkj_bsb.tname=session[:user_name]
+    @spkj_bsb.tname=current_user.name
     @spkj_bsb.sp_s_52=session[:user_province]
     @spkj_bsb.sp_i_state=1
     @spkj_bsb.save

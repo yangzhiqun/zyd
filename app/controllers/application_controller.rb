@@ -14,7 +14,7 @@
 class ApplicationController < ActionController::Base
   include ApplicationHelper
 
-  before_action :authenticate_user! #, except: [:login, :bind_ca_key]
+  before_action :authenticate_user!, except: [:update_account, :bind_ca_key]
 
   # before_filter :authorize, :except => [:login, :bind_ca_key]
 
@@ -43,12 +43,12 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def authorize
-    unless User.find_by_id(session[:user_id])
-      flash[:notice] = '请登录后使用系统'
-      redirect_to :controller => 'admin', :action => 'login'
-    end
-  end
+  # def authorize
+  #   unless User.find_by_id(session[:user_id])
+  #     flash[:notice] = '请登录后使用系统'
+  #     redirect_to :controller => 'admin', :action => 'login'
+  #   end
+  # end
 end
 
 def session_expiry

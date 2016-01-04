@@ -169,9 +169,9 @@ class JgBsbsController < ApplicationController
     if !uploaded_io.nil? and accepted_formats.include? File.extname(uploaded_io.original_filename) then
 
 
-      File.open(Rails.root.join('excel', session[:user_name]+(Time.now).to_s+uploaded_io.original_filename), 'wb') do |file|
+      File.open(Rails.root.join('excel', current_user.name + (Time.now).to_s+uploaded_io.original_filename), 'wb') do |file|
         file.write(uploaded_io.read)
-        book = Spreadsheet.open(Rails.root.join('excel', session[:user_name]+(Time.now).to_s+uploaded_io.original_filename))
+        book = Spreadsheet.open(Rails.root.join('excel', current_user.name + (Time.now).to_s + uploaded_io.original_filename))
         sheet1 = book.worksheet 0
         i_num=0
         temp_str=''

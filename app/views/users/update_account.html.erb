@@ -1,0 +1,45 @@
+<div class="ctner" style="width: 500px; margin: 50px auto;">
+  <div class="panel panel-success">
+    <div class="panel-heading">
+      <h4>账户升级</h4>
+    </div>
+    <div class="panel-body">
+      <% if !@errors and @user.encrypted_password.present? %>
+          <p class="text-warning">账户已升级！<a href="/">回首页</a></p>
+      <% else %>
+          <small>请填写完整以下信息，以完成账户升级</small>
+          <%= form_for(@user, {method: 'POST', url: ''}) do |f| %>
+              <div class="text-danger"><%= flash[:notice] %></div>
+              <label>用户名：<%= @user.name %></label>
+              <br>
+              <label>账号：<%= @user.uid %></label>
+
+              <div class="form-group">
+                <label>姓名：<span class="text-danger">*</span><%= show_error(@user.errors, :tname) %></label>
+                <%= f.text_field :tname, :class => "form-control input-sm" %>
+              </div>
+              <% if @user.id_card.blank? or @user.errors.has_key?(:id_card) %>
+                  <div class="form-group">
+                    <label>身份证号：<span class="text-danger">*</span><%= show_error(@user.errors, :id_card) %></label>
+                    <br>
+                    <%= f.text_field :id_card, :class => "form-control input-sm" %>
+                  </div>
+              <% end %>
+
+              <div class="form-group">
+                <label>手机号：<span class="text-danger">*</span><%= show_error(@user.errors, :mobile) %></label>
+                <%= f.text_field :mobile, :class => "form-control input-sm" %>
+              </div>
+
+              <div class="form-group">
+                <label>新口令：<span class="text-danger">*(至少8位)</span><%= show_error(@user.errors, :password) %></label>
+                <%= f.password_field :password, :class => "form-control input-sm" %>
+              </div>
+
+              <br>
+              <button class="btn btn-sm btn-success" onclick="submit">提交</button>
+          <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

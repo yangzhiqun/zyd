@@ -66,7 +66,7 @@
         <label>电子邮箱：</label>
         <%= f.text_field :eaddress, :class => "form-control input-sm" %>
 
-        <% if session[:user_name]=='superadmin' %>
+        <% if current_user.name == 'superadmin' %>
             <br>
             <label>所在省份：</label>
 
@@ -81,7 +81,7 @@
         <label>机构名称：</label>
         <%= f.select :jg_bsb_id, options_for_select(JgBsb.where(status: 0).map { |jg| [jg.jg_name, jg.id] }, @user.jg_bsb_id), {}, :class => "form-control input-sm" %>
 
-        <% if session[:user_name]=='superadmin' %>
+        <% if current_user.name == 'superadmin' %>
             <div class="checkbox">
               <label><%= f.check_box :user_i_switch, options = {}, checked_value = "1", unchecked_value = "0" %>
                 是否为工作组</label></div>

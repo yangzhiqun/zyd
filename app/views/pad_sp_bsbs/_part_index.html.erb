@@ -85,7 +85,7 @@
       </td>
       <td>
         <% if sp_bsb.sp_i_state == 6 %>
-          <% if sp_bsb.is_bad_report? && (session[:user_name] == 'admin' || session[:user_js] == 1) %>
+            <% if sp_bsb.is_bad_report? && (current_user.is_admin? || session[:user_js] == 1) %>
             <% if sp_bsb.wtyp_state == nil && sp_bsb.wtyp_state_sc == nil %> 
               <%= link_to '问题样品处理(未进行)', {:controller => "wtyp_czbs",:action => "new", :id =>sp_bsb}, class: "btn btn-xs btn-danger" %>
             <% else %>
@@ -107,7 +107,7 @@
             <% end %>
           <% end %>
         <% elsif sp_bsb.sp_i_state == 8 %>
-          <%if sp_bsb.is_bad_report? && (session[:user_name] == 'admin' || session[:user_js] == 1)%>
+            <% if sp_bsb.is_bad_report? && (current_user.is_admin? || session[:user_js] == 1) %>
             <%if sp_bsb.wtyp_state == nil && sp_bsb.wtyp_state_sc == nil %> 
               <%= link_to '问题样品处理(未进行)', {:controller => "wtyp_czbs",:action => "new", :id =>sp_bsb}, class: "btn btn-xs btn-danger" %>
             <%else%>

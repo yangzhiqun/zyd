@@ -45,7 +45,7 @@ class PadSpBsbsController < ApplicationController
     if current_user.is_admin?||session[:change_js]==9||session[:change_js]==10
       return 1
     end
-    if params_data.tname==session[:user_name]
+    if params_data.tname == current_user.name
       return 1
     end
     if current_user.jg_bsb.all_names.include?(params_data.sp_s_43)
@@ -128,7 +128,7 @@ class PadSpBsbsController < ApplicationController
     @sp_bsb.sp_s_33='塑料袋'
     @sp_bsb.sp_s_63='预包装'
     @sp_bsb.sp_s_66='月'
-    @sp_bsb.tname=session[:user_name]
+    @sp_bsb.tname = current_user.name
     @sp_bsb.sp_s_3=session[:user_province]
     @sp_bsb.sp_s_35=current_user.jg_bsb.jg_name
     # @sp_bsb.sp_s_37=session[:user_tname]
@@ -349,7 +349,7 @@ class PadSpBsbsController < ApplicationController
     @sp_bsb.a_category_id = @a_category.id
     # /填充结束
 
-    @sp_bsb.tname = session[:user_name]
+    @sp_bsb.tname = current_user.name
     @sp_bsb.sp_s_52 = session[:user_province]
 
     @check_existance = PadSpBsb.find_by_sp_s_16(params[:pad_sp_bsb][:sp_s_16])

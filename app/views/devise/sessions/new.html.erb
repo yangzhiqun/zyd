@@ -55,7 +55,7 @@
             } else {
                 $('.no-key-tip').addClass('hidden');
             }
-        }, 1000)
+        }, 1000);
 
         SetOnUsbKeyChangeCallBack(function () {
             setTimeout(function () {
@@ -66,7 +66,6 @@
                 }
             }, 3000)
         });
-
     });
 </script>
 <DIV class="header"></DIV>
@@ -107,15 +106,16 @@
         </div>
     <% end %>
     <div class="login-normal">
+      <em class="text-danger" style="position: absolute; top: 10px; right: 20px;"><%= flash[:alert] %></em>
       <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
           <div class="form-group">
             <%= f.label '账号：' %><br>
-            <%= f.email_field :email, autofocus: true, class: 'form-control input-sm' %>
+            <%= f.text_field :uid, autofocus: true, class: 'form-control input-sm', placeholder: '请输入UID/用户名..' %>
           </div>
 
           <div class="form-group">
             <%= f.label '口令：' %><br/>
-            <%= f.password_field :password, autocomplete: "off", class: 'form-control input-sm' %>
+            <%= f.password_field :password, autocomplete: "off", class: 'form-control input-sm', placeholder: '请输入登录口令..' %>
           </div>
 
           <div class="form-group">
@@ -126,7 +126,7 @@
           <div class="actions">
             <%= f.submit '登录', class: 'btn btn-success btn-sm' %>
             <%= link_to "注册", new_registration_path(resource_name), class: 'btn btn-default btn-sm' %>
-            <%- if controller?('users/sessions') and action?('new') and Rails.application.config.site[:enable_ca_login] %>
+            <%- if Rails.application.config.site[:enable_ca_login] %>
                 <a href="javascript:void(0);" onclick="switchTo(1);return false;" class="btn btn-info btn-sm login-style-switcher">
                   <i class="glyphicon glyphicon-tag"></i>
                   USB Key登录>>

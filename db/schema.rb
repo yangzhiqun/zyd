@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160102051942) do
+ActiveRecord::Schema.define(version: 20160103084625) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -2306,6 +2306,8 @@ ActiveRecord::Schema.define(version: 20160102051942) do
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip",     limit: 255
     t.string   "last_sign_in_ip",        limit: 255
+    t.string "uid", limit: 255, null: false
+    t.string "mobile", limit: 255
   end
 
   add_index "users", ["name"], name: "index_name", using: :btree

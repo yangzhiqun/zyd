@@ -2,6 +2,8 @@ Rails.application.routes.draw do
 
   devise_for :users, controllers: {sessions: 'users/sessions'}
 
+  match 'update-account' => 'users#update_account', via: [:get, :post]
+
   resources :jg_bsb_stamps do
     get 'cover'
   end
@@ -309,5 +311,5 @@ Rails.application.routes.draw do
 
   get "admin/adduser"
 
-  root :to => 'admin#login'
+  root :to => 'welcome_notices#index'
 end

@@ -300,21 +300,21 @@ class WtypCzbPart < ActiveRecord::Base
       when ::WtypCzb::State::LOGGED
         self.current_state = ::WtypCzb::State::ASSIGNED
         self.blr = session[:user_tname]
-        self.blbm = User.find(session[:user_id]).jg_bsb.jg_name
+        self.blbm = current_user.jg_bsb.jg_name
         self.blsj = Time.now
 
       when ::WtypCzb::State::ASSIGNED
         self.current_state = ::WtypCzb::State::FILLED
 
         self.tbr = session[:user_tname]
-        self.tbbm = User.find(session[:user_id]).jg_bsb.jg_name
+        self.tbbm = current_user.jg_bsb.jg_name
         self.tbsj = Time.now
 
       when ::WtypCzb::State::FILLED
         self.current_state = ::WtypCzb::State::PASSED
 
         self.shr = session[:user_tname]
-        self.shbm = User.find(session[:user_id]).jg_bsb.jg_name
+        self.shbm = current_user.jg_bsb.jg_name
         self.shsj = Time.now
 
         # 问题样品处置流程结束，强制终止进行中的异议处置流程
@@ -326,7 +326,7 @@ class WtypCzbPart < ActiveRecord::Base
               :content          => '终止',
               :cjbh             => self.cjbh,
               :sp_yydjb_state   => -2,
-              :user_id          => session[:user_id]
+              :user_id => current_user.id
           }]) 
         end
       when ::WtypCzb::State::PASSED
@@ -396,9 +396,9 @@ class WtypCzbPart < ActiveRecord::Base
         :sp_bsb_id => self.sp_bsb_id, 
         :content => content_tmp, 
         :wtyp_czb_part_id => self.id, 
-        :wtyp_czb_state   => self.current_state, 
-        :wtyp_czb_type    => self.wtyp_czb_type, 
-        :user_id          => session[:user_id]})
+        :wtyp_czb_state   => self.current_state,
+        :wtyp_czb_type => self.wtyp_czb_type,
+        :user_id => current_user.id})
     end
   end
 end
