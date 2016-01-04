@@ -42,7 +42,7 @@
         <% end %>
 
         <br>
-        <label>请输入密码：</label>
+        <label>请输入密码：<%= show_error(@user.errors, :password)%></label>
         <%= f.password_field :password, :class => "form-control input-sm" %>
 
         <br>

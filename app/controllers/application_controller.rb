@@ -51,8 +51,11 @@ class ApplicationController < ActionController::Base
   # end
 
   def after_sign_in_path_for(resource)
+    user_agent = request.env['HTTP_USER_AGENT']
+    user_agent_parsed = UserAgent.parse(request.env['HTTP_USER_AGENT'])
+
     if current_user.user_i_switch == 1
-      session[:user_dl]=user.user_s_dl
+      session[:user_dl]=current_user.user_s_dl
       session[:user_i_switch] = 1
     else
       session[:user_dl].blank?
@@ -89,7 +92,7 @@ class ApplicationController < ActionController::Base
     if session[:user_spss]==1 #三司
       session[:change_js]=10
     end
-    LoginLog.create(:name => params[:name], :sessionid => session.id, :action => '登陆成功', :ip => request.env["REMOTE_ADDR"], :os => user_agent_parsed.os, :browser => user_agent_parsed.browser, :brover => user_agent_parsed.version)
+    LoginLog.create(:name => current_user.name, :sessionid => session.id, :action => '登陆成功', :ip => request.env["REMOTE_ADDR"], :os => user_agent_parsed.os, :browser => user_agent_parsed.browser, :brover => user_agent_parsed.version)
     request.env['omniauth.origin'] || stored_location_for(resource) || root_path
   end
 end

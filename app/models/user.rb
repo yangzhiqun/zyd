@@ -357,6 +357,12 @@ class User < ActiveRecord::Base
     self.uid
   end
 
+  def send_sms_msg
+    api_url = 'http://gw.api.taobao.com/router/rest'
+    form = {method: 'alibaba.aliqin.fc.sms.num.send', app_key: '23293361', timestamp: Time.now.strftime('%Y-%m-%d %H:%M:%S'), format: 'json', v: '2.0', sign_method: 'md5', sign: '' , sms_type: 'normal', sms_free_sign_name: '', sms_param: {uid: self.uid}.to_json, rec_num: self.mobile, sms_template_code: 'SMS_4025594'}.sort
+    form[:sign] = Digest::MD5.hexdigest('eb21d46b595e70ba0c6055bbb6b36781' + form.flatten.join('') + 'eb21d46b595e70ba0c6055bbb6b36781').upcase
+  end
+
   private
   def password_non_blank
     errors.add(:password, "Missing password") if hashed_password.blank?

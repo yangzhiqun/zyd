@@ -162,15 +162,20 @@ class UsersController < ApplicationController
   def update
     @user = User.find(params[:id])
 
+    u_params = user_params
+    if u_params[:password].blank?
+      u_params.delete(:password)
+      u_params.delete(:password_confirmation)
+    end
+
     respond_to do |format|
-      if @user.update_attributes(user_params)
+      if @user.update_attributes(u_params)
         flash[:notice] = "User was successfully updated."
         format.html { redirect_to(:action => 'index') }
         format.xml { head :ok }
       else
         format.html { render :action => "edit" }
-        format.xml { render :xml => @user.errors,
-                            :status => :unprocessable_entity }
+        format.xml { render :xml => @user.errors, :status => :unprocessable_entity }
       end
     end
   end
