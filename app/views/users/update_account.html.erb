@@ -11,8 +11,6 @@
           <hr>
           <%= form_for(@user, {method: 'POST', url: ''}) do |f| %>
               <div class="text-danger"><%= flash[:notice] %></div>
-              <label>用户名：<%= @user.name %></label>
-              <br>
               <label>账&emsp;号：<%= @user.uid %></label>
 
               <div class="form-group">

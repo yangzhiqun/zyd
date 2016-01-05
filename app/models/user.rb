@@ -351,16 +351,25 @@ class User < ActiveRecord::Base
   # 生成唯一编号
   def generate_uid
     if self.uid.blank?
-      self.uid = "#{Time.now.strftime('%Y%m%d')}#{'%.6i' % self.id}"
+      self.uid = "#{Time.now.strftime('%Y%m%d')}#{'%.3i' % self.id}"
       self.save
     end
     self.uid
   end
 
+	API_URL = 'http://gw.api.taobao.com/router/rest?%s'
   def send_sms_msg
-    api_url = 'http://gw.api.taobao.com/router/rest'
-    form = {method: 'alibaba.aliqin.fc.sms.num.send', app_key: '23293361', timestamp: Time.now.strftime('%Y-%m-%d %H:%M:%S'), format: 'json', v: '2.0', sign_method: 'md5', sign: '' , sms_type: 'normal', sms_free_sign_name: '', sms_param: {uid: self.uid}.to_json, rec_num: self.mobile, sms_template_code: 'SMS_4025594'}.sort
-    form[:sign] = Digest::MD5.hexdigest('eb21d46b595e70ba0c6055bbb6b36781' + form.flatten.join('') + 'eb21d46b595e70ba0c6055bbb6b36781').upcase
+    form = {method: 'alibaba.aliqin.fc.sms.num.send', app_key: '23293361', timestamp: Time.now.strftime('%Y-%m-%d %H:%M:%S'), format: 'json', v: '2.0', sign_method: 'md5', sms_type: 'normal', sms_free_sign_name: '身份验证', sms_param: {uid: self.uid}.to_json, rec_num: self.mobile, sms_template_code: 'SMS_4025594'}
+
+    form[:sign] = Digest::MD5.hexdigest('eb21d46b595e70ba0c6055bbb6b36781' + form.sort.flatten.join('') + 'eb21d46b595e70ba0c6055bbb6b36781').upcase
+
+    response = JSON.parse(Net::HTTP.get(URI.parse(api_url % [form.to_query])), :symbolize_names => true)
+    result = response[:alibaba_aliqin_fc_sms_num_send_response][:result]
+    if result[:err_code].to_i == 0
+      return true
+    else
+      return false
+    end
   end
 
   private
