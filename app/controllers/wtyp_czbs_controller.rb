@@ -693,7 +693,7 @@ class WtypCzbsController < ApplicationController
       SpBsb.record_timestamps = false
       @sp_bsbs = SpBsb.where(id: params[:ids].split(','))
       @sp_bsbs.each do |bsb|
-        bsb.update_attribute("czb_reverted_flag", true)
+        bsb.update_attributes("czb_reverted_flag" => true, "czb_reverted_reason" => "操作时间：" + Time.now.to_s + ", 原因：" + params[:thyy] + ", 操作人员：" + session[:user_tname])
       end
       SpBsb.record_timestamps = true
     else
