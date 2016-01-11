@@ -91,7 +91,7 @@ class WtypCzbsController < ApplicationController
           else
             # @sp_bsbs = @sp_bsbs.where('id NOT IN (SELECT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL))').group('sp_bsb_id').having('count(1) = 2')
             @sp_bsbs = @sp_bsbs.where('id NOT IN (SELECT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL) group by sp_bsb_id having(count(1))=2)') #.group('sp_bsb_id').having('count(1) = 2')
-          end
+					end
 
           # 样品名称
           unless params[:ypmc].blank?
@@ -324,7 +324,7 @@ class WtypCzbsController < ApplicationController
 
           if current_user.hcz_admin != 1
             #@sp_bsbs = @sp_bsbs.where("id NOT IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND bcydw_sheng = ?) OR (wtyp_czb_type = 1 AND bsscqy_sheng = ?))) AND (((sp_s_3 = ? OR sp_s_202 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_202 = ? AND sp_s_68 = '生产'))", current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province)
-            @sp_bsbs = @sp_bsbs.where("id IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NULL OR current_state =0 OR current_state IS NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND bcydw_sheng = ?) OR (wtyp_czb_type = 1 AND bsscqy_sheng = ?))) AND (((sp_s_3 = ? OR sp_s_202 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_202 = ? AND sp_s_68 = '生产'))", current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province)
+            @sp_bsbs = @sp_bsbs.where("id IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NULL OR current_state = 0 OR current_state IS NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND bcydw_sheng = ?) OR (wtyp_czb_type = 1 AND bsscqy_sheng = ?))) AND (((sp_s_3 = ? OR sp_s_202 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_202 = ? AND sp_s_68 = '生产'))", current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province)
           else
             # @sp_bsbs = @sp_bsbs.where('id NOT IN (SELECT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL))').group('sp_bsb_id').having('count(1) = 2')
             @sp_bsbs = @sp_bsbs.where('id NOT IN (SELECT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL) group by sp_bsb_id having(count(1))=2)') #.group('sp_bsb_id').having('count(1) = 2')

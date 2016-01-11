@@ -156,20 +156,24 @@ class SpBsb < ActiveRecord::Base
       state = 6
     end
     @logfive = SpLog.where(sp_bsb_id: self.id, sp_i_state: 5).order('id asc').last
-    @log = SpLog.where("sp_bsb_id = ? and sp_i_state = ? and id > ?",self.id, state, @logfive.id).order('id asc').first
-    if @log.nil?
-      @log = SpLog.where(sp_bsb_id: self.id, sp_i_state: 8).order('sp_i_state asc').last
-    end
-    unless @log.nil?
-      @user = User.find(@log.user_id)
-      if @user.user_sign.blank?
-        return "-#{@user.tname}-".html_safe
-      else
-        return "<img src='data:image/png;base64,#{@user.user_sign}'>".html_safe
-      end
-    else
-      return "<font color='#999'>未记录</font>".html_safe
-    end
+		if @logfive.nil?
+			return "<font color='#999'>未记录</font>".html_safe
+		else
+			@log = SpLog.where("sp_bsb_id = ? and sp_i_state = ? and id > ?",self.id, state, @logfive.id).order('id asc').first
+			if @log.nil?
+				@log = SpLog.where(sp_bsb_id: self.id, sp_i_state: 8).order('sp_i_state asc').last
+			end
+			unless @log.nil?
+				@user = User.find(@log.user_id)
+				if @user.user_sign.blank?
+					return "-#{@user.tname}-".html_safe
+				else
+					return "<img src='data:image/png;base64,#{@user.user_sign}'>".html_safe
+				end
+			else
+				return "<font color='#999'>未记录</font>".html_safe
+			end
+		end
   end
 
   # 延长15天异议登记时间
