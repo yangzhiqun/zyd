@@ -26,13 +26,10 @@ class UsersController < ApplicationController
       unless @user.update_attributes(params.require(:user).permit(:function_type, :uid, :tname, :id_card, :mobile, :password))
         @errors = true
         logger.error "修改用户失败：#{@user.errors.first.last}"
-      else
-        @user.generate_uid
       end
       return not_found if @user.nil?
     else
       @user = User.find(session[:update_user_id])
-      @user.generate_uid
       @user.reload
       return not_found if @user.nil?
     end

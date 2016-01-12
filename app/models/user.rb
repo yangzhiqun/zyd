@@ -15,21 +15,23 @@ class User < ActiveRecord::Base
   validates_uniqueness_of :uid, allow_blank: true
   validates_presence_of :uid, allow_blank: true
 
-  validates_presence_of :name
-  validates_uniqueness_of :name
+  validates_presence_of :name, message: '姓名不可为空'
+  validates_presence_of :user_s_province, message: '省份不可为空'
 
-  validates_uniqueness_of :id_card, message: "身份证号已绑定", allow_nil: true, allow_blank: true
+  validates_uniqueness_of :id_card, message: "该身份证号已绑定", allow_nil: true, allow_blank: true
   validates_format_of :id_card, with: /(^\d{15}$)|(^\d{17}([0-9]|X)$)/i, message: '身份证格式不正确'
   validates_format_of :mobile, with: /(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}/i, message: '手机号格式不正确'
   validates_uniqueness_of :user_sign, message: "签名已存在", allow_nil: true, allow_blank: true
   validates_confirmation_of :password
   validate :password_non_blank
 
+  before_save :generate_uid
+
   def is_info_complete?
     !id_card.blank? and !tname.blank? and !tel.blank?
   end
 
-  attr_accessor :password_confirmation
+  attr_accessor :password_confirmation, :sms_code
   # attr_accessible :jg_bsb_id, :id_card, :user_sign, :pub_xxfb, :pub_xxfb_sh, :user_s_city, :user_s_lcity, :yyadmin, :jsyp, :hcz_admin, :car_sys_id, :zxcy, :rwbs, :rwxd, :enable_api,:hcz_sc, :hcz_lt, :hcz_czap, :hcz_czbl, :hcz_czsh, :yysl, :zhxt, :yybl, :yysh, :yycz_permission, :name, :password, :password_confirmation,:tname,:tel,:eaddress,:company,:user_s_province,:user_d_authority,:user_d_authority_1,:user_jcjg,:user_jcjg_lxr,:user_jcjg_tel,:user_jcjg_mail,:user_cyjg,:user_cyjg_lxr,:user_cyjg_tel,:user_cyjg_mail,:user_d_authority_2,:user_d_authority_3,:user_d_authority_4,:user_d_authority_5,:user_i_js,:user_i_switch,:user_i_sp,:user_i_hzp,:user_i_bjp,:user_s_dl,:user_i_spys,:user_i_spss
 
   belongs_to :jg_bsb
@@ -380,43 +382,49 @@ class User < ActiveRecord::Base
     if self.uid.blank?
       prov = self.province
       if prov.nil?
+        self.errors.add(:uid, '用户省份不存在')
         Rails.logger.error('用户省份不存在')
-        return nil
+        return false
       end
 
       if self.jg_bsb.nil?
+        self.errors.add(:uid, '用户机构未设置')
         Rails.logger.error('用户机构未设置')
-        return nil
+        return false
       end
 
       if self.function_type == -1
+        self.errors.add(:uid, '用户职能未设置')
         Rails.logger.error('用户职能未设置')
-        return nil
+        return false
       end
 
       self.uid = "#{Time.now.strftime('%Y%m%d')}#{'%.3i' % self.id}"
 
       self.uid = "#{'%.2i' % prov.code.to_i}#{'%.2i' % self.jg_bsb.code.to_i }#{'%.2i' % self.function_type}"
-      available_ids = (1..99).to_a - User.where('uid LIKE ?', "#{self.uid}%").map{|u| u[6..7].to_i}
+      available_ids = (1..99).to_a - User.where('uid LIKE ?', "#{self.uid}%").map { |u| u[6..7].to_i }
       if available_ids.blank?
+        self.errors.add(:uid, '满员')
         Rails.logger.error('满员')
-        return nil
+        return false
       end
       self.uid = "#{self.uid}#{'%.2i' % available_ids.first.to_i }"
-
-      self.save
+      Rails.logger.error "message send result: #{send_sms_msg({uid: self.uid}, TMPL_CODE[:SFYZ])}"
     end
-    self.uid
+    return true
   end
 
   API_URL = 'http://gw.api.taobao.com/router/rest?%s'
+  TMPL_CODE = {
+      SFYZ: 'SMS_4025594',
+  }
 
-  def send_sms_msg
-    form = {method: 'alibaba.aliqin.fc.sms.num.send', app_key: '23293361', timestamp: Time.now.strftime('%Y-%m-%d %H:%M:%S'), format: 'json', v: '2.0', sign_method: 'md5', sms_type: 'normal', sms_free_sign_name: '身份验证', sms_param: {uid: self.uid}.to_json, rec_num: self.mobile, sms_template_code: 'SMS_4025594'}
+  def send_sms_msg(params, template_code)
+    form = {method: 'alibaba.aliqin.fc.sms.num.send', app_key: '23293361', timestamp: Time.now.strftime('%Y-%m-%d %H:%M:%S'), format: 'json', v: '2.0', sign_method: 'md5', sms_type: 'normal', sms_free_sign_name: '食品抽检报送平台', sms_param: params.to_json, rec_num: self.mobile, sms_template_code: template_code}
 
     form[:sign] = Digest::MD5.hexdigest('eb21d46b595e70ba0c6055bbb6b36781' + form.sort.flatten.join('') + 'eb21d46b595e70ba0c6055bbb6b36781').upcase
 
-    response = JSON.parse(Net::HTTP.get(URI.parse(api_url % [form.to_query])), :symbolize_names => true)
+    response = JSON.parse(Net::HTTP.get(URI.parse(API_URL % [form.to_query])), :symbolize_names => true)
     result = response[:alibaba_aliqin_fc_sms_num_send_response][:result]
     if result[:err_code].to_i == 0
       return true
