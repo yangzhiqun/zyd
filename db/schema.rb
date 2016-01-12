@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160103084625) do
+ActiveRecord::Schema.define(version: 20160112133712) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -21,6 +21,14 @@ ActiveRecord::Schema.define(version: 20160103084625) do
     t.datetime "updated_at",                            null: false
     t.string   "identifier", limit: 255
     t.boolean  "enable",                 default: true
+  end
+
+  create_table "a_category_testers", force: :cascade do |t|
+    t.integer  "a_category_id", limit: 4
+    t.integer  "tester_id",     limit: 4
+    t.string   "note",          limit: 255
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
   end
 
   create_table "api_exchange_pools", force: :cascade do |t|
@@ -1177,6 +1185,50 @@ ActiveRecord::Schema.define(version: 20160103084625) do
     t.datetime "updated_at",             null: false
   end
 
+  create_table "oauth_access_grants", force: :cascade do |t|
+    t.integer  "resource_owner_id", limit: 4,     null: false
+    t.integer  "application_id",    limit: 4,     null: false
+    t.string   "token",             limit: 255,   null: false
+    t.integer  "expires_in",        limit: 4,     null: false
+    t.text     "redirect_uri",      limit: 65535, null: false
+    t.datetime "created_at",                      null: false
+    t.datetime "revoked_at"
+    t.string   "scopes",            limit: 255
+  end
+
+  add_index "oauth_access_grants", ["token"], name: "index_oauth_access_grants_on_token", unique: true, using: :btree
+
+  create_table "oauth_access_tokens", force: :cascade do |t|
+    t.integer  "resource_owner_id", limit: 4
+    t.integer  "application_id",    limit: 4
+    t.string   "token",             limit: 255, null: false
+    t.string   "refresh_token",     limit: 255
+    t.integer  "expires_in",        limit: 4
+    t.datetime "revoked_at"
+    t.datetime "created_at",                    null: false
+    t.string   "scopes",            limit: 255
+  end
+
+  add_index "oauth_access_tokens", ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true, using: :btree
+  add_index "oauth_access_tokens", ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id", using: :btree
+  add_index "oauth_access_tokens", ["token"], name: "index_oauth_access_tokens_on_token", unique: true, using: :btree
+
+  create_table "oauth_applications", force: :cascade do |t|
+    t.string   "name",         limit: 255,                null: false
+    t.string   "uid",          limit: 255,                null: false
+    t.string   "secret",       limit: 255,                null: false
+    t.text     "redirect_uri", limit: 65535,              null: false
+    t.string   "scopes",       limit: 255,   default: "", null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
+    t.integer  "user_id",      limit: 4
+    t.string   "prov",         limit: 255
+    t.string   "jg",           limit: 255
+    t.text     "note",         limit: 65535
+  end
+
+  add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true, using: :btree
+
   create_table "orders", force: :cascade do |t|
     t.string   "name",       limit: 255
     t.text     "address",    limit: 65535
@@ -1710,6 +1762,8 @@ ActiveRecord::Schema.define(version: 20160103084625) do
     t.datetime "synced_at"
     t.integer  "application_id",           limit: 4
     t.string   "czb_reverted_reason",      limit: 255
+    t.string   "sp_s_220",                 limit: 10
+    t.string   "sp_s_221",                 limit: 10
   end
 
   add_index "sp_bsbs", ["application_id"], name: "index_sp_bsbs_on_application_id", using: :btree
@@ -1727,7 +1781,6 @@ ActiveRecord::Schema.define(version: 20160103084625) do
   add_index "sp_bsbs", ["sp_s_5"], name: "index_sp_bsbs_on_sp_s_5", using: :btree
   add_index "sp_bsbs", ["sp_s_71"], name: "index_sp_bsbs_on_sp_s_71", using: :btree
   add_index "sp_bsbs", ["tname"], name: "index_tname", using: :btree
-  add_index "sp_bsbs", ["updated_at", "sp_i_state"], name: "updated_at_state_idx", using: :btree
   add_index "sp_bsbs", ["updated_at"], name: "update_desc", using: :btree
   add_index "sp_bsbs", ["via_api"], name: "index_sp_bsbs_on_via_api", using: :btree
 
@@ -1825,13 +1878,6 @@ ActiveRecord::Schema.define(version: 20160103084625) do
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
     t.integer  "pub_type",     limit: 4,   default: -1
-  end
-
-  create_table "sp_sort_bsbs", force: :cascade do |t|
-    t.string   "sp_sort_name", limit: 255
-    t.integer  "sp_sort_num",  limit: 4
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
   end
 
   create_table "sp_sta", id: false, force: :cascade do |t|
@@ -2193,6 +2239,15 @@ ActiveRecord::Schema.define(version: 20160103084625) do
     t.string   "d_category_name", limit: 255
   end
 
+  create_table "testers", force: :cascade do |t|
+    t.string   "name",       limit: 255
+    t.string   "prov",       limit: 255
+    t.string   "city",       limit: 255
+    t.string   "country",    limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
   create_table "tmp_sp_bsbs", force: :cascade do |t|
     t.integer  "sp_i_state",        limit: 4
     t.string   "sp_s_16",           limit: 255
@@ -2255,8 +2310,8 @@ ActiveRecord::Schema.define(version: 20160103084625) do
     t.string   "name",                   limit: 255
     t.string   "hashed_password",        limit: 255
     t.string   "salt",                   limit: 255
-    t.datetime "created_at",                                        null: false
-    t.datetime "updated_at",                                        null: false
+    t.datetime "created_at",                                       null: false
+    t.datetime "updated_at",                                       null: false
     t.string   "tname",                  limit: 30
     t.string   "tel",                    limit: 255
     t.string   "eaddress",               limit: 255
@@ -2296,18 +2351,6 @@ ActiveRecord::Schema.define(version: 20160103084625) do
     t.string   "id_card",                limit: 255
     t.text     "user_sign",              limit: 65535
     t.integer  "jg_bsb_id",              limit: 4
-    t.string   "email",                  limit: 255,   default: "", null: false
-    t.string   "encrypted_password",     limit: 255,   default: "", null: false
-    t.string   "reset_password_token",   limit: 255
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          limit: 4,     default: 0,  null: false
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
-    t.string   "current_sign_in_ip",     limit: 255
-    t.string   "last_sign_in_ip",        limit: 255
-    t.string   "uid",                    limit: 255,                null: false
-    t.string   "mobile",                 limit: 255
   end
 
   add_index "users", ["name"], name: "index_name", using: :btree
@@ -2503,9 +2546,6 @@ ActiveRecord::Schema.define(version: 20160103084625) do
   end
 
   add_index "wtyp_czb_parts", ["cjbh"], name: "index_wtyp_czb_parts_on_cjbh", using: :btree
-  add_index "wtyp_czb_parts", ["current_state", "sp_bsb_id"], name: "state_sp_bsb_id_idx", using: :btree
-  add_index "wtyp_czb_parts", ["current_state"], name: "current_state_idx", using: :btree
-  add_index "wtyp_czb_parts", ["sp_bsb_id"], name: "sp_bsb_id_idx", using: :btree
 
   create_table "wtyp_czbs", force: :cascade do |t|
     t.string   "wtyp_jg",                limit: 255
