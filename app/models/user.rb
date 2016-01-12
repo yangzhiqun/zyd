@@ -9,10 +9,15 @@ class User < ActiveRecord::Base
 
   include ApplicationHelper
 
-  validates_presence_of :uid
-  validates_uniqueness_of :uid
+  validates_presence_of :function_type
+  validates_numericality_of :function_type, greater_than: 0, message: '请选择用户职能'
+
+  validates_uniqueness_of :uid, allow_blank: true
+  validates_presence_of :uid, allow_blank: true
+
   validates_presence_of :name
   validates_uniqueness_of :name
+
   validates_uniqueness_of :id_card, message: "身份证号已绑定", allow_nil: true, allow_blank: true
   validates_format_of :id_card, with: /(^\d{15}$)|(^\d{17}([0-9]|X)$)/i, message: '身份证格式不正确'
   validates_format_of :mobile, with: /(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}/i, message: '手机号格式不正确'
@@ -42,6 +47,24 @@ class User < ActiveRecord::Base
     # 管理
     GL = 0x0000000010000
   end
+
+  FuncType = {
+      '任务部署' => 1,
+      '任务下达' => 2,
+      '抽样人员' => 3,
+      '接样人员' => 4,
+      '机构主检人' => 5,
+      '机构审核人' => 6,
+      '机构批准人' => 7,
+      '省局审核人' => 8,
+      '牵头机构审核人' => 9,
+      '核查处置安排人' => 10,
+      '核查处置办理人' => 11,
+      '核查处置审核人' => 12,
+      '异议登记' => 13,
+      '异议办理' => 14,
+      '异议审核' => 15
+  }
 
   # 后处置权限
   module HczPermission
@@ -348,16 +371,46 @@ class User < ActiveRecord::Base
     false
   end
 
+  def province
+    SysProvince.where(name: self.user_s_province).last
+  end
+
   # 生成唯一编号
   def generate_uid
     if self.uid.blank?
+      prov = self.province
+      if prov.nil?
+        Rails.logger.error('用户省份不存在')
+        return nil
+      end
+
+      if self.jg_bsb.nil?
+        Rails.logger.error('用户机构未设置')
+        return nil
+      end
+
+      if self.function_type == -1
+        Rails.logger.error('用户职能未设置')
+        return nil
+      end
+
       self.uid = "#{Time.now.strftime('%Y%m%d')}#{'%.3i' % self.id}"
+
+      self.uid = "#{'%.2i' % prov.code.to_i}#{'%.2i' % self.jg_bsb.code.to_i }#{'%.2i' % self.function_type}"
+      available_ids = (1..99).to_a - User.where('uid LIKE ?', "#{self.uid}%").map{|u| u[6..7].to_i}
+      if available_ids.blank?
+        Rails.logger.error('满员')
+        return nil
+      end
+      self.uid = "#{self.uid}#{'%.2i' % available_ids.first.to_i }"
+
       self.save
     end
     self.uid
   end
 
-	API_URL = 'http://gw.api.taobao.com/router/rest?%s'
+  API_URL = 'http://gw.api.taobao.com/router/rest?%s'
+
   def send_sms_msg
     form = {method: 'alibaba.aliqin.fc.sms.num.send', app_key: '23293361', timestamp: Time.now.strftime('%Y-%m-%d %H:%M:%S'), format: 'json', v: '2.0', sign_method: 'md5', sms_type: 'normal', sms_free_sign_name: '身份验证', sms_param: {uid: self.uid}.to_json, rec_num: self.mobile, sms_template_code: 'SMS_4025594'}
 
