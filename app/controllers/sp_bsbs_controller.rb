@@ -147,7 +147,7 @@ class SpBsbsController < ApplicationController
     @options=[]
     @avala.each do |i|
       @options[i] = Flexcontent.where(flex_field: "sp_bsb_sp_s_#{i}").order("flex_sortid ASC")
-      @options[i] = @options[i].map { |option| [option[:flex_name], option[:flex_id]] }
+      @options[i] = @options[i].map { |option| [option[:flex_name], option[:flex_id]] }.unshift(['请选择', nil])
     end
 
     @xkz_options=[['请选择', ''], ['流通许可证', '流通许可证'], ['餐饮服务许可证', '餐饮服务许可证']]
