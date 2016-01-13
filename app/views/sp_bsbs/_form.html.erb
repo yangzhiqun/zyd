@@ -668,6 +668,15 @@
             }
             <%end%>
 
+            <%@check=["xkz","xkz_id"]%>
+            <%@check.each do |i|%>
+            if ($.trim($("#sp_bsb_sp_" +"<%=i%>").val()).length == 0) {
+                alert("该项为必填项");
+                $("#sp_bsb_sp_" +"<%=i%>").focus();
+                return false;
+            }
+            <%end%>
+
             <%@check=[38]%>
             <%@check.each do |i|%>
             if ($.trim($("#sp_bsb_sp_d_" +<%=i%>).val()).length == 0) {
@@ -1382,12 +1391,12 @@
         <tr>
           <td colspan="3">样品来源*</td>
           <td colspan="4"><%= f.select :sp_s_21, @options[21], {}, :style => "width: 100%" %></td>
-          <td colspan="5">生产/加工/购进日期</td>
-          <td colspan="4"><%= f.text_field :sp_d_22, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
-          <td colspan="3">抽样方式*</td>
-          <td colspan="4"><%= f.select :sp_s_24, @options[24], {}, :style => "width: 100%" %></td>
-          <td colspan="3">抽样工具</td>
-          <td colspan="4"><%= f.text_field :sp_s_25, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <!--<td colspan="5">生产/加工/购进日期</td>
+          <td colspan="4"><%= f.text_field :sp_d_22, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>-->
+          <td colspan="5">抽样方式*</td>
+          <td colspan="7"><%= f.select :sp_s_24, @options[24], {}, :style => "width: 100%" %></td>
+          <td colspan="4">抽样工具</td>
+          <td colspan="7"><%= f.text_field :sp_s_25, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
           <td rowspan="7" colspan="3">预包装<br>产品*</td>

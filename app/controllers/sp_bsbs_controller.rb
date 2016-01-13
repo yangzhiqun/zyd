@@ -150,7 +150,7 @@ class SpBsbsController < ApplicationController
       @options[i] = @options[i].map { |option| [option[:flex_name], option[:flex_id]] }
     end
 
-    @xkz_options=[['请选择', '请选择'], ['流通许可证', '流通许可证'], ['餐饮服务许可证', '餐饮服务许可证']]
+    @xkz_options=[['请选择', ''], ['流通许可证', '流通许可证'], ['餐饮服务许可证', '餐饮服务许可证']]
 
     @jg_bsbs = JgBsb.where('status = 0 and jg_sp_permission = 1 and jg_detection = 1', session[:user_province]).order('jg_province')
   end
