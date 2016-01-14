@@ -12,6 +12,8 @@ class User < ActiveRecord::Base
   validates_presence_of :function_type
   validates_numericality_of :function_type, greater_than: 0, message: '请选择用户职能'
 
+  validates_presence_of :jg_bsb_id, message: '所在机构不可为空'
+
   validates_uniqueness_of :uid, allow_blank: true
   validates_presence_of :uid, allow_blank: true
 
@@ -23,16 +25,25 @@ class User < ActiveRecord::Base
   validates_format_of :mobile, with: /(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}/i, message: '手机号格式不正确'
   validates_uniqueness_of :user_sign, message: "签名已存在", allow_nil: true, allow_blank: true
   validates_confirmation_of :password
-  validate :password_non_blank
+  # validate :password_non_blank
 
   before_save :generate_uid
+  after_create :cleanup_after_create
 
   def is_info_complete?
     !id_card.blank? and !tname.blank? and !tel.blank?
   end
 
+  def is_signup_sms_code_available?
+    sms_log = SmsLog.where(used_at: nil, sms_type: 'signup', msg: self.sms_code, mobile: self.mobile).last
+    if sms_log.present? and Time.now - sms_log.created_at < 5.minutes
+      return true
+    end
+    self.errors.add(:sms_code, '验证码无效或过期')
+    return false
+  end
+
   attr_accessor :password_confirmation, :sms_code
-  # attr_accessible :jg_bsb_id, :id_card, :user_sign, :pub_xxfb, :pub_xxfb_sh, :user_s_city, :user_s_lcity, :yyadmin, :jsyp, :hcz_admin, :car_sys_id, :zxcy, :rwbs, :rwxd, :enable_api,:hcz_sc, :hcz_lt, :hcz_czap, :hcz_czbl, :hcz_czsh, :yysl, :zhxt, :yybl, :yysh, :yycz_permission, :name, :password, :password_confirmation,:tname,:tel,:eaddress,:company,:user_s_province,:user_d_authority,:user_d_authority_1,:user_jcjg,:user_jcjg_lxr,:user_jcjg_tel,:user_jcjg_mail,:user_cyjg,:user_cyjg_lxr,:user_cyjg_tel,:user_cyjg_mail,:user_d_authority_2,:user_d_authority_3,:user_d_authority_4,:user_d_authority_5,:user_i_js,:user_i_switch,:user_i_sp,:user_i_hzp,:user_i_bjp,:user_s_dl,:user_i_spys,:user_i_spss
 
   belongs_to :jg_bsb
 
@@ -399,8 +410,6 @@ class User < ActiveRecord::Base
         return false
       end
 
-      self.uid = "#{Time.now.strftime('%Y%m%d')}#{'%.3i' % self.id}"
-
       self.uid = "#{'%.2i' % prov.code.to_i}#{'%.2i' % self.jg_bsb.code.to_i }#{'%.2i' % self.function_type}"
       available_ids = (1..99).to_a - User.where('uid LIKE ?', "#{self.uid}%").map { |u| u[6..7].to_i }
       if available_ids.blank?
@@ -434,8 +443,13 @@ class User < ActiveRecord::Base
   end
 
   private
-  def password_non_blank
-    errors.add(:password, "Missing password") if hashed_password.blank?
+  # def password_non_blank
+  #   errors.add(:password, "Missing password") if hashed_password.blank?
+  # end
+
+  def cleanup_after_create
+    Rails.logger.error 'Do cleaning work after user create'
+    SmsLog.where(sms_type: 'signup', mobile: self.mobile).last.update_attributes(used_at: Time.now)
   end
 
   def create_new_salt

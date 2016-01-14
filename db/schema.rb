@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160112072730) do
+ActiveRecord::Schema.define(version: 20160114160929) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -1156,6 +1156,7 @@ ActiveRecord::Schema.define(version: 20160112072730) do
     t.string   "attachment_path",   limit: 255
     t.string   "pdf_sign_rules",    limit: 255
     t.integer  "status",            limit: 4,   default: 0
+    t.integer "sys_province_id", limit: 4
   end
 
   create_table "login_logs", force: :cascade do |t|
@@ -1539,6 +1540,16 @@ ActiveRecord::Schema.define(version: 20160112072730) do
 
   add_index "sessions", ["session_id"], name: "index_sessions_on_session_id", unique: true, using: :btree
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
+
+  create_table "sms_logs", force: :cascade do |t|
+    t.string "sms_template_code", limit: 255
+    t.string "sms_type", limit: 255
+    t.string "mobile", limit: 255
+    t.string "msg", limit: 255
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "used_at"
+  end
 
   create_table "sp_bsb_certs", force: :cascade do |t|
     t.text     "source",     limit: 65535
@@ -2255,8 +2266,8 @@ ActiveRecord::Schema.define(version: 20160112072730) do
     t.string   "name",                   limit: 255
     t.string   "hashed_password",        limit: 255
     t.string   "salt",                   limit: 255
-    t.datetime "created_at",                                        null: false
-    t.datetime "updated_at",                                        null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string   "tname",                  limit: 30
     t.string   "tel",                    limit: 255
     t.string   "eaddress",               limit: 255
@@ -2296,19 +2307,22 @@ ActiveRecord::Schema.define(version: 20160112072730) do
     t.string   "id_card",                limit: 255
     t.text     "user_sign",              limit: 65535
     t.integer  "jg_bsb_id",              limit: 4
-    t.string   "email",                  limit: 255,   default: "", null: false
-    t.string   "encrypted_password",     limit: 255,   default: "", null: false
+    t.string "email", limit: 255, default: "", null: false
+    t.string "encrypted_password", limit: 255, default: "", null: false
     t.string   "reset_password_token",   limit: 255
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          limit: 4,     default: 0,  null: false
+    t.integer "sign_in_count", limit: 4, default: 0, null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip",     limit: 255
     t.string   "last_sign_in_ip",        limit: 255
-    t.string   "uid",                    limit: 255,                null: false
+    t.string "uid", limit: 255, null: false
     t.string   "mobile",                 limit: 255
     t.integer  "function_type",          limit: 3,     default: -1
+    t.boolean "enable", default: false
+    t.string "prov_city", limit: 10
+    t.string "prov_country", limit: 10
   end
 
   add_index "users", ["name"], name: "index_name", using: :btree

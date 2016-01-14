@@ -1,7 +1,8 @@
 #encoding=UTF-8
 class JgBsbsController < ApplicationController
 
-  before_filter :check_user_role
+  before_filter :check_user_role, except: [:by_province]
+  skip_before_action :authenticate_user!, only: [:by_province]
 
   # GET /jg_bsbs
   # GET /jg_bsbs.json
@@ -221,6 +222,11 @@ class JgBsbsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to :action => "index", :controller => "jg_bsbs" }
     end
+  end
+
+  def by_province
+    @jg_bsbs = JgBsb.where(jg_province: params[:prov])
+    render json: {status: 'OK', msg: @jg_bsbs.map { |j| [j.jg_name, j.id] }}
   end
 
   private

@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  post 'sms_helper/send_msg'
+
   devise_for :users, controllers: {sessions: 'users/sessions', registrations: 'users/registrations'}
 
   match 'update-account' => 'users#update_account', via: [:get, :post]
@@ -80,6 +82,7 @@ Rails.application.routes.draw do
   post 'd_categories/:id/update_check_items' => 'd_categories#update_check_items'
 
   resources :sys_provinces
+  get 'prov' => 'sys_provinces#prov'
 
   match "tasks/deploy", via: [:get, :post]
   # 省局任务部署
@@ -131,6 +134,7 @@ Rails.application.routes.draw do
 
     collection do
       match 'merge_request', via: [:get, :post]
+      get 'by_province'
     end
   end
 

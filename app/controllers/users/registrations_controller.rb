@@ -8,10 +8,20 @@ class Users::RegistrationsController < Devise::RegistrationsController
 #   super
 # end
 
-# POST /resource
-# def create
-#   super
-# end
+  # POST /resource
+  def create
+    build_resource(sign_up_params)
+    if resource.is_signup_sms_code_available?
+      super
+    else
+      respond_to do |format|
+        format.json { render json: {status: 'OK'}}
+        format.html {
+          respond_with resource
+        }
+      end
+    end
+  end
 
 # GET /resource/edit
 # def edit
@@ -41,12 +51,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
 # If you have extra params to permit, append them to the sanitizer.
   def configure_sign_up_params
-    devise_parameter_sanitizer.for(:sign_up) << [:user_s_province, :id_card, :sms_code, :mobile, :name, :function_type]
+    devise_parameter_sanitizer.for(:sign_up) << [:prov_city, :jg_bsb_id, :user_s_province, :id_card, :sms_code, :mobile, :name, :function_type, :password, :password_confirmation]
   end
 
 # If you have extra params to permit, append them to the sanitizer.
   def configure_account_update_params
-    devise_parameter_sanitizer.for(:account_update) << [:user_s_province, :id_card, :sms_code, :mobile, :name, :function_type]
+    devise_parameter_sanitizer.for(:account_update) << [:user_s_province, :id_card, :sms_code, :mobile, :name, :function_type, :password, :password_confirmation]
   end
 
 # The path used after sign up.

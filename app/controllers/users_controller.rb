@@ -1,7 +1,7 @@
 #encoding=UTF-8
 class UsersController < ApplicationController
   include ApplicationHelper
-  skip_before_filter :check_user_info_completeness, only: [:update]
+  skip_before_filter :check_user_info, only: [:update]
   skip_before_filter :authenticate_user!, only: [:update]
 
   # GET /users
@@ -175,6 +175,7 @@ class UsersController < ApplicationController
         format.html { redirect_to(:action => 'index') }
         format.xml { head :ok }
       else
+        flash[:notice] = @user.errors.first.last
         format.html { render :action => "edit" }
         format.xml { render :xml => @user.errors, :status => :unprocessable_entity }
       end
@@ -353,6 +354,6 @@ class UsersController < ApplicationController
 
   private
   def user_params
-    params.require(:user).permit(:jg_bsb_id, :id_card, :user_sign, :pub_xxfb, :pub_xxfb_sh, :user_s_city, :user_s_lcity, :yyadmin, :jsyp, :hcz_admin, :car_sys_id, :zxcy, :rwbs, :rwxd, :enable_api, :hcz_sc, :hcz_lt, :hcz_czap, :hcz_czbl, :hcz_czsh, :yysl, :zhxt, :yybl, :yysh, :yycz_permission, :name, :password, :password_confirmation, :tname, :tel, :eaddress, :company, :user_s_province, :user_d_authority, :user_d_authority_1, :user_jcjg, :user_jcjg_lxr, :user_jcjg_tel, :user_jcjg_mail, :user_cyjg, :user_cyjg_lxr, :user_cyjg_tel, :user_cyjg_mail, :user_d_authority_2, :user_d_authority_3, :user_d_authority_4, :user_d_authority_5, :user_i_js, :user_i_switch, :user_i_sp, :user_i_hzp, :user_i_bjp, :user_s_dl, :user_i_spys, :user_i_spss, :function_type)
+    params.require(:user).permit(:jg_bsb_id, :id_card, :user_sign, :pub_xxfb, :pub_xxfb_sh, :user_s_city, :user_s_lcity, :yyadmin, :jsyp, :hcz_admin, :car_sys_id, :zxcy, :rwbs, :rwxd, :enable_api, :hcz_sc, :hcz_lt, :hcz_czap, :hcz_czbl, :hcz_czsh, :yysl, :zhxt, :yybl, :yysh, :yycz_permission, :name, :password, :password_confirmation, :tname, :tel, :eaddress, :company, :user_s_province, :user_d_authority, :user_d_authority_1, :user_jcjg, :user_jcjg_lxr, :user_jcjg_tel, :user_jcjg_mail, :user_cyjg, :user_cyjg_lxr, :user_cyjg_tel, :user_cyjg_mail, :user_d_authority_2, :user_d_authority_3, :user_d_authority_4, :user_d_authority_5, :user_i_js, :user_i_switch, :user_i_sp, :user_i_hzp, :user_i_bjp, :user_s_dl, :user_i_spys, :user_i_spss, :function_type, :prov_city, :prov_country)
   end
 end

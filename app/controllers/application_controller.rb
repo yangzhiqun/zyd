@@ -21,7 +21,7 @@ class ApplicationController < ActionController::Base
   # before_filter :session_expiry, :except => [:login, :ca_login, :logout, :timeout, :bind_ca_key]
   # before_filter :update_activity_time, :except => [:login, :logout, :ca_login, :bind_ca_key]
 
-  before_filter :check_user_info_completeness, :except => [:login, :bind_ca_key, :complete_user_info]
+  before_filter :check_user_info, :except => [:login, :bind_ca_key, :complete_user_info]
 
   # helper :all # include all helpers, all the time
 
@@ -36,11 +36,15 @@ class ApplicationController < ActionController::Base
 
   protected
 
-  def check_user_info_completeness
+  def check_user_info
+    # 如果用户账号未启用，则跳至等待页面
+
+    # 如果用户信息不完整，则跳转至填充页面
     if !current_user.nil? and !current_user.is_info_complete?
       redirect_to '/complete_user_info'
       return
     end
+
   end
 
   # def authorize
