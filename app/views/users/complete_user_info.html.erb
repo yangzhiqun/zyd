@@ -6,7 +6,6 @@
     </div>
     <div class="panel-body">
       <%= form_for(@user) do |f| %>
-          <%= flash[:notice] %>
           <div class="text-danger"><%= flash[:notice] %></div>
           <label>用户名：<%= @user.name %></label>
           <br>
