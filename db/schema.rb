@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160112133712) do
+ActiveRecord::Schema.define(version: 20160116062117) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -896,6 +896,7 @@ ActiveRecord::Schema.define(version: 20160112133712) do
     t.string   "czb_reverted_reason",      limit: 255
     t.string   "sp_s_220",                 limit: 10
     t.string   "sp_s_221",                 limit: 10
+    t.string   "sp_s_222",                 limit: 20
   end
 
   add_index "sp_bsbs", ["application_id"], name: "index_sp_bsbs_on_application_id", using: :btree

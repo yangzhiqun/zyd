@@ -1661,6 +1661,7 @@ class SpBsbsController < ApplicationController
         :sp_s_215,
         :sp_s_220,
         :sp_s_221,
+        :sp_s_222,
         :fail_report_path,
         :fail_report_at,
         :bgfl,
