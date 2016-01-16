@@ -825,6 +825,9 @@ ActiveRecord::Schema.define(version: 20160116073647) do
     t.datetime "synced_at"
     t.integer  "application_id",           limit: 4
     t.string   "czb_reverted_reason",      limit: 255
+    t.string   "sp_s_220",                 limit: 10
+    t.string   "sp_s_221",                 limit: 10
+    t.string   "sp_s_222",                 limit: 20
   end
 
   add_index "sp_bsbs", ["application_id"], name: "index_sp_bsbs_on_application_id", using: :btree

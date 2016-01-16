@@ -32,7 +32,7 @@ end
 
 gem 'mysql2', '~>0.3.18'
 
-gem 'rmagick', '~> 2.15.0'
+gem 'rmagick'#, '~> 2.15.0'
 gem 'jquery-ui-rails', '~>5.0.0'
 gem "jquery-fileupload-rails"
 
@@ -71,6 +71,5 @@ gem 'useragent'
 
 gem 'devise'
 gem 'devise-i18n'
-
 gem 'nokogiri', '>=1.6.7.rc'
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
