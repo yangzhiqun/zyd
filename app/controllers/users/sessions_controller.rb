@@ -2,6 +2,7 @@ class Users::SessionsController < Devise::SessionsController
   layout 'session'
 
   before_filter :configure_sign_in_params, only: [:create]
+  skip_before_action :check_user_info
 
   # GET /resource/sign_in
   def new

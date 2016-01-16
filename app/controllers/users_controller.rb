@@ -1,7 +1,7 @@
 #encoding=UTF-8
 class UsersController < ApplicationController
   include ApplicationHelper
-  skip_before_filter :check_user_info, only: [:update]
+  skip_before_filter :check_user_info, only: [:update, :in_review]
   skip_before_filter :authenticate_user!, only: [:update]
 
   # GET /users
@@ -350,6 +350,9 @@ class UsersController < ApplicationController
     savetempfile="public/#{(Time.now).year.to_s}年用户信息.xls"
     book.write(savetempfile)
     send_file(savetempfile, :disposition => "attachment")
+  end
+
+  def in_review
   end
 
   private
