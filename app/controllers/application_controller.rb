@@ -38,6 +38,10 @@ class ApplicationController < ActionController::Base
 
   def check_user_info
     # 如果用户账号未启用，则跳至等待页面
+    if current_user.present? and current_user.enabled_at.nil?
+      redirect_to '/in-review'
+      return
+    end
 
     # 如果用户信息不完整，则跳转至填充页面
     if !current_user.nil? and !current_user.is_info_complete?

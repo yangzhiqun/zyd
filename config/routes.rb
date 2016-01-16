@@ -282,13 +282,19 @@ Rails.application.routes.draw do
 
   resources :orders
 
-  resources :users
+  resources :users do
+    collection do
+      get 'pending'
+    end
+  end
+
   get "users_changeauthority" => "users#changeauthority"
   post "users_import_data_excel" => "users#import_data_excel"
   post "users_export_user_info" => "users#export_user_info"
   get "users_by_jcjg" => "users#users_by_jcjg"
   get "users/timeout"
   get 'complete_user_info' => 'users#complete_user_info'
+  get 'in-review' => 'users#in_review'
   match "bind_ca_key" => "users#bind_ca_key", via: [:get, :post]
 
   resources :products

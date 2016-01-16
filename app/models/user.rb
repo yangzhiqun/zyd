@@ -61,6 +61,10 @@ class User < ActiveRecord::Base
     GL = 0x0000000010000
   end
 
+  def func_type_desc
+    FuncType.invert[self.function_type]
+  end
+
   FuncType = {
       '任务部署' => 1,
       '任务下达' => 2,

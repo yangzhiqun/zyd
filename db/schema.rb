@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160114160929) do
+ActiveRecord::Schema.define(version: 20160116073647) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -1417,9 +1417,11 @@ ActiveRecord::Schema.define(version: 20160114160929) do
     t.string   "uid",                    limit: 255,                   null: false
     t.string   "mobile",                 limit: 255
     t.integer  "function_type",          limit: 3,     default: -1
-    t.boolean  "enable",                               default: false
     t.string   "prov_city",              limit: 10
     t.string   "prov_country",           limit: 10
+    t.datetime "enabled_at"
+    t.boolean  "is_account_manager",                   default: false
+    t.datetime "apply_refused_at"
   end
 
   add_index "users", ["name"], name: "index_name", using: :btree
