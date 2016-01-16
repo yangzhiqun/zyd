@@ -12,10 +12,10 @@ development:
   adapter: mysql2
   encoding: utf8
   reconnect: false
-  database: depot_demo_development
+  database: depot_demo_production
   pool: 25
   username: root
-  password: Just1234
+  password: btbuzuomin5638
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -34,7 +34,7 @@ production:
   adapter: mysql2
   encoding: utf8
   reconnect: false
-  database: depot_demo_development
+  database: depot_demo_production
   pool: 25
   username: root
   password: btbuzuomin5638
