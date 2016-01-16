@@ -21,11 +21,11 @@ class YyczController < ApplicationController
     end
 
     @yydjb.djbm = current_user.jg_bsb.jg_name
-    @yydjb.djr = session[:user_tname]
+    @yydjb.djr = current_user.tname
 
     # 2015年5月17日应 张秀宇 要求，去掉中间安排环节，直接将登记后的异议信息安排给当前登记人
     @yydjb.current_state = SpYydjb::State::ASSIGNED
-    @yydjb.blr = session[:user_tname]
+    @yydjb.blr = current_user.tname
     @yydjb.blbm = current_user.jg_bsb.jg_name
     @yydjb.blsj = Time.now
     
@@ -81,7 +81,7 @@ class YyczController < ApplicationController
     end
 
     if current_user.yyadmin != 1
-      @yyczs = @yyczs.where("bcydwsf = ? or bsscqysf = ?", session[:user_province], session[:user_province])
+      @yyczs = @yyczs.where("bcydwsf = ? or bsscqysf = ?", current_user.user_s_province, current_user.user_s_province)
     end
   end
 
@@ -97,7 +97,7 @@ class YyczController < ApplicationController
     end
 
     if current_user.yyadmin != 1
-      @yyczs = @yyczs.where("y.bcydwsf = ? or y.bsscqysf = ?", session[:user_province], session[:user_province])
+      @yyczs = @yyczs.where("y.bcydwsf = ? or y.bsscqysf = ?", current_user.user_s_province, current_user.user_s_province)
     end
 
     # 样品名称
@@ -150,7 +150,7 @@ class YyczController < ApplicationController
     end
 
     if current_user.yyadmin != 1
-      @yyczs = @yyczs.where("y.bcydwsf = ? or y.bsscqysf = ?", session[:user_province], session[:user_province])
+      @yyczs = @yyczs.where("y.bcydwsf = ? or y.bsscqysf = ?", current_user.user_s_province, current_user.user_s_province)
     end
     # 样品名称
     unless params[:ypmc].blank?
@@ -197,7 +197,7 @@ class YyczController < ApplicationController
       @sp_bsbs = SpBsb.select("s.*").group('s.sp_s_16').order('s.updated_at DESC').joins("AS s LEFT JOIN sp_yydjbs AS y ON s.sp_s_16=y.cjbh").where("y.current_state NOT IN (1, 2, 3) OR y.cjbh IS NULL").where("(s.sp_s_71 LIKE ? OR s.sp_s_71 LIKE ?) AND s.sp_i_state = 9", "%问题样品%", "%不合格样品%")
 
       if current_user.yyadmin != 1
-        @sp_bsbs = @sp_bsbs.where("s.sp_s_3 = ? OR s.sp_s_202 = ?", session[:user_province], session[:user_province])
+        @sp_bsbs = @sp_bsbs.where("s.sp_s_3 = ? OR s.sp_s_202 = ?", current_user.user_s_province, current_user.user_s_province)
       end
 
       if !params[:cjbh].blank?
@@ -231,19 +231,19 @@ class YyczController < ApplicationController
       case @djb.current_state
       when SpYydjb::State::LOGGED
         @djb.current_state = SpYydjb::State::ASSIGNED
-        @djb.blr = session[:user_tname]
+        @djb.blr = current_user.tname
         @djb.blbm = current_user.jg_bsb.jg_name
         @djb.blsj = Time.now
 
       when SpYydjb::State::ASSIGNED
         @djb.current_state = SpYydjb::State::FILLED
-        @djb.tbr = session[:user_tname]
+        @djb.tbr = current_user.tname
         @djb.tbbm = current_user.jg_bsb.jg_name
         @djb.tbsj = Time.now
 
       when SpYydjb::State::FILLED
         @djb.current_state = SpYydjb::State::PASSED
-        @djb.shr = session[:user_tname]
+        @djb.shr = current_user.tname
         @djb.shbm = current_user.jg_bsb.jg_name
         @djb.shsj = Time.now
 
@@ -309,7 +309,7 @@ class YyczController < ApplicationController
       @djbs = SpYydjb.where(:id => params[:ids].split(','))
       @bsbs = SpBsb.where(:sp_s_16 => @djbs.map{|djb| djb.cjbh })
 
-      if @djbs.update_all(:yyczbm => params[:czbm], :yyczfzr => params[:czfzr], :current_state => SpYydjb::State::ASSIGNED, :blr => session[:user_tname], :blbm => current_user.jg_bsb.jg_name, :blsj => Time.now)
+      if @djbs.update_all(:yyczbm => params[:czbm], :yyczfzr => params[:czfzr], :current_state => SpYydjb::State::ASSIGNED, :blr => current_user.tname, :blbm => current_user.jg_bsb.jg_name, :blsj => Time.now)
         format.json { render :json => {:status => 'OK'}}
       else
         format.json { render :json => {:status => 'ERR', :msg => '失败！'}}
@@ -363,7 +363,7 @@ class YyczController < ApplicationController
     
     @djbs.each do |djb|
       djb.session = session
-      djb.thyy = (djb.thyy || "") + "<br>" + "操作时间：" + Time.now.to_s + ", 原因：" + params[:thyy] + ", 操作人员：" + session[:user_tname]
+      djb.thyy = (djb.thyy || "") + "<br>" + "操作时间：" + Time.now.to_s + ", 原因：" + params[:thyy] + ", 操作人员：" + current_user.tname
       case djb.current_state
       when SpYydjb::State::LOGGED
         djb.current_state = SpYydjb::State::CANCEL

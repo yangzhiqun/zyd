@@ -152,7 +152,7 @@ class SpBsbsController < ApplicationController
 
     @xkz_options=[['请选择', ''], ['流通许可证', '流通许可证'], ['餐饮服务许可证', '餐饮服务许可证']]
 
-    @jg_bsbs = JgBsb.where('status = 0 and jg_sp_permission = 1 and jg_detection = 1', session[:user_province]).order('jg_province')
+    @jg_bsbs = JgBsb.where('status = 0 and jg_sp_permission = 1 and jg_detection = 1', current_user.user_s_province).order('jg_province')
   end
 
   #2014-01-12
@@ -160,13 +160,13 @@ class SpBsbsController < ApplicationController
     if current_user.is_admin?||session[:change_js]==9||session[:change_js]==10
       return 1
     end
-    if params_data.tname==session[:user_name]
+    if params_data.tname == current_user.name
       return 1
     end
     if current_user.jg_bsb.all_names.include?(params_data.sp_s_43)
       return 1
     end
-    if (params_data.sp_s_3==session[:user_province]||params_data.sp_s_202==session[:user_province]||params_data.sp_s_52==session[:user_province])&&(session[:change_js]==2||session[:change_js]==3||session[:change_js]==4)
+    if (params_data.sp_s_3==current_user.user_s_province||params_data.sp_s_202==current_user.user_s_province||params_data.sp_s_52==current_user.user_s_province)&&(session[:change_js]==2||session[:change_js]==3||session[:change_js]==4)
       return 1
     end
     if params_data.sp_s_17==session[:user_dl]&&session[:change_js]==8
@@ -245,33 +245,33 @@ class SpBsbsController < ApplicationController
   # GET /sp_bsbs/new.json
   def new
     @province_plus = "省"
-    if ["北京", "天津", "上海", "重庆"].include?(session[:user_province])
+    if ["北京", "天津", "上海", "重庆"].include?(current_user.user_s_province)
       @province_plus = "市"
     end
 
-    if ["西藏", "内蒙古"].include?(session[:user_province])
+    if ["西藏", "内蒙古"].include?(current_user.user_s_province)
       @province_plus = "自治区"
     end
 
-    if session[:user_province] == "广西"
+    if current_user.user_s_province == "广西"
       @province_plus = "壮族自治区"
     end
 
-    if session[:user_province] == "新疆"
+    if current_user.user_s_province == "新疆"
       @province_plus = "维吾尔自治区"
     end
 
-    if session[:user_province] == "宁夏"
+    if current_user.user_s_province == "宁夏"
       @province_plus = ""
     end
     flash[:import_result] =nil
     @sp_bsb = SpBsb.new
-    @sp_bsb.tname=session[:user_name]
-    @sp_bsb.sp_s_3=session[:user_province]
+    @sp_bsb.tname= current_user.name
+    @sp_bsb.sp_s_3=current_user.user_s_province
     @sp_bsb.sp_s_35= current_user.jg_bsb.jg_name
-    @sp_bsb.sp_s_37=session[:user_tname]
-    @sp_bsb.sp_s_39=session[:user_tel]
-    @sp_bsb.sp_s_52=session[:user_province]
+    @sp_bsb.sp_s_37=current_user.tname
+    @sp_bsb.sp_s_39=current_user.tel
+    @sp_bsb.sp_s_52=current_user.user_s_province
     @sp_bsb.sp_s_71='未检验'
     if current_user.jg_bsb
       @sp_bsb.sp_s_40=current_user.jg_bsb.jg_contacts
@@ -558,7 +558,7 @@ class SpBsbsController < ApplicationController
               @role_name = '检测机构批准'
             end
           end
-          SpLog.create(:sp_bsb_id => params[:id], :sp_i_state => params[:sp_bsb][:sp_i_state], :remark => @role_name, :user_id => session[:user_id])
+          SpLog.create(:sp_bsb_id => params[:id], :sp_i_state => params[:sp_bsb][:sp_i_state], :remark => @role_name, :user_id => current_user.id)
 
           format.json { render :json => {:status => "保存成功!", :msg => "保存成功!"} }
           format.html { redirect_to("/sp_bsbs_spsearch?#{session[:query]}") }
@@ -851,7 +851,7 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:s8]=='14'
-      if session[:user_name] == 'admin' || session[:change_js] == 10
+      if current_user.is_admin? || session[:change_js] == 10
         @sp_bsbs = @sp_bsbs.where("synced = false and sp_i_state = 2").paginate(page: params[:page], per_page: 10)
 
         respond_to do |format|
@@ -867,13 +867,13 @@ class SpBsbsController < ApplicationController
         @sp_bsbs = @sp_bsbs.where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
       else
         if session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
-          @sp_bsbs = @sp_bsbs.where("sp_s_3 = ? or sp_s_202 = ?", session[:user_province], session[:user_province]).where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+          @sp_bsbs = @sp_bsbs.where("sp_s_3 = ? or sp_s_202 = ?", current_user.user_s_province, current_user.user_s_province).where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==7 #数据审核
           @sp_bsbs = @sp_bsbs.where("sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==6 #数据填报
           @sp_bsbs = @sp_bsbs.where("sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==1||session[:change_js]==5 #填报
-          @sp_bsbs = @sp_bsbs.where("tname = ?", session[:user_name]).where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+          @sp_bsbs = @sp_bsbs.where("tname = ?", current_user.name).where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==8 #牵头
           if session[:user_dl]=='乳制品'&& current_user.jg_bsb_id == JgBsb.find_by_history_name('上海市质量监督检验技术研究院').id
             @sp_bsbs = @sp_bsbs.where("sp_s_17 = ? or (sp_s_18='婴幼儿配方食品' and sp_s_70 LIKE '%一司%')", session[:user_dl]).where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
@@ -890,7 +890,7 @@ class SpBsbsController < ApplicationController
       @sp_bsbs = @sp_bsbs.paginate(page: params[:page], per_page: 10)
     else
       if session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
-        @sp_bsbs = @sp_bsbs.where("sp_s_3=? or (sp_s_202=? and (sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'))", session[:user_province], session[:user_province]).paginate(page: params[:page], per_page: 10)
+        @sp_bsbs = @sp_bsbs.where("sp_s_3=? or (sp_s_202=? and (sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'))", current_user.user_s_province, current_user.user_s_province).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==7 #数据审核
         @sp_bsbs = @sp_bsbs.where("sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==11 #数据批准
@@ -898,7 +898,7 @@ class SpBsbsController < ApplicationController
       elsif session[:change_js]==6 #数据填报
         @sp_bsbs = @sp_bsbs.where("sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==1||session[:change_js]==5 #填报
-        @sp_bsbs = @sp_bsbs.where("tname = ?", session[:user_name]).paginate(page: params[:page], per_page: 10)
+        @sp_bsbs = @sp_bsbs.where("tname = ?", current_user.name).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==8 #牵头
         if session[:user_dl]=='乳制品'&&current_user.jg_bsb_id == JgBsb.find_by_history_name('上海市质量监督检验技术研究院').id
           @sp_bsbs = @sp_bsbs.where("sp_s_17=? or (sp_s_18='婴幼儿配方食品' and sp_s_70 LIKE '%一司%')", session[:user_dl]).paginate(page: params[:page], per_page: 10)
@@ -940,7 +940,7 @@ class SpBsbsController < ApplicationController
     uploaded_io = params[:excel]
     accepted_formats = [".xls", ".xlsx"]
     if !uploaded_io.nil? and accepted_formats.include? File.extname(uploaded_io.original_filename) then
-      file_name = Rails.root.join('excel', session[:user_name]+(Time.now.to_i.to_s)+uploaded_io.original_filename)
+      file_name = Rails.root.join('excel', current_user.name + (Time.now.to_i.to_s)+uploaded_io.original_filename)
       File.open(file_name, 'wb+') do |file|
         file.write(uploaded_io.read)
 
@@ -1034,10 +1034,10 @@ class SpBsbsController < ApplicationController
                 bsb.sp_s_212=row[71]
                 bsb.sp_s_213=row[72]
                 bsb.sp_s_43=''
-                bsb.sp_s_85="#{session[:user_name]}"
-                bsb.sp_s_52="#{session[:user_province]}"
+                bsb.sp_s_85= current_user.name
+                bsb.sp_s_52=current_user.user_s_province
                 bsb.sp_s_56=""
-                bsb.tname=session[:user_name]
+                bsb.tname = current_user.name
                 bsb.sp_i_state=10
                 bsb.sp_n_jcxcount=1
                 bsb.sp_d_86=(Time.now).year.to_s+'-'+(Time.now).mon.to_s+'-'+(Time.now).day.to_s
@@ -1077,9 +1077,9 @@ class SpBsbsController < ApplicationController
 
     accepted_formats = [".xls", ".xlsx"]
     if !uploaded_io.nil? and accepted_formats.include? File.extname(uploaded_io.original_filename) then
-      File.open(Rails.root.join('excel', session[:user_name]+(Time.now).to_s+uploaded_io.original_filename), 'wb') do |file|
+      File.open(Rails.root.join('excel', current_user.name+(Time.now).to_s+uploaded_io.original_filename), 'wb') do |file|
         file.write(uploaded_io.read)
-        book = Spreadsheet.open(Rails.root.join('excel', session[:user_name]+(Time.now).to_s+uploaded_io.original_filename))
+        book = Spreadsheet.open(Rails.root.join('excel', current_user.name + (Time.now).to_s+uploaded_io.original_filename))
         sheet1 = book.worksheet 0
         i_num=0
         temp_str=''
@@ -1129,9 +1129,9 @@ class SpBsbsController < ApplicationController
     accepted_formats = [".xls", ".xlsx"]
     SpBsb.record_timestamps = false
     if !uploaded_io.nil? and accepted_formats.include? File.extname(uploaded_io.original_filename) then
-      File.open(Rails.root.join('excel', session[:user_name]+(Time.now).to_s+uploaded_io.original_filename), 'wb') do |file|
+      File.open(Rails.root.join('excel', (current_user.name +(Time.now).to_s+uploaded_io.original_filename), 'wb')) do |file|
         file.write(uploaded_io.read)
-        book = Spreadsheet.open(Rails.root.join('excel', session[:user_name]+(Time.now).to_s+uploaded_io.original_filename))
+        book = Spreadsheet.open(Rails.root.join('excel', current_user.name + (Time.now).to_s+uploaded_io.original_filename))
         sheet1 = book.worksheet 0
         i_num=0
         temp_str=''

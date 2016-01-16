@@ -1,5 +1,11 @@
 Rails.application.routes.draw do
 
+  post 'sms_helper/send_msg'
+
+  devise_for :users, controllers: {sessions: 'users/sessions', registrations: 'users/registrations'}
+
+  match 'update-account' => 'users#update_account', via: [:get, :post]
+
   resources :jg_bsb_stamps do
     get 'cover'
   end
@@ -76,6 +82,7 @@ Rails.application.routes.draw do
   post 'd_categories/:id/update_check_items' => 'd_categories#update_check_items'
 
   resources :sys_provinces
+  get 'prov' => 'sys_provinces#prov'
 
   match "tasks/deploy", via: [:get, :post]
   # 省局任务部署
@@ -127,6 +134,7 @@ Rails.application.routes.draw do
 
     collection do
       match 'merge_request', via: [:get, :post]
+      get 'by_province'
     end
   end
 
@@ -274,13 +282,19 @@ Rails.application.routes.draw do
 
   resources :orders
 
-  resources :users
+  resources :users do
+    collection do
+      get 'pending'
+    end
+  end
+
   get "users_changeauthority" => "users#changeauthority"
   post "users_import_data_excel" => "users#import_data_excel"
   post "users_export_user_info" => "users#export_user_info"
   get "users_by_jcjg" => "users#users_by_jcjg"
   get "users/timeout"
   get 'complete_user_info' => 'users#complete_user_info'
+  get 'in-review' => 'users#in_review'
   match "bind_ca_key" => "users#bind_ca_key", via: [:get, :post]
 
   resources :products
@@ -307,5 +321,5 @@ Rails.application.routes.draw do
 
   get "admin/adduser"
 
-  root :to => 'admin#login'
+  root :to => 'welcome_notices#index'
 end

@@ -6,6 +6,6 @@ class CreateApiExchangePools < ActiveRecord::Migration
       t.boolean :fetched, default: false
 
       t.timestamps null: false
-    end
+    end unless table_exists?(:api_exchange_pools)
   end
 end

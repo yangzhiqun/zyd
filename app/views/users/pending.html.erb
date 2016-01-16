@@ -1,0 +1,34 @@
+<div class="panel panel-default">
+  <div class="panel-body">
+    <table class="table table-bordered">
+      <thead>
+      <tr>
+        <th width="50" align="center" valign="middle">#</th>
+        <th>姓名</th>
+        <th>电话</th>
+        <th>省份</th>
+        <th>机构</th>
+        <th>职能</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @pending_users.each_with_index do |user, index|%>
+          <tr>
+            <td align="center"><%= index + 1 %></td>
+            <td><%= user.name %></td>
+            <td><%= user.mobile %></td>
+            <td><%= user.user_s_province %></td>
+            <td><%= user.jg_bsb.jg_name %></td>
+            <td><%= user.function_type %></td>
+            <td>
+              <a href="/users/<%= user.id %>/edit" class="btn btn-danger btn-sm">
+                <i class="glyphicon glyphicon-user"></i>审核
+              </a>
+            </td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

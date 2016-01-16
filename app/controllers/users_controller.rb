@@ -1,7 +1,8 @@
 #encoding=UTF-8
 class UsersController < ApplicationController
   include ApplicationHelper
-  skip_before_filter :check_user_info_completeness, only: [:update]
+  skip_before_filter :check_user_info, only: [:update, :in_review]
+  skip_before_filter :authenticate_user!, only: [:update]
 
   # GET /users
   # GET /users.xml
@@ -14,6 +15,25 @@ class UsersController < ApplicationController
   def complete_user_info
     @user = current_user
     @title = '请填写完整个人信息'
+    render layout: 'blank'
+  end
+
+  def update_account
+    @title = '账户升级...'
+
+    if request.post?
+      @user = User.find(session[:update_user_id])
+
+      unless @user.update_attributes(params.require(:user).permit(:function_type, :uid, :tname, :id_card, :mobile, :password))
+        @errors = true
+        logger.error "修改用户失败：#{@user.errors.first.last}"
+      end
+      return not_found if @user.nil?
+    else
+      @user = User.find(session[:update_user_id])
+      @user.reload
+      return not_found if @user.nil?
+    end
     render layout: 'blank'
   end
 
@@ -37,10 +57,10 @@ class UsersController < ApplicationController
       username="%"+params[:sp_name]+"%"
     end
     str=str+"order by user_s_province"
-    if session[:user_name]=='superadmin'
+    if current_user.name == 'superadmin'
       @users = User.paginate_by_sql([str, province, username], :page => params[:page], :per_page => 10)
     else
-      @users = User.where(name: session[:user_name])
+      @users = User.where(name: current_user.name)
     end
 
 
@@ -62,7 +82,7 @@ class UsersController < ApplicationController
   end
 
   def changeauthority
-    @user = User.find_by_name(session[:user_name])
+    @user = current_user
 
     respond_to do |format|
       format.html # changeauthority.html.erb
@@ -74,7 +94,7 @@ class UsersController < ApplicationController
   # GET /users/new.xml
   def new
 
-    if session[:user_name]=='superadmin'
+    if current_user.name == 'superadmin'
       @user = User.new
       respond_to do |format|
         format.html # new.html.erb
@@ -144,15 +164,31 @@ class UsersController < ApplicationController
   def update
     @user = User.find(params[:id])
 
+    u_params = user_params
+    if u_params[:password].blank?
+      u_params.delete(:password)
+      u_params.delete(:password_confirmation)
+    end
+
+    if params['account-pass-request'].to_i == 1 and @user.enabled_at.nil? and current_user.is_account_manager \
+      and current_user.jg_bsb_id == @user.jg_bsb_id
+
+      if params['account-pass'].to_i == 1
+        @user.enabled_at = Time.now
+      else
+        @user.apply_refused_at = Time.now
+      end
+    end
+
     respond_to do |format|
-      if @user.update_attributes(user_params)
+      if @user.update_attributes(u_params)
         flash[:notice] = "User was successfully updated."
         format.html { redirect_to(:action => 'index') }
         format.xml { head :ok }
       else
+        flash[:notice] = @user.errors.first.last
         format.html { render :action => "edit" }
-        format.xml { render :xml => @user.errors,
-                            :status => :unprocessable_entity }
+        format.xml { render :xml => @user.errors, :status => :unprocessable_entity }
       end
     end
   end
@@ -186,7 +222,7 @@ class UsersController < ApplicationController
 
   #
   def import_data_excel
-    unless session[:user_name]=='superadmin'
+    unless current_user.name == 'superadmin'
       respond_to do |format|
         flash[:import_result] = "仅管理员可操作"
         format.html { redirect_to :back }
@@ -245,7 +281,7 @@ class UsersController < ApplicationController
       user.user_jcjg = row[@title.index('机构名称')]
 
 
-			user.jg_bsb_id = JgBsb.find_by_jg_name(user.user_jcjg).id
+      user.jg_bsb_id = JgBsb.find_by_jg_name(user.user_jcjg).id
       user.user_i_switch = row[@title.index('是否为工作组')].to_i
       user.user_s_dl = row[@title.index('工作组内容')]
       user.user_i_js = row[@title.index('是否为地方药监局')].to_i
@@ -327,8 +363,16 @@ class UsersController < ApplicationController
     send_file(savetempfile, :disposition => "attachment")
   end
 
+  def in_review
+  end
+
+  def pending
+    return not_found unless current_user.is_account_manager
+    @pending_users = User.where(enabled_at: nil, jg_bsb_id: current_user.jg_bsb_id)
+  end
+
   private
   def user_params
-    params.require(:user).permit(:jg_bsb_id, :id_card, :user_sign, :pub_xxfb, :pub_xxfb_sh, :user_s_city, :user_s_lcity, :yyadmin, :jsyp, :hcz_admin, :car_sys_id, :zxcy, :rwbs, :rwxd, :enable_api,:hcz_sc, :hcz_lt, :hcz_czap, :hcz_czbl, :hcz_czsh, :yysl, :zhxt, :yybl, :yysh, :yycz_permission, :name, :password, :password_confirmation,:tname,:tel,:eaddress,:company,:user_s_province,:user_d_authority,:user_d_authority_1,:user_jcjg,:user_jcjg_lxr,:user_jcjg_tel,:user_jcjg_mail,:user_cyjg,:user_cyjg_lxr,:user_cyjg_tel,:user_cyjg_mail,:user_d_authority_2,:user_d_authority_3,:user_d_authority_4,:user_d_authority_5,:user_i_js,:user_i_switch,:user_i_sp,:user_i_hzp,:user_i_bjp,:user_s_dl,:user_i_spys,:user_i_spss)
+    params.require(:user).permit(:is_account_manager, :mobile, :jg_bsb_id, :id_card, :user_sign, :pub_xxfb, :pub_xxfb_sh, :user_s_city, :user_s_lcity, :yyadmin, :jsyp, :hcz_admin, :car_sys_id, :zxcy, :rwbs, :rwxd, :enable_api, :hcz_sc, :hcz_lt, :hcz_czap, :hcz_czbl, :hcz_czsh, :yysl, :zhxt, :yybl, :yysh, :yycz_permission, :name, :password, :password_confirmation, :tname, :tel, :eaddress, :company, :user_s_province, :user_d_authority, :user_d_authority_1, :user_jcjg, :user_jcjg_lxr, :user_jcjg_tel, :user_jcjg_mail, :user_cyjg, :user_cyjg_lxr, :user_cyjg_tel, :user_cyjg_mail, :user_d_authority_2, :user_d_authority_3, :user_d_authority_4, :user_d_authority_5, :user_i_js, :user_i_switch, :user_i_sp, :user_i_hzp, :user_i_bjp, :user_s_dl, :user_i_spys, :user_i_spss, :function_type, :prov_city, :prov_country)
   end
 end

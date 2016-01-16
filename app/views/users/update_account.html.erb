@@ -1,0 +1,48 @@
+<div class="ctner" style="width: 500px; margin: 50px auto;">
+  <div class="panel panel-success">
+    <div class="panel-heading">
+      <h4>账户升级</h4>
+    </div>
+    <div class="panel-body">
+      <% if !@errors and @user.encrypted_password.present? %>
+          <p class="text-warning">账户已升级！登录账号为：<%= @user.uid %><a href="/">回首页</a></p>
+      <% else %>
+          <h5>请填写完整以下信息，以完成账户升级</h5>
+          <hr>
+          <%= form_for(@user, {method: 'POST', url: ''}) do |f| %>
+              <div class="text-danger"><%= flash[:notice] %></div>
+              <label>账&emsp;号：<%= @user.uid.blank? ? '<i class="text-danger">未分配</i>'.html_safe : @user.uid %></label>
+
+              <div class="form-group">
+                <label>姓&emsp;名：<span class="text-danger">*</span><%= show_error(@user.errors, :tname) %></label>
+                <%= f.text_field :tname, :class => "form-control input-sm" %>
+              </div>
+              <div class="form-group">
+                <label>职&emsp;能：<span class="text-danger">*</span><%= show_error(@user.errors, :function_type) %></label>
+                <%= f.select :function_type, options_for_select(User::FuncType.map{|k, v| [k, v]}.unshift(['-请选择-', -1])), {}, :class => 'form-control input-sm' %>
+              </div>
+              <% if @user.id_card.blank? or @user.errors.has_key?(:id_card) %>
+                  <div class="form-group">
+                    <label>身份证号：<span class="text-danger">*</span><%= show_error(@user.errors, :id_card) %></label>
+                    <br>
+                    <%= f.text_field :id_card, :class => "form-control input-sm" %>
+                  </div>
+              <% end %>
+
+              <div class="form-group">
+                <label>手机号：<span class="text-danger">*</span><%= show_error(@user.errors, :mobile) %><small class="text-warning">（升级成功后会收到短信）</small></label>
+                <%= f.text_field :mobile, :class => "form-control input-sm" %>
+              </div>
+
+              <div class="form-group">
+                <label>新口令：<span class="text-danger">*(至少8位)</span><%= show_error(@user.errors, :password) %></label>
+                <%= f.password_field :password, :class => "form-control input-sm" %>
+              </div>
+
+              <br>
+              <button class="btn btn-sm btn-success">提交</button>
+          <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

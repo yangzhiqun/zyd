@@ -52,9 +52,10 @@
   <%= image_tag('logo.jpg') %>
 
   <div id="top_right" class="form-inline">
-    <label>欢迎您:<%= session[:user_name] %></label>
-    <%= button_to "退出", '/admin/logout', :method => :get, :class => "btn btn-xs btn-danger" %>
-    <%= (Time.now).strftime("%Y年%m月%d日 %H:%M:%S") %>
+    <label>欢迎您:<%= current_user.name %></label>
+    <%= link_to '退出', '/users/sign_out', 'data-method' => :delete, 'data-confirm' => '确定退出吗？', :class => "btn btn-xs btn-link" %>
+    <br>
+    登录时间：<%= current_user.current_sign_in_at.strftime("%Y年%m月%d日 %H:%M:%S") %>
   </div>
 </div>
 <!-- /TOP -->
@@ -74,16 +75,8 @@
   <div class="main_left">
     <div class="nav-ctner" data-spy="affix" data-offset-top="350">
       <ul id="nav">
-        <% if false and session[:user_bjp]==1 %>
-            <li><a style="font-size: 14px; text-align: center" href="/bjp_bsbs/new">保健品检验数据录入</a></li>
-            <li><a style="font-size: 14px; text-align: center" href="/bjp_bsbs">保健品检验数据查看</a></li>
-        <% end %>
-        <% if false and session[:user_hzp]==1 %>
-            <li><a style="font-size: 14px; text-align: center" href="/hzp_bsbs/new">化妆品检验数据录入</a></li>
-            <li><a style="font-size: 14px; text-align: center" href="/hzp_bsbs">化妆品检验数据查看</a></li>
-        <% end %>
-        <% if session[:user_sp]==1 %>
-            <% if session[:user_authority_1]==1 %>
+        <% if current_user.user_i_sp == 1 %>
+            <% if current_user.user_d_authority == 1 %>
                 <li><a style="font-size: 14px; text-align: center" href="/sp_bsbs/new">食品检验数据录入</a></li>
             <% end %>
             <% if current_user.user_d_authority_5 == 1 or current_user.user_i_switch == 1 or current_user.user_d_authority == 1 or current_user.user_d_authority_1 == 1 or current_user.user_d_authority_2 == 1 or current_user.user_d_authority_3 == 1 %>
@@ -170,7 +163,7 @@
             </li>
         <% end %>
         <% if current_user.is_admin? %>
-            <% if session[:user_name]=='superadmin' %>
+            <% if current_user.name == 'superadmin' %>
               <li>
                 <a class="collapse" href="javascript:void(0);" style="font-size: 14px; text-align: center" href="/jg_bsbs">机构信息维护</a>
                 <ul class="subnav">
@@ -183,7 +176,7 @@
             <% end %>
             <li><a style="font-size: 14px; text-align: center" href="/baosong_as">报送分类维护</a></li>
         <% end %>
-        <% if current_user.user_d_authority_1 == 1 or session[:user_name]=='superadmin' %>
+        <% if current_user.user_d_authority_1 == 1 or current_user.name == 'superadmin' %>
             <li><a style="font-size: 14px; text-align: center" href="/company_standards">企业标准库维护</a></li>
         <% end %>
         <% if current_user.is_admin? %>
