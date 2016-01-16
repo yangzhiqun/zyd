@@ -89,7 +89,10 @@
             $('#flag').val('tabs_5');
             $('#sp_submit').trigger("click");
         });
-
+        $("#tabs_6").click(function () {
+            $('#flag').val('tabs_6');
+            $('#sp_submit').trigger("click");
+        });
         $('#s8').val('<%= params[:s8]%>');
     });
 </script>
@@ -232,6 +235,9 @@
         </li>
         <li>
           <a class="<%= (params[:flag].eql?('tabs_5') ? "active" : "") %>" style="cursor: pointer;" id="tabs_5">退修数据</a>
+        </li>
+        <li>
+          <a class="<%= (params[:flag].eql?('tabs_6') ? "active" : "") %>" style="cursor: pointer;" id="tabs_6">核查处置退修数据</a>
         </li>
     <% else %>
         <li>
