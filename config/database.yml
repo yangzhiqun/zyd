@@ -7,7 +7,7 @@ development:
   database: depot_demo_development
   pool: 25
   username: root
-  password: Just1234
+  password: 123456
 
 production:
   adapter: mysql2
