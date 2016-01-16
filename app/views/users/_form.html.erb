@@ -91,7 +91,7 @@
         <% end %>
 
         <br>
-        <% if current_user.id == @user.id %>
+        <% if !current_user.is_admin? and current_user.id == @user.id %>
             <label for="">机构名称：<%= @user.jg_bsb.jg_name %></label>
         <% else %>
             <label>机构名称：</label>
