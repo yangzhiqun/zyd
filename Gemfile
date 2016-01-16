@@ -75,3 +75,5 @@ gem 'newrelic_rpm'
 gem 'hairtrigger'
 #gem 'oneapm_rpm'
 gem 'useragent'
+gem 'nokogiri', '>=1.6.7.rc'
+gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
