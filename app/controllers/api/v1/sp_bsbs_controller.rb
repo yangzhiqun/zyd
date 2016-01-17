@@ -113,7 +113,7 @@ class Api::V1::SpBsbsController < ApplicationController
         end
         format.json { render :json => {:status => "OK", :msg => "保存成功!", :id => @sp_bsb.id} }
       else
-        format.json { render :json => {:status => "ERR", :msg => "保存不成功，数据库中已有该样品编号!"} }
+        format.json { render :json => {:status => "ERR", :msg => "保存不成功，#{@sp_bsb.errors.first.last}!"} }
       end
     end
   end
@@ -214,7 +214,7 @@ class Api::V1::SpBsbsController < ApplicationController
       render json: {status: 'OK', msg: '机构未设置签章，无法下发配置信息'}
     else
 			if File.exists?(@user.jg_bsb.attachment_path_file)
-				stmap = Base64.encode64(open(@user.jg_bsb.attachment_path_file).to_a.join)
+				stamp = Base64.encode64(open(@user.jg_bsb.attachment_path_file).to_a.join)
 			else
 				stamp = nil
 			end

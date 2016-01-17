@@ -134,26 +134,34 @@
       <td><%= sp_bsb.sp_s_214 %></td>
       <td>
         <% if sp_bsb.sp_i_state == nil %>
-          <%= link_to '填报样品信息', edit_sp_bsb_path(sp_bsb), :class => 'btn btn-link btn-xs center-block' %>
+          <%= link_to '填报样品信息', "/sp_bsbs/#{sp_bsb.id}/edit", :class => 'btn btn-link btn-xs center-block' %>
         <% elsif sp_bsb.sp_i_state < 2 %>
-          <%= link_to '填报样品信息', edit_sp_bsb_path(sp_bsb), :class => 'btn btn-info btn-xs center-block' %>
+          <%= link_to '填报样品信息', "/sp_bsbs/#{sp_bsb.id}/edit", :class => 'btn btn-info btn-xs center-block' %>
         <% elsif sp_bsb.sp_i_state < 3 %>
-          <%= link_to '填报检测数据', edit_sp_bsb_path(sp_bsb), :class => 'btn btn-info btn-xs center-block' %>
+          <%= link_to '填报检测数据', "/sp_bsbs/#{sp_bsb.id}/edit", :class => 'btn btn-info btn-xs center-block' %>
         <% elsif sp_bsb.sp_i_state == 3 %>
-          <%= link_to '退回待修数据', edit_sp_bsb_path(sp_bsb), :class => 'btn btn-info btn-xs center-block' %>
+          <%= link_to '退回待修数据', "/sp_bsbs/#{sp_bsb.id}/edit", :class => 'btn btn-info btn-xs center-block' %>
         <% elsif sp_bsb.sp_i_state == 4 %>
-          <%= link_to '待机构审核', edit_sp_bsb_path(sp_bsb), :class => 'btn btn-info btn-xs center-block' %>
+          <%= link_to '待机构审核', "/sp_bsbs/#{sp_bsb.id}/edit", :class => 'btn btn-info btn-xs center-block' %>
         <% elsif sp_bsb.sp_i_state == 5 %>
-          <%= link_to '待机构批准', edit_sp_bsb_path(sp_bsb), :class => 'btn btn-info btn-xs center-block' %>
+          <%= link_to '待机构批准', "/sp_bsbs/#{sp_bsb.id}/edit", :class => 'btn btn-info btn-xs center-block' %>
         <% elsif sp_bsb.sp_i_state == 6 %>
-          <%= link_to '待省局审核', edit_sp_bsb_path(sp_bsb), :class => 'btn btn-info btn-xs center-block' %>
+          <%= link_to '待省局审核', "/sp_bsbs/#{sp_bsb.id}/edit", :class => 'btn btn-info btn-xs center-block' %>
         <% elsif sp_bsb.sp_i_state == 8 %>
-          <%= link_to '待牵头单位审核', edit_sp_bsb_path(sp_bsb), :class => 'btn btn-info btn-xs center-block' %>
+					<% if SpBsb.find(sp_bsb.id).via_api %>
+          <%= link_to '待牵头单位审核(二)', "/sp_bsbs/#{sp_bsb.id}", :class => 'btn btn-info btn-xs center-block' %>
+					<% else %>
+          <%= link_to '待牵头单位审核', "/sp_bsbs/#{sp_bsb.id}/edit", :class => 'btn btn-info btn-xs center-block' %>
+					<% end %>
         <% elsif sp_bsb.sp_i_state == 9 %>
-          <%= link_to '已完全提交', sp_bsb, :class => 'btn btn-info btn-xs center-block' %>
+					<% if current_user.is_admin? %>
+          <%= link_to '已完全提交', "/sp_bsbs/#{sp_bsb.id}/edit", :class => 'btn btn-info btn-xs center-block' %>
+					<% else %>
+          <%= link_to '已完全提交', "/sp_bsbs/#{sp_bsb.id}", :class => 'btn btn-info btn-xs center-block' %>
+					<% end %>
           <a href="/sp_bsbs/<%= sp_bsb.id%>/print" class="print-sp-bsb btn btn-xs btn-link center-block" target="_blank">打印</a>
         <% elsif sp_bsb.sp_i_state == 10 %>
-          <%= link_to '批量导入待入库', edit_sp_bsb_path(sp_bsb), :class => 'btn btn-info btn-xs center-block' %>
+          <%= link_to '批量导入待入库', "/sp_bsbs/#{sp_bsb.id}/edit", :class => 'btn btn-info btn-xs center-block' %>
         <% end %>
 
 			 <!--<% if sp_bsb.is_bad_report? %>
@@ -165,7 +173,7 @@
         <% end %>
 
         <% unless [3, 4, 6, 8, 9].include? sp_bsb.sp_i_state%>
-        <%= link_to '删除', sp_bsb,method: :delete, data: { confirm: '是否删除?' }, :class => 'btn btn-link btn-xs center-block' %>
+        <%= link_to '删除', "/sp_bsbs/#{sp_bsb.id}",method: :delete, data: { confirm: '是否删除?' }, :class => 'btn btn-link btn-xs center-block' %>
         <% end %>
       </td>
       <td>
@@ -184,7 +192,7 @@
             <% end %>
           <% end %>
         <% elsif sp_bsb.sp_i_state == 9 %>
-          <%if sp_bsb.is_bad_report? && (session[:user_name]=='admin'||session[:user_js]==1||session[:change_js]==9||session[:change_js]==10)%>
+          <%if sp_bsb.is_bad_report? && (current_user.is_admin?||session[:user_js]==1||session[:change_js]==9||session[:change_js]==10)%>
             <%if (sp_bsb.sc_wtypcz_enabled?(current_user.user_s_province) or sp_bsb.lt_wtypcz_enabled?(current_user.user_s_province))||current_user.is_admin?||session[:change_js]==10%>
               <% if sp_bsb.wtyp_cz_present? %>
                 <a href="/wtyp_czbs/<%= sp_bsb.id%>/edit" class="btn btn-danger btn-xs">问题样品处理(<%= sp_bsb.status_desc %>)</a>

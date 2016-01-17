@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  sp_i_state: 1
+  sp_s_16: MyString
+  sp_s_3: MyString
+  sp_s_202: MyString
+
+two:
+  sp_i_state: 1
+  sp_s_16: MyString
+  sp_s_3: MyString
+  sp_s_202: MyString

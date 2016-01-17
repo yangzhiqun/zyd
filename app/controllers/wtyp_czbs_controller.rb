@@ -86,11 +86,12 @@ class WtypCzbsController < ApplicationController
           @sp_bsbs = SpBsb.select('sp_s_14, sp_s_16, sp_s_64, sp_s_68, sp_s_71, sp_s_202, sp_s_3, id, updated_at').where("bgfl = '24小时限时报告' AND sp_i_state = 9 AND czb_reverted_flag = 0 AND (sp_s_71 LIKE '%不合格%' OR sp_s_71 LIKE '%问题%')").order('updated_at DESC')
 
           if current_user.hcz_admin != 1
-            @sp_bsbs = @sp_bsbs.where("id NOT IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND bcydw_sheng = ?) OR (wtyp_czb_type = 1 AND bsscqy_sheng = ?))) AND (((sp_s_3 = ? OR sp_s_202 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_202 = ? AND sp_s_68 = '生产'))", current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province)
+            #@sp_bsbs = @sp_bsbs.where("id NOT IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND bcydw_sheng = ?) OR (wtyp_czb_type = 1 AND bsscqy_sheng = ?))) AND (((sp_s_3 = ? OR sp_s_202 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_202 = ? AND sp_s_68 = '生产'))", current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province)
+            @sp_bsbs = @sp_bsbs.where("id IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NULL OR current_state = 0 OR current_state IS NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND bcydw_sheng = ?) OR (wtyp_czb_type = 1 AND bsscqy_sheng = ?))) AND (((sp_s_3 = ? OR sp_s_202 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_202 = ? AND sp_s_68 = '生产'))", current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province)
           else
             # @sp_bsbs = @sp_bsbs.where('id NOT IN (SELECT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL))').group('sp_bsb_id').having('count(1) = 2')
             @sp_bsbs = @sp_bsbs.where('id NOT IN (SELECT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL) group by sp_bsb_id having(count(1))=2)') #.group('sp_bsb_id').having('count(1) = 2')
-          end
+					end
 
           # 样品名称
           unless params[:ypmc].blank?
@@ -195,7 +196,8 @@ class WtypCzbsController < ApplicationController
           @sp_bsbs = SpBsb.select('sp_s_14, sp_s_16, sp_s_64, sp_s_68, sp_s_71, sp_s_202, sp_s_3, id, updated_at').where("sp_i_state = 9 AND czb_reverted_flag = 0 AND sp_s_71 LIKE '%不合格%'").order('updated_at DESC')
 
           if current_user.hcz_admin != 1
-            @sp_bsbs = @sp_bsbs.where("id NOT IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND bcydw_sheng = ?) OR (wtyp_czb_type = 1 AND bsscqy_sheng = ?))) AND (((sp_s_3 = ? OR sp_s_202 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_202 = ? AND sp_s_68 = '生产'))", current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province)
+            #@sp_bsbs = @sp_bsbs.where("id NOT IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND bcydw_sheng = ?) OR (wtyp_czb_type = 1 AND bsscqy_sheng = ?))) AND (((sp_s_3 = ? OR sp_s_202 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_202 = ? AND sp_s_68 = '生产'))", current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province)
+            @sp_bsbs = @sp_bsbs.where("id IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NULL OR current_state = 0 OR current_state IS NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND bcydw_sheng = ?) OR (wtyp_czb_type = 1 AND bsscqy_sheng = ?))) AND (((sp_s_3 = ? OR sp_s_202 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_202 = ? AND sp_s_68 = '生产'))", current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province)
           else
             @sp_bsbs = @sp_bsbs.where('id NOT IN (SELECT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL) group by sp_bsb_id having(count(1))=2)') #.group('sp_bsb_id').having('count(1) = 2')
           end
@@ -321,7 +323,8 @@ class WtypCzbsController < ApplicationController
           @sp_bsbs = SpBsb.select('sp_s_14, sp_s_16, sp_s_64, sp_s_68, sp_s_71, sp_s_202, sp_s_3, id, updated_at').where("sp_i_state = 9 AND czb_reverted_flag = 0 AND sp_s_71 LIKE '%问题%'").order('updated_at DESC')
 
           if current_user.hcz_admin != 1
-            @sp_bsbs = @sp_bsbs.where("id NOT IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND bcydw_sheng = ?) OR (wtyp_czb_type = 1 AND bsscqy_sheng = ?))) AND (((sp_s_3 = ? OR sp_s_202 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_202 = ? AND sp_s_68 = '生产'))", current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province)
+            #@sp_bsbs = @sp_bsbs.where("id NOT IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND bcydw_sheng = ?) OR (wtyp_czb_type = 1 AND bsscqy_sheng = ?))) AND (((sp_s_3 = ? OR sp_s_202 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_202 = ? AND sp_s_68 = '生产'))", current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province)
+            @sp_bsbs = @sp_bsbs.where("id IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NULL OR current_state = 0 OR current_state IS NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND bcydw_sheng = ?) OR (wtyp_czb_type = 1 AND bsscqy_sheng = ?))) AND (((sp_s_3 = ? OR sp_s_202 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_202 = ? AND sp_s_68 = '生产'))", current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province)
           else
             # @sp_bsbs = @sp_bsbs.where('id NOT IN (SELECT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL))').group('sp_bsb_id').having('count(1) = 2')
             @sp_bsbs = @sp_bsbs.where('id NOT IN (SELECT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL) group by sp_bsb_id having(count(1))=2)') #.group('sp_bsb_id').having('count(1) = 2')
@@ -690,7 +693,7 @@ class WtypCzbsController < ApplicationController
       SpBsb.record_timestamps = false
       @sp_bsbs = SpBsb.where(id: params[:ids].split(','))
       @sp_bsbs.each do |bsb|
-        bsb.update_attribute("czb_reverted_flag", true)
+        bsb.update_attributes("czb_reverted_flag" => true, "czb_reverted_reason" => "操作时间：" + Time.now.to_s + ", 原因：" + params[:thyy] + ", 操作人员：" + session[:user_tname])
       end
       SpBsb.record_timestamps = true
     else

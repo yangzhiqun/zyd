@@ -119,18 +119,18 @@
                                 <td style="width:79px;"><%= link_to '待机构审核', edit_sp_bsb_path(sp_bsb) %></td>
                             <%elsif sp_bsb["sp_i_state"]==6 %>
                                 <td style="width:79px;"><%= link_to '待省局审核', edit_sp_bsb_path(sp_bsb) %></td>
-                                <%if  ((sp_bsb.sp_s_71.include? '问题样品')or(sp_bsb.sp_s_71.include? '不合格样品'))&&(session[:user_name]=='admin'||session[:user_js]==1)%>
+                                <%if  ((sp_bsb.sp_s_71.include? '问题样品')or(sp_bsb.sp_s_71.include? '不合格样品'))&&(current_user.is_admin?||session[:user_js]==1)%>
                                    <%if sp_bsb.wtyp_state==nil&&sp_bsb.wtyp_state_sc==nil%> 
                                         <td style="width:79px;"><%= link_to '问题样品处理(未进行)', :controller => "wtyp_czbs",:action => "new", :id =>sp_bsb %></td>
                                    <%else%>
-                                        <%if (session[:user_province]!=sp_bsb.sp_s_3&&session[:user_province]==sp_bsb.sp_s_202)||session[:user_name]=='admin'||session[:change_js]==10%>
+                                        <%if (session[:user_province]!=sp_bsb.sp_s_3&&session[:user_province]==sp_bsb.sp_s_202)||current_user.is_admin?||session[:change_js]==10%>
                                             <%if sp_bsb.wtyp_state_sc==nil%>
                                                 <td style="width:79px;"><%= link_to '问题样品处理(未进行)', :controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb %></td>
                                             <%else%>
                                                 <td style="width:79px;"><%= link_to '问题样品处理('+sp_bsb.wtyp_state_sc+')', :controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb %></td>
                                             <%end%>
                                         <%end%>
-                                        <%if (session[:user_province]==sp_bsb.sp_s_3)||session[:user_name]=='admin'||session[:change_js]==10%>
+                                        <%if (session[:user_province]==sp_bsb.sp_s_3)||current_user.is_admin?||session[:change_js]==10%>
                                             <%if sp_bsb.wtyp_state==nil%>
                                                 <td style="width:79px;"><%= link_to '问题样品处理(未进行)', :controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb %></td>
                                             <%else%>
@@ -141,18 +141,18 @@
                                 <%end%>
                             <%elsif sp_bsb["sp_i_state"]==8 %>
                                 <td style="width:79px;"><%= link_to '待牵头单位审核', edit_sp_bsb_path(sp_bsb) %></td>
-                                <%if  ((sp_bsb.sp_s_71.include? '问题样品')or(sp_bsb.sp_s_71.include? '不合格样品'))&&(session[:user_name]=='admin'||session[:user_js]==1)%>
+                                <%if  ((sp_bsb.sp_s_71.include? '问题样品')or(sp_bsb.sp_s_71.include? '不合格样品'))&&(current_user.is_admin?||session[:user_js]==1)%>
                                    <%if sp_bsb.wtyp_state==nil&&sp_bsb.wtyp_state_sc==nil%> 
                                         <td style="width:79px;"><%= link_to '问题样品处理(未进行)', :controller => "wtyp_czbs",:action => "new", :id =>sp_bsb %></td>
                                    <%else%>
-                                        <%if (session[:user_province]!=sp_bsb.sp_s_3&&session[:user_province]==sp_bsb.sp_s_202)||session[:user_name]=='admin'||session[:change_js]==10%>
+                                        <%if (session[:user_province]!=sp_bsb.sp_s_3&&session[:user_province]==sp_bsb.sp_s_202)||current_user.is_admin?||session[:change_js]==10%>
                                             <%if sp_bsb.wtyp_state_sc==nil%>
                                                 <td style="width:79px;"><%= link_to '问题样品处理(未进行)', :controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb %></td>
                                             <%else%>
                                                 <td style="width:79px;"><%= link_to '问题样品处理('+sp_bsb.wtyp_state_sc+')', :controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb %></td>
                                             <%end%>
                                         <%end%>
-                                        <%if (session[:user_province]==sp_bsb.sp_s_3)||session[:user_name]=='admin'||session[:change_js]==10%>
+                                        <%if (session[:user_province]==sp_bsb.sp_s_3)||current_user.is_admin?||session[:change_js]==10%>
                                             <%if sp_bsb.wtyp_state==nil%>
                                                 <td style="width:79px;"><%= link_to '问题样品处理(未进行)', :controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb %></td>
                                             <%else%>
@@ -164,18 +164,18 @@
                                 <%elsif sp_bsb["sp_i_state"]==9%>
 									<td style="width:79px;"><%= link_to '已完全提交', sp_bsb %></td>
 									<td style="width:79px;"><a class="print-sp-bsb" href="/sp_bsbs/<%= sp_bsb.id%>/print.pdf" target="_blank">打印</a></td>
-									<%if ((sp_bsb.sp_s_71.include? '问题样品')or(sp_bsb.sp_s_71.include? '不合格样品'))&&(session[:user_name]=='admin'||session[:user_js]==1||session[:change_js]==9||session[:change_js]==10)%>
+									<%if ((sp_bsb.sp_s_71.include? '问题样品')or(sp_bsb.sp_s_71.include? '不合格样品'))&&(current_user.is_admin?||session[:user_js]==1||session[:change_js]==9||session[:change_js]==10)%>
                                     <%if sp_bsb.wtyp_state==nil&&sp_bsb.wtyp_state_sc==nil%> 
                                         <td style="width:79px;" ><%= link_to '问题样品处理1(未进行)', :controller => "wtyp_czbs",:action => "new", :id =>sp_bsb %></td>
                                     <%else%>
-                                        <%if (session[:user_province]!=sp_bsb.sp_s_3&&session[:user_province]==sp_bsb.sp_s_202)||session[:user_name]=='admin'||session[:change_js]==10%>
+                                        <%if (session[:user_province]!=sp_bsb.sp_s_3&&session[:user_province]==sp_bsb.sp_s_202)||current_user.is_admin?||session[:change_js]==10%>
                                             <%if sp_bsb.wtyp_state_sc==nil%>
                                                 <td style="width:79px;"><%= link_to '问题样品处理2(未进行)',{:controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb},{:width=>80} %></td>
                                             <%else%>
                                                 <td style="width:79px;"><%= link_to '问题样品处理3('+sp_bsb.wtyp_state_sc+')', :controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb %></td>
                                             <%end%>
                                         <%end%>
-                                        <%if (session[:user_province]==sp_bsb.sp_s_3)||session[:user_name]=='admin'||session[:change_js]==10%>
+                                        <%if (session[:user_province]==sp_bsb.sp_s_3)||current_user.is_admin?||session[:change_js]==10%>
                                             <%if sp_bsb.wtyp_state==nil%>
                                                 <td style="width:79px;"><%= link_to '问题样品处理4(未进行)', :controller => "wtyp_czbs",:action => "edit", :id =>sp_bsb %></td>
                                             <%else%>

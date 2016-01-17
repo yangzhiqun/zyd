@@ -10,26 +10,26 @@ class SpBsbsController < ApplicationController
   def print
     @spbsb = SpBsb.find(params[:id])
     @jg_bsb = JgBsb.find_by_jg_name(@spbsb.sp_s_43)
-    @jyxm_str = Spdatum.where('sp_bsb_id= ? and spdata_2 <> ?', @spbsb.id, '未检验').limit(3).map { |s| s.spdata_0 }.join(",") + "等#{Spdatum.where("sp_bsb_id= ? and spdata_2 <> ?", @spbsb.id, '未检验').count}项。"
+    @jyxm_str = Spdatum.where('sp_bsb_id= ? and (spdata_2 = ? or spdata_2 = ?)', @spbsb.id,'合格项','不合格项').limit(3).map { |s| s.spdata_0 }.join(",") + "等#{Spdatum.where("sp_bsb_id= ? and (spdata_2 = ? or spdata_2 = ?)", @spbsb.id, '合格项','不合格项').count}项。"
     #@jyjy_str = Spdatum.where(:sp_bsb_id => @spbsb.id,!spdata_4.eql?('/')).limit(2).map{|s| s.spdata_3}.join(",")
     @jyjy_str = Spdatum.where("sp_bsb_id= ? and spdata_4 <> ?", @spbsb.id, '/').limit(2).map { |s| s.spdata_3 }.join(",")
     @jyjy_str4 = Spdatum.where("sp_bsb_id= ? and spdata_4 <> ?", @spbsb.id, '/').limit(2).map { |s| s.spdata_4 }.join(",")
-    @jyjy_struni = (Spdatum.where("sp_bsb_id= ? and spdata_4 <> ?", @spbsb.id, '/').limit(2).map { |s| s.spdata_3 }+Spdatum.where("sp_bsb_id= ? and spdata_4 <> ?", @spbsb.id, '/').limit(2).map { |s| s.spdata_4 }).uniq.join(",")
     #@jyjy_str1 = Spdatum.where(:sp_bsb_id => @spbsb.id,:spdata_4 => '/').map{|s| s.spdata_3}.join(",")
     @jyjy_str1 = Spdatum.where("sp_bsb_id = ? and (spdata_4 = ? OR spdata_4 = ?)", @spbsb.id, '/', '-').map { |s| s.spdata_3 }.uniq.join(",")
     @splog = SpLog.where("sp_bsb_id = ? AND remark = ?", @spbsb.id, "检测机构批准").last
     #抽检项
     @cjx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE '%合格项%' OR spdata_2 LIKE '%不合格项%')", @spbsb.id)
+    @jyjy_struni = (@cjx.where("sp_bsb_id= ? and spdata_4 <> ?", @spbsb.id, '/').limit(2).map { |s| s.spdata_3 }).uniq.join(",")
     #风险项
     @fxx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE '%不判定项%' OR spdata_2 LIKE '%问题项%')", @spbsb.id)
     #问题项
-    @wtx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE ? OR spdata_2 LIKE ?)", @spbsb.id, "%不合格%", "%问题%")
+    @wtx = Spdatum.where("sp_bsb_id = ? AND spdata_2 LIKE ?", @spbsb.id, "%不合格%")
     #合格项检验依据，取合格项的spdata_4
     #@hgx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE ?)", @spbsb.id, "%合格项%")
     @jyyj_hgx_str4 = "经抽样检验，所检项目符合" + Spdatum.where("sp_bsb_id= ? and spdata_4 <> ? and spdata_2 like ?", @spbsb.id, '/', "%合格项%").map { |s| s.spdata_4 }.uniq.join(",")+"要求。"
 
     #问题项字符串
-    @wtx_str = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE ? OR spdata_2 LIKE ?)", @spbsb.id, "%不合格%", "%问题%").map { |s| s.spdata_0 }.join(",")
+    @wtx_str = Spdatum.where("sp_bsb_id = ? AND spdata_2 LIKE ? ", @spbsb.id, "%问题%").map { |s| s.spdata_0 }.join(",")
     #检查封样人员
     @padsplog_jcfy = PadSpLogs.where("sp_s_16 = ? AND remark = ?", @spbsb.sp_s_16, "接受样品").last
     @splog_jcfy = SpLog.where("sp_bsb_id = ? AND remark = ?", @spbsb.id, "基本信息提交入库").last
@@ -147,17 +147,17 @@ class SpBsbsController < ApplicationController
     @options=[]
     @avala.each do |i|
       @options[i] = Flexcontent.where(flex_field: "sp_bsb_sp_s_#{i}").order("flex_sortid ASC")
-      @options[i] = @options[i].map { |option| [option[:flex_name], option[:flex_id]] }
+      @options[i] = @options[i].map { |option| [option[:flex_name], option[:flex_id]] }.unshift(['请选择', nil])
     end
 
-    @xkz_options=[['请选择', '请选择'], ['流通许可证', '流通许可证'], ['餐饮服务许可证', '餐饮服务许可证']]
+    @xkz_options=[['请选择', ''], ['流通许可证', '流通许可证'], ['餐饮服务许可证', '餐饮服务许可证']]
 
     @jg_bsbs = JgBsb.where('status = 0 and jg_sp_permission = 1 and jg_detection = 1', session[:user_province]).order('jg_province')
   end
 
   #2014-01-12
   def data_owner(params_data)
-    if session[:user_name]=='admin'||session[:change_js]==9||session[:change_js]==10
+    if current_user.is_admin?||session[:change_js]==9||session[:change_js]==10
       return 1
     end
     if params_data.tname==session[:user_name]
@@ -223,44 +223,6 @@ class SpBsbsController < ApplicationController
     @sp_bsb=sp_bsb
     @sp_jcxcount=@sp_bsb.sp_n_jcxcount
     @sp_data=Spdatum.where(sp_bsb_id: params[:id])
-
-    unless @sp_bsb.sp_s_70.blank?
-      @sp_s_67s = BaosongB.where(baosong_a_id: BaosongA.find_by_name(@sp_bsb.sp_s_70).id)
-    else
-      @sp_s_67s = []
-    end
-
-    if !@sp_s_67s.blank? and !@sp_bsb.sp_s_67.blank?
-      @sp_s_67 = @sp_s_67s.where(name: @sp_bsb.sp_s_67).first
-    end
-
-    unless @sp_s_67.nil?
-      @a_categories = ACategory.where(:identifier => @sp_s_67.identifier)
-    else
-      @a_categories = []
-    end
-
-    if !@sp_bsb.sp_s_17.blank? and !@sp_bsb.sp_s_17.eql?("请选择")
-      @b_categories = BCategory.where(:identifier => @sp_s_67.identifier, a_category_id: @a_categories.where(name: @sp_bsb.sp_s_17).first.id)
-    else
-      @b_categories = []
-    end
-
-    if !@sp_bsb.sp_s_18.blank? and !@sp_bsb.sp_s_18.eql?("请选择")
-      @c_categories = CCategory.where(:identifier => @sp_s_67.identifier, b_category_id: @b_categories.where(name: @sp_bsb.sp_s_18).first.id)
-    else
-      @c_categories = []
-    end
-
-    if !@sp_bsb.sp_s_19.blank? and !@sp_bsb.sp_s_19.eql?("请选择")
-      @d_categories = DCategory.where(:identifier => @sp_s_67.identifier, c_category_id: @c_categories.where(name: @sp_bsb.sp_s_19).first.id)
-    else
-      @d_categories = []
-    end
-
-    if @sp_jcxcount==nil
-      @sp_jcxcount=1
-    end
   end
 
   # 推送基本数据
@@ -342,18 +304,20 @@ class SpBsbsController < ApplicationController
       end
       return
     end
-    @sp_bsb=sp_bsb
-    @sp_jcxcount=@sp_bsb.sp_n_jcxcount
-    @sp_bsb.sp_s_55=''
-    if @sp_jcxcount==nil
-      @sp_jcxcount=1
+    @sp_bsb = sp_bsb
+    @sp_jcxcount = @sp_bsb.sp_n_jcxcount
+    @sp_bsb.sp_s_55 = ''
+    if @sp_jcxcount.nil?
+      @sp_jcxcount = 1
     end
-    if @sp_bsb.sp_s_85==''||@sp_bsb.sp_s_85==nil
-      @sp_bsb.sp_s_85=session[:user_tname]
-      @sp_bsb.sp_s_87=session[:user_tel]
-      @sp_bsb.sp_s_88=session[:user_mail]
+
+    if @sp_bsb.sp_s_85.blank?
+      @sp_bsb.sp_s_85 = current_user.tname
+      @sp_bsb.sp_s_87 = current_user.tel
+      @sp_bsb.sp_s_88 = current_user.eaddress
     end
-    @sp_data=Spdatum.where(sp_bsb_id: params[:id])
+
+    @sp_data = Spdatum.where(sp_bsb_id: params[:id])
 
     unless @sp_bsb.sp_s_70.blank?
       @sp_s_67s = BaosongB.where(baosong_a_id: BaosongA.find_by_name(@sp_bsb.sp_s_70).id)
@@ -494,7 +458,6 @@ class SpBsbsController < ApplicationController
       respond_to do |format|
         @original_updated_at = nil
 
-
         if (params[:sp_bsb][:sp_i_state].to_i == 9 && current_user.is_admin?)
           @role_name = '秘书处直接修改'
 
@@ -533,12 +496,25 @@ class SpBsbsController < ApplicationController
           @sp_bsb.submit_d_flag = Time.now.ago(3600*8).to_s(:db)
         end
 
-        if @role_name.eql?'检测机构批准'
-          @sp_bsb.sp_d_47 = Time.now
+				if @role_name.blank?
+					@role_name = params[:commit]
+				end
+        @loglaststate=SpLog.where("sp_bsb_id = ? ", params[:id]).last
+        if @loglaststate.nil? 
+          @loglaststatesign = false
+        else
+          if params[:sp_bsb][:sp_i_state].to_s == '9' and @loglaststate.sp_i_state.to_s == '5'
+            @loglaststatesign = true
+          else
+            @loglaststatesign = false
+          end
+        end
+        if @role_name.eql?'检测机构批准' or params[:sp_bsb][:sp_i_state].to_s == '6' or @loglaststatesign
           @sp_bsb.sp_s_48 = current_user.tname
         end
 
-        if @sp_bsb.update_attributes(sp_bsb_params)
+        @sp_bsb.assign_attributes(sp_bsb_params)
+        if @sp_bsb.save
           # 如果original 存在，则回退updated_at时间
           if @original_updated_at.present?
             SpBsb.record_timestamps = false
@@ -576,11 +552,12 @@ class SpBsbsController < ApplicationController
           if !session[:userCert].blank? and !@sp_bsb.ca_sign.blank?
             SpBsbCert.create(source: @sp_bsb.ca_source, user_cert: session[:userCert], sign: @sp_bsb.ca_sign, user_id: current_user.id, sp_i_state: @sp_bsb.sp_i_state, sp_bsb_id: @sp_bsb.id)
           end
-
+          
           if @role_name.blank?
-            @role_name = params[:commit]
+            if params[:sp_bsb][:sp_i_state].to_s == '6' or (params[:sp_bsb][:sp_i_state].to_s == '9' and @loglaststate.sp_i_state.to_s == '5')
+              @role_name = '检测机构批准'
+            end
           end
-
           SpLog.create(:sp_bsb_id => params[:id], :sp_i_state => params[:sp_bsb][:sp_i_state], :remark => @role_name, :user_id => session[:user_id])
 
           format.json { render :json => {:status => "保存成功!", :msg => "保存成功!"} }
@@ -620,8 +597,10 @@ class SpBsbsController < ApplicationController
           else
             @d_categories = []
           end
+          flash[:import_result] = @sp_bsb.errors.first.last
+          @sp_bsb = SpBsb.find(@sp_bsb.id)
           format.html { render action: "edit" }
-          format.json { render json: {status: '保存出错!', msg: '修改不成功!'} }
+          format.json { render json: {status: '保存出错!', msg: "修改不成功! #{flash[:import_result]}"} }
         end
       end
     end
@@ -651,7 +630,7 @@ class SpBsbsController < ApplicationController
       end
     end
 
-    @sp_bsbs = SpBsb.select("id, updated_at, sp_s_3, sp_s_14, sp_s_16, sp_s_43, sp_s_214, sp_s_35, sp_s_71, sp_s_202, sp_i_state, fail_report_path")
+    @sp_bsbs = TmpSpBsb.select("id, updated_at, sp_s_3, sp_s_14, sp_s_16, sp_s_43, sp_s_214, sp_s_35, sp_s_71, sp_s_202, sp_i_state, fail_report_path, czb_reverted_flag")
 
     if params[:r1]
       session[:change_js]=params[:r1].to_i
@@ -818,9 +797,15 @@ class SpBsbsController < ApplicationController
     elsif session[:change_js]==8&&params[:flag]=="tabs_4"
       @sp_bsbs = @sp_bsbs.where("sp_i_state = 9")
     end
+    if params[:flag]=="tabs_5"
+      @sp_bsbs =@sp_bsbs.where("sp_i_state = 3")
+    end
+    if params[:flag]=="tabs_6"
+      @sp_bsbs =@sp_bsbs.where("czb_reverted_flag = 1")
+    end
 
     if params[:s8]=='10'
-      if session[:user_name]=='admin'||session[:change_js]==10
+      if current_user.is_admin?||session[:change_js]==10
         @sp_bsbs = @sp_bsbs.where("sp_s_70 = '抽检监测(总局本级)'").paginate(page: params[:page], per_page: 10)
 
         respond_to do |format|
@@ -832,7 +817,7 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:s8]=='11'
-      if session[:user_name]=='admin'||session[:change_js]==10
+      if current_user.is_admin?||session[:change_js]==10
         @sp_bsbs = @sp_bsbs.where("sp_s_70 = '抽检监测（地方）'").paginate(page: params[:page], per_page: 10)
 
         respond_to do |format|
@@ -844,7 +829,7 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:s8]=='12'
-      if session[:user_name]=='admin'||session[:change_js]==10
+      if current_user.is_admin?||session[:change_js]==10
         @sp_bsbs = @sp_bsbs.where("sp_s_70 = '三司专项检验'").paginate(page: params[:page], per_page: 10)
         respond_to do |format|
           format.html { render action: "index" }
@@ -855,7 +840,7 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:s8]=='13'
-      if session[:user_name]=='admin'||session[:change_js]==10
+      if current_user.is_admin?||session[:change_js]==10
         @sp_bsbs = @sp_bsbs.where("sp_s_70 = '网络专项检验'").paginate(page: params[:page], per_page: 10)
         respond_to do |format|
           format.html { render action: "index" }
@@ -901,7 +886,7 @@ class SpBsbsController < ApplicationController
           @sp_bsbs = @sp_bsbs.where("sp_i_state = 9 AND sp_s_70 NOT LIKE '%一司%' AND sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         end
       end
-    elsif session[:user_name]=='admin'||session[:change_js]==10
+    elsif current_user.is_admin?||session[:change_js]==10
       @sp_bsbs = @sp_bsbs.paginate(page: params[:page], per_page: 10)
     else
       if session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
@@ -941,7 +926,7 @@ class SpBsbsController < ApplicationController
 
   # get /sp_bsbs/submit
   def submit
-    #if session[:user_name]=='admin'
+    #if current_user.is_admin?
     @sp_bsb = SpBsb.find(params[:id])
     @sp_bsb.update_attribute(:sp_i_state, 1)
     #end
@@ -967,7 +952,7 @@ class SpBsbsController < ApplicationController
           sheet1.each_with_index do |row, index|
             if i_num<=0
               i_num=i_num+1
-            elsif (row[9]!=nil&&("安徽','澳门','北京','福建','甘肃','广东','广西','贵州','海南','河北','河南','黑龙江','湖北','湖南','吉林','江苏','江西','辽宁','内蒙古','宁夏','青海','山东','山西','陕西','上海','四川','台湾','天津','西藏','香港','新疆','云南','浙江','重庆','兵团".include? row[9]))||(session[:user_name]=='admin'&&row[9]!=nil)
+            elsif (row[9]!=nil&&("安徽','澳门','北京','福建','甘肃','广东','广西','贵州','海南','河北','河南','黑龙江','湖北','湖南','吉林','江苏','江西','辽宁','内蒙古','宁夏','青海','山东','山西','陕西','上海','四川','台湾','天津','西藏','香港','新疆','云南','浙江','重庆','兵团".include? row[9]))||(current_user.is_admin?&&row[9]!=nil)
               result_record=SpBsb.find(:first, :conditions => ["sp_s_16=?", row[25]])
 
               if result_record==nil&&row[62]!=nil&&row[21]!=nil&&row[9]!=nil&&row[29]!=nil&&row[25]!=nil&&row[5]!=nil&&row[26]!=nil&&row[3]!=nil&&row[50]!=nil&&row[0]!=nil&&row[1]!=nil&&row[2]!=nil&&"抽检监测（总局本级三司）','抽检监测（总局本级一司）','抽检监测（三司专项）','抽检监测（省级）','抽检监测（地方）".include?(row[1])&&BaosongB.exists?(name: row[2])
@@ -1102,7 +1087,7 @@ class SpBsbsController < ApplicationController
           if i_num<=0
             i_num=i_num+1
           else
-            if (session[:user_name]=='admin')
+            if (current_user.is_admin?)
               @result_record=SpBsb.find_by_sql(["select sp_bsbs.id as id1,spdata.id as id2 from sp_bsbs,spdata where sp_s_16=? and sp_bsbs.id=spdata.sp_bsb_id and spdata_0=?", row[0], row[1]])
               if @result_record!=nil
                 ActiveRecord::Base.transaction do
@@ -1154,7 +1139,7 @@ class SpBsbsController < ApplicationController
           if i_num<=0
             i_num=i_num+1
           else
-            if (session[:user_name]=='admin')
+            if (current_user.is_admin?)
               result_record=SpBsb.find(:first, :conditions => ["sp_s_16=?", row[1]])
               if result_record!=nil
                 ActiveRecord::Base.transaction do
@@ -1211,7 +1196,11 @@ class SpBsbsController < ApplicationController
   # 抽样检验告知书
   def cyjygzs
     @sp_bsb = SpBsb.find(params[:id])
-    send_file("#{@sp_bsb.cyjygzs_file}", :filename => "#{@sp_bsb.sp_s_16}抽样检验告知书#{File.extname(@sp_bsb.cyjygzs_file)}", :disposition => 'inline')
+    if @sp_bsb.cyjygzs_file_path.blank?
+      render text: "该样品的【抽样检验告知书电子版】不存在"
+    else
+      send_file("#{@sp_bsb.cyjygzs_file}", :filename => "#{@sp_bsb.sp_s_16}抽样检验告知书#{File.extname(@sp_bsb.cyjygzs_file)}", :disposition => 'inline')
+    end
   end
 
   def fail_pdf_report
@@ -1332,7 +1321,7 @@ class SpBsbsController < ApplicationController
   private
   def sp_bsb_params
     params.require(:sp_bsb).permit(
-        :report_path, :sp_s_1, :sp_s_2, :sp_s_3, :sp_s_4, :sp_s_5, :sp_s_6, :sp_s_7, :sp_s_8, :sp_s_9, :sp_s_10, :sp_s_11, :sp_s_12, :sp_s_13, :sp_s_14, :sp_n_15, :sp_s_16, :sp_s_17, :sp_s_18, :sp_s_19, :sp_s_20, :sp_s_21, :sp_d_22, :sp_s_23, :sp_s_24, :sp_s_25, :sp_s_26, :sp_s_27, :sp_d_28, :sp_n_29, :sp_s_30, :sp_n_31, :sp_n_32, :sp_s_33, :sp_s_34, :sp_s_35, :sp_s_36, :sp_s_37, :sp_d_38, :sp_s_39, :sp_s_40, :sp_s_41, :sp_s_42, :sp_s_43, :sp_s_44, :sp_s_45, :sp_d_46, :sp_s_49, :sp_s_50, :sp_s_51, :sp_s_52, :sp_s_53, :sp_s_54, :sp_s_55, :sp_s_56, :sp_s_57, :sp_s_58, :sp_s_59, :sp_s_60, :sp_s_61, :sp_s_62, :sp_s_63, :sp_s_64, :sp_s_65, :sp_s_66, :sp_s_67, :sp_s_68, :sp_s_69, :sp_s_70, :sp_s_71, :sp_s_72, :sp_s_73, :sp_s_74, :sp_s_75, :sp_s_76, :sp_s_77, :sp_s_78, :sp_s_79, :sp_s_80, :sp_s_81, :sp_s_82, :sp_s_83, :sp_s_84, :sp_s_85, :sp_d_86, :sp_s_87, :sp_s_88, :tname,
+        :report_path, :sp_s_1, :sp_s_2, :sp_s_3, :sp_s_4, :sp_s_5, :sp_s_6, :sp_s_7, :sp_s_8, :sp_s_9, :sp_s_10, :sp_s_11, :sp_s_12, :sp_s_13, :sp_s_14, :sp_n_15, :sp_s_16, :sp_s_17, :sp_s_18, :sp_s_19, :sp_s_20, :sp_s_21, :sp_d_22, :sp_s_23, :sp_s_24, :sp_s_25, :sp_s_26, :sp_s_27, :sp_d_28, :sp_n_29, :sp_s_30, :sp_n_31, :sp_n_32, :sp_s_33, :sp_s_34, :sp_s_35, :sp_s_36, :sp_s_37, :sp_d_38, :sp_s_39, :sp_s_40, :sp_s_41, :sp_s_42, :sp_s_43, :sp_s_44, :sp_s_45, :sp_d_46, :sp_d_47, :sp_s_48, :sp_s_49, :sp_s_50, :sp_s_51, :sp_s_52, :sp_s_53, :sp_s_54, :sp_s_55, :sp_s_56, :sp_s_57, :sp_s_58, :sp_s_59, :sp_s_60, :sp_s_61, :sp_s_62, :sp_s_63, :sp_s_64, :sp_s_65, :sp_s_66, :sp_s_67, :sp_s_68, :sp_s_69, :sp_s_70, :sp_s_71, :sp_s_72, :sp_s_73, :sp_s_74, :sp_s_75, :sp_s_76, :sp_s_77, :sp_s_78, :sp_s_79, :sp_s_80, :sp_s_81, :sp_s_82, :sp_s_83, :sp_s_84, :sp_s_85, :sp_d_86, :sp_s_87, :sp_s_88, :tname,
         :sp_n_jcxcount,
         :cyd_file, :cyjygzs_file,
         :yydj_enabled_by_admin_at,
@@ -1670,6 +1659,9 @@ class SpBsbsController < ApplicationController
         :sp_s_213,
         :sp_s_214,
         :sp_s_215,
+        :sp_s_220,
+        :sp_s_221,
+        :sp_s_222,
         :fail_report_path,
         :fail_report_at,
         :bgfl,
@@ -1677,6 +1669,7 @@ class SpBsbsController < ApplicationController
         :sp_xkz_id,
         :updated_at,
         :czb_reverted_flag,
+        :czb_reverted_reason,
         :synced, :ca_source, :ca_sign
     )
   end

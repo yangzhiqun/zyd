@@ -97,7 +97,7 @@
         <td><%= link_to '删除', hzp_bsb, method: :delete, data: { confirm: '是否删除?' } %></td>
     <%elsif hzp_bsb["hzp_i_state"]==4%>
         <td><%= link_to '查看', hzp_bsb %></td>
-        <%if session[:user_name]=='admin'%>
+        <%if current_user.is_admin?%>
             <td><%= link_to '退修', :controller => "hzp_bsbs",:action => "submit", :id =>hzp_bsb %></td>
         <%end%>
     <%elsif hzp_bsb["hzp_i_state"]==10 %>

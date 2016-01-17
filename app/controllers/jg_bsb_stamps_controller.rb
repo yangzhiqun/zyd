@@ -3,6 +3,7 @@ class JgBsbStampsController < ApplicationController
   # GET /jg_bsb_stamps.json
   def index
     @jg_bsb_stamps = JgBsbStamp.where(jg_bsb_id: params[:jg_bsb_id])
+		@jg_bsb = JgBsb.find(params[:jg_bsb_id])
 
     respond_to do |format|
       format.html # index.html.erb
@@ -41,14 +42,18 @@ class JgBsbStampsController < ApplicationController
   #require 'rmagick'
   def cover
     @jg_bsb_stamp = JgBsbStamp.find(params[:jg_bsb_stamp_id])
-    md5 = Digest::MD5.file(@jg_bsb_stamp.image_file).hexdigest.upcase
-    thumbnail_path = Rails.root.join('tmp', "#{md5}.preview")
-    unless File.exists?(thumbnail_path)
-      image = Magick::Image::read(@jg_bsb_stamp.image_file).first
-      image.resize_to_fit!(150)
-      image.write(thumbnail_path)
-    end
-    send_file thumbnail_path, :disposition => 'inline'
+		if @jg_bsb_stamp.image_file.present? and File.exists?(@jg_bsb_stamp.image_file)
+			md5 = Digest::MD5.file(@jg_bsb_stamp.image_file).hexdigest.upcase
+			thumbnail_path = Rails.root.join('tmp', "#{md5}.preview")
+			unless File.exists?(thumbnail_path)
+				image = Magick::Image::read(@jg_bsb_stamp.image_file).first
+				image.resize_to_fit!(150)
+				image.write(thumbnail_path)
+			end
+			send_file thumbnail_path, :disposition => 'inline'
+		else
+			render text: 'no image'
+		end
   end
 
   # POST /jg_bsb_stamps
@@ -90,13 +95,13 @@ class JgBsbStampsController < ApplicationController
     @jg_bsb_stamp.destroy
 
     respond_to do |format|
-      format.html { redirect_to jg_bsb_stamps_url }
+      format.html { redirect_to jg_bsb_stamps_url(jg_bsb_id: @jg_bsb_stamp.jg_bsb_id) }
       format.json { head :no_content }
     end
   end
 
   private
   def jg_bsb_stamp_params
-    params.require(:jg_bsb_stamp).permit(:jg_bsb_id, :note, :stamp_no, :image_path, :image_file)
+    params.require(:jg_bsb_stamp).permit(:jg_bsb_id, :note, :stamp_no, :image_path, :image_file, :name, :stamp_type)
   end
 end

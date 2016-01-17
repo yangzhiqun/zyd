@@ -190,34 +190,27 @@ class WtypCzb < ActiveRecord::Base
 
   def can_be_handled_by?(user)
     return false if user.hcz_admin == 1
-    Rails.logger.error "cccccccccccccccccccccccccc...................tick1"
 
 		t = WtypCzbPart.where("(wtyp_czb_type = #{::WtypCzbPart::Type::LT} AND bcydw_sheng = ?) OR (wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND bsscqy_sheng = ?)", user.user_s_province, user.user_s_province).last
     return true if !t.nil? and t.current_state == -1
-    Rails.logger.error "cccccccccccccccccccccccccc...................tick2"
 
-    return true if WtypCzbPart.count(:conditions => ["wtyp_czb_id = ?", self.id]) == 0
-    @records = WtypCzbPart.where("(bcydw_sheng = ? or bsscqy_sheng = ?) and wtyp_czb_id = ?", user.user_s_province, user.user_s_province, self.id)
+    return true if WtypCzbPart.where('wtyp_czb_id = ?', self.id).count == 0
+    @records = WtypCzbPart.where('(bcydw_sheng = ? or bsscqy_sheng = ?) and wtyp_czb_id = ?', user.user_s_province, user.user_s_province, self.id)
 
     if user.user_s_province.eql?(self.bcydw_sheng) or user.user_s_province.eql?(self.bsscqy_sheng)
       if user.hcz_czap == 1 and @records.where("current_state = ?", ::WtypCzb::State::LOGGED).count > 0
-        Rails.logger.error "cccccccccccccccccccccccccc...................tick3"
         return true
       end
 
       if user.hcz_czbl == 1 and @records.where("current_state = ?", ::WtypCzb::State::ASSIGNED).count > 0
-        Rails.logger.error "cccccccccccccccccccccccccc...................tick4"
         return true
       end
 
       if user.hcz_czsh == 1 and @records.where("current_state = ?", ::WtypCzb::State::FILLED).count > 0
-        Rails.logger.error "cccccccccccccccccccccccccc...................tick5"
         return true
       end
-      Rails.logger.error "cccccccccccccccccccccccccc...................tick6"
       return false
     else
-      Rails.logger.error "cccccccccccccccccccccccccc...................tick7"
       return false
     end
   end

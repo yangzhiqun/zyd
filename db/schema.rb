@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160101114136) do
+ActiveRecord::Schema.define(version: 20160116062117) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -21,6 +21,34 @@ ActiveRecord::Schema.define(version: 20160101114136) do
     t.datetime "updated_at",                            null: false
     t.string   "identifier", limit: 255
     t.boolean  "enable",                 default: true
+  end
+
+  create_table "a_categories_provinces", force: :cascade do |t|
+    t.integer  "sys_province_id", limit: 4
+    t.integer  "a_category_id",   limit: 4
+    t.integer  "quota",           limit: 4
+    t.string   "year",            limit: 255
+    t.string   "note",            limit: 255
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.integer  "b_category_id",   limit: 4
+    t.integer  "c_category_id",   limit: 4
+    t.integer  "d_category_id",   limit: 4
+    t.string   "identifier",      limit: 255
+  end
+
+  create_table "a_category_jg_bsbs", force: :cascade do |t|
+    t.integer  "a_category_id",   limit: 4
+    t.integer  "jg_bsb_id",       limit: 4
+    t.string   "note",            limit: 255
+    t.integer  "quota",           limit: 4
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.integer  "sys_province_id", limit: 4
+    t.integer  "b_category_id",   limit: 4
+    t.integer  "c_category_id",   limit: 4
+    t.integer  "d_category_id",   limit: 4
+    t.string   "identifier",      limit: 255
   end
 
   create_table "api_exchange_pools", force: :cascade do |t|
@@ -280,6 +308,49 @@ ActiveRecord::Schema.define(version: 20160101114136) do
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
   end
+
+  create_table "oauth_access_grants", force: :cascade do |t|
+    t.integer  "resource_owner_id", limit: 4,     null: false
+    t.integer  "application_id",    limit: 4,     null: false
+    t.string   "token",             limit: 255,   null: false
+    t.integer  "expires_in",        limit: 4,     null: false
+    t.text     "redirect_uri",      limit: 65535, null: false
+    t.datetime "created_at",                      null: false
+    t.datetime "revoked_at"
+    t.string   "scopes",            limit: 255
+  end
+
+  add_index "oauth_access_grants", ["token"], name: "index_oauth_access_grants_on_token", unique: true, using: :btree
+
+  create_table "oauth_access_tokens", force: :cascade do |t|
+    t.integer  "resource_owner_id", limit: 4
+    t.integer  "application_id",    limit: 4
+    t.string   "token",             limit: 255, null: false
+    t.string   "refresh_token",     limit: 255
+    t.integer  "expires_in",        limit: 4
+    t.datetime "revoked_at"
+    t.datetime "created_at",                    null: false
+    t.string   "scopes",            limit: 255
+  end
+
+  add_index "oauth_access_tokens", ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true, using: :btree
+  add_index "oauth_access_tokens", ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id", using: :btree
+  add_index "oauth_access_tokens", ["token"], name: "index_oauth_access_tokens_on_token", unique: true, using: :btree
+
+  create_table "oauth_applications", force: :cascade do |t|
+    t.string   "name",         limit: 255,                   null: false
+    t.string   "uid",          limit: 255,                   null: false
+    t.string   "secret",       limit: 255,                   null: false
+    t.text     "redirect_uri", limit: 65535,                 null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "user_id",      limit: 4
+    t.string   "prov",         limit: 255
+    t.string   "jg",           limit: 255
+    t.boolean  "auto_submit",                default: false
+  end
+
+  add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true, using: :btree
 
   create_table "orders", force: :cascade do |t|
     t.string   "name",       limit: 255
@@ -644,6 +715,15 @@ ActiveRecord::Schema.define(version: 20160101114136) do
   add_index "sessions", ["session_id"], name: "index_sessions_on_session_id", unique: true, using: :btree
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
 
+  create_table "sp_bsb_api_logs", force: :cascade do |t|
+    t.integer  "application_id", limit: 4
+    t.integer  "sp_bsb_id",      limit: 4
+    t.text     "snapshot",       limit: 65535
+    t.string   "note",           limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "sp_bsb_certs", force: :cascade do |t|
     t.text     "source",     limit: 65535
     t.text     "user_cert",  limit: 65535
@@ -814,6 +894,12 @@ ActiveRecord::Schema.define(version: 20160101114136) do
     t.datetime "synced_at"
     t.integer  "application_id",           limit: 4
     t.string   "czb_reverted_reason",      limit: 255
+<<<<<<< HEAD
+=======
+    t.string   "sp_s_220",                 limit: 10
+    t.string   "sp_s_221",                 limit: 10
+    t.string   "sp_s_222",                 limit: 20
+>>>>>>> ddb897c5b801af5a4ee953f61ffdaae254ead4c1
   end
 
   add_index "sp_bsbs", ["application_id"], name: "index_sp_bsbs_on_application_id", using: :btree
@@ -1243,6 +1329,15 @@ ActiveRecord::Schema.define(version: 20160101114136) do
     t.string   "sp_s_213",       limit: 255
     t.string   "sp_s_214",       limit: 255
     t.string   "sp_s_215",       limit: 255
+  end
+
+  create_table "static_queues", force: :cascade do |t|
+    t.string   "name",        limit: 255
+    t.integer  "user_id",     limit: 4
+    t.datetime "finished_at"
+    t.text     "msg",         limit: 65535
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
   end
 
   create_table "sys_provinces", force: :cascade do |t|
@@ -1733,6 +1828,25 @@ ActiveRecord::Schema.define(version: 20160101114136) do
     t.integer  "sp_bsb_id",  limit: 4
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
+  end
+
+  create_trigger("sp_bsbs_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("sp_bsbs").
+      after(:delete) do
+    "DELETE FROM tmp_sp_bsbs where id=OLD.id;"
+  end
+
+  create_trigger("sp_bsbs_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("sp_bsbs").
+      after(:insert) do
+    "INSERT INTO tmp_sp_bsbs(id, sp_i_state, sp_s_16, sp_s_3, sp_s_202, sp_s_14, sp_s_43, sp_s_2_1, sp_s_35, sp_s_64, sp_s_1, sp_s_17, sp_s_20, sp_s_85, created_at, updated_at, sp_s_214, sp_s_71, fail_report_path, tname, sp_s_18, sp_s_70, sp_s_215, sp_s_68, sp_s_13, sp_s_27, czb_reverted_flag) values(NEW.id, NEW.sp_i_state, NEW.sp_s_16, NEW.sp_s_3, NEW.sp_s_202, NEW.sp_s_14, NEW.sp_s_43, NEW.sp_s_2_1, NEW.sp_s_35, NEW.sp_s_64, NEW.sp_s_1, NEW.sp_s_17, NEW.sp_s_20, NEW.sp_s_85, NEW.created_at, NEW.updated_at, NEW.sp_s_214, NEW.sp_s_71, NEW.fail_report_path, NEW.tname, NEW.sp_s_18, NEW.sp_s_70, NEW.sp_s_215, NEW.sp_s_68, NEW.sp_s_13, NEW.sp_s_27, NEW.czb_reverted_flag);"
+  end
+
+  create_trigger("sp_bsbs_after_update_of_updated_at_sp_i_state_row_tr", :generated => true, :compatibility => 1).
+      on("sp_bsbs").
+      after(:update).
+      of(:updated_at, :sp_i_state) do
+    "UPDATE tmp_sp_bsbs SET sp_i_state=NEW.sp_i_state, sp_s_16=NEW.sp_s_16, sp_s_3=NEW.sp_s_3, sp_s_202=NEW.sp_s_202, sp_s_14=NEW.sp_s_14, sp_s_43=NEW.sp_s_43, sp_s_2_1=NEW.sp_s_2_1, sp_s_35=NEW.sp_s_35, sp_s_64=NEW.sp_s_64, sp_s_1=NEW.sp_s_1, sp_s_17=NEW.sp_s_17, sp_s_20=NEW.sp_s_20, sp_s_85=NEW.sp_s_85, created_at=NEW.created_at, updated_at=NEW.updated_at, sp_s_214=NEW.sp_s_214, sp_s_71=NEW.sp_s_71, fail_report_path=NEW.fail_report_path, tname=NEW.tname, sp_s_18=NEW.sp_s_18, sp_s_70=NEW.sp_s_70, sp_s_215=NEW.sp_s_215, sp_s_68=NEW.sp_s_68, sp_s_13=NEW.sp_s_13, sp_s_27=NEW.sp_s_27, czb_reverted_flag=NEW.czb_reverted_flag where id=NEW.id;"
   end
 
 end

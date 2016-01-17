@@ -5,8 +5,16 @@ class JgBsbStamp < ActiveRecord::Base
   validates_presence_of :jg_bsb_id, message: '机构信息不可为空'
 
   belongs_to :jg_bsb
-
   attr_accessor :image_file
+
+	module Type
+		# 骑缝
+		QF = 0
+		# 资质
+		ZZ = 1
+		# 专用
+		ZY = 2
+	end
 
   def attachments_dir(folder)
     "#{Rails.application.config.attachment_path}/#{folder}"

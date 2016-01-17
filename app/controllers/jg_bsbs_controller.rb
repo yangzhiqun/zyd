@@ -6,10 +6,10 @@ class JgBsbsController < ApplicationController
   # GET /jg_bsbs
   # GET /jg_bsbs.json
   def index
-    @jg_bsbs = JgBsb.where(status: 0)
+    @jg_bsbs = JgBsb.where(status: 0).order('created_at desc')
 
     unless params[:name].blank?
-      @jg_bsbs = @jg_bsbs.where("jg_name LIKE ?", "%#{params[:name]}%")
+      @jg_bsbs = @jg_bsbs.where(id: JgBsbName.where("name LIKE ?", "%#{params[:name]}%").pluck('jg_bsb_id'))
     end
 
     unless params[:contact].blank?
@@ -179,7 +179,7 @@ class JgBsbsController < ApplicationController
           if i_num<=1
             i_num=i_num+1
           else
-            if (session[:user_name]=='admin')
+            if (current_user.is_admin?)
               result_record=JgBsb.find_by_sql(["select jg_name from jg_bsbs where jg_name=? limit 1", row[1]])
 
               if result_record[0]==nil

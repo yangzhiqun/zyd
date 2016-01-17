@@ -1,150 +1,174 @@
 <style type="text/css">
-	.query-conditions th {
-		font-size: 10px;
-	}
-	ul.data-tabs li{
-		display: inline-block;
-	}
+    .query-conditions th {
+        font-size: 10px;
+    }
 
-	ul.data-tabs {
-		border-bottom: 1px solid #999;
-		padding-left: 15px;
-		position: relative;
-	}
+    ul.data-tabs li {
+        display: inline-block;
+    }
 
-	ul.data-tabs a {
-		display: inline-block;
-		color: black;
-		text-decoration: none;
-		border: 1px solid #999;
-		padding: 5px 10px;
-		position: relative;
-		bottom: -1px;
-	}
-	ul.data-tabs a.active {
-		border-bottom: 1px solid #FFFFFF;
-	}
-    
+    ul.data-tabs {
+        border-bottom: 1px solid #999;
+        padding-left: 15px;
+        position: relative;
+    }
+
+    ul.data-tabs a {
+        display: inline-block;
+        color: black;
+        text-decoration: none;
+        border: 1px solid #999;
+        padding: 5px 10px;
+        position: relative;
+        bottom: -1px;
+    }
+
+    ul.data-tabs a.active {
+        border-bottom: 1px solid #FFFFFF;
+    }
+
+    .search-form th, .search-form td {
+        font-size: 12px;
+    }
+
 </style>
 <script>
-$(function() {
-	$( "#begin_time, #ending_time" ).datepicker({dateFormat:"yy-mm-dd",
-		changeMonth: true,
-		changeYear: true
-	});
+    $(function () {
+        $("#begin_time, #ending_time").datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true
+        });
 
-	$.each(GP, function(index,data){
-		$("#sp_sf").append("<option value='"+data+"'>"+data+"</option>");
-	});
+        $.each(GP, function (index, data) {
+            $("#sp_sf").append("<option value='" + data + "'>" + data + "</option>");
+        });
 
-	$.each(SPDL1, function(index, data){
-		$("#sp_dl").append("<option value='"+data+"'>"+data+"</option>");
-	});
+        $.each(SPDL1, function (index, data) {
+            $("#sp_dl").append("<option value='" + data + "'>" + data + "</option>");
+        });
 
-	$('#sp_dl').val('<%= params[:sp_dl] %>');
-});
+        $('#sp_dl').val('<%= params[:sp_dl] %>');
+    });
 </script>
 
 <h2 class="text-center">食品安全检验数据采样任务表</h2>
 
-<h4 class="text-danger"><%= flash[:edit_result] unless flash[:edit_result].nil?%></h4>
+<h4 class="text-danger"><%= flash[:edit_result] unless flash[:edit_result].nil? %></h4>
 
 <div class="panel panel-default">
   <div class="panel-body">
     <h4>数据查询选项</h4>
-    <form action="/tasks/check" method="get">
+
+    <form action="" method="post">
+      <%= tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token) %>
       <table style="table-layout: fixed;" class="search-form table table-bordered table-condensed table-bordered-black">
         <tr>
           <td colspan="4">填报起始日期</td>
-          <td colspan="6"><input type="text" id="begin_time" name="begin_time" class="form-control input-sm" value=<%=@begin_time.strftime("%Y-%m-%d") %>></input></td>
+          <td colspan="6">
+            <input type="text" id="begin_time" name="begin_time" class="form-control input-sm" value=<%= @begin_time.strftime("%Y-%m-%d") %>>
+          </td>
           <td colspan="4">至填报结束日期</td>
-          <td colspan="6"><input type="text" id="ending_time" name="ending_time" class="form-control input-sm" value=<%=@end_time.strftime("%Y-%m-%d") %>></input></td>
+          <td colspan="6">
+            <input type="text" id="ending_time" name="ending_time" class="form-control input-sm" value=<%= @end_time.strftime("%Y-%m-%d") %>>
+          </td>
           <td colspan="4">采样编号</td>
-          <td colspan="6"><input type="text" id="s7" value="<%= params[:s7] %>" class="form-control input-sm" name="s7"></td>
+          <td colspan="6">
+            <input type="text" id="sp_s_16" value="<%= params[:sp_s_16] %>" class="form-control input-sm" name="sp_s_16">
+          </td>
         </tr>
         <tr>
           <td colspan="4">任务来源</td>
-          <td colspan="6"><input type="text" id="s13" value="<%= params[:s13] %>" name="s13" class="form-control input-sm"></td>
-          <td colspan="4">采样单位名称</td>
-          <td colspan="6"><input type="text" id="s1" value="<%= params[:s1] %>" name="s1" class="form-control input-sm"></td>
+          <td colspan="6">
+            <%= select_tag 'rwly', options_for_select(SysProvince.level1.map { |s| [s.name, s.id] }.unshift(['国家局', -1])), class: 'form-control input-sm' %>
+          </td>
+          <td colspan="4">抽样单位名称</td>
+          <td colspan="6">
+            <input type="text" id="sp_s_35" value="<%= params[:sp_s_35] %>" name="sp_s_35" class="form-control input-sm">
+          </td>
           <td colspan="4">检验机构名称</td>
-          <td colspan="6"><input type="text" id="s2" value="<%= params[:s2] %>" name="s2" class="form-control input-sm"></td>
+          <td colspan="6">
+            <input type="text" id="sp_s_43" value="<%= params[:sp_s_43] %>" name="sp_s_43" class="form-control input-sm">
+          </td>
         </tr>
         <tr>
           <td colspan="4">标识生产企业名称</td>
-          <td colspan="6"><input type="text" id="s12" value="<%= params[:s12] %>" name="s12" class="form-control input-sm"></td>
+          <td colspan="6">
+            <input type="text" id="s12" value="<%= params[:sp_s_64] %>" name="sp_s_64" class="form-control input-sm">
+          </td>
           <td colspan="4">被抽样单位名称</td>
-          <td colspan="6"><input type="text" id="s11" value="<%= params[:s11] %>" name="s11" class="form-control input-sm"></td>
+          <td colspan="6">
+            <input type="text" id="sp_s_1" value="<%= params[:sp_s_1] %>" name="sp_s_1" class="form-control input-sm">
+          </td>
           <td colspan="4">样品名称</td>
-          <td colspan="6"><input type="text" id="s4" value="<%= params[:s4] %>" name="s4" class="form-control input-sm"></td>
+          <td colspan="6">
+            <input type="text" id="sp_s_14" value="<%= params[:sp_s_14] %>" name="sp_s_14" class="form-control input-sm">
+          </td>
         </tr>
         <tr>
           <td colspan="4">食品大类</td>
-          <%if session[:user_name]=='admin'||session[:change_js]!=8%>
-            <td colspan="6"><select type="text" id="sp_dl" name="sp_dl" class="form-control input-sm"></select></td>
-          <%else%>
-            <td colspan="6"><%=session[:user_dl]%></td>
-            <td style="display:none"><select type="text" id="sp_dl" class="form-control input-sm" name="sp_dl" style="width:123px"></select></td>
-          <%end%>
+          <td colspan="6"><input type="text" id="sp_s_17" name="sp_s_17" class="form-control input-sm"></td>
           <td colspan="4">食品细类</td>
-          <td colspan="6"><input type="text" id="s6" value="<%= params[:s6] %>" class="form-control input-sm" name="s6"></td>
+          <td colspan="6">
+            <input type="text" id="sp_s_20" value="<%= params[:sp_s_20] %>" class="form-control input-sm" name="sp_s_20">
+          </td>
           <td colspan="4">被抽样单位省份</td>
-          <%if session[:user_name]=='admin'||session[:change_js]==8||session[:change_js]==9||session[:change_js]==10%>
-            <td colspan="6">
-							<%= select_tag "sp_sf", options_for_select(SysProvince.level1.map{|prov| [prov.name, prov.name]}.unshift(['请选择', '']), params[:sp_sf]), :class => "form-control"%>
-						</td> 
-          <%else%>
-            <td colspan="6"><%=session[:user_province]%></td>
-            <td style="display:none"><select type="text" class="form-control input-sm" id="sp_sf" name="sp_sf"></select></td>
-          <%end%>
-        </tr>
-        <tr>
-          <td colspan="4">单位类型</td>
-          <td colspan="6"><input type="text" id="s5" value="<%= params[:s5] %>" class="form-control input-sm" name="s5"></input></td>
-          <td colspan="4"></td>
-          <td colspan="6"></td>
-          <td colspan="4"></td>
-          <td colspan="6"></td>
+          <% if current_user.is_admin?||session[:change_js]==8||session[:change_js]==9||session[:change_js]==10 %>
+              <td colspan="6">
+                <%= select_tag 'sp_s_3', options_for_select(SysProvince.level1.map { |prov| [prov.name, prov.name] }.unshift(['请选择', '']), params[:sp_s_3]), :class => 'form-control input-sm' %>
+              </td>
+          <% else %>
+              <td colspan="6"><%= session[:user_province] %></td>
+              <td style="display:none">
+                <select type="text" class="form-control input-sm" id="sp_s_3" name="sp_s_3"></select>
+              </td>
+          <% end %>
         </tr>
         <tr style="display:none;">
-          <td colspan="6"><input type="text" id="sp_order" value="<%= params[:sp_order] %>" class="form-control input-sm" name="sp_order"></input></td>
-          <td colspan="6"><input type="text" id="sp_order_seq" value="<%= params[:sp_order_seq] %>" class="form-control input-sm" name="sp_order_seq"></input></td>
-          <td colspan="6"><input type="text" id="flag" class="form-control input-sm" value="<%= params[:flag] %>" name="flag"></input></td>
+          <td colspan="6">
+            <input type="text" id="sp_order" value="<%= params[:sp_order] %>" class="form-control input-sm" name="sp_order">
+          </td>
+          <td colspan="6">
+            <input type="text" id="sp_order_seq" value="<%= params[:sp_order_seq] %>" class="form-control input-sm" name="sp_order_seq">
+          </td>
+          <td colspan="6">
+            <input type="text" class="form-control input-sm" value="<%= params[:tab] %>" name="tab">
+            <input type="text" class="form-control input-sm" value="<%= params[:page] %>" name="page">
+          </td>
         </tr>
       </table>
-      <br>
-      <input id="sp_submit" type="submit" value="搜索" class="btn btn-sm btn-primary"></input>
+      <input id="sp_submit" type="submit" value="搜索" class="btn btn-sm btn-primary">
     </form>
   </div>
 </div>
 
 <div id="tabs">
   <ul class="data-tabs">
-    <%if session[:user_name]=='admin' or session[:change_js]==10%>
-      <li><a class="<%= (params[:tab].to_i == 0 ? "active" : "")%>" href="?tab=0">已完成任务</a></li>
-    <%elsif%>
-      <li><a class="<%= (params[:tab].to_i == 0 ? "active" : "")%>" href="?tab=0">待下达</a></li>
-      <li><a class="<%= (params[:tab].to_i == 1 ? "active" : "")%>" href="?tab=1">已下达</a></li>
-      <li><a class="<%= (params[:tab].to_i == 2 ? "active" : "")%>" href="?tab=2">已完成</a></li>
-			<% if current_user.jsyp == 1 or current_user.zxcy == 1%>
-      <li><a class="<%= (params[:tab].to_i == 3 ? "active" : "")%>" href="?tab=3">已拒收</a></li>
-			<% end %>
-    <%end%>
+    <% if current_user.is_admin? or session[:change_js]==10 %>
+        <li><a class="<%= (params[:tab].to_i == 0 ? "active" : "") %>" href="?tab=0">已完成任务</a></li>
+    <% else %>
+        <li><a class="<%= (params[:tab].to_i == 0 ? "active" : "") %>" href="?tab=0">待下达</a></li>
+        <li><a class="<%= (params[:tab].to_i == 1 ? "active" : "") %>" href="?tab=1">已下达</a></li>
+        <li><a class="<%= (params[:tab].to_i == 2 ? "active" : "") %>" href="?tab=2">已完成</a></li>
+        <% if current_user.jsyp == 1 or current_user.zxcy == 1 %>
+            <li><a class="<%= (params[:tab].to_i == 3 ? "active" : "") %>" href="?tab=3">已拒收</a></li>
+        <% end %>
+    <% end %>
   </ul>
   <div class="tab-content">
     <% unless flash[:error].blank? %>
-    <p class="text-danger"><%= flash[:error]%></p>
+        <p class="text-danger"><%= flash[:error] %></p>
     <% end %>
 
     <% unless flash[:notice].blank? %>
-    <p class="text-success"><%= flash[:notice]%></p>
+        <p class="text-success"><%= flash[:notice] %></p>
     <% end %>
 
     <% if @pad_sp_bsbs.blank? %>
-      <div class="text-danger">无记录</div>
+        <div class="text-danger">无记录</div>
     <% else %>
-      <%= render 'part_index' %>
-      <p><%=will_paginate @pad_sp_bsbs,:params=>params,:separator=>',',:previous_label=>'上一页',:next_label=>'下一页'%></p>
+        <%= render 'part_index' %>
+        <p><%= will_paginate @pad_sp_bsbs, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
     <% end %>
   </div>
 </div>

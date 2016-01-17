@@ -123,10 +123,13 @@
 <div class="panel panel-primary">
 	<div class="panel-heading">基本信息</div>
 	<div class="panel-body">
+	<% if !@sp_bsb.czb_reverted_reason.blank? and (current_user.is_admin? or session[:change_js]==10) %>
+		<br><p class="bg-danger"><b>退回历史：</b><br><%= @sp_bsb.czb_reverted_reason.html_safe %></p><br>
+	<% end %>
 		<table class="table table-bordered table-bordered-black" id="tblGrid">
 			 <tr>
 				<th colspan="4">抽检编号</th>
-				<td colspan="26"><a target="_blank" href="/sp_bsbs/<%= @wtyp_czb.wtyp_sp_bsbs_id %>/cyd"><%= @wtyp_czb.cjbh %></a></td>
+				<td colspan="26"><%= @wtyp_czb.cjbh %>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="/sp_bsbs/<%= @wtyp_czb.wtyp_sp_bsbs_id %>/cyd">抽样单</a>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="/sp_bsbs/<%= @wtyp_czb.wtyp_sp_bsbs_id %>/cyjygzs">抽样检验告知书</a></td>
 			 </tr>
 			 <tr>
 				<th colspan="4">报告书编号</th>

@@ -52,7 +52,6 @@ gem 'mysql2', '~>0.3.18'
 gem 'rmagick', '~> 2.15.4'
 gem 'jquery-ui-rails', '~>5.0.0'
 
-
 gem 'will_paginate','>=3.0.pre'
 gem 'spreadsheet'
 gem 'importex'
@@ -74,3 +73,8 @@ gem 'angular_rails_csrf'
 gem 'puma'
 gem 'activerecord-session_store'
 gem 'newrelic_rpm'
+gem 'hairtrigger'
+#gem 'oneapm_rpm'
+gem 'useragent'
+gem 'nokogiri', '>=1.6.7.rc'
+gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
