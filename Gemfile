@@ -50,9 +50,7 @@ gem 'mysql2', '~>0.3.18'
 gem 'rmagick'#, '~> 2.15.0'
 gem 'jquery-ui-rails', '~>5.0.0'
 
-gem 'nokogiri', '>=1.6.7.rc'
 gem 'will_paginate','>=3.0.pre'
-gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
 gem 'spreadsheet'
 gem 'importex'
 gem 'whenever',:require=>false
@@ -76,3 +74,5 @@ gem 'newrelic_rpm'
 gem 'hairtrigger'
 #gem 'oneapm_rpm'
 gem 'useragent'
+gem 'nokogiri', '>=1.6.7.rc'
+gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
