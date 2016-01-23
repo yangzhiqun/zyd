@@ -9,8 +9,7 @@ class User < ActiveRecord::Base
 
   include ApplicationHelper
 
-  validates_presence_of :function_type
-  validates_numericality_of :function_type, greater_than: 0, message: '请选择用户职能'
+  validates_presence_of :function_type, message: '请设置用户职能'
 
   validates_presence_of :jg_bsb_id, message: '所在机构不可为空'
 
@@ -30,6 +29,8 @@ class User < ActiveRecord::Base
   before_save :generate_uid
   after_create :cleanup_after_create
 
+  has_many :user_audit_logs
+
   def is_info_complete?
     !id_card.blank? and !tname.blank? and !tel.blank?
   end
@@ -40,10 +41,48 @@ class User < ActiveRecord::Base
       return true
     end
     self.errors.add(:sms_code, '验证码无效或过期')
-    return false
+    false
+  end
+
+  module State
+    ReviewJG = 0
+    Blocked = 1
+    ReviewSJ = 3
+    Rejected = 4
+    InUse = 9
   end
 
   attr_accessor :password_confirmation, :sms_code
+
+  # TODO: finish me.
+  def function=(fs)
+    # 为用户各权限赋值
+    fs.each do |f|
+      case f.to_i
+        when 1
+        when 2
+        when 3
+        when 4
+        when 5
+        when 6
+        when 7
+        when 8
+        when 9
+        when 10
+        when 11
+        when 12
+        when 13
+        when 14
+        when 15
+      end
+    end
+
+    self.function_type = fs.join(',')
+  end
+
+  def function
+    self.function_type.split(',')
+  end
 
   belongs_to :jg_bsb
 
@@ -408,14 +447,17 @@ class User < ActiveRecord::Base
         return false
       end
 
-      if self.function_type == -1
+      if self.function_type.blank?
         self.errors.add(:uid, '用户职能未设置')
         Rails.logger.error('用户职能未设置')
         return false
       end
 
-      self.uid = "#{'%.2i' % prov.code.to_i}#{'%.2i' % self.jg_bsb.code.to_i }#{'%.2i' % self.function_type}"
-      available_ids = (1..99).to_a - User.where('uid LIKE ?', "#{self.uid}%").map { |u| u[6..7].to_i }
+      self.uid = "#{'%.2i' % prov.code.to_i}#{'%.2i' % self.jg_bsb.code.to_i }#{'%.2i' % self.function_type.split(',')[0]}"
+      Rails.logger.error "CANDICATE PART: #{self.uid}"
+
+      Rails.logger.error User.where('uid LIKE ?', "#{self.uid}%").map { |u| u.uid[6..7].to_i }
+      available_ids = (1..99).to_a - User.where('uid LIKE ?', "#{self.uid}%").map { |u| u.uid[6..7].to_i }
       if available_ids.blank?
         self.errors.add(:uid, '满员')
         Rails.logger.error('满员')
@@ -440,10 +482,19 @@ class User < ActiveRecord::Base
     response = JSON.parse(Net::HTTP.get(URI.parse(API_URL % [form.to_query])), :symbolize_names => true)
     result = response[:alibaba_aliqin_fc_sms_num_send_response][:result]
     if result[:err_code].to_i == 0
-      return true
+      true
     else
-      return false
+      false
     end
+  end
+
+  # 该账号是否通过审核
+  def is_passed?
+    self.state == User::State::InUse
+  end
+
+  def is_rejected?
+    self.state == User::State::Rejected
   end
 
   private
@@ -454,6 +505,7 @@ class User < ActiveRecord::Base
   def cleanup_after_create
     Rails.logger.error 'Do cleaning work after user create'
     SmsLog.where(sms_type: 'signup', mobile: self.mobile).last.update_attributes(used_at: Time.now)
+    UserAuditLog.create(user_id: self.id, operator_id: self.id, action: UserAuditLog::Action::UserReq, msg: '新注册')
   end
 
   def create_new_salt
