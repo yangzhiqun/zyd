@@ -57,25 +57,42 @@ class User < ActiveRecord::Base
   # TODO: finish me.
   def function=(fs)
     # 为用户各权限赋值
+    self.user_i_sp = 1
     fs.each do |f|
       case f.to_i
         when 1
           self.rwbs = 1
-          self.user_i_sp = 1
         when 2
+          self.rwxd = 1
         when 3
+          self.zxcy = 1
         when 4
+          self.jsyp = 1
+          self.user_d_authority = 1
         when 5
+          self.user_d_authority_1 = 1
         when 6
+          self.user_d_authority_2 = 1
         when 7
+          self.user_d_authority_5 = 1
         when 8
+          self.user_i_js = 1
+          self.user_d_authority_5 = 1
         when 9
+          self.user_i_switch = 1
+          self.user_d_authority_5 = 1
         when 10
+          self.hcz_czap = 1
         when 11
+          self.hcz_czbl = 1
         when 12
+          self.hcz_czsh = 1
         when 13
+          self.hcz_yysl = 1
         when 14
+          self.hcz_yybl = 1
         when 15
+          self.hcz_yysh = 1
       end
     end
 
