@@ -310,7 +310,7 @@ DEPENDENCIES
   rails (= 4.2.4)
   react-rails
   rest-client
-  rmagick
+  rmagick (~> 2.15.4)
   sass-rails (~> 5.0)
   savon
   sdoc (~> 0.4.0)

@@ -6,6 +6,8 @@ gem 'rails', '4.2.4'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
+gem 'nokogiri', '>=1.6.7.rc'
+gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
 gem 'uglifier', '>= 1.3.0'
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.1.0'
@@ -32,7 +34,7 @@ end
 
 gem 'mysql2', '~>0.3.18'
 
-gem 'rmagick'#, '~> 2.15.0'
+gem 'rmagick', '~> 2.15.4'
 gem 'jquery-ui-rails', '~>5.0.0'
 gem "jquery-fileupload-rails"
 
