@@ -18,8 +18,15 @@
                 <%= f.text_field :tname, :class => "form-control input-sm" %>
               </div>
               <div class="form-group">
-                <label>职&emsp;能：<span class="text-danger">*</span><%= show_error(@user.errors, :function_type) %></label>
-                <%= f.select :function_type, options_for_select(User::FuncType.map{|k, v| [k, v]}.unshift(['-请选择-', -1])), {}, :class => 'form-control input-sm' %>
+                <label>职&emsp;能：<span class="text-danger">*</span><%= show_error(@user.errors, :function_type) %>
+                </label>
+                <% User::FuncType.each do |k, v| %>
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" <%= 'checked' if ((params[:user]||{})[:function] || []).include?(v.to_s) %> name="user[function][]" value="<%= v %>"><%= k %>
+                      </label>
+                    </div>
+                <% end %>
               </div>
               <% if @user.id_card.blank? or @user.errors.has_key?(:id_card) %>
                   <div class="form-group">
@@ -30,7 +37,9 @@
               <% end %>
 
               <div class="form-group">
-                <label>手机号：<span class="text-danger">*</span><%= show_error(@user.errors, :mobile) %><small class="text-warning">（升级成功后会收到短信）</small></label>
+                <label>手机号：<span class="text-danger">*</span><%= show_error(@user.errors, :mobile) %>
+                  <small class="text-warning">（升级成功后会收到短信）</small>
+                </label>
                 <%= f.text_field :mobile, :class => "form-control input-sm" %>
               </div>
 

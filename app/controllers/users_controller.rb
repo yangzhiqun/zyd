@@ -1,7 +1,7 @@
 #encoding=UTF-8
 class UsersController < ApplicationController
   include ApplicationHelper
-  skip_before_filter :check_user_info, only: [:update, :in_review]
+  skip_before_filter :check_user_info, only: [:update, :in_review, :edit]
   skip_before_filter :authenticate_user!, only: [:update]
 
   # GET /users
@@ -24,7 +24,7 @@ class UsersController < ApplicationController
     if request.post?
       @user = User.find(session[:update_user_id])
 
-      unless @user.update_attributes(params.require(:user).permit(:function_type, :uid, :tname, :id_card, :mobile, :password))
+      unless @user.update_attributes(params.require(:user).permit(:uid, :tname, :id_card, :mobile, :password, function: []))
         @errors = true
         logger.error "修改用户失败：#{@user.errors.first.last}"
       end
@@ -170,20 +170,44 @@ class UsersController < ApplicationController
       u_params.delete(:password_confirmation)
     end
 
-    if params['account-pass-request'].to_i == 1 and @user.enabled_at.nil? and current_user.is_account_manager \
-      and current_user.jg_bsb_id == @user.jg_bsb_id
+    if params['account-pass-request'].to_i == 1 and ((current_user.id == @user.id and @user.state == User::State::Rejected) or (!@user.is_passed? and current_user.is_account_manager))
+      request_pass = params['account-pass'].to_i == 1
 
-      if params['account-pass'].to_i == 1
-        @user.enabled_at = Time.now
-      else
-        @user.apply_refused_at = Time.now
+      case @user.state
+        when User::State::ReviewSJ
+          if request_pass
+            @user.state = User::State::InUse
+            UserAuditLog.create(user_id: @user.id, operator_id: current_user.id, action: UserAuditLog::Action::SjPass, msg: '省局审核通过')
+          else
+            @user.state = User::State::Rejected
+            UserAuditLog.create(user_id: @user.id, operator_id: current_user.id, action: UserAuditLog::Action::SjFail, msg: '机构审核失败')
+          end
+        when User::State::ReviewJG
+          if request_pass
+            @user.state = User::State::ReviewSJ
+            UserAuditLog.create(user_id: @user.id, operator_id: current_user.id, action: UserAuditLog::Action::JgPass, msg: '机构审核通过')
+          else
+            @user.state = User::State::Rejected
+            UserAuditLog.create(user_id: @user.id, operator_id: current_user.id, action: UserAuditLog::Action::JgFail, msg: '机构审核失败')
+          end
+        when User::State::InUse
+          raise 'How can this happen?'
+        when User::State::Rejected
+          @user.state = User::State::ReviewJG
+          UserAuditLog.create(user_id: @user.id, operator_id: current_user.id, action: UserAuditLog::Action::UserReq, msg: '用户再次提起')
+        else
+          #...
       end
     end
 
     respond_to do |format|
       if @user.update_attributes(u_params)
-        flash[:notice] = "User was successfully updated."
-        format.html { redirect_to(:action => 'index') }
+        flash[:notice] = "用户信息修改成功"
+        if params['account-pass-request'].to_i == 1
+          format.html { redirect_to('/users/pending') }
+        else
+          format.html { redirect_to(:action => 'index') }
+        end
         format.xml { head :ok }
       else
         flash[:notice] = @user.errors.first.last
@@ -368,7 +392,11 @@ class UsersController < ApplicationController
 
   def pending
     return not_found unless current_user.is_account_manager
-    @pending_users = User.where(enabled_at: nil, jg_bsb_id: current_user.jg_bsb_id)
+    if current_user.user_i_js == 1
+      @pending_users = User.where('state = ? and user_s_province = ?', User::State::ReviewSJ, current_user.user_s_province)
+    else
+      @pending_users = User.where('state = ? and jg_bsb_id = ?', User::State::ReviewJG, current_user.jg_bsb_id)
+    end
   end
 
   private
