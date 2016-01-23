@@ -73,3 +73,4 @@ gem 'devise'
 gem 'devise-i18n'
 gem 'nokogiri', '>=1.6.7.rc'
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
+gem 'react-rails'
