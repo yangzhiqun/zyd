@@ -35,16 +35,17 @@ module ApplicationHelper
   end
 
   # 当前用户
-  def current_user
-    if session[:user_id].blank?
-      nil
-    else
-      if @current_user.nil? 
-				@current_user = User.find(session[:user_id])
-			end
-			@current_user
-    end
-  end
+  # @deprecated
+  # def current_user
+  #   if session[:user_id].blank?
+  #     nil
+  #   else
+  #     if @current_user.nil?
+  # 		@current_user = User.find(session[:user_id])
+  # 	end
+  # 	@current_user
+  #   end
+  # end
 
   def is_number?(str)
     true if Float(str) rescue false

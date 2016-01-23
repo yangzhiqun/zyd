@@ -12,38 +12,38 @@
   <%= csrf_meta_tags %>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" pageEncoding="UTF-8"/>
   <script type="text/javascript">
-      window.SP = {};
-      $(function () {
-          $(".collapse").click(function () {
-              var o = $(this);
-              o.next('.subnav').slideToggle();
-          });
-
-          <% unless session[:userCert].blank? %>
-          SetOnUsbKeyChangeCallBack(function () {
-              location.href = "/admin/logout";
-          });
-          <% end %>
+    window.SP = {};
+    $(function () {
+      $(".collapse").click(function () {
+        var o = $(this);
+        o.next('.subnav').slideToggle();
       });
+
+      <% unless session[:userCert].blank? %>
+      SetOnUsbKeyChangeCallBack(function () {
+        location.href = "/admin/logout";
+      });
+      <% end %>
+    });
   </script>
   <style type="text/css">
-      .collapse + .subnav {
-          display: none;
-      }
+    .collapse + .subnav {
+      display: none;
+    }
 
-      .subnav.active {
-          display: block !important;
-      }
+    .subnav.active {
+      display: block !important;
+    }
 
-      .subnav .active {
-          background-color: #A8B8BC !important;
-          color: white !important;
-      }
+    .subnav .active {
+      background-color: #A8B8BC !important;
+      color: white !important;
+    }
 
-      .nav-ctner.affix {
-          position: fixed;
-          top: 0;
-      }
+    .nav-ctner.affix {
+      position: fixed;
+      top: 0;
+    }
   </style>
 </head>
 <body>
@@ -52,9 +52,10 @@
   <%= image_tag('logo.jpg') %>
 
   <div id="top_right" class="form-inline">
-    <label>欢迎您:<%= session[:user_name] %></label>
-    <%= button_to "退出", '/admin/logout', :method => :get, :class => "btn btn-xs btn-danger" %>
-    <%= (Time.now).strftime("%Y年%m月%d日 %H:%M:%S") %>
+    <label>欢迎您:<%= current_user.name %></label>
+    <%= link_to '退出', '/users/sign_out', 'data-method' => :delete, 'data-confirm' => '确定退出吗？', :class => "btn btn-xs btn-link" %>
+    <br>
+    登录时间：<%= current_user.current_sign_in_at.strftime("%Y年%m月%d日 %H:%M:%S") %>
   </div>
 </div>
 <!-- /TOP -->
@@ -74,16 +75,8 @@
   <div class="main_left">
     <div class="nav-ctner" data-spy="affix" data-offset-top="350">
       <ul id="nav">
-        <% if false and session[:user_bjp]==1 %>
-            <li><a style="font-size: 14px; text-align: center" href="/bjp_bsbs/new">保健品检验数据录入</a></li>
-            <li><a style="font-size: 14px; text-align: center" href="/bjp_bsbs">保健品检验数据查看</a></li>
-        <% end %>
-        <% if false and session[:user_hzp]==1 %>
-            <li><a style="font-size: 14px; text-align: center" href="/hzp_bsbs/new">化妆品检验数据录入</a></li>
-            <li><a style="font-size: 14px; text-align: center" href="/hzp_bsbs">化妆品检验数据查看</a></li>
-        <% end %>
-        <% if session[:user_sp]==1 %>
-            <% if session[:user_authority_1]==1 %>
+        <% if current_user.user_i_sp == 1 %>
+            <% if current_user.user_d_authority == 1 %>
                 <li><a style="font-size: 14px; text-align: center" href="/sp_bsbs/new">食品检验数据录入</a></li>
             <% end %>
             <% if current_user.user_d_authority_5 == 1 or current_user.user_i_switch == 1 or current_user.user_d_authority == 1 or current_user.user_d_authority_1 == 1 or current_user.user_d_authority_2 == 1 or current_user.user_d_authority_3 == 1 %>
@@ -149,11 +142,11 @@
                 <% end %>
                 <li><a class="<%= "active" if action?("check") %>" href="/tasks/check">任务查看</a></li>
 
-              <% if false and (current_user.rwxd == 1 or current_user.is_admin?) and !current_user.jg_bsb.nil? %>
+                <% if false and (current_user.rwxd == 1 or current_user.is_admin?) and !current_user.jg_bsb.nil? %>
                     <li>
                       <a target="_blank" href="http://210.72.225.133/webgps/logins.aspx?username=<%= current_user.jg_bsb.gpsname %>&pwd=<%= current_user.jg_bsb.gpspassword %>">GPS信息留存</a>
                     </li>
-                <% end %> 
+                <% end %>
               </ul>
             </li>
         <% end %>
@@ -170,20 +163,20 @@
             </li>
         <% end %>
         <% if current_user.is_admin? %>
-            <% if session[:user_name]=='superadmin' %>
-              <li>
-                <a class="collapse" href="javascript:void(0);" style="font-size: 14px; text-align: center" href="/jg_bsbs">机构信息维护</a>
-                <ul class="subnav">
-                  <li><a href="/jg_bsbs">机构信息录入</a></li>
-                  <li><a href="/jg_bsbs/merge_request">机构合并</a></li>
-                </ul>
-              </li>
-              <li><a style="font-size: 14px; text-align: center" href="/sp_production_infos">生产企业库维护</a></li>
-              <li><a style="font-size: 14px; text-align: center" href="/sp_company_infos">被抽样单位库维护</a></li>
+            <% if current_user.name == 'superadmin' %>
+                <li>
+                  <a class="collapse" href="javascript:void(0);" style="font-size: 14px; text-align: center" href="/jg_bsbs">机构信息维护</a>
+                  <ul class="subnav">
+                    <li><a href="/jg_bsbs">机构信息录入</a></li>
+                    <li><a href="/jg_bsbs/merge_request">机构合并</a></li>
+                  </ul>
+                </li>
+                <li><a style="font-size: 14px; text-align: center" href="/sp_production_infos">生产企业库维护</a></li>
+                <li><a style="font-size: 14px; text-align: center" href="/sp_company_infos">被抽样单位库维护</a></li>
             <% end %>
             <li><a style="font-size: 14px; text-align: center" href="/baosong_as">报送分类维护</a></li>
         <% end %>
-        <% if current_user.user_d_authority_1 == 1 or session[:user_name]=='superadmin' %>
+        <% if current_user.user_d_authority_1 == 1 or current_user.name == 'superadmin' %>
             <li><a style="font-size: 14px; text-align: center" href="/company_standards">企业标准库维护</a></li>
         <% end %>
         <% if current_user.is_admin? %>
@@ -192,6 +185,10 @@
             </li>
         <% end %>
         <li><a style="font-size: 14px; text-align: center" href="/users">登录用户管理</a></li>
+
+        <% if current_user.is_account_manager %>
+            <li><a style="font-size: 14px; text-align: center" href="/users/pending">用户审核</a></li>
+        <% end %>
         <% if current_user.user_i_js == 1 %>
             <li><a style="font-size: 14px; text-align: center" href="/sample_members">人员信息查看</a></li>
         <% end %>

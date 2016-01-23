@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  sms_template_code: MyString
+  sms_type: MyString
+  mobile: MyString
+
+two:
+  sms_template_code: MyString
+  sms_type: MyString
+  mobile: MyString

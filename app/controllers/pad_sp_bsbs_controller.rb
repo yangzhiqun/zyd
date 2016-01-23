@@ -37,7 +37,7 @@ class PadSpBsbsController < ApplicationController
       @options_68[i]=temp.map { |option| option[:flex_name] }
     end
 
-		@jg_bsbs = JgBsb.where('status = 0 and jg_sp_permission = 1 and jg_detection = 1', session[:user_province]).order('jg_province')
+    @jg_bsbs = JgBsb.where('status = 0 and jg_sp_permission = 1 and jg_detection = 1', current_user.user_s_province).order('jg_province')
   end
 
   #2014-01-12
@@ -45,13 +45,13 @@ class PadSpBsbsController < ApplicationController
     if current_user.is_admin?||session[:change_js]==9||session[:change_js]==10
       return 1
     end
-    if params_data.tname==session[:user_name]
+    if params_data.tname == current_user.name
       return 1
     end
     if current_user.jg_bsb.all_names.include?(params_data.sp_s_43)
       return 1
     end
-    if (params_data.sp_s_3==session[:user_province]||params_data.sp_s_202==session[:user_province]||params_data.sp_s_52==session[:user_province])&&(session[:change_js]==2||session[:change_js]==3||session[:change_js]==4)
+    if (params_data.sp_s_3==current_user.user_s_province||params_data.sp_s_202==current_user.user_s_province||params_data.sp_s_52==current_user.user_s_province)&&(session[:change_js]==2||session[:change_js]==3||session[:change_js]==4)
       return 1
     end
     if params_data.sp_s_17==session[:user_dl]&&session[:change_js]==8
@@ -128,12 +128,12 @@ class PadSpBsbsController < ApplicationController
     @sp_bsb.sp_s_33='塑料袋'
     @sp_bsb.sp_s_63='预包装'
     @sp_bsb.sp_s_66='月'
-    @sp_bsb.tname=session[:user_name]
-    @sp_bsb.sp_s_3=session[:user_province]
+    @sp_bsb.tname = current_user.name
+    @sp_bsb.sp_s_3=current_user.user_s_province
     @sp_bsb.sp_s_35=current_user.jg_bsb.jg_name
     # @sp_bsb.sp_s_37=session[:user_tname]
-    @sp_bsb.sp_s_39=session[:user_tel]
-    @sp_bsb.sp_s_52=session[:user_province]
+    @sp_bsb.sp_s_39=current_user.tel
+    @sp_bsb.sp_s_52=current_user.user_s_province
 
     if params[:rwly].to_i != 0
       if params[:rwly].to_i == -1
@@ -289,9 +289,9 @@ class PadSpBsbsController < ApplicationController
       @sp_jcxcount=1
     end
     if @sp_bsb.sp_s_85==''||@sp_bsb.sp_s_85==nil
-      @sp_bsb.sp_s_85=session[:user_tname]
-      @sp_bsb.sp_s_87=session[:user_tel]
-      @sp_bsb.sp_s_88=session[:user_mail]
+      @sp_bsb.sp_s_85=current_user.tname
+      @sp_bsb.sp_s_87=current_user.tel
+      @sp_bsb.sp_s_88=current_user.eaddress
     end
     @sp_data=Spdatum.where(sp_bsb_id: params[:id])
 
@@ -349,8 +349,8 @@ class PadSpBsbsController < ApplicationController
     @sp_bsb.a_category_id = @a_category.id
     # /填充结束
 
-    @sp_bsb.tname = session[:user_name]
-    @sp_bsb.sp_s_52 = session[:user_province]
+    @sp_bsb.tname = current_user.name
+    @sp_bsb.sp_s_52 = current_user.user_s_province
 
     @check_existance = PadSpBsb.find_by_sp_s_16(params[:pad_sp_bsb][:sp_s_16])
 

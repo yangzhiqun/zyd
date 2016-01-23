@@ -1,7 +1,8 @@
 #encoding=UTF-8
 class JgBsbsController < ApplicationController
 
-  before_filter :check_user_role
+  before_filter :check_user_role, except: [:by_province]
+  skip_before_action :authenticate_user!, only: [:by_province]
 
   # GET /jg_bsbs
   # GET /jg_bsbs.json
@@ -169,9 +170,9 @@ class JgBsbsController < ApplicationController
     if !uploaded_io.nil? and accepted_formats.include? File.extname(uploaded_io.original_filename) then
 
 
-      File.open(Rails.root.join('excel', session[:user_name]+(Time.now).to_s+uploaded_io.original_filename), 'wb') do |file|
+      File.open(Rails.root.join('excel', current_user.name + (Time.now).to_s+uploaded_io.original_filename), 'wb') do |file|
         file.write(uploaded_io.read)
-        book = Spreadsheet.open(Rails.root.join('excel', session[:user_name]+(Time.now).to_s+uploaded_io.original_filename))
+        book = Spreadsheet.open(Rails.root.join('excel', current_user.name + (Time.now).to_s + uploaded_io.original_filename))
         sheet1 = book.worksheet 0
         i_num=0
         temp_str=''
@@ -221,6 +222,11 @@ class JgBsbsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to :action => "index", :controller => "jg_bsbs" }
     end
+  end
+
+  def by_province
+    @jg_bsbs = JgBsb.where(jg_province: params[:prov])
+    render json: {status: 'OK', msg: @jg_bsbs.map { |j| [j.jg_name, j.id] }}
   end
 
   private

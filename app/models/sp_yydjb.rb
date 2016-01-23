@@ -194,7 +194,7 @@ class SpYydjb < ActiveRecord::Base
           :content          => content_tmp,
           :cjbh             => self.cjbh,
           :sp_yydjb_state   => self.current_state,
-          :user_id          => session[:user_id]
+          :user_id => current_user.id
       }]) 
     end
     if self.changes.include?'current_state'
@@ -220,7 +220,7 @@ class SpYydjb < ActiveRecord::Base
               :content          => content_tmp,
               :cjbh             => self.cjbh,
               :sp_yydjb_state   => self.current_state,
-              :user_id          => session[:user_id]
+              :user_id => current_user.id
           }]) 
     end
   end

@@ -1,4 +1,5 @@
 class SysProvincesController < ApplicationController
+  skip_before_action :authenticate_user!, only: [:prov]
   # GET /sys_provinces
   # GET /sys_provinces.json
   def index
@@ -67,6 +68,20 @@ class SysProvincesController < ApplicationController
         format.json { render json: @sys_province.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  def prov
+    if params[:prov].present?
+      prov = SysProvince.find(params[:prov])
+      @provinces = SysProvince.where('level LIKE ? OR level LIKE ?', "#{prov.level}._", "#{prov.level}.__")
+    end
+
+    if params[:city].present?
+      prov = SysProvince.find(params[:city])
+      @provinces = SysProvince.where('level LIKE ? OR level LIKE ?', "#{prov.level}._", "#{prov.level}.__")
+    end
+
+    render json: {status: 'OK', msg: @provinces.select('name, id')}
   end
 
   # DELETE /sys_provinces/1
