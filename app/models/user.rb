@@ -60,6 +60,8 @@ class User < ActiveRecord::Base
     fs.each do |f|
       case f.to_i
         when 1
+          self.rwbs = 1
+          self.user_i_sp = 1
         when 2
         when 3
         when 4
