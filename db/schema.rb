@@ -1721,9 +1721,12 @@ ActiveRecord::Schema.define(version: 20160123101650) do
     t.datetime "synced_at"
     t.integer  "application_id",           limit: 4
     t.string   "czb_reverted_reason",      limit: 255
+<<<<<<< HEAD
+=======
     t.string   "sp_s_220",                 limit: 10
     t.string   "sp_s_221",                 limit: 10
     t.string   "sp_s_222",                 limit: 20
+>>>>>>> ddb897c5b801af5a4ee953f61ffdaae254ead4c1
   end
 
   add_index "sp_bsbs", ["application_id"], name: "index_sp_bsbs_on_application_id", using: :btree
@@ -1841,6 +1844,8 @@ ActiveRecord::Schema.define(version: 20160123101650) do
     t.integer  "pub_type",     limit: 4,   default: -1
   end
 
+<<<<<<< HEAD
+=======
   create_table "sp_sort_bsbs", force: :cascade do |t|
     t.string "sp_sort_name", limit: 255
     t.integer "sp_sort_num", limit: 4
@@ -1848,6 +1853,7 @@ ActiveRecord::Schema.define(version: 20160123101650) do
     t.datetime "updated_at", null: false
   end
 
+>>>>>>> 1f98c9fa76e42438abddaf23db6e6e936fd1385d
   create_table "sp_sta", id: false, force: :cascade do |t|
     t.string "spdata_0", limit: 255
     t.string "spdata_4", limit: 255

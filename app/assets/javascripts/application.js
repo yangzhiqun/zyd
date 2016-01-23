@@ -67,6 +67,10 @@
 // require bjpdata
 // require hzpdata
 
+//= require react
+//= require react_ujs
+//= require components
+
 $(function(){
   $('#preview').iframeAutoHeight({debug: false});
   
