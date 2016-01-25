@@ -108,6 +108,10 @@
     <%= flash[:notice] %>
     <table class="table table-bordered" style="table-layout: fixed;" id="tblGrid">
       <tr>
+        <th colspan="6">机构编号</th>
+        <td colspan="34"><%= @jg_bsb.code %></td>
+      </tr>
+      <tr>
         <th colspan="6">机构名称</th>
         <td colspan="34">
           <p class="current_name">
@@ -161,6 +165,13 @@
         </td>
       </tr>
       <tr>
+        <td colspan="40">
+          <label for=""><%= f.check_box :jg_enable %>是否有效期内</label>
+          <label><%= f.check_box :jg_sampling %>是否采样</label>
+          <label for=""><%= f.check_box :jg_detection %>是否检测</label>
+        </td>
+      </tr>
+      <tr>
         <th colspan="6">所属地<%= show_error(@jg_bsb.errors, :jg_province) %></th>
         <td colspan="34">
           <div class="form-inline">
@@ -178,11 +189,12 @@
         </td>
       </tr>
       <tr>
-        <td colspan="40">
-          <label for=""><%= f.check_box :jg_enable %>是否有效期内</label>
-          <label><%= f.check_box :jg_sampling %>是否采样</label>
-          <label for=""><%= f.check_box :jg_detection %>是否检测</label>
-        </td>
+        <th colspan="6">机构类型</th>
+        <td colspan="6"><%= f.select :jg_type, options_for_select(JgBsb::JG_TYPE.map{|jg| [jg[:name], jg[:code]]}.unshift(['-请选择-', nil]), @jg_bsb.jg_type), {}, class: 'form-control input-sm'%></td>
+        <th colspan="6">邮编</th>
+        <td colspan="6"><%= f.text_field :zipcode, :class => "form-control input-sm" %></td>
+        <th colspan="6">传真</th>
+        <td colspan="10"><%= f.text_field :fax, :class => "form-control input-sm" %></td>
       </tr>
       <tr>
         <th colspan="6">机构法人</th>
@@ -253,10 +265,8 @@
         <td colspan="34"><%= f.text_field :jg_word_area, :class => "form-control input-sm" %></td>
       </tr>
       <tr>
-        <th colspan="6">采样机构编号</th>
-        <td colspan="14"><%= f.text_field :code, :class => "form-control input-sm" %></td>
         <th colspan="6">检测机构接口地址</th>
-        <td colspan="14"><%= f.text_field :api_ip_address, :class => "form-control input-sm" %></td>
+        <td colspan="34"><%= f.text_field :api_ip_address, :class => "form-control input-sm" %></td>
       </tr>
       <tr>
         <th colspan="6">GPS用户名</th>

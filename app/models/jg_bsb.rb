@@ -10,6 +10,20 @@ class JgBsb < ActiveRecord::Base
   has_many :jg_bsb_stamps
   has_many :users
 
+  JG_TYPE = [{
+                 name: '监管部门',
+                 code: 1
+             },
+             {
+                 name: '采样机构',
+                 code: 2
+             },
+             {
+                 name: '检验机构',
+                 code: 3
+             }
+  ]
+
   after_save :generate_code
 
   def pdf_sign_rules
