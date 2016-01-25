@@ -1,5 +1,4 @@
 <style type="text/css">
-
   .style1 {
     border-collapse: collapse;
     font-size: 9pt;
@@ -21,17 +20,6 @@
     padding: 0cm 5.4pt 0cm 5.4pt;
     height: 30px;
   }
-
-  .form-control input-sm {
-    font-size: 12px;
-    border-right-width: 0px;
-    border-left-width: 0px;
-    border-top-width: 0px;
-    border-bottom: 1px solid;
-    background-color: transparent;
-
-  }
-
 </style>
 <script type="text/javascript">
   $(document).ready(function () {
@@ -77,7 +65,7 @@
       $.get('/prov.json', {prov: o.find('option:selected').attr('data-id')}, function (data) {
         $('<option>-请选择-</option>').appendTo($('#jg_bsb_city'));
         $.each(data.msg, function (i, item) {
-          $('<option>').attr({'value': item.name, 'data-id' : item.id}).text(item.name).appendTo($('#jg_bsb_city'));
+          $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#jg_bsb_city'));
         });
       }, 'json');
     }).trigger('change');
@@ -95,12 +83,14 @@
       }, 'json');
     });
 
-    setTimeout(function(){
+    setTimeout(function () {
       $('#jg_bsb_city').val('<%= @jg_bsb.city %>').trigger('change');
-      setTimeout(function(){
+      setTimeout(function () {
         $('#jg_bsb_country').val('<%= @jg_bsb.country %>');
       }, 1000);
     }, 1000);
+
+    $('#jg_bsb_super_jg_bsbs').select2({theme: 'bootstrap', placeholder: '请选择上级业务部门'});
   });
 </script>
 <%= form_for(@jg_bsb) do |f| %>
@@ -190,7 +180,7 @@
       </tr>
       <tr>
         <th colspan="6">机构类型</th>
-        <td colspan="6"><%= f.select :jg_type, options_for_select(JgBsb::JG_TYPE.map{|jg| [jg[:name], jg[:code]]}.unshift(['-请选择-', nil]), @jg_bsb.jg_type), {}, class: 'form-control input-sm'%></td>
+        <td colspan="6"><%= f.select :jg_type, options_for_select(JgBsb::JG_TYPE.map { |jg| [jg[:name], jg[:code]] }.unshift(['-请选择-', nil]), @jg_bsb.jg_type), {}, class: 'form-control input-sm' %></td>
         <th colspan="6">邮编</th>
         <td colspan="6"><%= f.text_field :zipcode, placeholder: '请输入邮编', :class => "form-control input-sm" %></td>
         <th colspan="6">传真</th>
@@ -275,8 +265,9 @@
         <td colspan="14"><%= f.text_field :gpspassword, placeholder: '请输入GPS密码', :class => "form-control input-sm" %></td>
       </tr>
       <tr>
-        <th colspan="10">公章<br/><span style="color:#999">（请上传PNG格式背景透明，<br/>&nbsp;&nbsp;图片宽高不超过200px，<br/>&nbsp;&nbsp;文件大小不超过0.5M）</span></th>
-        <td colspan="30">
+        <th colspan="6">公章</th>
+        <td colspan="34">
+          <span style="color:#999">（请上传PNG格式背景透明，&nbsp;&nbsp;图片宽高不超过200px，&nbsp;&nbsp;文件大小不超过0.5M）</span><br>
           <% if @jg_bsb["attachment_path"].blank? %>
               <span class="text-danger">尚未上传公章</span>
           <% else %>
@@ -291,7 +282,7 @@
         </td>
       </tr>
       <tr>
-        <th colspan="10">检验报告签章规则号<span style="color:#999">（多个规则号用#分隔）</span></th>
+        <th colspan="10">检验报告签章规则号</th>
         <td colspan="30">
           <% if @jg_bsb.new_record? %>
               <i class="text-info">请新建保存后再管理机构签章</i>
@@ -299,6 +290,12 @@
               <p><%= @jg_bsb.pdf_sign_rules %></p>
               <a href="/jg_bsb_stamps?jg_bsb_id=<%= @jg_bsb.id %>">机构签章管理<i class="glyphicon glyphicon-arrow-right"></i></a>
           <% end %>
+        </td>
+      </tr>
+      <tr>
+        <th colspan="6">上级业务部门</th>
+        <td colspan="34">
+          <%= f.select :super_jg_bsbs, options_for_select(JgBsb.all.map{|jg| [jg.jg_name, jg.id]}, @jg_bsb.jg_bsb_supers.pluck(:id)), {}, multiple: true, class: 'form-control input-sm' %>
         </td>
       </tr>
       <% if @show==0||@show==nil %>

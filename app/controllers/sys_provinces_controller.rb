@@ -81,7 +81,7 @@ class SysProvincesController < ApplicationController
       @provinces = SysProvince.where('level LIKE ? OR level LIKE ?', "#{prov.level}._", "#{prov.level}.__")
     end
 
-    render json: {status: 'OK', msg: @provinces.select('name, id')}
+    render json: {status: 'OK', msg: (@provinces.select('name, id') if @provinces)}
   end
 
   # DELETE /sys_provinces/1

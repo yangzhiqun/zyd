@@ -9,6 +9,9 @@ class JgBsb < ActiveRecord::Base
   has_many :jg_bsb_names
   has_many :jg_bsb_stamps
   has_many :users
+  has_many :jg_bsb_supers
+
+  attr_accessor :super_jg_bsbs
 
   JG_TYPE = [{
                  name: '监管部门',
@@ -24,7 +27,7 @@ class JgBsb < ActiveRecord::Base
              }
   ]
 
-  after_save :generate_code
+  after_save :doings_after_save
 
   def pdf_sign_rules
     #return super
@@ -125,6 +128,22 @@ class JgBsb < ActiveRecord::Base
 
   def attachment_path_file
     Rails.application.config.attachment_path + "/" + self.attachment_path unless self.attachment_path.blank?
+  end
+
+  def doings_after_save
+    generate_code
+    update_super_jg_bsbs_info
+  end
+
+  def update_super_jg_bsbs_info
+    ids = self.super_jg_bsbs
+    ids.delete('')
+    ids = ids.map { |j| j.to_i }
+    self.jg_bsb_supers.where('id not in (?)', ids).destroy_all
+    self.jg_bsb_supers.reload
+    (ids - self.jg_bsb_supers.pluck(:id)).each do |i|
+      JgBsbSuper.create(jg_bsb_id: self.id, super_jg_bsb_id: i)
+    end
   end
 
 # 对机构进行编号

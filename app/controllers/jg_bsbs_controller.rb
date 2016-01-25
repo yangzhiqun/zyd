@@ -236,7 +236,7 @@ class JgBsbsController < ApplicationController
 
   def jg_bsb_params
     params.require(:jg_bsb).permit(
-        :zipcode, :fax, :jg_type, :city, :country, :status, :pdf_sign_rules, :attachment_path_file, :gpsname, :gpspassword, :api_ip_address, :code, :jg_address, :jg_administrion, :jg_bjp_permission, :jg_certification, :jg_contacts, :jg_detection, :jg_enable, :jg_group, :jg_group_category, :jg_higher_level, :jg_hzp_permission, :jg_leader, :jg_name, :jg_sampling, :jg_sp_permission, :jg_tel, :jg_word_area, :jg_province, :jg_email
+        :zipcode, :fax, :jg_type, :city, :country, :status, :pdf_sign_rules, :attachment_path_file, :gpsname, :gpspassword, :api_ip_address, :code, :jg_address, :jg_administrion, :jg_bjp_permission, :jg_certification, :jg_contacts, :jg_detection, :jg_enable, :jg_group, :jg_group_category, :jg_higher_level, :jg_hzp_permission, :jg_leader, :jg_name, :jg_sampling, :jg_sp_permission, :jg_tel, :jg_word_area, :jg_province, :jg_email, super_jg_bsbs: []
     )
   end
 end
