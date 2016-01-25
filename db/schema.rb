@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160123101650) do
+ActiveRecord::Schema.define(version: 20160125025520) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -261,6 +261,8 @@ ActiveRecord::Schema.define(version: 20160123101650) do
     t.string   "pdf_sign_rules",    limit: 255
     t.integer  "status",            limit: 4,   default: 0
     t.integer  "sys_province_id",   limit: 4
+    t.string   "city",              limit: 10
+    t.string   "country",           limit: 10
   end
 
   create_table "login_logs", force: :cascade do |t|
