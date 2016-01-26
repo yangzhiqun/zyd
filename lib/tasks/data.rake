@@ -2,23 +2,77 @@
 require 'pp'
 namespace :data do
 
-	desc '迁移sp_bsbs到tmp_sp_bsbs'
-	task :migrate_tmp_sp_bsbs => :environment do
+  desc '迁移sp_bsbs到tmp_sp_bsbs'
+  task :migrate_tmp_sp_bsbs => :environment do
     ActiveRecord::Base.connection.execute("TRUNCATE tmp_sp_bsbs")
     ActiveRecord::Base.connection.execute("INSERT INTO tmp_sp_bsbs(id, sp_i_state, sp_s_16, sp_s_3, sp_s_202, sp_s_14, sp_s_43, sp_s_2_1, sp_s_35, sp_s_64, sp_s_1, sp_s_17, sp_s_20, sp_s_85, created_at, updated_at, sp_s_214, sp_s_71, fail_report_path, sp_s_18, tname, user_id, uid, sp_s_70, sp_s_215, sp_s_68, sp_s_13, sp_s_27, czb_reverted_flag) select id, sp_i_state, sp_s_16, sp_s_3, sp_s_202, sp_s_14, sp_s_43, sp_s_2_1, sp_s_35, sp_s_64, sp_s_1, sp_s_17, sp_s_20, sp_s_85, created_at, updated_at, sp_s_214, sp_s_71, fail_report_path, sp_s_18, tname, user_id, uid, sp_s_70, sp_s_215, sp_s_68, sp_s_13, sp_s_27, czb_reverted_flag from sp_bsbs")
-	end
+  end
 
-	# 执行该task之前请先在jg_bsb model中注释掉pdf_sign_rules
-	desc '机构签章规则号整理为stamps表'
-	task :migrate_jg_stamps => :environment do
-		ActiveRecord::Base.transaction do
-			JgBsb.where('pdf_sign_rules is not null and pdf_sign_rules <> ""').all.each do |jg|
-				jg.pdf_sign_rules.split('#').each do |rule|
-					JgBsbStamp.create(jg_bsb_id: jg.id, name: rule, stamp_no: rule, stamp_type: rule.split('_')[1], note: 'created from migration')
-				end
-			end
-		end
-	end
+  # 执行该task之前请先在jg_bsb model中注释掉pdf_sign_rules
+  desc '机构签章规则号整理为stamps表'
+  task :migrate_jg_stamps => :environment do
+    ActiveRecord::Base.transaction do
+      JgBsb.where('pdf_sign_rules is not null and pdf_sign_rules <> ""').all.each do |jg|
+        jg.pdf_sign_rules.split('#').each do |rule|
+          JgBsbStamp.create(jg_bsb_id: jg.id, name: rule, stamp_no: rule, stamp_type: rule.split('_')[1], note: 'created from migration')
+        end
+      end
+    end
+  end
+
+  desc '升级用户后将sp_bsbs等tname更新为user_id'
+  task :update_user_account => :environment do
+    SpBsb.record_timestamps = false
+    total = SpBsb.count
+    THREAD_SIZE = 10000
+
+    threads = []
+    (total.to_f / THREAD_SIZE).ceil.times do |i|
+      threads << Thread.new do
+        puts "Thread #{i} started.\n"
+        SpBsb.where('user_id IS NULL OR uid IS NULL').limit(THREAD_SIZE).offset(i + THREAD_SIZE).each_with_index do |bsb, index|
+          user = User.find_by_tname(bsb.tname)
+          unless user.blank?
+            if bsb.update_attributes(user_id: user.id, uid: user.uid, sp_s_37_user_id: User.find_by_tname(bsb.sp_s_37).id)
+              puts "T:#{i} updated: GC: #{bsb.sp_s_16}, #{index}/#{total}"
+            else
+              puts "T:#{i}  failed: GC: #{bsb.sp_s_16}, #{index}/#{total}"
+            end
+          else
+            puts "T:#{i}    user: #{bsb.tname} not exists"
+          end
+        end
+        puts "Thread #{i} ended."
+      end
+    end
+
+    threads.each do |t|
+      t.join
+    end
+
+    Thread.new do
+      SpYydjb.all.each do |djb|
+        r = djb.update_attributes({djr_user_id: User.find_by_tname(djb.djr).id,
+                                blr_user_id: User.find_by_tname(djb.blr).id,
+                                tbr_user_id: User.find_by_tname(djb.tbr).id,
+                                shr_user_id: User.find_by_tname(djb.tbr).id
+                               })
+        puts "YYDJB;#{djb.id}, #{r}\n"
+      end
+    end.join
+
+    Thread.new do
+      WtypCzbPart.all.each do |part|
+        r = part.update_attributes({blr_user_id: User.find_by_tname(part.blr).id,
+                               tbr_user_id: User.find_by_tname(part.tbr).id,
+                               shr_user_id: User.find_by_tname(part.tbr).id
+                              })
+        puts "WTYP;#{part.id}, #{r}\n"
+      end
+    end.join
+
+    SpBsb.record_timestamps = true
+  end
 
   desc '机构重名数据整理'
   task :rename_jg_bsbs_data_clean => :environment do

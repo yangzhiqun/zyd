@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160126081406) do
+ActiveRecord::Schema.define(version: 20160126083737) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -1334,6 +1334,7 @@ ActiveRecord::Schema.define(version: 20160126081406) do
     t.string   "sp_xkz_id",         limit: 255
     t.string   "cyd_file_path",     limit: 255
     t.string   "cyjygzs_file_path", limit: 255
+    t.integer  "sp_s_37_user_id",   limit: 4
   end
 
   add_index "pad_sp_bsbs", ["sp_s_1"], name: "index_pad_sp_bsbs_on_sp_s_1", using: :btree
@@ -1737,9 +1738,9 @@ ActiveRecord::Schema.define(version: 20160126081406) do
     t.string   "sp_s_220",                 limit: 10
     t.string   "sp_s_221",                 limit: 10
     t.string   "sp_s_222",                 limit: 20
-    t.integer "user_id", limit: 4
-    t.string "uid", limit: 20
-    t.integer "sp_s_37_user_id", limit: 4
+    t.integer  "user_id",                  limit: 4
+    t.string   "uid",                      limit: 20
+    t.integer  "sp_s_37_user_id",          limit: 4
   end
 
   add_index "sp_bsbs", ["application_id"], name: "index_sp_bsbs_on_application_id", using: :btree
@@ -2020,10 +2021,10 @@ ActiveRecord::Schema.define(version: 20160126081406) do
     t.date     "gzbcydwrq"
     t.string   "attachment_path", limit: 255
     t.string   "attachments",     limit: 255
-    t.integer "djr_user_id", limit: 4
-    t.integer "blr_user_id", limit: 4
-    t.integer "tbr_user_id", limit: 4
-    t.integer "shr_user_id", limit: 4
+    t.integer  "djr_user_id",     limit: 4
+    t.integer  "blr_user_id",     limit: 4
+    t.integer  "tbr_user_id",     limit: 4
+    t.integer  "shr_user_id",     limit: 4
   end
 
   create_table "spdata", force: :cascade do |t|
@@ -2554,10 +2555,10 @@ ActiveRecord::Schema.define(version: 20160126081406) do
     t.string   "cpkzqk_22",           limit: 255
     t.string   "cpkzqk_23",           limit: 255
     t.string   "current_state_desc",  limit: 255
-    t.integer "blr_user_id", limit: 4
-    t.integer "czfzr_user_id", limit: 4
-    t.integer "tbr_user_id", limit: 4
-    t.integer "shr_user_id", limit: 4
+    t.integer  "blr_user_id",         limit: 4
+    t.integer  "czfzr_user_id",       limit: 4
+    t.integer  "tbr_user_id",         limit: 4
+    t.integer  "shr_user_id",         limit: 4
   end
 
   add_index "wtyp_czb_parts", ["cjbh"], name: "index_wtyp_czb_parts_on_cjbh", using: :btree
