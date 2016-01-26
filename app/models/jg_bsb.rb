@@ -3,7 +3,7 @@ class JgBsb < ActiveRecord::Base
   validates_presence_of :jg_address, message: '请填写机构地址'
   validates_presence_of :jg_province, message: '请填写机构省份'
   validates_uniqueness_of :jg_address, message: '机构地址重复'
-  validates_uniqueness_of :code, message: '该编号已存在', scope: [:jg_province]
+  validates_uniqueness_of :code, message: '该编号已存在', scope: [:jg_province], allow_blank: true
   require 'RMagick'
 
   has_many :jg_bsb_names
@@ -28,6 +28,7 @@ class JgBsb < ActiveRecord::Base
   ]
 
   after_save :doings_after_save
+  before_save :generate_code
 
   def pdf_sign_rules
     #return super
@@ -131,7 +132,6 @@ class JgBsb < ActiveRecord::Base
   end
 
   def doings_after_save
-    generate_code
     update_super_jg_bsbs_info
   end
 
@@ -150,7 +150,6 @@ class JgBsb < ActiveRecord::Base
   def generate_code
     if self.code.blank?
       self.code = '%.2i' % [((1..99).to_a - JgBsb.where(jg_province: self.jg_province).map { |j| j.code.to_i })[0]]
-      self.save
     end
   end
 end

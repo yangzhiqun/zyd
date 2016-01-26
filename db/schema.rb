@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160125054951) do
+ActiveRecord::Schema.define(version: 20160125152432) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -1737,6 +1737,8 @@ ActiveRecord::Schema.define(version: 20160125054951) do
     t.string   "sp_s_220",                 limit: 10
     t.string   "sp_s_221",                 limit: 10
     t.string   "sp_s_222",                 limit: 20
+    t.integer "user_id", limit: 4
+    t.string "uid", limit: 20
   end
 
   add_index "sp_bsbs", ["application_id"], name: "index_sp_bsbs_on_application_id", using: :btree
@@ -1754,8 +1756,10 @@ ActiveRecord::Schema.define(version: 20160125054951) do
   add_index "sp_bsbs", ["sp_s_5"], name: "index_sp_bsbs_on_sp_s_5", using: :btree
   add_index "sp_bsbs", ["sp_s_71"], name: "index_sp_bsbs_on_sp_s_71", using: :btree
   add_index "sp_bsbs", ["tname"], name: "index_tname", using: :btree
+  add_index "sp_bsbs", ["uid"], name: "index_sp_bsbs_on_uid", using: :btree
   add_index "sp_bsbs", ["updated_at", "sp_i_state"], name: "updated_at_state_idx", using: :btree
   add_index "sp_bsbs", ["updated_at"], name: "update_desc", using: :btree
+  add_index "sp_bsbs", ["user_id"], name: "index_sp_bsbs_on_user_id", using: :btree
   add_index "sp_bsbs", ["via_api"], name: "index_sp_bsbs_on_via_api", using: :btree
 
   create_table "sp_company_infos", force: :cascade do |t|
