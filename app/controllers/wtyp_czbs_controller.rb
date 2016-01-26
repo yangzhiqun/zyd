@@ -700,7 +700,7 @@ class WtypCzbsController < ApplicationController
       @wtyp_czbs = WtypCzbPart.where(:id => params[:ids].split(','))
 
       @wtyp_czbs.each do |czb|
-        czb.thyy = (czb.thyy || "") + "<br>" + "操作时间：" + Time.now.to_s + ", 原因：" + params[:thyy] + ", 操作人员：" + current_user.tname
+        czb.thyy = (czb.thyy || '') + "<br>" + "操作时间：" + Time.now.to_s + ", 原因：" + params[:thyy] + ", 操作人员：" + current_user.tname + "(#{current_user.uid})"
         czb.current_user = current_user
         czb.reverting = true
         case czb.current_state

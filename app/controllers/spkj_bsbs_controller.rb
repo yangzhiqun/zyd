@@ -62,13 +62,13 @@ class SpkjBsbsController < ApplicationController
 
     flash[:import_result] =nil
     @spkj_bsb = SpkjBsb.new
-    @spkj_bsb.tname= current_user.name
-    @spkj_bsb.sp_s_3=current_user.user_s_province
-    @spkj_bsb.sp_s_35=session[:user_jcjg]
-    @spkj_bsb.sp_s_37=current_user.tname
-    @spkj_bsb.sp_s_39=current_user.tel
-    @spkj_bsb.sp_s_52=current_user.user_s_province
-    @spkj_bsb.sp_s_71='未检验'
+    @spkj_bsb.tname = current_user.name
+    @spkj_bsb.sp_s_3 = current_user.user_s_province
+    @spkj_bsb.sp_s_35 = session[:user_jcjg]
+    @spkj_bsb.sp_s_37 = current_user.tname
+    @spkj_bsb.sp_s_39 = current_user.tel
+    @spkj_bsb.sp_s_52 = current_user.user_s_province
+    @spkj_bsb.sp_s_71 = '未检验'
     temp=JgBsb.find_by_jg_name(session[:user_jcjg])
     if temp
       @spkj_bsb.sp_s_40=temp.jg_contacts
@@ -113,7 +113,9 @@ class SpkjBsbsController < ApplicationController
   # POST /spkj_bsbs.json
   def create
     @spkj_bsb = SpkjBsb.new(params[:spkj_bsb])
-    @spkj_bsb.tname=current_user.name
+    # @spkj_bsb.tname=current_user.name
+    @spkj_bsb.user_id = current_user.id
+    @spkj_bsb.uid = current_user.uid
     @spkj_bsb.sp_s_52=current_user.user_s_province
     @spkj_bsb.sp_i_state=1
     @spkj_bsb.save

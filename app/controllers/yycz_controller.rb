@@ -22,10 +22,12 @@ class YyczController < ApplicationController
 
     @yydjb.djbm = current_user.jg_bsb.jg_name
     @yydjb.djr = current_user.tname
+    @yydjb.djr_user_id = current_user.id
 
     # 2015年5月17日应 张秀宇 要求，去掉中间安排环节，直接将登记后的异议信息安排给当前登记人
     @yydjb.current_state = SpYydjb::State::ASSIGNED
     @yydjb.blr = current_user.tname
+    @yydjb.blr_user_id = current_user.id
     @yydjb.blbm = current_user.jg_bsb.jg_name
     @yydjb.blsj = Time.now
     
@@ -232,18 +234,21 @@ class YyczController < ApplicationController
       when SpYydjb::State::LOGGED
         @djb.current_state = SpYydjb::State::ASSIGNED
         @djb.blr = current_user.tname
+        @djb.blr_user_id = current_user.id
         @djb.blbm = current_user.jg_bsb.jg_name
         @djb.blsj = Time.now
 
       when SpYydjb::State::ASSIGNED
         @djb.current_state = SpYydjb::State::FILLED
         @djb.tbr = current_user.tname
+        @djb.tbr_user_id = current_user.id
         @djb.tbbm = current_user.jg_bsb.jg_name
         @djb.tbsj = Time.now
 
       when SpYydjb::State::FILLED
         @djb.current_state = SpYydjb::State::PASSED
         @djb.shr = current_user.tname
+        @djb.shr_user_id = current_user.id
         @djb.shbm = current_user.jg_bsb.jg_name
         @djb.shsj = Time.now
 
@@ -363,7 +368,7 @@ class YyczController < ApplicationController
     
     @djbs.each do |djb|
       djb.session = session
-      djb.thyy = (djb.thyy || "") + "<br>" + "操作时间：" + Time.now.to_s + ", 原因：" + params[:thyy] + ", 操作人员：" + current_user.tname
+      djb.thyy = (djb.thyy || "") + "<br>" + "操作时间：" + Time.now.to_s + ", 原因：" + params[:thyy] + ", 操作人员：" + current_user.tname + "(#{current_user.uid})"
       case djb.current_state
       when SpYydjb::State::LOGGED
         djb.current_state = SpYydjb::State::CANCEL

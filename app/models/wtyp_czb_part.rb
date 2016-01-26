@@ -139,6 +139,7 @@ class WtypCzbPart < ActiveRecord::Base
       when ::WtypCzb::State::LOGGED
         self.current_state = ::WtypCzb::State::ASSIGNED
         self.blr = current_user.tname
+        self.blr_user_id = current_user.id
         self.blbm = current_user.jg_bsb.jg_name
         self.blsj = Time.now
 
@@ -146,6 +147,7 @@ class WtypCzbPart < ActiveRecord::Base
         self.current_state = ::WtypCzb::State::FILLED
 
         self.tbr = current_user.tname
+        self.tbr_user_id = current_user.id
         self.tbbm = current_user.jg_bsb.jg_name
         self.tbsj = Time.now
 
@@ -153,6 +155,7 @@ class WtypCzbPart < ActiveRecord::Base
         self.current_state = ::WtypCzb::State::PASSED
 
         self.shr = current_user.tname
+        self.shr_user_id = current_user.id
         self.shbm = current_user.jg_bsb.jg_name
         self.shsj = Time.now
 

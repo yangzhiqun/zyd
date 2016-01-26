@@ -32,7 +32,7 @@ class SpBsbsController < ApplicationController
     @wtx_str = Spdatum.where("sp_bsb_id = ? AND spdata_2 LIKE ? ", @spbsb.id, "%问题%").map { |s| s.spdata_0 }.join(",")
     #检查封样人员
     @padsplog_jcfy = PadSpLogs.where("sp_s_16 = ? AND remark = ?", @spbsb.sp_s_16, "接受样品").last
-    @splog_jcfy = SpLog.where("sp_bsb_id = ? AND remark = ?", @spbsb.id, "基本信息提交入库").last
+    @splog_jcfy = SpLog.where('sp_bsb_id = ? AND remark = ?', @spbsb.id, "基本信息提交入库").last
     @jcfy = '/'
     if !@padsplog_jcfy.nil?
       @jcfy = User.where("id = ?", @padsplog_jcfy.user_id).last.tname
@@ -160,7 +160,7 @@ class SpBsbsController < ApplicationController
     if current_user.is_admin?||session[:change_js]==9||session[:change_js]==10
       return 1
     end
-    if params_data.tname == current_user.name
+    if params_data.user_id == current_user.id
       return 1
     end
     if current_user.jg_bsb.all_names.include?(params_data.sp_s_43)
@@ -266,18 +266,19 @@ class SpBsbsController < ApplicationController
     end
     flash[:import_result] =nil
     @sp_bsb = SpBsb.new
-    @sp_bsb.tname= current_user.name
-    @sp_bsb.sp_s_3=current_user.user_s_province
-    @sp_bsb.sp_s_35= current_user.jg_bsb.jg_name
-    @sp_bsb.sp_s_37=current_user.tname
-    @sp_bsb.sp_s_39=current_user.tel
-    @sp_bsb.sp_s_52=current_user.user_s_province
-    @sp_bsb.sp_s_71='未检验'
+    @sp_bsb.user_id = current_user.id
+    @sp_bsb.uid = current_user.uid
+    @sp_bsb.sp_s_3 = current_user.user_s_province
+    @sp_bsb.sp_s_35 = current_user.jg_bsb.jg_name
+    @sp_bsb.sp_s_37 = current_user.tname
+    @sp_bsb.sp_s_39 = current_user.tel
+    @sp_bsb.sp_s_52 = current_user.user_s_province
+    @sp_bsb.sp_s_71 = '未检验'
     if current_user.jg_bsb
-      @sp_bsb.sp_s_40=current_user.jg_bsb.jg_contacts
-      @sp_bsb.sp_s_41=current_user.jg_bsb.jg_tel
-      @sp_bsb.sp_s_42=current_user.jg_bsb.jg_email
-      @sp_bsb.sp_s_52=current_user.jg_bsb.jg_province
+      @sp_bsb.sp_s_40 = current_user.jg_bsb.jg_contacts
+      @sp_bsb.sp_s_41 = current_user.jg_bsb.jg_tel
+      @sp_bsb.sp_s_42 = current_user.jg_bsb.jg_email
+      @sp_bsb.sp_s_52 = current_user.jg_bsb.jg_province
     end
 
     @sp_bsb.sp_d_86=(Time.now).year.to_s+'-'+(Time.now).mon.to_s+'-'+(Time.now).day.to_s
@@ -369,7 +370,9 @@ class SpBsbsController < ApplicationController
   def create
     ActiveRecord::Base.transaction do
       @sp_bsb = SpBsb.new(sp_bsb_params)
-      @sp_bsb.tname = current_user.name
+      # @sp_bsb.tname = current_user.name
+      @sp_bsb.user_id = current_user.id
+      @sp_bsb.uid = current_user.uid
       @sp_bsb.sp_s_52 = current_user.user_s_province
 
       @sp_bsb.sp_s_2 = @sp_bsb.sp_s_2 || '';
@@ -873,7 +876,7 @@ class SpBsbsController < ApplicationController
         elsif session[:change_js]==6 #数据填报
           @sp_bsbs = @sp_bsbs.where("sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==1||session[:change_js]==5 #填报
-          @sp_bsbs = @sp_bsbs.where("tname = ?", current_user.name).where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+          @sp_bsbs = @sp_bsbs.where('user_id = ?', current_user.id).where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==8 #牵头
           if session[:user_dl]=='乳制品'&& current_user.jg_bsb_id == JgBsb.find_by_history_name('上海市质量监督检验技术研究院').id
             @sp_bsbs = @sp_bsbs.where("sp_s_17 = ? or (sp_s_18='婴幼儿配方食品' and sp_s_70 LIKE '%一司%')", session[:user_dl]).where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
@@ -898,7 +901,7 @@ class SpBsbsController < ApplicationController
       elsif session[:change_js]==6 #数据填报
         @sp_bsbs = @sp_bsbs.where("sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==1||session[:change_js]==5 #填报
-        @sp_bsbs = @sp_bsbs.where("tname = ?", current_user.name).paginate(page: params[:page], per_page: 10)
+        @sp_bsbs = @sp_bsbs.where('user_id = ?', current_user.id).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==8 #牵头
         if session[:user_dl]=='乳制品'&&current_user.jg_bsb_id == JgBsb.find_by_history_name('上海市质量监督检验技术研究院').id
           @sp_bsbs = @sp_bsbs.where("sp_s_17=? or (sp_s_18='婴幼儿配方食品' and sp_s_70 LIKE '%一司%')", session[:user_dl]).paginate(page: params[:page], per_page: 10)
@@ -1037,7 +1040,9 @@ class SpBsbsController < ApplicationController
                 bsb.sp_s_85= current_user.name
                 bsb.sp_s_52=current_user.user_s_province
                 bsb.sp_s_56=""
-                bsb.tname = current_user.name
+                # bsb.tname = current_user.name
+                bsb.user_id = current_user.id
+                bsb.uid = current_user.uid
                 bsb.sp_i_state=10
                 bsb.sp_n_jcxcount=1
                 bsb.sp_d_86=(Time.now).year.to_s+'-'+(Time.now).mon.to_s+'-'+(Time.now).day.to_s
@@ -1321,7 +1326,7 @@ class SpBsbsController < ApplicationController
   private
   def sp_bsb_params
     params.require(:sp_bsb).permit(
-        :report_path, :sp_s_1, :sp_s_2, :sp_s_3, :sp_s_4, :sp_s_5, :sp_s_6, :sp_s_7, :sp_s_8, :sp_s_9, :sp_s_10, :sp_s_11, :sp_s_12, :sp_s_13, :sp_s_14, :sp_n_15, :sp_s_16, :sp_s_17, :sp_s_18, :sp_s_19, :sp_s_20, :sp_s_21, :sp_d_22, :sp_s_23, :sp_s_24, :sp_s_25, :sp_s_26, :sp_s_27, :sp_d_28, :sp_n_29, :sp_s_30, :sp_n_31, :sp_n_32, :sp_s_33, :sp_s_34, :sp_s_35, :sp_s_36, :sp_s_37, :sp_d_38, :sp_s_39, :sp_s_40, :sp_s_41, :sp_s_42, :sp_s_43, :sp_s_44, :sp_s_45, :sp_d_46, :sp_d_47, :sp_s_48, :sp_s_49, :sp_s_50, :sp_s_51, :sp_s_52, :sp_s_53, :sp_s_54, :sp_s_55, :sp_s_56, :sp_s_57, :sp_s_58, :sp_s_59, :sp_s_60, :sp_s_61, :sp_s_62, :sp_s_63, :sp_s_64, :sp_s_65, :sp_s_66, :sp_s_67, :sp_s_68, :sp_s_69, :sp_s_70, :sp_s_71, :sp_s_72, :sp_s_73, :sp_s_74, :sp_s_75, :sp_s_76, :sp_s_77, :sp_s_78, :sp_s_79, :sp_s_80, :sp_s_81, :sp_s_82, :sp_s_83, :sp_s_84, :sp_s_85, :sp_d_86, :sp_s_87, :sp_s_88, :tname,
+        :report_path, :sp_s_1, :sp_s_2, :sp_s_3, :sp_s_4, :sp_s_5, :sp_s_6, :sp_s_7, :sp_s_8, :sp_s_9, :sp_s_10, :sp_s_11, :sp_s_12, :sp_s_13, :sp_s_14, :sp_n_15, :sp_s_16, :sp_s_17, :sp_s_18, :sp_s_19, :sp_s_20, :sp_s_21, :sp_d_22, :sp_s_23, :sp_s_24, :sp_s_25, :sp_s_26, :sp_s_27, :sp_d_28, :sp_n_29, :sp_s_30, :sp_n_31, :sp_n_32, :sp_s_33, :sp_s_34, :sp_s_35, :sp_s_36, :sp_s_37, :sp_d_38, :sp_s_39, :sp_s_40, :sp_s_41, :sp_s_42, :sp_s_43, :sp_s_44, :sp_s_45, :sp_d_46, :sp_d_47, :sp_s_48, :sp_s_49, :sp_s_50, :sp_s_51, :sp_s_52, :sp_s_53, :sp_s_54, :sp_s_55, :sp_s_56, :sp_s_57, :sp_s_58, :sp_s_59, :sp_s_60, :sp_s_61, :sp_s_62, :sp_s_63, :sp_s_64, :sp_s_65, :sp_s_66, :sp_s_67, :sp_s_68, :sp_s_69, :sp_s_70, :sp_s_71, :sp_s_72, :sp_s_73, :sp_s_74, :sp_s_75, :sp_s_76, :sp_s_77, :sp_s_78, :sp_s_79, :sp_s_80, :sp_s_81, :sp_s_82, :sp_s_83, :sp_s_84, :sp_s_85, :sp_d_86, :sp_s_87, :sp_s_88, :user_id, :uid,
         :sp_n_jcxcount,
         :cyd_file, :cyjygzs_file,
         :yydj_enabled_by_admin_at,

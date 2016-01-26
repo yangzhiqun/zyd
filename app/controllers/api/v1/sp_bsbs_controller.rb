@@ -135,7 +135,7 @@ class Api::V1::SpBsbsController < ApplicationController
   end
 
   def tasks
-    @tasks = PadSpBsb.where(:sp_i_state => [12, 13, 14, 15, 16], :sp_s_37 => @user.tname)
+    @tasks = PadSpBsb.where(:sp_i_state => [12, 13, 14, 15, 16], :sp_s_37 => @user.tname, sp_s_37_user_id: @user.id)
     respond_to do |format|
       format.json { render :json => {:status => 'OK', :msg => @tasks.as_json(:include => [:sp_bsb_pictures])} }
     end
