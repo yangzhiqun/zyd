@@ -10,7 +10,7 @@ class SpBsbsController < ApplicationController
   def print
     @spbsb = SpBsb.find(params[:id])
     @jg_bsb = JgBsb.find_by_jg_name(@spbsb.sp_s_43)
-    @jyxm_str = Spdatum.where('sp_bsb_id= ? and (spdata_2 = ? or spdata_2 = ?)', @spbsb.id,'合格项','不合格项').limit(3).map { |s| s.spdata_0 }.join(",") + "等#{Spdatum.where("sp_bsb_id= ? and (spdata_2 = ? or spdata_2 = ?)", @spbsb.id, '合格项','不合格项').count}项。"
+    @jyxm_str = Spdatum.where('sp_bsb_id= ? and (spdata_2 = ? or spdata_2 = ?)', @spbsb.id, '合格项', '不合格项').limit(3).map { |s| s.spdata_0 }.join(",") + "等#{Spdatum.where("sp_bsb_id= ? and (spdata_2 = ? or spdata_2 = ?)", @spbsb.id, '合格项', '不合格项').count}项。"
     #@jyjy_str = Spdatum.where(:sp_bsb_id => @spbsb.id,!spdata_4.eql?('/')).limit(2).map{|s| s.spdata_3}.join(",")
     @jyjy_str = Spdatum.where("sp_bsb_id= ? and spdata_4 <> ?", @spbsb.id, '/').limit(2).map { |s| s.spdata_3 }.join(",")
     @jyjy_str4 = Spdatum.where("sp_bsb_id= ? and spdata_4 <> ?", @spbsb.id, '/').limit(2).map { |s| s.spdata_4 }.join(",")
@@ -34,11 +34,13 @@ class SpBsbsController < ApplicationController
     @padsplog_jcfy = PadSpLogs.where("sp_s_16 = ? AND remark = ?", @spbsb.sp_s_16, "接受样品").last
     @splog_jcfy = SpLog.where('sp_bsb_id = ? AND remark = ?', @spbsb.id, "基本信息提交入库").last
     @jcfy = '/'
+
     if !@padsplog_jcfy.nil?
       @jcfy = User.where("id = ?", @padsplog_jcfy.user_id).last.tname
     elsif @padsplog_jcfy.nil? and !@splog_jcfy.nil?
       @jcfy = User.where("id = ?", @splog_jcfy.user_id).last.tname
     end
+
     if @jg_bsb.pdf_sign_rules.blank?
       render text: "请配置[#{@jg_bsb.jg_name}]签章规则号后使用打印功能"
       return
@@ -47,19 +49,19 @@ class SpBsbsController < ApplicationController
     respond_to do |format|
       format.pdf {
         if @spbsb.report_path.blank? or !File.exists?(@spbsb.absolute_report_path)
-          tmp_file = Rails.root.join("tmp", "sp_bsbs_#{@spbsb.id}_print.pdf")
+          tmp_file = Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}_print.pdf")
           render template: 'sp_bsbs/1.html.erb',
                  save_to_file: tmp_file,
                  save_only: true,
-                 pdf: "home",
-                 wkhtmltopdf: "/usr/local/bin/wkhtmltopdf",
-                 encoding: "utf-8",
+                 pdf: 'home',
+                 wkhtmltopdf: '/usr/local/bin/wkhtmltopdf',
+                 encoding: 'utf-8',
                  disable_javascript: true,
                  show_as_html: params[:debug].present?,
                  print_media_type: true,
                  lowquality: false
 
-          target_path = "#{Time.now.strftime("/%Y/%m/%d")}"
+          target_path = "#{Time.now.strftime('/%Y/%m/%d')}"
           abs_target_path = File.expand_path('../reports', Rails.root).to_s + target_path
           FileUtils.mkdir_p abs_target_path unless Dir.exists? abs_target_path
 
@@ -87,44 +89,35 @@ class SpBsbsController < ApplicationController
         end
       }
       format.html {
-        if @spbsb.report_path.blank? or !File.exists?(@spbsb.absolute_report_path)
-          tmp_file = Rails.root.join("tmp", "sp_bsbs_#{@spbsb.id}_print.pdf")
-          render template: 'sp_bsbs/1.html.erb',
-                 save_to_file: tmp_file,
-                 save_only: true,
-                 pdf: "home",
-                 wkhtmltopdf: "/usr/local/bin/wkhtmltopdf",
-                 encoding: "utf-8",
-                 disable_javascript: true,
-                 show_as_html: params[:debug].present?,
-                 print_media_type: true,
-                 lowquality: false
+        # 这里相当于报告预览
+        if params[:pdf_rules].blank?
+          render text: '错误:请提供签章规则号'
+          return
+        end
+        tmp_file = Rails.root.join('tmp', "preview_sp_bsbs_#{@spbsb.id}_print.pdf")
+        render template: 'sp_bsbs/1.html.erb',
+               save_to_file: tmp_file,
+               save_only: true,
+               pdf: 'home',
+               wkhtmltopdf: '/usr/local/bin/wkhtmltopdf',
+               encoding: 'utf-8',
+               disable_javascript: true,
+               show_as_html: params[:debug].present?,
+               print_media_type: true,
+               lowquality: false
 
-          target_path = "#{Time.now.strftime("/%Y/%m/%d")}"
-          abs_target_path = File.expand_path('../reports', Rails.root).to_s + target_path
-          FileUtils.mkdir_p abs_target_path unless Dir.exists? abs_target_path
+        abs_target_path = Rails.root.join('tmp', 'pdf_preview', "#{Time.now.strftime('%Y/%m/%d')}", "preview_#{@spbsb.id}.pdf")
+        FileUtils.mkdir_p abs_target_path unless Dir.exists? abs_target_path
 
-          SpBsb.record_timestamps = false
-          @spbsb.report_path = "#{target_path}/#{@spbsb.id}.pdf"
+        cmd = "/usr/local/java-ppc64-80/jre/bin/java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 1 #{params[:pdf_rules].split(',').join('#')} #{tmp_file} #{abs_target_path}"
+        logger.error cmd
 
-          cmd = "/usr/local/java-ppc64-80/jre/bin/java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 1 #{@jg_bsb.pdf_sign_rules} #{tmp_file} #{@spbsb.absolute_report_path}"
-          logger.error cmd
-
-          result = `#{cmd}`
-          FileUtils.rm_f(tmp_file)
-          if result.strip.include?('200')
-            if @spbsb.save
-              send_file @spbsb.absolute_report_path, filename: "#{@spbsb.sp_s_16}-检验报告.pdf", disposition: "inline"
-            else
-              render text: "错误：#{@spbsb.errors.first.last}"
-            end
-          else
-            render text: "错误：#{result}"
-          end
-
-          SpBsb.record_timestamps = true
+        result = `#{cmd}`
+        FileUtils.rm_f(tmp_file)
+        if result.strip.include?('200')
+          send_file abs_target_path, filename: "#{@spbsb.sp_s_16}-检验报告-预览.pdf", disposition: 'inline'
         else
-          send_file @spbsb.absolute_report_path, filename: "#{@spbsb.sp_s_16}-检验报告.pdf", disposition: "inline"
+          render text: "错误：#{result}"
         end
       }
     end
@@ -499,11 +492,11 @@ class SpBsbsController < ApplicationController
           @sp_bsb.submit_d_flag = Time.now.ago(3600*8).to_s(:db)
         end
 
-				if @role_name.blank?
-					@role_name = params[:commit]
-				end
+        if @role_name.blank?
+          @role_name = params[:commit]
+        end
         @loglaststate=SpLog.where("sp_bsb_id = ? ", params[:id]).last
-        if @loglaststate.nil? 
+        if @loglaststate.nil?
           @loglaststatesign = false
         else
           if params[:sp_bsb][:sp_i_state].to_s == '9' and @loglaststate.sp_i_state.to_s == '5'
@@ -512,7 +505,7 @@ class SpBsbsController < ApplicationController
             @loglaststatesign = false
           end
         end
-        if @role_name.eql?'检测机构批准' or params[:sp_bsb][:sp_i_state].to_s == '6' or @loglaststatesign
+        if @role_name.eql? '检测机构批准' or params[:sp_bsb][:sp_i_state].to_s == '6' or @loglaststatesign
           @sp_bsb.sp_s_48 = current_user.tname
         end
 
@@ -555,7 +548,7 @@ class SpBsbsController < ApplicationController
           if !session[:userCert].blank? and !@sp_bsb.ca_sign.blank?
             SpBsbCert.create(source: @sp_bsb.ca_source, user_cert: session[:userCert], sign: @sp_bsb.ca_sign, user_id: current_user.id, sp_i_state: @sp_bsb.sp_i_state, sp_bsb_id: @sp_bsb.id)
           end
-          
+
           if @role_name.blank?
             if params[:sp_bsb][:sp_i_state].to_s == '6' or (params[:sp_bsb][:sp_i_state].to_s == '9' and @loglaststate.sp_i_state.to_s == '5')
               @role_name = '检测机构批准'
