@@ -136,7 +136,7 @@ class Api::V1::SpBsbsController < ApplicationController
   end
 
   def tasks
-    @tasks = PadSpBsb.where(:sp_i_state => [12, 13, 14, 15, 16], :sp_s_37 => @user.tname, sp_s_37_user_id: @user.id)
+    @tasks = PadSpBsb.where(:sp_i_state => [12, 13, 14, 15, 16], sp_s_37_user_id: @user.id)
     respond_to do |format|
       format.json { render :json => {:status => 'OK', :msg => @tasks.as_json(:include => [:sp_bsb_pictures])} }
     end
@@ -264,8 +264,8 @@ class Api::V1::SpBsbsController < ApplicationController
       end
     else
       if !(params[:username].blank? or params[:password].blank?)
-        @user = User.authenticate(params[:username], params[:password])
-        if @user.blank?
+        @user = User.where(uid: params[:username]).last
+        if @user.blank? or !@user.valid_password?(params[:password])
           respond_to do |format|
             format.json {
               render :json => {:status => 'ERR', :msg => '非法访问'}
