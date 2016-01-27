@@ -470,7 +470,7 @@ class PadSpBsbsController < ApplicationController
             end
 
             @sp_bsb_new.sp_i_state = 1
-            # @sp_bsb_new.tname = current_user.tname
+            @sp_bsb_new.tname = current_user.tname
             @sp_bsb_new.user_id = current_user.id
             @sp_bsb_new.uid = current_user.uid
 
@@ -479,6 +479,7 @@ class PadSpBsbsController < ApplicationController
             else
               redirect_to :back, :flash => {:error => "接收样品失败！"}
             end
+						Rails.logger.error @sp_bsbs_new.errors.as_json
           else
             redirect_to :back, :flash => {:error => "接收样品失败, ERROR: 2！#{@sp_bsb.errors.first.last.as_json}"}
           end
@@ -502,6 +503,8 @@ class PadSpBsbsController < ApplicationController
             redirect_to :back, :flash => {:error => "无权限执行该操作"}
           end
         end
+			else
+				redirect_to :back, flash: { error: '状态未知' }
       end
     end
   end
