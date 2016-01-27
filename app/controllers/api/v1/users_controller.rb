@@ -1,7 +1,8 @@
 #encoding: utf-8
 class Api::V1::UsersController < ApplicationController
-  skip_before_filter :session_expiry, :verify_authenticity_token
-  before_filter :authorize, :only => [:auth, :update_location]
+	skip_before_filter :session_expiry, :verify_authenticity_token
+	before_filter :authorize, :only => [:auth, :update_location]
+  skip_before_action :authenticate_user!
 
   # CA AUTH
   def ca_auth

@@ -33,7 +33,7 @@ namespace :data do
         SpBsb.where('user_id IS NULL OR uid IS NULL').limit(THREAD_SIZE).offset(i + THREAD_SIZE).each_with_index do |bsb, index|
           user = User.find_by_tname(bsb.tname)
           unless user.blank?
-            if bsb.update_attributes(user_id: user.id, uid: user.uid, sp_s_37_user_id: User.find_by_tname(bsb.sp_s_37).id)
+            if bsb.update_attributes(user_id: user.id, uid: user.uid, sp_s_37_user_id: (User.find_by_tname(bsb.sp_s_37).id if User.exists?(tname: bsb.sp_s_37)))
               puts "T:#{i} updated: GC: #{bsb.sp_s_16}, #{index}/#{total}"
             else
               puts "T:#{i}  failed: GC: #{bsb.sp_s_16}, #{index}/#{total}"
