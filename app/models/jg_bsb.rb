@@ -9,7 +9,7 @@ class JgBsb < ActiveRecord::Base
   has_many :jg_bsb_names
   has_many :jg_bsb_stamps
   has_many :users
-  has_many :jg_bsb_supers
+  has_many :jg_bsb_supers, foreign_key: :super_jg_bsb_id
 
   attr_accessor :super_jg_bsbs
 

@@ -295,13 +295,25 @@
       <tr>
         <th colspan="6">上级业务部门</th>
         <td colspan="34">
-          <%= f.select :super_jg_bsbs, options_for_select(JgBsb.all.map{|jg| [jg.jg_name, jg.id]}, @jg_bsb.jg_bsb_supers.pluck(:id)), {}, multiple: true, class: 'form-control input-sm' %>
+          <%= f.select :super_jg_bsbs, options_for_select(JgBsb.all.map { |jg| [jg.jg_name, jg.id] }, @jg_bsb.jg_bsb_supers.pluck(:id)), {}, multiple: true, class: 'form-control input-sm' %>
         </td>
       </tr>
-      <% if @show==0||@show==nil %>
+      <tr>
+        <th colspan="6">下级业务部门</th>
+        <td colspan="34">
+          <ul class="list-group">
+            <% @jg_bsb.jg_bsb_supers.each_with_index do |s, i| %>
+                <li class="list-group-item"><%= i + 1 %>.
+                  <a href="/jg_bsbs/<%= s.jg_bsb.id %>"><%= s.jg_bsb.jg_name %></a>
+                </li>
+            <% end %>
+          </ul>
+        </td>
+      </tr>
+      <% if current_user.is_admin? %>
           <tr>
             <td colspan="40">
-              <%= f.submit(vaule="保存并退出", options={"id" => "save_and_exit", :class => "btn btn-sm btn-success"}) %>
+              <%= f.submit(vaule='保存并退出', options={id: 'save_and_exit', class: 'btn btn-sm btn-success'}) %>
             </td>
           </tr>
       <% end %>
