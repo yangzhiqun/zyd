@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160126083737) do
+ActiveRecord::Schema.define(version: 20160127064159) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -1335,6 +1335,8 @@ ActiveRecord::Schema.define(version: 20160126083737) do
     t.string   "cyd_file_path",     limit: 255
     t.string   "cyjygzs_file_path", limit: 255
     t.integer  "sp_s_37_user_id",   limit: 4
+    t.integer  "user_id",           limit: 4
+    t.string   "uid",               limit: 20
   end
 
   add_index "pad_sp_bsbs", ["sp_s_1"], name: "index_pad_sp_bsbs_on_sp_s_1", using: :btree
@@ -2257,6 +2259,8 @@ ActiveRecord::Schema.define(version: 20160126083737) do
     t.string   "sp_s_13",           limit: 255
     t.string   "sp_s_27",           limit: 255
     t.boolean  "czb_reverted_flag"
+    t.integer  "user_id",           limit: 4
+    t.string   "uid",               limit: 20
   end
 
   add_index "tmp_sp_bsbs", ["sp_i_state"], name: "index_tmp_sp_bsbs_on_sp_i_state", using: :btree
