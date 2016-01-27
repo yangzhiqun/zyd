@@ -479,7 +479,6 @@ class PadSpBsbsController < ApplicationController
             else
               redirect_to :back, :flash => {:error => "接收样品失败！"}
             end
-						Rails.logger.error @sp_bsbs_new.errors.as_json
           else
             redirect_to :back, :flash => {:error => "接收样品失败, ERROR: 2！#{@sp_bsb.errors.first.last.as_json}"}
           end
