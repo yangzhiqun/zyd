@@ -5,6 +5,7 @@ class Api::V1::SpBsbsController < ApplicationController
 
   skip_before_filter :session_expiry, :verify_authenticity_token
   before_filter :authorize, :except => [:picture, :transfer]
+  skip_before_action :authenticate_user!
 
   before_filter :doorkeeper_authorize!, :only => [:transfer]
 

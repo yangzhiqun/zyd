@@ -2,6 +2,7 @@
 class Api::V1::HcczController < ApplicationController
   skip_before_filter :session_expiry, :verify_authenticity_token
   before_filter :authorize, :only => [:list]
+  skip_before_action :authenticate_user!
 
   # @param tab: 0 => 待安排, 1 => 待办理, 2 => 待审核
   # @param @user
