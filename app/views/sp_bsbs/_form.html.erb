@@ -1028,11 +1028,6 @@
         return false;
       }
       <%end%>
-      $('#stamp-dlg').modal('show');
-      return false;
-      if (!confirm('确定提交吗？')) {
-        return false;
-      }
       var spxlxz = $('#sp_bsb_sp_s_70').val();
       $("select").attr("disabled", "disabled");
       $("input.inputText").attr("disabled", "disabled");
@@ -1051,6 +1046,11 @@
         $('#sp_bsb_sp_i_state').val("9");
       } else {
         $('#sp_bsb_sp_i_state').val("6");
+      }
+      $('#stamp-dlg').modal('show');
+      return false;
+      if (!confirm('确定提交吗？')) {
+        return false;
       }
       return true;
     });
@@ -1165,9 +1165,9 @@
       check_stamp_selector();
     });
 
-    function check_stamp_selector() {
+    function check_stamp_selector(preview) {
       var selected = $('#stamp-dlg .stamp-selector i.selected');
-      if (selected.length == 0) {
+      if (!preview && selected.length == 0) {
         $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
         alert('请选择签章.');
         return false;
@@ -1176,7 +1176,17 @@
         $.each(selected, function (i, stamp) {
           stamp_nos.push($(stamp).attr('data-stamp-no'));
         });
-        window.open('/sp_bsbs/' + SP.sp_bsb.id + '/print.html?pdf_rules=' + stamp_nos.join(','));
+        if (preview) {
+          window.open('/sp_bsbs/' + SP.sp_bsb.id + '/print.html?pdf_rules=' + stamp_nos.join(','));
+          $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
+        } else {
+          if (confirm('确定报告执行[检验机构批准]操作吗?')) {
+            window.open('/sp_bsbs/' + SP.sp_bsb.id + '/print.pdf?pdf_rules=' + stamp_nos.join(','));
+            $("#new_sp_bsb, form.edit_sp_bsb").trigger('submit');
+          } else {
+            $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
+          }
+        }
         return false;
       }
       return false;
@@ -1744,9 +1754,11 @@
           <% if @sp_bsb.sp_i_state == 2 %>
               <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
           <% end %>
+          <a href="/sp_bsbs/<%= @sp_bsb.id %>/print.html" data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default">报告预览</a>
       <% elsif @sp_bsb["sp_i_state"]==4&&session[:change_js]==7 %>
           <%= f.submit(vaule="检测机构审核通过", options={"id" => "save_2", :class => "btn btn-xs btn-success"}) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
+          <a href="/sp_bsbs/<%= @sp_bsb.id %>/print.html" data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default">报告预览</a>
       <% elsif @sp_bsb["sp_i_state"]==5&&session[:change_js]==11 %>
           <div class="modal fade" id="stamp-dlg" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
