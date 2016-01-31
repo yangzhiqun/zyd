@@ -1158,11 +1158,11 @@
 
     $('#stamp-dlg .ok').click(function () {
       $('#stamp-dlg .modal-footer .btn').attr('disabled', true);
-      check_stamp_selector();
+      check_stamp_selector(false);
     });
     $('#stamp-dlg .preview').click(function () {
       $('#stamp-dlg .modal-footer .btn').attr('disabled', true);
-      check_stamp_selector();
+      check_stamp_selector(true);
     });
 
     function check_stamp_selector(preview) {

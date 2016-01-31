@@ -43,12 +43,13 @@ class SpBsbsController < ApplicationController
 
     respond_to do |format|
       format.pdf {
-        if params[:pdf_rules].blank?
-          render text: "请选择签章规则号后使用"
-          return
-        end
 
         if @spbsb.report_path.blank? or !File.exists?(@spbsb.absolute_report_path)
+          if params[:pdf_rules].blank?
+            render text: '请选择签章规则号后使用'
+            return
+          end
+
           tmp_file = Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}_print.pdf")
           render template: 'sp_bsbs/1.html.erb',
                  save_to_file: tmp_file,
