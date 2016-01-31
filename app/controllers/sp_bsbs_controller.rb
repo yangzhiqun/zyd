@@ -106,16 +106,18 @@ class SpBsbsController < ApplicationController
         if params[:pdf_rules].blank?
           send_file tmp_file, filename: "#{@spbsb.sp_s_16}-检验报告-预览A.pdf", disposition: 'inline'
         else
-          abs_target_path = Rails.root.join('tmp', 'pdf_preview', "#{Time.now.strftime('%Y/%m/%d')}", "preview_#{@spbsb.id}.pdf")
+          abs_target_path = Rails.root.join('tmp', 'pdf_preview', "#{Time.now.strftime('%Y/%m/%d')}")
+					filename = "preview_#{@spbsb.id}.pdf"
+
           FileUtils.mkdir_p abs_target_path unless Dir.exists? abs_target_path
 
-          cmd = "/usr/local/java-ppc64-80/jre/bin/java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 1 #{params[:pdf_rules].split(',').join('#')} #{tmp_file} #{abs_target_path}"
+          cmd = "/usr/local/java-ppc64-80/jre/bin/java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 1 #{params[:pdf_rules].split(',').join('#')} #{tmp_file} #{abs_target_path}/#{filename}"
           logger.error cmd
 
           result = `#{cmd}`
           FileUtils.rm_f(tmp_file)
           if result.strip.include?('200')
-            send_file abs_target_path, filename: "#{@spbsb.sp_s_16}-检验报告-预览B.pdf", disposition: 'inline'
+            send_file "#{abs_target_path}/#{filename}", filename: "#{@spbsb.sp_s_16}-检验报告-预览B.pdf", disposition: 'inline'
           else
             render text: "错误：#{result}"
           end
