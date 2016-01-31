@@ -700,7 +700,7 @@
             }
             <%end%>
 
-            <%@check=[68,17,18,19,20,62,202]%>
+            <%@check=[68,17,18,19,20,62,202,220,221]%>
             <%@check.each do |i|%>
             var o = $.trim($("#sp_bsb_sp_s_" +<%=i%>).val());
             if (o == '请选择' || o == '') {
@@ -735,9 +735,6 @@
          * 检验数据提交入库
          * */
         $('#submit2').click(function () {
-            if (!confirm('确定提交吗？')) {
-                return false;
-            }
 
             var jcxnull = 0;
             $("#tblGrid input[name='spdata[][spdata_1]']").each(
@@ -808,15 +805,15 @@
             }
 
             <%end%>
-            <%@check=[68,17,62,202]%>
+            <%@check=[68,17,62,202,220,221]%>
             <%@check.each do |i|%>
-            if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()) == '请选择') {
+              var o = $.trim($("#sp_bsb_sp_s_" +<%=i%>).val());
+              if (o == '请选择' || o == '') {
                 alert("该项为必选项");
                 $("#sp_bsb_sp_s_" +<%=i%>).focus();
                 return false;
-            }
+              }
             <%end%>
-
 
             <%@check=[43,44,45,49,50,51,85,87,88]%>
             <%@check.each do |i|%>
@@ -843,6 +840,10 @@
                 return false;
             }
             <%end%>
+
+          if (!confirm('确定提交吗？')) {
+            return false;
+          }
             varDate = $("#sp_bsb_sp_d_86").val();
             varData = varDate.split("-")
             varDate = new Date(varData[0], varData[1] - 1, varData[2]);
