@@ -343,13 +343,13 @@
     });
     <% end %>
     $(".region").ProvinceCity({
-      dprovince: "<%= @sp_bsb.sp_s_3 %>",
-      dcity: "<%= @sp_bsb.sp_s_4 %>",
-      lcity: "<%= @sp_bsb.sp_s_5 %>"
+      dprovince: "<%= escape_javascript(@sp_bsb.sp_s_3) %>",
+      dcity: "<%= escape_javascript(@sp_bsb.sp_s_4) %>",
+      lcity: "<%= escape_javascript(@sp_bsb.sp_s_5) %>"
     });
     $(".region2").ProvinceCity({
-      dprovince: "<%= @sp_bsb.sp_s_202 %>",
-      dcity: "<%= @sp_bsb.sp_s_220 %>",
+      dprovince: "<%= escape_javascript(@sp_bsb.sp_s_202) %>",
+      dcity: "<%= escape_javascript(@sp_bsb.sp_s_220) %>",
       lcity: "<%= @sp_bsb.sp_s_221 %>"
     });
     $("#sp_bsb_sp_d_22, #sp_bsb_sp_d_28, #sp_bsb_sp_d_38, #sp_bsb_sp_d_46, #sp_bsb_sp_d_86, #sp_bsb_sp_s_209").datepicker({
