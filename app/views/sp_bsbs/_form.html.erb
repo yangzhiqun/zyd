@@ -743,10 +743,6 @@
      * 检验数据提交入库
      * */
     $('#submit2').click(function () {
-      if (!confirm('确定提交吗？')) {
-        return false;
-      }
-
       var jcxnull = 0;
       $("#tblGrid input[name='spdata[][spdata_1]']").each(
           function () {
@@ -865,6 +861,15 @@
       $("#sp_bsb_sp_s_70").removeAttr("disabled");
       $("#sp_bsb_sp_s_20").removeAttr("disabled");
       $('#sp_bsb_sp_i_state').val("4");
+
+      $('#stamp-dlg').modal('show');
+      return false;
+
+      if (!confirm('确定提交吗？')) {
+        return false;
+      }
+
+
       return true;
     });
     $('#save').click(function () {
@@ -973,9 +978,6 @@
       $("#sp_bsb_sp_s_20").removeAttr("disabled");
 
       $('#sp_bsb_sp_i_state').val("5");
-
-      $('#stamp-dlg').modal('show');
-      return false;
 
       if (!confirm('确定提交吗？')) {
         return false;
@@ -1757,10 +1759,6 @@
           <% if @sp_bsb.sp_i_state == 2 %>
               <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
           <% end %>
-          <a href="/sp_bsbs/<%= @sp_bsb.id %>/print.html" data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default">报告预览</a>
-      <% elsif @sp_bsb["sp_i_state"]==4&&session[:change_js]==7 %>
-          <%= f.submit(vaule="检测机构审核通过", options={"id" => "save_2", :class => "btn btn-xs btn-success"}) %>
-          <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
           <div class="modal fade" id="stamp-dlg" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
               <div class="modal-content">
@@ -1788,6 +1786,10 @@
               </div>
             </div>
           </div>
+      <% elsif @sp_bsb["sp_i_state"]==4&&session[:change_js]==7 %>
+          <%= f.submit(vaule="检测机构审核通过", options={"id" => "save_2", :class => "btn btn-xs btn-success"}) %>
+          <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
+          <a href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf" data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default">检验报告</a>
       <% elsif @sp_bsb["sp_i_state"]==5&&session[:change_js]==11 %>
           <%= f.submit(vaule="检测机构批准", options={"id" => "save_5", :class => "btn btn-xs btn-success"}) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
