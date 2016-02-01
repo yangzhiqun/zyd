@@ -39,10 +39,6 @@ class SpBsbsController < ApplicationController
     elsif @padsplog_jcfy.nil? and !@splog_jcfy.nil?
       @jcfy = User.where("id = ?", @splog_jcfy.user_id).last.tname
     end
-    if @jg_bsb.pdf_sign_rules.blank?
-      render text: "请配置[#{@jg_bsb.jg_name}]签章规则号后使用打印功能"
-      return
-    end
 
     respond_to do |format|
       format.pdf {
