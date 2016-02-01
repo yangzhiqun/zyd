@@ -46,27 +46,33 @@ class SpBsbsController < ApplicationController
 
     respond_to do |format|
       format.pdf {
+
         if @spbsb.report_path.blank? or !File.exists?(@spbsb.absolute_report_path)
-          tmp_file = Rails.root.join("tmp", "sp_bsbs_#{@spbsb.id}_print.pdf")
+          if params[:pdf_rules].blank?
+            render text: '请选择签章规则号后使用'
+            return
+          end
+
+          tmp_file = Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}_print.pdf")
           render template: 'sp_bsbs/1.html.erb',
                  save_to_file: tmp_file,
                  save_only: true,
-                 pdf: "home",
-                 wkhtmltopdf: "/usr/local/bin/wkhtmltopdf",
-                 encoding: "utf-8",
+                 pdf: 'home',
+                 wkhtmltopdf: '/usr/local/bin/wkhtmltopdf',
+                 encoding: 'utf-8',
                  disable_javascript: true,
                  show_as_html: params[:debug].present?,
                  print_media_type: true,
                  lowquality: false
 
-          target_path = "#{Time.now.strftime("/%Y/%m/%d")}"
+          target_path = "#{Time.now.strftime('/%Y/%m/%d')}"
           abs_target_path = File.expand_path('../reports', Rails.root).to_s + target_path
           FileUtils.mkdir_p abs_target_path unless Dir.exists? abs_target_path
 
           SpBsb.record_timestamps = false
           @spbsb.report_path = "#{target_path}/#{@spbsb.id}.pdf"
 
-          cmd = "/usr/local/java-ppc64-80/jre/bin/java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 1 #{@jg_bsb.pdf_sign_rules} #{tmp_file} #{@spbsb.absolute_report_path}"
+          cmd = "/usr/local/java-ppc64-80/jre/bin/java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 1 #{params[:pdf_rules]} #{tmp_file} #{@spbsb.absolute_report_path}"
           logger.error cmd
 
           result = `#{cmd}`
@@ -87,44 +93,37 @@ class SpBsbsController < ApplicationController
         end
       }
       format.html {
-        if @spbsb.report_path.blank? or !File.exists?(@spbsb.absolute_report_path)
-          tmp_file = Rails.root.join("tmp", "sp_bsbs_#{@spbsb.id}_print.pdf")
-          render template: 'sp_bsbs/1.html.erb',
-                 save_to_file: tmp_file,
-                 save_only: true,
-                 pdf: "home",
-                 wkhtmltopdf: "/usr/local/bin/wkhtmltopdf",
-                 encoding: "utf-8",
-                 disable_javascript: true,
-                 show_as_html: params[:debug].present?,
-                 print_media_type: true,
-                 lowquality: false
+        # 这里相当于报告预览
+        tmp_file = Rails.root.join('tmp', "preview_sp_bsbs_#{@spbsb.id}_print.pdf")
+        render template: 'sp_bsbs/1.html.erb',
+               save_to_file: tmp_file,
+               save_only: true,
+               pdf: 'home',
+               wkhtmltopdf: '/usr/local/bin/wkhtmltopdf',
+               encoding: 'utf-8',
+               disable_javascript: true,
+               show_as_html: params[:debug].present?,
+               print_media_type: true,
+               lowquality: false
 
-          target_path = "#{Time.now.strftime("/%Y/%m/%d")}"
-          abs_target_path = File.expand_path('../reports', Rails.root).to_s + target_path
+        if params[:pdf_rules].blank?
+          send_file tmp_file, filename: "#{@spbsb.sp_s_16}-检验报告-预览A.pdf", disposition: 'inline'
+        else
+          abs_target_path = Rails.root.join('tmp', 'pdf_preview', "#{Time.now.strftime('%Y/%m/%d')}")
+          filename = "preview_#{@spbsb.id}.pdf"
+
           FileUtils.mkdir_p abs_target_path unless Dir.exists? abs_target_path
 
-          SpBsb.record_timestamps = false
-          @spbsb.report_path = "#{target_path}/#{@spbsb.id}.pdf"
-
-          cmd = "/usr/local/java-ppc64-80/jre/bin/java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 1 #{@jg_bsb.pdf_sign_rules} #{tmp_file} #{@spbsb.absolute_report_path}"
+          cmd = "/usr/local/java-ppc64-80/jre/bin/java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 1 #{params[:pdf_rules].split(',').join('#')} #{tmp_file} #{abs_target_path}/#{filename}"
           logger.error cmd
 
           result = `#{cmd}`
           FileUtils.rm_f(tmp_file)
           if result.strip.include?('200')
-            if @spbsb.save
-              send_file @spbsb.absolute_report_path, filename: "#{@spbsb.sp_s_16}-检验报告.pdf", disposition: "inline"
-            else
-              render text: "错误：#{@spbsb.errors.first.last}"
-            end
+            send_file "#{abs_target_path}/#{filename}", filename: "#{@spbsb.sp_s_16}-检验报告-预览B.pdf", disposition: 'inline'
           else
             render text: "错误：#{result}"
           end
-
-          SpBsb.record_timestamps = true
-        else
-          send_file @spbsb.absolute_report_path, filename: "#{@spbsb.sp_s_16}-检验报告.pdf", disposition: "inline"
         end
       }
     end
