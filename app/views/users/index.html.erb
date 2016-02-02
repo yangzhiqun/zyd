@@ -17,7 +17,9 @@
                   <th width="80">省份:</th>
                   <td><%= f.select :prov, options_for_select(SysProvince.level1.pluck(:name).unshift(%w{-不限- /}), @search_form.prov), {}, class: 'form-control input-sm' %></td>
                   <th width="80">机构:</th>
-                  <td><%= f.select :jg_id, options_for_select(JgBsb.all.map { |jg| [jg.jg_name, jg.id] }.unshift(%w{-不限- /}), @search_form.jg_id), {}, class: 'form-control input-sm' %></td>
+                  <% cache 'jg_data' do %>
+                      <td><%= f.select :jg_id, options_for_select(JgBsb.all.map { |jg| [jg.jg_name, jg.id] }.unshift(%w{-不限- /}), @search_form.jg_id), {}, class: 'form-control input-sm' %></td>
+                  <% end %>
                 </tr>
                 <tr>
                   <td colspan="6">
@@ -77,24 +79,24 @@
       <table style="table-layout: fixed;" class="table table-bordered table-striped table-hover">
         <thead>
         <tr>
-          <th width="100">用户名</th>
-          <th width="100">UID</th>
           <th width="100">姓名</th>
+          <th width="100">UID</th>
           <th>电话</th>
           <th>E-Mail</th>
           <th width="60">省份</th>
+          <th width="100">上次登录</th>
           <th width="60">-</th>
         </tr>
         </thead>
         <tbody>
         <% @users.each do |user| %>
             <tr>
-              <td><%= user.name %></td>
-              <td><%= user.uid %></td>
               <td><%= user.tname %></td>
-              <td><%= user.tel %></td>
+              <td><%= user.uid %></td>
+              <td><%= user.mobile %><%= user.tel %></td>
               <td><%= user.eaddress %></td>
               <td><%= user.user_s_province %></td>
+              <td><%= user.last_sign_in_at %></td>
               <td>
                 <%= link_to '修改', edit_user_path(user), :class => "btn btn-info btn-xs", style: 'margin-bottom: 5px;' %>
                 <% if current_user.name.eql?('superadmin') %>
@@ -118,7 +120,7 @@
           <div class="well well-sm">
             <b> <%= flash[:import_result] unless flash[:import_result].nil? %> </b>
             <%= form_tag({action: :import_data_excel}, multipart: true) do %>
-                <%= file_field_tag 'excel'%>
+                <%= file_field_tag 'excel' %>
                 <br>
                 <%= submit_tag("批量导入用户", :class => 'btn btn-xs btn-primary') %>
             <% end %>

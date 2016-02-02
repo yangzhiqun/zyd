@@ -133,6 +133,7 @@ class JgBsb < ActiveRecord::Base
 
   def doings_after_save
     update_super_jg_bsbs_info
+    expire_fragment('jg_data')
   end
 
   def update_super_jg_bsbs_info

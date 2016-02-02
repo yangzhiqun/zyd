@@ -4,7 +4,7 @@
     window.SP.SP_DATA_CA_FIELDS = <%= Spdatum::CA_FIELDS.to_json.html_safe %>;
     ///////////////////
     var spdata = <%=@sp_data.to_json.html_safe%>;
-    <% cache 'jg_data' do %>
+    <% cache "jg_data" do %>
     var jg_data = <%= @jg_bsbs.select('id, jg_name, jg_contacts, jg_tel, jg_email').to_json.html_safe%>;
     <% end %>
     var spdata_condition = "<%= "#{@sp_bsb["sp_s_17"]}#{@sp_bsb["sp_s_18"]}#{@sp_bsb["sp_s_19"]}#{@sp_bsb["sp_s_20"]}"%>";
