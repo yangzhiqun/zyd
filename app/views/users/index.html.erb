@@ -106,25 +106,23 @@
         </tbody>
       </table>
       <p><%= will_paginate @users, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
-      <% if current_user.name == 'superadmin' %>
-          <hr>
-          <%= link_to '新建用户', new_user_path, :class => 'btn btn-sm btn-success' %>
-      <% end %>
     </div>
   </div>
   <% if current_user.name == 'superadmin' %>
       <div class="panel panel-default">
-        <div class="panel-heading">批量用户导入</div>
+        <div class="panel-heading">添加用户</div>
         <div class="panel-body">
-          <b> <%= flash[:import_result] unless flash[:import_result].nil? %> </b>
-          <%= form_tag({action: :import_data_excel}, multipart: true) do %>
-              <%= file_field_tag 'excel', :class => 'btn btn-sm btn-default' %>
-              <br>
-              <%= submit_tag("批量导入用户", :class => 'btn btn-sm btn-primary') %><br></br>
-          <% end %>
-          <%= form_tag({action: :export_user_info}, multipart: true) do %>
-              <%= submit_tag("用户信息下载", :class => 'btn btn-sm btn-primary') %><br></br>
-          <% end %>
+          <%= link_to '新建用户', new_user_path, :class => 'btn btn-sm btn-success' %>
+          <a href="/users_export_user_info" class="btn btn-sm btn-success" data-method="post">用户信息下载</a>
+          <hr>
+          <div class="well well-sm">
+            <b> <%= flash[:import_result] unless flash[:import_result].nil? %> </b>
+            <%= form_tag({action: :import_data_excel}, multipart: true) do %>
+                <%= file_field_tag 'excel'%>
+                <br>
+                <%= submit_tag("批量导入用户", :class => 'btn btn-xs btn-primary') %>
+            <% end %>
+          </div>
         </div>
       </div>
   <% end %>
