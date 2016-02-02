@@ -50,35 +50,39 @@ class UsersController < ApplicationController
       @users = @users.where('tname like ?', "%#{@search_form.tname}%")
     end
 
-    if @search_form.prov.present?
+    if @search_form.prov.present? and !@search_form.prov.eql?('/')
       @users = @users.where('user_s_province = ?', "%#{@search_form.prov}%")
     end
 
-    if @search_form.jg_id.present?
+    if @search_form.jg_id.present? and !@search_form.jg_id.eql?('/')
       @users = @users.where('jg_bsb_id = ?', "%#{@search_form.jg_id}%")
     end
 
-    @users = @users.where('user_d_authority = 1') if @search_form.tbjbxx
-    @users = @users.where('user_d_authority_1 = 1') if @search_form.jbjcsj
-    @users = @users.where('user_d_authority_2 = 1') if @search_form.sbsh
-    @users = @users.where('user_d_authority_5 = 1') if @search_form.sbpz
+    @users = @users.where('user_d_authority = 1') if @search_form.tbjbxx.to_i == 1
+    @users = @users.where('user_d_authority_1 = 1') if @search_form.jbjcsj.to_i == 1
+    @users = @users.where('user_d_authority_2 = 1') if @search_form.sbsh.to_i == 1
+    @users = @users.where('user_d_authority_5 = 1') if @search_form.sbpz.to_i == 1
 
-    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::GL) if @search_form.yy_gly
-    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYSL) if @search_form.yy_yysl
-    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::ZHXT) if @search_form.yy_zhxt
-    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYBL) if @search_form.yy_yybl
-    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYSH) if @search_form.yy_yysh
+    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::GL) if @search_form.yy_gly.to_i == 1
+    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYSL) if @search_form.yy_yysl.to_i == 1
+    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::ZHXT) if @search_form.yy_zhxt.to_i == 1
+    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYBL) if @search_form.yy_yybl.to_i == 1
+    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYSH) if @search_form.yy_yysh.to_i == 1
 
-    @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::GL) if @search_form.hcl_gly
-    @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZAP) if @search_form.hcl_czap
-    @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZBL) if @search_form.hcl_czbl
-    @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZSH) if @search_form.hcl_czsh
+    @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::GL) if @search_form.hcl_gly.to_i == 1
+    @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZAP) if @search_form.hcl_czap.to_i == 1
+    @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZBL) if @search_form.hcl_czbl.to_i == 1
+    @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZSH) if @search_form.hcl_czsh.to_i == 1
+
+    @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::RWBS) if @search_form.pad_rwbs.to_i == 1
+    @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::ZXCY) if @search_form.pad_zxcy.to_i == 1
+    @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::RWXD) if @search_form.pad_rwxd.to_i == 1
+    @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::JSYP) if @search_form.pad_jsyp.to_i == 1
 
     @users = @users.paginate(page: params[:page], per_page: 20)
 
     respond_to do |format|
       format.html # index.html.erb
-      format.xml { render :xml => @users }
     end
   end
 

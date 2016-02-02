@@ -545,26 +545,26 @@ class User < ActiveRecord::Base
     attribute :prov, String
     attribute :jg_id, Integer
 
-    attribute :tbjbxx, Boolean, default: false
-    attribute :jbjcsj, Boolean, default: false
-    attribute :sbsh, Boolean, default: false
-    attribute :sbpz, Boolean, default: false
+    attribute :tbjbxx, Integer, default: 0
+    attribute :jbjcsj, Integer, default: 0
+    attribute :sbsh, Integer, default: 0
+    attribute :sbpz, Integer, default: 0
 
-    attribute :yy_gly, Boolean, default: false
-    attribute :yy_yysl, Boolean, default: false
-    attribute :yy_zhxt, Boolean, default: false
-    attribute :yy_yybl, Boolean, default: false
-    attribute :yy_yysh, Boolean, default: false
+    attribute :yy_gly, Integer, default: 0
+    attribute :yy_yysl, Integer, default: 0
+    attribute :yy_zhxt, Integer, default: 0
+    attribute :yy_yybl, Integer, default: 0
+    attribute :yy_yysh, Integer, default: 0
 
-    attribute :pad_jsyp, Boolean, default: false
-    attribute :pad_zxcy, Boolean, default: false
-    attribute :pad_rwbs, Boolean, default: false
-    attribute :pad_rwxd, Boolean, default: false
+    attribute :pad_jsyp, Integer, default: 0
+    attribute :pad_zxcy, Integer, default: 0
+    attribute :pad_rwbs, Integer, default: 0
+    attribute :pad_rwxd, Integer, default: 0
 
-    attribute :hcl_gly, Boolean, default: false
-    attribute :hcl_czap, Boolean, default: false
-    attribute :hcl_czbl, Boolean, default: false
-    attribute :hcl_czsh, Boolean, default: false
+    attribute :hcl_gly, Integer, default: 0
+    attribute :hcl_czap, Integer, default: 0
+    attribute :hcl_czbl, Integer, default: 0
+    attribute :hcl_czsh, Integer, default: 0
   end
 end
 

@@ -58,7 +58,7 @@
                     <hr>
                     <label for="">抽检终端</label>
                     <div class="checkbox">
-                      <label><%= f.check_box :pad_jsyp %>管理员</label>
+                      <label><%= f.check_box :pad_jsyp %>接收样品</label>
                       &emsp;
                       <label><%= f.check_box :pad_zxcy %>执行采样任务</label>
                       &emsp;
@@ -73,11 +73,12 @@
               <hr>
           <% end %>
       <% end %>
+      <%= page_entries_info @users %>
       <table style="table-layout: fixed;" class="table table-bordered table-striped table-hover">
         <thead>
         <tr>
-          <th width="100">UID</th>
           <th width="100">用户名</th>
+          <th width="100">UID</th>
           <th width="100">姓名</th>
           <th>电话</th>
           <th>E-Mail</th>
@@ -88,8 +89,8 @@
         <tbody>
         <% @users.each do |user| %>
             <tr>
-              <td><%= user.uid %></td>
               <td><%= user.name %></td>
+              <td><%= user.uid %></td>
               <td><%= user.tname %></td>
               <td><%= user.tel %></td>
               <td><%= user.eaddress %></td>
@@ -104,8 +105,9 @@
         <% end %>
         </tbody>
       </table>
+      <p><%= will_paginate @users, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
       <% if current_user.name == 'superadmin' %>
-          <p><%= will_paginate @users, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
+          <hr>
           <%= link_to '新建用户', new_user_path, :class => 'btn btn-sm btn-success' %>
       <% end %>
     </div>

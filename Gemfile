@@ -36,7 +36,7 @@ gem 'rmagick', '~> 2.15.4'
 gem 'jquery-ui-rails', '~>5.0.0'
 gem "jquery-fileupload-rails"
 
-gem 'will_paginate','>=3.0.pre'
+gem 'will_paginate','~>3.0.5'
 gem 'spreadsheet'
 gem 'importex'
 
