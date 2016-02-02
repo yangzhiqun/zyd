@@ -32,7 +32,7 @@ class User < ActiveRecord::Base
   has_many :user_audit_logs
 
   def is_info_complete?
-    !id_card.blank? and !tname.blank? and !tel.blank?
+    !tname.blank?
   end
 
   def is_signup_sms_code_available?

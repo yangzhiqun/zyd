@@ -12,7 +12,7 @@
           <%= form_for @search_form, url: '/users', method: :get do |f| %>
               <table class="table table-bordered" style="table-layout: fixed;">
                 <tr>
-                  <th width="80">用户名:</th>
+                  <th width="80">姓名:</th>
                   <td><%= f.text_field :tname, class: 'form-control input-sm' %></td>
                   <th width="80">省份:</th>
                   <td><%= f.select :prov, options_for_select(SysProvince.level1.pluck(:name).unshift(%w{-不限- /}), @search_form.prov), {}, class: 'form-control input-sm' %></td>

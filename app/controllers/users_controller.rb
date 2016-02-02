@@ -51,11 +51,11 @@ class UsersController < ApplicationController
     end
 
     if @search_form.prov.present? and !@search_form.prov.eql?('/')
-      @users = @users.where('user_s_province = ?', "%#{@search_form.prov}%")
+      @users = @users.where('user_s_province = ?', "#{@search_form.prov}")
     end
 
     if @search_form.jg_id.present? and !@search_form.jg_id.eql?('/')
-      @users = @users.where('jg_bsb_id = ?', "%#{@search_form.jg_id}%")
+      @users = @users.where('jg_bsb_id = ?', "#{@search_form.jg_id}")
     end
 
     @users = @users.where('user_d_authority = 1') if @search_form.tbjbxx.to_i == 1
