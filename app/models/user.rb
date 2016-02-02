@@ -535,5 +535,36 @@ class User < ActiveRecord::Base
     string_to_hash = password + "wibble" + salt
     Digest::SHA1.hexdigest(string_to_hash)
   end
+
+  # 用户检索表单虚拟类
+  class UserSearchForm
+    include ActiveModel::Model
+    include Virtus.model
+
+    attribute :tname, String
+    attribute :prov, String
+    attribute :jg_id, Integer
+
+    attribute :tbjbxx, Boolean, default: false
+    attribute :jbjcsj, Boolean, default: false
+    attribute :sbsh, Boolean, default: false
+    attribute :sbpz, Boolean, default: false
+
+    attribute :yy_gly, Boolean, default: false
+    attribute :yy_yysl, Boolean, default: false
+    attribute :yy_zhxt, Boolean, default: false
+    attribute :yy_yybl, Boolean, default: false
+    attribute :yy_yysh, Boolean, default: false
+
+    attribute :pad_jsyp, Boolean, default: false
+    attribute :pad_zxcy, Boolean, default: false
+    attribute :pad_rwbs, Boolean, default: false
+    attribute :pad_rwxd, Boolean, default: false
+
+    attribute :hcl_gly, Boolean, default: false
+    attribute :hcl_czap, Boolean, default: false
+    attribute :hcl_czbl, Boolean, default: false
+    attribute :hcl_czsh, Boolean, default: false
+  end
 end
 

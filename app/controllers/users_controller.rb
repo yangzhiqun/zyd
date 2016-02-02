@@ -38,31 +38,43 @@ class UsersController < ApplicationController
   end
 
   def index
-    str="select * from users "
-    if params[:sp_sf]=='请选择' #省份
-      str=str+"where user_s_province like ? "
-      province='%%'
+    if params[:user_user_search_form].present?
+      @search_form = User::UserSearchForm.new(params.require(:user_user_search_form).permit(:hcl_gly, :hcl_czap, :hcl_czbl, :hcl_czsh, :pad_rwbs, :pad_jsyp, :pad_rwxd, :pad_zxcy, :tname, :prov, :jg_id, :tbjbxx, :jbjcsj, :sbsh, :sbpz, :yy_gly, :yy_yysl, :yy_zhxt, :yy_yybl, :yy_yysh))
     else
-      str=str+"where user_s_province like ? "
-      province=params[:sp_sf]
-    end
-    if params[:sp_name]=='' #用户名
-      str=str+"and name like ? "
-      username='%%'
-    else
-      str=str+"and name like ? "
-      if params[:sp_name]==nil
-        params[:sp_name]=''
-      end
-      username="%"+params[:sp_name]+"%"
-    end
-    str=str+"order by user_s_province"
-    if current_user.name == 'superadmin'
-      @users = User.paginate_by_sql([str, province, username], :page => params[:page], :per_page => 10)
-    else
-      @users = User.where(name: current_user.name)
+      @search_form = User::UserSearchForm.new
     end
 
+    @users = User.order('tname DESC')
+
+    if @search_form.tname.present?
+      @users = @users.where('tname like ?', "%#{@search_form.tname}%")
+    end
+
+    if @search_form.prov.present?
+      @users = @users.where('user_s_province = ?', "%#{@search_form.prov}%")
+    end
+
+    if @search_form.jg_id.present?
+      @users = @users.where('jg_bsb_id = ?', "%#{@search_form.jg_id}%")
+    end
+
+    @users = @users.where('user_d_authority = 1') if @search_form.tbjbxx
+    @users = @users.where('user_d_authority_1 = 1') if @search_form.jbjcsj
+    @users = @users.where('user_d_authority_2 = 1') if @search_form.sbsh
+    @users = @users.where('user_d_authority_5 = 1') if @search_form.sbpz
+
+    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::GL) if @search_form.yy_gly
+    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYSL) if @search_form.yy_yysl
+    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::ZHXT) if @search_form.yy_zhxt
+    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYBL) if @search_form.yy_yybl
+    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYSH) if @search_form.yy_yysh
+
+    @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::GL) if @search_form.hcl_gly
+    @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZAP) if @search_form.hcl_czap
+    @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZBL) if @search_form.hcl_czbl
+    @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZSH) if @search_form.hcl_czsh
+
+    @users = @users.paginate(page: params[:page], per_page: 20)
 
     respond_to do |format|
       format.html # index.html.erb
