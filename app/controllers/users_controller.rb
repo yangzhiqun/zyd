@@ -50,6 +50,10 @@ class UsersController < ApplicationController
       @users = @users.where('tname like ?', "%#{@search_form.tname}%")
     end
 
+    if @search_form.uid.present?
+      @users = @users.where('uid like ?', "%#{@search_form.uid}%")
+    end
+
     if @search_form.prov.present? and !@search_form.prov.eql?('/')
       @users = @users.where('user_s_province = ?', "#{@search_form.prov}")
     end

@@ -543,6 +543,7 @@ class User < ActiveRecord::Base
 
     attribute :tname, String
     attribute :prov, String
+    attribute :uid, String
     attribute :jg_id, Integer
 
     attribute :tbjbxx, Integer, default: 0
