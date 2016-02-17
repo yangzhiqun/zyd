@@ -8,7 +8,16 @@
     ///////////////////
 
     $(function () {
-        $("#region").ProvinceCity({});
+        $(".region").ProvinceCity({
+          dprovince: "<%= escape_javascript(@sp_bsb.sp_s_3) %>",
+          dcity: "<%= escape_javascript(@sp_bsb.sp_s_4) %>",
+          lcity: "<%= escape_javascript(@sp_bsb.sp_s_5) %>"
+        });
+        $(".region2").ProvinceCity({
+          dprovince: "<%= escape_javascript(@sp_bsb.sp_s_202) %>",
+          dcity: "<%= escape_javascript(@sp_bsb.sp_s_220) %>",
+          lcity: "<%= @sp_bsb.sp_s_221 %>"
+        });
         $("#pad_sp_bsb_sp_d_22").datepicker({
             dateFormat: "yy-mm-dd",
             changeMonth: true,
@@ -421,7 +430,7 @@
         <tr>
           <td colspan="5">被抽样单位名称*</td>
           <td colspan="11"><%= f.text_field :sp_s_1, title: "被抽样单位名称", :style => "width: 100%; height: 19px", :class => "inputText" %></td>
-          <td colspan="3">抽样环节*</td>
+          <td colspan="3">抽样地点*</td>
           <td colspan="11"><%= f.select :sp_s_68, @options[68], {}, {:style => "width: 87px", :class => "required", title: "抽样地点"} %>
             <span><%= f.select :sp_s_2, "", {}, :class => "required", :style => "width: 185px" %></span>
           </td>
@@ -436,30 +445,25 @@
           <td colspan="3">区域类型*</td>
           <td colspan="5"><%= f.select :sp_s_201, @options[201], {}, {:style => "width: 100%;"} %></td>
         </tr>
-        <tr id="region">
-          <td colspan="3" style="width: 73px">所在地区*</td>
-          <td colspan="9" style="border-right:none;">
-            <select id='province' name='province' class="NoPrint"></select><%= f.text_field :sp_s_3, :class => "inputText", :style => "width: 60px; height: 19px", :readonly => true %>
-            省(市、自治区)
+        <tr class="region">
+          <td colspan="3" style="width: 73px">单位地址*</td>
+          <td colspan="5" style="border-right:none;">
+            省：<%= f.select :sp_s_3, {}, {name: 'province'} %>
           </td>
-          <td colspan="9" style="border-left:none; border-right:none">
-            <select id='city' name='city'></select><%= f.text_field :sp_s_4, :class => "inputText", :style => "width: 60px; height: 19px", :readonly => true %>
-            地区(市、州、盟)
+          <td colspan="5" style="border-right:none; border-left:none">
+            市：<%= f.select :sp_s_4, {}, {name: 'city'} %>
           </td>
-          <td colspan="9" style="border-left:none;">
-            <select id='lcity' name='lcity'></select><%= f.text_field :sp_s_5, :class => "inputText", :style => "width: 60px; height: 19px" %>
-            县(市、区)</span>
+          <td colspan="5" style="border-left:none;">
+            县：<%= f.select :sp_s_5, {}, {name: 'lcity'} %>
+            </span>
           </td>
+          <td colspan="12"><%= f.text_field :sp_s_7, :class => "inputText", placeholder: '请填写详细地址', :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
-          <td colspan="3">单位地址*</td>
-          <td colspan="19"><%= f.text_field :sp_s_7, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
           <td colspan="3">邮编</td>
-          <td colspan="5"><%= f.text_field :sp_s_10, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
-        </tr>
-        <tr>
+          <td colspan="4"><%= f.text_field :sp_s_10, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
           <td colspan="7">被抽样单位法人（负责人）</td>
-          <td colspan="11"><%= f.text_field :sp_s_8, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="4"><%= f.text_field :sp_s_8, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
           <td colspan="3">电话</td>
           <td colspan="9"><%= f.text_field :sp_s_9, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
@@ -468,7 +472,7 @@
           <td colspan="3"><%= f.text_field :sp_s_11, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
           <td colspan="3">电话*</td>
           <td colspan="5"><%= f.text_field :sp_s_12, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
-          <td colspan="3">许可证</td>
+          <td colspan="3">许可证*</td>
           <td colspan="4"><%= f.select :sp_xkz, @xkz_options, {}, {:style => "width: 100%;"} %></td>
           <td colspan="5"><%= f.text_field :sp_xkz_id, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
@@ -518,12 +522,12 @@
         <tr>
           <td colspan="3">样品来源*</td>
           <td colspan="4"><%= f.select :sp_s_21, @options[21], {}, :style => "width: 100%" %></td>
-          <td colspan="5">生产/加工/购进日期</td>
-          <td colspan="4"><%= f.text_field :sp_d_22, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
-          <td colspan="3">抽样方式*</td>
-          <td colspan="4"><%= f.select :sp_s_24, @options[24], {}, :style => "width: 100%" %></td>
-          <td colspan="3">抽样工具</td>
-          <td colspan="4"><%= f.text_field :sp_s_25, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <!--<td colspan="5">生产/加工/购进日期</td>
+          <td colspan="4"><%= f.text_field :sp_d_22, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>-->
+          <td colspan="5">抽样方式*</td>
+          <td colspan="7"><%= f.select :sp_s_24, @options[24], {}, :style => "width: 100%" %></td>
+          <td colspan="4">抽样工具</td>
+          <td colspan="7"><%= f.text_field :sp_s_25, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
           <td rowspan="7" colspan="3">预包装<br>产品*</td>
@@ -557,24 +561,32 @@
         <tr>
           <td colspan="5">抽样基数/批量*</td>
           <td colspan="4"><%= f.text_field :sp_s_206, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
-          <td colspan="4">抽样数</td>
-          <td colspan="5"><%= f.text_field :sp_s_207, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="4">条形码</td>
+          <td colspan="5"><%= f.text_field :sp_s_222, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
           <td colspan="4">备样数量*</td>
           <td colspan="5"><%= f.text_field :sp_s_208, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
-        <tr>
-          <td colspan="5">标识生产企业省份*</td>
-          <td colspan="4"><%= f.select :sp_s_202, '', {}, :style => "width: 100%" %></td>
-          <td colspan="4">生产企业联系人*</td>
-          <td colspan="5"><%= f.text_field :sp_s_75, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
-          <td colspan="4">生产企业电话*</td>
-          <td colspan="5"><%= f.text_field :sp_s_76, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        <tr class="region2">
+          <td colspan="5">标识生产企业地址*</td>
+          <td colspan="5" style="border-right:none;">
+            省：<%= f.select :sp_s_202, {}, {name: 'province'} %>
+          </td>
+          <td colspan="5" style="border-right:none; border-left:none">
+            市：<%= f.select :sp_s_220, {}, {name: 'city'} %>
+          </td>
+          <td colspan="5" style="border-left:none;">
+            县：<%= f.select :sp_s_221, {}, {name: 'lcity'} %>
+            </span>
+          </td>
+          <td colspan="7"><%= f.text_field :sp_s_65, :class => "inputText", placeholder: '请填写详细地址', :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
           <td colspan="5">标识生产企业名称*</td>
-          <td colspan="8"><%= f.text_field :sp_s_64, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
-          <td colspan="5">标识生产企业地址*</td>
-          <td colspan="9"><%= f.text_field :sp_s_65, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="5"><%= f.text_field :sp_s_64, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="4">生产企业联系人*</td>
+          <td colspan="4"><%= f.text_field :sp_s_75, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="4">生产企业电话*</td>
+          <td colspan="5"><%= f.text_field :sp_s_76, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
           <td rowspan="2" colspan="5">抽样时样品<br>存储状态*</td>
@@ -678,8 +690,8 @@
           <td colspan="6"><%= f.text_field :sp_s_71, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
           <td colspan="3">确认情况</td>
           <td colspan="8"><%= f.select :sp_s_214, @options[214], {}, :style => "width: 100%;" %></td>
-          <td colspan="3">备注</td>
-          <td colspan="7"><%= f.text_field :sp_s_84, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="4">备注</td>
+          <td colspan="6"><%= f.text_field :sp_s_84, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
           <td colspan="3">填报人*</td>
@@ -688,8 +700,8 @@
           <td colspan="3"><%= f.text_field :sp_d_86, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
           <td colspan="3">电话*</td>
           <td colspan="5"><%= f.text_field :sp_s_87, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
-          <td colspan="3">电子邮箱*</td>
-          <td colspan="7"><%= f.text_field :sp_s_88, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="4">电子邮箱*</td>
+          <td colspan="6"><%= f.text_field :sp_s_88, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr id="reason">
           <% if @sp_bsb["sp_i_state"]>=4&&@sp_bsb["sp_i_state"]<=9 %>
