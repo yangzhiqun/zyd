@@ -247,7 +247,8 @@
             <ul>
               <% @user.user_audit_logs.order('id asc').each do |log| %>
                   <li><%= log.msg %>
-                    <small><%= log.created_at.strftime('%Y-%m-%d %H:%M:%S') %></small>
+                    <small>操作人:<%= log.operator.tname %>,
+                      操作时间:<%= log.created_at.strftime('%Y-%m-%d %H:%M:%S') %></small>
                   </li>
               <% end %>
             </ul>

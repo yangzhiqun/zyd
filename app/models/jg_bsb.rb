@@ -56,7 +56,12 @@ class JgBsb < ActiveRecord::Base
   end
 
   def self.find_by_history_name(name)
-    JgBsb.find(JgBsbName.where(name: name).last.jg_bsb_id)
+    jg_name = JgBsbName.where(name: name).last
+    if jg_name.present?
+      JgBsb.find(jg_name.jg_bsb_id)
+    else
+      nil
+    end
   end
 
   def current
