@@ -107,7 +107,7 @@ class SpBsbsController < ApplicationController
           send_file tmp_file, filename: "#{@spbsb.sp_s_16}-检验报告-预览A.pdf", disposition: 'inline'
         else
           abs_target_path = Rails.root.join('tmp', 'pdf_preview', "#{Time.now.strftime('%Y/%m/%d')}")
-					filename = "preview_#{@spbsb.id}.pdf"
+          filename = "preview_#{@spbsb.id}.pdf"
 
           FileUtils.mkdir_p abs_target_path unless Dir.exists? abs_target_path
 
