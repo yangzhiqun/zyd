@@ -291,6 +291,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # 管理员创建用户
+  post 'manager_create_users' => 'users#create'
+
   get "users_changeauthority" => "users#changeauthority"
   post "users_import_data_excel" => "users#import_data_excel"
   post "users_export_user_info" => "users#export_user_info"

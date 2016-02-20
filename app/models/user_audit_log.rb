@@ -11,5 +11,6 @@ class UserAuditLog < ActiveRecord::Base
     SjPass = 0x00000003
     SjFail = 0x00000004
     UserReq = 0x00000005
+    SUPass = 0x00000006
   end
 end

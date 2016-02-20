@@ -38,52 +38,65 @@ class UsersController < ApplicationController
   end
 
   def index
-    if params[:user_user_search_form].present?
-      @search_form = User::UserSearchForm.new(params.require(:user_user_search_form).permit(:uid, :hcl_gly, :hcl_czap, :hcl_czbl, :hcl_czsh, :pad_rwbs, :pad_jsyp, :pad_rwxd, :pad_zxcy, :tname, :prov, :jg_id, :tbjbxx, :jbjcsj, :sbsh, :sbpz, :yy_gly, :yy_yysl, :yy_zhxt, :yy_yybl, :yy_yysh))
+
+    if current_user.is_super? or current_user.is_account_manager
+      if params[:user_user_search_form].present?
+        @search_form = User::UserSearchForm.new(params.require(:user_user_search_form).permit(:uid, :hcl_gly, :hcl_czap, :hcl_czbl, :hcl_czsh, :pad_rwbs, :pad_jsyp, :pad_rwxd, :pad_zxcy, :tname, :prov, :jg_id, :tbjbxx, :jbjcsj, :sbsh, :sbpz, :yy_gly, :yy_yysl, :yy_zhxt, :yy_yybl, :yy_yysh))
+      else
+        @search_form = User::UserSearchForm.new
+      end
+
+      @users = User.order('tname DESC')
+
+      if current_user.is_account_manager
+        if current_user.user_i_js == 1
+          @users = @users.where(user_s_province: current_user.user_s_province)
+        else
+          @users = @users.where(jg_bsb_id: current_user.jg_bsb_id)
+        end
+      end
+
+      if @search_form.tname.present?
+        @users = @users.where('tname like ?', "%#{@search_form.tname}%")
+      end
+
+      if @search_form.uid.present?
+        @users = @users.where('uid like ?', "%#{@search_form.uid}%")
+      end
+
+      if @search_form.prov.present? and !@search_form.prov.eql?('/')
+        @users = @users.where('user_s_province = ?', "#{@search_form.prov}")
+      end
+
+      if @search_form.jg_id.present? and !@search_form.jg_id.eql?('/')
+        @users = @users.where('jg_bsb_id = ?', "#{@search_form.jg_id}")
+      end
+
+      @users = @users.where('user_d_authority = 1') if @search_form.tbjbxx.to_i == 1
+      @users = @users.where('user_d_authority_1 = 1') if @search_form.jbjcsj.to_i == 1
+      @users = @users.where('user_d_authority_2 = 1') if @search_form.sbsh.to_i == 1
+      @users = @users.where('user_d_authority_5 = 1') if @search_form.sbpz.to_i == 1
+
+      @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::GL) if @search_form.yy_gly.to_i == 1
+      @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYSL) if @search_form.yy_yysl.to_i == 1
+      @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::ZHXT) if @search_form.yy_zhxt.to_i == 1
+      @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYBL) if @search_form.yy_yybl.to_i == 1
+      @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYSH) if @search_form.yy_yysh.to_i == 1
+
+      @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::GL) if @search_form.hcl_gly.to_i == 1
+      @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZAP) if @search_form.hcl_czap.to_i == 1
+      @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZBL) if @search_form.hcl_czbl.to_i == 1
+      @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZSH) if @search_form.hcl_czsh.to_i == 1
+
+      @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::RWBS) if @search_form.pad_rwbs.to_i == 1
+      @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::ZXCY) if @search_form.pad_zxcy.to_i == 1
+      @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::RWXD) if @search_form.pad_rwxd.to_i == 1
+      @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::JSYP) if @search_form.pad_jsyp.to_i == 1
+
+      @users = @users.paginate(page: params[:page], per_page: 20)
     else
-      @search_form = User::UserSearchForm.new
+      @users = User.where(id: current_user.id)
     end
-
-    @users = User.order('tname DESC')
-
-    if @search_form.tname.present?
-      @users = @users.where('tname like ?', "%#{@search_form.tname}%")
-    end
-
-    if @search_form.uid.present?
-      @users = @users.where('uid like ?', "%#{@search_form.uid}%")
-    end
-
-    if @search_form.prov.present? and !@search_form.prov.eql?('/')
-      @users = @users.where('user_s_province = ?', "#{@search_form.prov}")
-    end
-
-    if @search_form.jg_id.present? and !@search_form.jg_id.eql?('/')
-      @users = @users.where('jg_bsb_id = ?', "#{@search_form.jg_id}")
-    end
-
-    @users = @users.where('user_d_authority = 1') if @search_form.tbjbxx.to_i == 1
-    @users = @users.where('user_d_authority_1 = 1') if @search_form.jbjcsj.to_i == 1
-    @users = @users.where('user_d_authority_2 = 1') if @search_form.sbsh.to_i == 1
-    @users = @users.where('user_d_authority_5 = 1') if @search_form.sbpz.to_i == 1
-
-    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::GL) if @search_form.yy_gly.to_i == 1
-    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYSL) if @search_form.yy_yysl.to_i == 1
-    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::ZHXT) if @search_form.yy_zhxt.to_i == 1
-    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYBL) if @search_form.yy_yybl.to_i == 1
-    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYSH) if @search_form.yy_yysh.to_i == 1
-
-    @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::GL) if @search_form.hcl_gly.to_i == 1
-    @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZAP) if @search_form.hcl_czap.to_i == 1
-    @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZBL) if @search_form.hcl_czbl.to_i == 1
-    @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZSH) if @search_form.hcl_czsh.to_i == 1
-
-    @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::RWBS) if @search_form.pad_rwbs.to_i == 1
-    @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::ZXCY) if @search_form.pad_zxcy.to_i == 1
-    @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::RWXD) if @search_form.pad_rwxd.to_i == 1
-    @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::JSYP) if @search_form.pad_jsyp.to_i == 1
-
-    @users = @users.paginate(page: params[:page], per_page: 20)
 
     respond_to do |format|
       format.html # index.html.erb
@@ -113,7 +126,6 @@ class UsersController < ApplicationController
   # GET /users/new
   # GET /users/new.xml
   def new
-
     if current_user.name == 'superadmin'
       @user = User.new
       respond_to do |format|
@@ -129,8 +141,8 @@ class UsersController < ApplicationController
     if request.get?
       render layout: "blank"
     elsif request.post?
-      @user = User.authenticate(params[:username], params[:password])
-      if @user.nil?
+      @user = User.where(uid: params[:username]).last
+      if @user.nil? or !@user.valid_password?(params[:password])
         render json: {status: 'ERR', msg: '无效的用户名或密码'}
       else
         if params[:user_sign].blank?
@@ -163,19 +175,23 @@ class UsersController < ApplicationController
   # POST /users
   # POST /users.xml
   def create
-    @user = User.new(user_params)
+    if current_user.is_account_manager or current_user.is_super?
+      @user = User.new(user_params)
+      @user.state = User::State::InUse
 
-    respond_to do |format|
-      if @user.save
-        flash[:notice] = "User #{@user.name} was successfully created."
-        format.html { redirect_to(:action => 'index') }
-        format.xml { render :xml => @user, :status => :created,
-                            :location => @user }
-      else
-        format.html { render :action => "new" }
-        format.xml { render :xml => @user.errors,
-                            :status => :unprocessable_entity }
+      respond_to do |format|
+        if @user.save
+          UserAuditLog.create(user_id: @user.id, operator_id: current_user.id, action: UserAuditLog::Action::SUPass, msg: '管理员添加')
+          flash[:notice] = "#{@user.tname}账号添加成功!"
+          format.html { redirect_to "/users/#{@user.id}/edit" }
+        else
+          flash[:notice] = @user.errors.first.last
+          format.html { render :action => 'new' }
+        end
       end
+    else
+      flash[:notice] = '无权操作'
+      redirect_to :back
     end
   end
 
@@ -226,7 +242,7 @@ class UsersController < ApplicationController
         if params['account-pass-request'].to_i == 1
           format.html { redirect_to('/users/pending') }
         else
-          format.html { redirect_to(:action => 'index') }
+          format.html { redirect_to "/users/#{@user.id}/edit" }
         end
         format.xml { head :ok }
       else
