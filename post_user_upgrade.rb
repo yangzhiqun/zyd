@@ -14,6 +14,9 @@ CLIENT.query('select tname, id, uid from users').each do |user|
   @user_mapper[user['tname']] = [user['id'], user['uid']]
 end
 
+# 将系统中原有用户的状态更新为9, 即：正常在用InUse
+CLIENT.query('update users set state = 9')
+
 # 取出spbsbs的总数
 sp_bsbs_count = CLIENT.query('select count(1) as count from sp_bsbs where user_id is null').first['count']
 
