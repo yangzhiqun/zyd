@@ -69,7 +69,7 @@ class SpBsbsController < ApplicationController
           SpBsb.record_timestamps = false
           @spbsb.report_path = "#{target_path}/#{@spbsb.id}.pdf"
 
-          cmd = "/usr/local/java-ppc64-80/jre/bin/java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 1 #{params[:pdf_rules]} #{tmp_file} #{@spbsb.absolute_report_path}"
+          cmd = "/usr/local/java-ppc64-80/jre/bin/java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 1 #{params[:pdf_rules].split(',').join('#')} #{tmp_file} #{@spbsb.absolute_report_path}"
           logger.error cmd
 
           result = `#{cmd}`

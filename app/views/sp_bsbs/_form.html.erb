@@ -145,9 +145,9 @@
       }).val(copied.find('.BZZDYXXDW').val());
 
       copied.find('.JGDW').attr({
-        'value': copied.find('.BZJCXDW').val(),
-        'title': copied.find('.BZJCXDW').val()
-      }).val(copied.find('.BZJCXDW').val());
+        'value': item.JGDW,
+        'title': item.JGDW
+      }).val(item.JGDW);
 
       if (o != null && is_previous_data()) {
         copied.find('.JYYJ').attr({'value': o.spdata_3, 'title': o.spdata_3}).val(o.spdata_3);
@@ -803,6 +803,7 @@
         return false;
       }
       <%end%>
+
       <%@check=[15]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_n_" +<%=i%>).val()).length == 0) {
@@ -917,6 +918,7 @@
         $("#sp_bsb_sp_d_86").focus();
         return false;
       }
+
       $('#sp_bsb_sp_i_state').val("1");
       $("#sp_bsb_sp_s_70").removeAttr("disabled");
       $("#sp_bsb_sp_s_20").removeAttr("disabled");
@@ -1790,11 +1792,19 @@
       <% elsif @sp_bsb["sp_i_state"]==4&&session[:change_js]==7 %>
           <%= f.submit(vaule="检测机构审核通过", options={"id" => "save_2", :class => "btn btn-xs btn-success"}) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
-          <a href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf" data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default">检验报告</a>
+          <% if @jg_bsb.present? and @jg_bsb.jg_bsb_stamps.count > 0 %>
+              <a href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf" data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default">检验报告</a>
+          <% else %>
+              <a href="/sp_bsbs/<%= @sp_bsb.id %>/print" data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default">检验报告</a>
+          <% end %>
       <% elsif @sp_bsb["sp_i_state"]==5&&session[:change_js]==11 %>
           <%= f.submit(vaule="检测机构批准", options={"id" => "save_5", :class => "btn btn-xs btn-success"}) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
-          <a href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf" data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default">检验报告</a>
+          <% if @jg_bsb.present? and @jg_bsb.jg_bsb_stamps.count > 0 %>
+              <a href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf" data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default">检验报告</a>
+          <% else %>
+              <a href="/sp_bsbs/<%= @sp_bsb.id %>/print" data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default">检验报告</a>
+          <% end %>
       <% elsif @sp_bsb["sp_i_state"]==6&&session[:change_js]==2 %>
           <%= f.submit(vaule="药监局审核通过", options={"id" => "save_3", :class => "btn btn-xs btn-success"}) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
