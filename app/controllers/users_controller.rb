@@ -72,10 +72,16 @@ class UsersController < ApplicationController
         @users = @users.where('jg_bsb_id = ?', "#{@search_form.jg_id}")
       end
 
+
       @users = @users.where('user_d_authority = 1') if @search_form.tbjbxx.to_i == 1
       @users = @users.where('user_d_authority_1 = 1') if @search_form.jbjcsj.to_i == 1
       @users = @users.where('user_d_authority_2 = 1') if @search_form.sbsh.to_i == 1
       @users = @users.where('user_d_authority_5 = 1') if @search_form.sbpz.to_i == 1
+      if @search_form.qtjg.to_i == 1
+        @users = @users.where('user_i_switch = 1')
+      else
+        @users = @users.where('user_i_switch = 0')
+      end
 
       @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::GL) if @search_form.yy_gly.to_i == 1
       @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYSL) if @search_form.yy_yysl.to_i == 1

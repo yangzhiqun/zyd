@@ -9,12 +9,23 @@ class JgBsbStamp < ActiveRecord::Base
 
 	module Type
 		# 骑缝
-		QF = 0
+    QF = 'QFZ'
 		# 资质
-		ZZ = 1
+    ZZ = '.'
 		# 专用
-		ZY = 2
-	end
+    ZY = 'ZYZ'
+  end
+
+  def stamp_type_desc
+    case self.stamp_type
+      when Type::QF
+        '骑缝章'
+      when Type::ZY
+        '专用章'
+      else
+        '资质章 '
+    end
+  end
 
   def attachments_dir(folder)
     "#{Rails.application.config.attachment_path}/#{folder}"

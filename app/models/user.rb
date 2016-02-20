@@ -570,6 +570,7 @@ class User < ActiveRecord::Base
     attribute :hcl_czap, Integer, default: 0
     attribute :hcl_czbl, Integer, default: 0
     attribute :hcl_czsh, Integer, default: 0
+    attribute :qtjg, Integer, default: 0
   end
 end
 

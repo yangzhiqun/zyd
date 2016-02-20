@@ -790,7 +790,7 @@
       <%@check=[1,2,3,4,5,6,7,11,12,14,16,21,24,30,33,35,36,37,39,40,41,42,61,62,63,70]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
-        alert("该项为必填项");
+        alert("该项为必填项" + <%= i %>);
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
       }
@@ -815,7 +815,7 @@
       <%@check=[68,17,62,202]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()) == '请选择') {
-        alert("该项为必选项");
+        alert("该项为必填项" + <%= i %>);
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
       }
@@ -825,7 +825,7 @@
       <%@check=[43,44,45,49,50,51,85,87,88]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
-        alert("该项为必填项");
+        alert("该项为必填项" + <%= i %>);
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
       }
@@ -1261,7 +1261,7 @@
     color: green;
     position: absolute;
     right: 10px !important;
-    bottom: 10px !important;
+    bottom: 30px !important;
     top: initial;
     display: block !important;
   }
@@ -1773,6 +1773,7 @@
                         <li>
                           <a href="javascript:void(0);" data-stamp-no="<%= stamp.stamp_no %>" class="stamp-selector">
                             <img src="/jg_bsb_stamps/<%= stamp.id %>/cover" class="img-thumbnail" alt="<%= stamp.stamp_no %>">
+                            <div class="text-center"><%= stamp.stamp_type_desc %></div>
                             <i data-stamp-no="<%= stamp.stamp_no %>" class="hidden glyphicon glyphicon-ok"></i>
                           </a>
                         </li>

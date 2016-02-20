@@ -1,100 +1,103 @@
 <style type="text/css">
-    .style1 {
-        border-collapse: collapse;
-        font-size: 9pt;
-        font-family: Calibri, sans-serif;
-        border-style: none;
-        border-color: inherit;
-        border-width: medium;
-        table-layout: fixed;
-    }
+  .style1 {
+    border-collapse: collapse;
+    font-size: 9pt;
+    font-family: Calibri, sans-serif;
+    border-style: none;
+    border-color: inherit;
+    border-width: medium;
+    table-layout: fixed;
+  }
 
-    .style1 td {
-        border: solid windowtext 1.0px;
-        padding: 0cm 5.4pt 0cm 5.4pt;
-        height: 30px;
-    }
+  .style1 td {
+    border: solid windowtext 1.0px;
+    padding: 0cm 5.4pt 0cm 5.4pt;
+    height: 30px;
+  }
 
-    .style1 th {
-        border: solid windowtext 1.0px;
-        padding: 0cm 5.4pt 0cm 5.4pt;
-        height: 30px;
-    }
+  .style1 th {
+    border: solid windowtext 1.0px;
+    padding: 0cm 5.4pt 0cm 5.4pt;
+    height: 30px;
+  }
 
-    .style1 p {
-        height: 5px;
+  .style1 p {
+    height: 5px;
 
-    }
+  }
 
-    .inputText {
-        font-size: 12px;
-        border-right-width: 0px;
-        border-left-width: 0px;
-        border-top-width: 0px;
-        border-bottom: 1px solid;
-        background-color: transparent;
+  .inputText {
+    font-size: 12px;
+    border-right-width: 0px;
+    border-left-width: 0px;
+    border-top-width: 0px;
+    border-bottom: 1px solid;
+    background-color: transparent;
 
-    }
+  }
 
-    ul.data-tabs li {
-        display: inline-block;
-    }
+  ul.data-tabs li {
+    display: inline-block;
+  }
 
-    ul.data-tabs {
-        border-bottom: 1px solid #999;
-        padding-left: 15px;
-        position: relative;
-    }
+  ul.data-tabs {
+    border-bottom: 1px solid #999;
+    padding-left: 15px;
+    position: relative;
+  }
 
-    ul.data-tabs a {
-        display: inline-block;
-        color: black;
-        text-decoration: none;
-        border: 1px solid #999;
-        padding: 5px 10px;
-        position: relative;
-        bottom: -1px;
-    }
+  ul.data-tabs a {
+    display: inline-block;
+    color: black;
+    text-decoration: none;
+    border: 1px solid #999;
+    padding: 5px 10px;
+    position: relative;
+    bottom: -1px;
+  }
 
-    ul.data-tabs a.active {
-        border-bottom: 1px solid #FFFFFF;
-    }
+  ul.data-tabs a.active {
+    border-bottom: 1px solid #FFFFFF;
+  }
 
-    .search-form th, .search-form td {
-        font-size: 12px;
-    }
+  .search-form th, .search-form td {
+    font-size: 12px;
+  }
 </style>
 <script>
-    $(function () {
-        $("#begin_time, #ending_time, #begin_time_1, #ending_time_1").datepicker({
-            dateFormat: "yy-mm-dd",
-            changeMonth: true,
-            changeYear: true
-        });
-
-        $("#tabs_4").click(function () {
-            $('#flag').val('tabs_4');
-            $('#sp_submit').trigger("click");
-        });
-
-        $("#tabs_2").click(function () {
-            $('#flag').val('tabs_2');
-            $('#sp_submit').trigger("click");
-        });
-        $("#tabs_1").click(function () {
-            $('#flag').val('tabs_1');
-            $('#sp_submit').trigger("click");
-        });
-        $("#tabs_5").click(function () {
-            $('#flag').val('tabs_5');
-            $('#sp_submit').trigger("click");
-        });
-        $("#tabs_6").click(function () {
-            $('#flag').val('tabs_6');
-            $('#sp_submit').trigger("click");
-        });
-        $('#s8').val('<%= params[:s8]%>');
+  $(function () {
+    $("#begin_time, #ending_time, #begin_time_1, #ending_time_1").datepicker({
+      dateFormat: "yy-mm-dd",
+      changeMonth: true,
+      changeYear: true
     });
+
+    $("#tabs_4").click(function () {
+      $('#flag').val('tabs_4');
+      $('#sp_submit').trigger("click");
+    });
+
+    $("#tabs_2").click(function () {
+      $('#flag').val('tabs_2');
+      $('#sp_submit').trigger("click");
+    });
+    $("#tabs_1").click(function () {
+      $('#flag').val('tabs_1');
+      $('#sp_submit').trigger("click");
+    });
+    $("#tabs_5").click(function () {
+      $('#flag').val('tabs_5');
+      $('#sp_submit').trigger("click");
+    });
+    $("#tabs_6").click(function () {
+      $('#flag').val('tabs_6');
+      $('#sp_submit').trigger("click");
+    });
+    $('#s8').val('<%= params[:s8]%>');
+
+    $('#sp_dl').select2({theme: 'bootstrap', placeholder: '食品大类'});
+    $('#sp_sf').select2({theme: 'bootstrap', placeholder: '省份'});
+  });
 </script>
 
 <h1>食品安全检验数据报送表</h1>
@@ -244,9 +247,9 @@
           <a class="<%= (params[:flag].eql?('tabs_1') ? "active" : "") %>" style="cursor: pointer;" id="tabs_1">待处理数据</a>
         </li>
         <% if current_user.user_d_authority_1==1 %>
-        <li>
-          <a class="<%= (params[:flag].eql?('tabs_5') ? "active" : "") %>" style="cursor: pointer;" id="tabs_5">退修数据</a>
-        </li>
+            <li>
+              <a class="<%= (params[:flag].eql?('tabs_5') ? "active" : "") %>" style="cursor: pointer;" id="tabs_5">退修数据</a>
+            </li>
         <% end %>
         <% if session[:change_js]!=8 %>
             <li>

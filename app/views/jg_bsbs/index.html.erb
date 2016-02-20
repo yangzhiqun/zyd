@@ -1,21 +1,30 @@
 <style>
-    td {
-        vertical-align: middle !important;
-    }
+  td {
+    vertical-align: middle !important;
+  }
 </style>
+<script type="text/javascript" charset="utf-8">
+  $(function () {
+    $('#jg-province').select2({theme: 'bootstrap', placeholder: '请选择省份'});
+  });
+</script>
 <h1 align="center">机构列表</h1>
 <form action="/jg_bsbs" method="GET">
   <table class="table table-bordered">
     <tr>
-      <td>机构名称
-      </th>
+      <td>机构名称</td>
       <td><input class="form-control input-sm" name="name" type="text" value="<%= params[:name] %>"></td>
-      <td>联系人
-      </th>
+      <td>联系人</td>
       <td><input class="form-control input-sm" name="contact" type="text" value="<%= params[:contact] %>"></td>
-      <td>省份
-      </th>
-      <td><input class="form-control input-sm" name="province" type="text" value="<%= params[:province] %>"></td>
+      <td>省份</td>
+      <td>
+        <select name="province" id="jg-province">
+          <option value="">--请选择--</option>
+          <% SysProvince.level1.each do |prov| %>
+              <option value="<%= prov.name %>"><%= prov.name %></option>
+          <% end %>
+        </select>
+      </td>
       <td>
         <input type="submit" value="搜索" class="btn btn-sm btn-primary">
       </td>
