@@ -110,7 +110,10 @@ class PadSpBsb < ActiveRecord::Base
   # 3. 同一生产企业，同一样品名称，同一生产批次，不能下达第二次；
   def check_bsb_validity
     #return true if self.sp_s_215.blank? or self.sp_s_13.blank? or %w{抽检监测（总局本级一司） 抽检监测（总局本级三司） 抽检监测（三司专项）}.include?(self.sp_s_70)
-    return true if self.sp_s_215.blank? or self.sp_s_13.blank? or self.sp_s_64.blank?
+    if self.sp_s_215.blank? or self.sp_s_13.blank? or self.sp_s_64.blank?
+      self.sp_bsb_checked_count = -1
+      return true
+    end
     now = Time.now
 
     # 条件: 1
