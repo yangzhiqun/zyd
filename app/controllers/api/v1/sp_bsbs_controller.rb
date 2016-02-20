@@ -254,10 +254,14 @@ class Api::V1::SpBsbsController < ApplicationController
       bsb.sp_s_68 = params[:sp_s_68]
       bsb.sp_s_13 = params[:sp_s_13]
       bsb.sp_s_14 = params[:sp_s_14]
-      unless bsb.check_bsb_validity
-        render json: {status: 'ERR', msg: bsb.errors.first.last }
+      if bsb.check_bsb_validity
+        if bsb.sp_bsb_checked_count == -1
+          render json: {status: 'OK', msg: '营业执照号或生产许可证号或生产企业名称信息不完整, 无法判断有效性.' }
+        else
+          render json: {status: 'OK', msg: "当前填报内容可以提交, 已经抽取#{bsb.sp_bsb_checked_count}批次." }
+        end
       else
-        render json: {status: 'OK', msg: "当前填报内容可以提交" }
+        render json: {status: 'ERR', msg: bsb.errors.first.last }
       end
     end
   end
