@@ -24,20 +24,21 @@ class PadSpBsbsController < ApplicationController
     else
       @admin_user=0
     end
-    # @avala=[17, 18, 19, 20, 21, 23, 24, 30, 31, 33, 36, 44, 59, 61, 62, 63, 66, 67, 68, 70, 71, 201, 203, 205, 214]
-    # @options=[]
-    # @avala.each do |i|
-    #   @options[i]=Flexcontent.where(flex_field: "sp_bsb_sp_s_#{i}").order("flex_sortid ASC")
-    #   @options[i]=@options[i].map { |option| [option[:flex_name], option[:flex_id]] }
-    #   @xkz_options=[["请选择", "请选择"], ["流通许可证", "流通许可证"], ["餐饮服务许可证", "餐饮服务许可证"]]
-    # end
-    # @options_68=[]
-    # @options[68].each_index do |i|
-    #   temp=Flexcontent.where("flex_field=? and flex_groupid=?", "sp_bsb_sp_s_2", i).order("flex_sortid ASC")
-    #   @options_68[i]=temp.map { |option| option[:flex_name] }
-    # end
+    #@avala=[17, 18, 19, 20, 21, 23, 24, 30, 31, 33, 36, 44, 59, 61, 62, 63, 66, 67, 68, 70, 71, 201, 203, 205, 214]
+    #@options=[]
+    #@avala.each do |i|
+    #  @options[i]=Flexcontent.where(flex_field: "sp_bsb_sp_s_#{i}").order("flex_sortid ASC")
+    #  @options[i]=@options[i].map { |option| [option[:flex_name], option[:flex_id]] }
+    #  @xkz_options=[["请选择", "请选择"], ["流通许可证", "流通许可证"], ["餐饮服务许可证", "餐饮服务许可证"]]
+    #end
+    #@options_68=[]
+    #@options[68].each_index do |i|
+    #  temp=Flexcontent.where("flex_field=? and flex_groupid=?", "sp_bsb_sp_s_2", i).order("flex_sortid ASC")
+    #  @options_68[i]=temp.map { |option| option[:flex_name] }
+    #end
     #
-    # @jg_bsbs = JgBsb.where('status = 0 and jg_sp_permission = 1 and jg_detection = 1', current_user.user_s_province).order('jg_province')
+		#@jg_bsbs = JgBsb.where('status = 0 and jg_sp_permission = 1 and jg_detection = 1', session[:user_province]).order('jg_province')
+
     @avala=[21, 24, 30, 33, 36, 44, 61, 62, 63, 68, 201, 203, 205, 214]
     @options=[]
     @avala.each do |i|
