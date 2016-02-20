@@ -121,8 +121,8 @@ class PadSpBsb < ActiveRecord::Base
       pad_sp_bsbs = PadSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (1, 16, 18)", self.sp_s_215, (now - 60.days), now)
 
       sp_bsb_count = TmpSpBsb.where("sp_s_16 NOT IN (?) AND sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_215, (now - 60.days), now).count
-      if sp_bsb_count + pad_sp_bsbs.count >= 10
-        self.sp_bsb_checked_count = sp_bsb_count + pad_sp_bsbs.count
+			self.sp_bsb_checked_count = sp_bsb_count + pad_sp_bsbs.count
+      if self.sp_bsb_checked_count >= 10
         errors.add(:base, '同一被抽样单位，同一个抽样周期内，流通环节，只能下达10批')
         return false
       end
@@ -133,8 +133,8 @@ class PadSpBsb < ActiveRecord::Base
       pad_sp_bsbs = PadSpBsb.where('sp_s_13 = ? AND sp_s_64 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (1, 16, 18)', self.sp_s_13, self.sp_s_64, (now - 60.days), now)
 
       sp_bsb_count = TmpSpBsb.where('sp_s_16 NOT IN (?) AND sp_s_13 = ? AND sp_s_64 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_13, self.sp_s_64, (now - 60.days), now).count
-      if sp_bsb_count + pad_sp_bsbs.count >= 5
-        self.sp_bsb_checked_count = sp_bsb_count + pad_sp_bsbs.count
+			self.sp_bsb_checked_count = sp_bsb_count + pad_sp_bsbs.count
+      if self.sp_bsb_checked_count >= 5
         errors.add(:base, '同一生产企业，同一个抽样周期内, 无论环节，不同产品，最多下达5批')
         return false
       end
@@ -145,12 +145,13 @@ class PadSpBsb < ActiveRecord::Base
       pad_sp_bsbs = PadSpBsb.where('sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_s_27 = ? AND created_at BETWEEN ? AND ? AND sp_i_state not in (1, 16, 18)', self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_s_27, (now - 60.days), now)
       sp_bsb_count = TmpSpBsb.where('sp_s_16 NOT IN (?) AND sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_s_27 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_s_27, (now - 60.days), now).count
 
-      if sp_bsb_count + pad_sp_bsbs.count >= 2
-        self.sp_bsb_checked_count = sp_bsb_count + pad_sp_bsbs.count
+			self.sp_bsb_checked_count = sp_bsb_count + pad_sp_bsbs.count
+      if self.sp_bsb_checked_count >= 2
         errors.add(:base, '同一生产企业，同一个抽样周期内, 同一样品名称，同一生产批次，不能下达第2批')
         return false
       end
     end
+		true
   end
 
   # 生成规则
