@@ -212,6 +212,9 @@ Rails.application.routes.draw do
       post "users/ca_auth"
       post "users/update_location"
 
+			get 'scqy' => 'sp_bsbs#scqy_infos'
+			get 'bcydw' => 'sp_bsbs#bcydw_infos'
+
       get "client/version"
       get "client/download"
       post "hccz/list"

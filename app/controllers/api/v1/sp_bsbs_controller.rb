@@ -142,6 +142,28 @@ class Api::V1::SpBsbsController < ApplicationController
     end
   end
 
+	# 生产企业信息
+	def scqy_infos
+		@qys = SpProductionInfo.order('id desc').limit(20)
+
+		if params[:qymc].present?
+			@qys = @qys.where('qymc like ?', "%#{params[:qymc]}%")
+		end
+
+		render json: { status: 'OK', msg: @qys.select('scbh, qymc, scdz') }
+	end
+
+	# 被抽样单位信息
+	def bcydw_infos
+		@bcydws = SpCompanyInfo.order('id desc').limit(20)
+
+		if params[:sp_s_1].present?
+			@bcydws = @bcydws.where('sp_s_1 like ?', "%#{params[:sp_s_1]}%")
+		end
+
+		render json: { status: 'OK', msg: @bcydws.select('sp_s_1, sp_s_201, sp_s_8, sp_s_23, sp_s_215, sp_s_bsfl, sp_s_3, sp_s_4, sp_s_5, sp_s_7, sp_s_12, sp_s_10') }
+	end
+
   def upload_picture
     @sp_bsb_picture = SpBsbPicture.where(:sp_bsb_id => params[:id], :sort_index => params[:sort_index]).first
     @sp_bsb_picture ||= SpBsbPicture.new(:sp_bsb_id => params[:id], :sort_index => params[:sort_index])
