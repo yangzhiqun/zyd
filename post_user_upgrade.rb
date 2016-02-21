@@ -3,7 +3,7 @@
 require 'mysql2'
 require 'pp'
 
-DB_CONFIG = {:host => "localhost", :username => "root", :password => "123456", :database => "depot_demo_development"}
+DB_CONFIG = {:host => "localhost", :username => "root", :password => "btbuzuomin5638", :database => "production_test"}
 
 CLIENT = Mysql2::Client.new(DB_CONFIG)
 
