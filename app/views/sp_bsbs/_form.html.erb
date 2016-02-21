@@ -1735,11 +1735,11 @@
     <% if @sp_bsb.cyd_file_path.present? %>
         <div style="clear:both"></div>
         <div>
-          <% if @sp_bsbs.cyd_file_path.present? %>
-              <a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @pad_sp_bsbs.id %>/cyd"><i class="glyphicon glyphicon-download-alt"></i>抽样单电子版</a>
+          <% if @sp_bsb.cyd_file_path.present? %>
+              <a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @sp_bsb.id %>/cyd"><i class="glyphicon glyphicon-download-alt"></i>抽样单电子版</a>
           <% end %>
-          <% if @sp_bsbs.cyjygzs_file_path.present? %>
-              <a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @pad_sp_bsbs.id %>/cyjygzs"><i class="glyphicon glyphicon-download-alt"></i>抽样检验告知书电子版</a>
+          <% if @sp_bsb.cyjygzs_file_path.present? %>
+              <a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @sp_bsb.id %>/cyjygzs"><i class="glyphicon glyphicon-download-alt"></i>抽样检验告知书电子版</a>
           <% end %>
           <hr>
         </div>
