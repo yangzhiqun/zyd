@@ -41,7 +41,7 @@ class UsersController < ApplicationController
 
     if current_user.is_super? or current_user.is_account_manager
       if params[:user_user_search_form].present?
-        @search_form = User::UserSearchForm.new(params.require(:user_user_search_form).permit(:uid, :hcl_gly, :hcl_czap, :hcl_czbl, :hcl_czsh, :pad_rwbs, :pad_jsyp, :pad_rwxd, :pad_zxcy, :tname, :prov, :jg_id, :tbjbxx, :jbjcsj, :sbsh, :sbpz, :yy_gly, :yy_yysl, :yy_zhxt, :yy_yybl, :yy_yysh))
+        @search_form = User::UserSearchForm.new(params.require(:user_user_search_form).permit(:qtjg, :uid, :hcl_gly, :hcl_czap, :hcl_czbl, :hcl_czsh, :pad_rwbs, :pad_jsyp, :pad_rwxd, :pad_zxcy, :tname, :prov, :jg_id, :tbjbxx, :jbjcsj, :sbsh, :sbpz, :yy_gly, :yy_yysl, :yy_zhxt, :yy_yybl, :yy_yysh))
       else
         @search_form = User::UserSearchForm.new
       end
