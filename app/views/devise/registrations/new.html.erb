@@ -9,6 +9,8 @@
           $.each(data.msg, function (index, item) {
             $("<option>").attr({'value': item[1]}).text(item[0]).appendTo($('#user_jg_bsb_id'));
           });
+
+          $('#user_jg_bsb_id').select2({theme: 'bootstrap', placeholder: '请选择所在机构'});
         }
       }, 'json');
 
@@ -63,6 +65,12 @@
         }
       }, 'json');
     });
+
+    $('.function').change(function () {
+      if ($('.function:checked').length > 3) {
+        $(this).removeAttr('checked');
+      }
+    });
   });
 </script>
 <br>
@@ -91,13 +99,12 @@
                 <%= f.select :jg_bsb_id, [], {}, :class => 'form-control input-sm' %>
               </div>
 
-              <div class="form-group">
-                <label>职能：<span class="text-danger">*</span><%= show_error(@user.errors, :function_type) %>
+              <div class="functions form-group">
+                <label>职能：(最多3项) <span class="text-danger">*</span><%= show_error(@user.errors, :function_type) %>
                 </label>
                 <% User::FuncType.each do |k, v| %>
                     <div class="checkbox">
-                      <label>
-                        <input type="checkbox" <%= 'checked' if ((params[:user]||{})[:function] || []).include?(v.to_s) %> name="user[function][]" value="<%= v %>"><%= k %>
+                      <label><input class="function" type="checkbox" <%= 'checked' if ((params[:user]||{})[:function] || []).include?(v.to_s) %> name="user[function][]" value="<%= v %>"><%= k %>
                       </label>
                     </div>
                 <% end %>
