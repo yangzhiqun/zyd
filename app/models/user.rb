@@ -88,11 +88,11 @@ class User < ActiveRecord::Base
         when 12
           self.hcz_czsh = 1
         when 13
-          self.hcz_yysl = 1
+          self.yysl = 1
         when 14
-          self.hcz_yybl = 1
+          self.yybl = 1
         when 15
-          self.hcz_yysh = 1
+          self.yysh = 1
       end
     end
 
