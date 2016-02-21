@@ -14,7 +14,7 @@
 class ApplicationController < ActionController::Base
   include ApplicationHelper
 
-  before_action :authenticate_user!, except: [:update_account, :bind_ca_key]
+  before_action :authenticate_user!, except: [:update_account, :bind_ca_key, :ca_login]
 
   # before_filter :authorize, :except => [:login, :bind_ca_key]
 
