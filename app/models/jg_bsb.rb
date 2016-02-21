@@ -138,7 +138,7 @@ class JgBsb < ActiveRecord::Base
 
   def doings_after_save
     update_super_jg_bsbs_info
-    expire_fragment('jg_data')
+    ActionController::Base.new.expire_fragment('jg_data', options = nil)
   end
 
   def update_super_jg_bsbs_info

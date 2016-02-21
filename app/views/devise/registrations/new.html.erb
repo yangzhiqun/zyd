@@ -101,6 +101,7 @@
 
               <div class="functions form-group">
                 <label>职能：(最多3项) <span class="text-danger">*</span><%= show_error(@user.errors, :function_type) %>
+                  <small>详细职能解释，请参照系统手册</small>
                 </label>
                 <% User::FuncType.each do |k, v| %>
                     <div class="checkbox">
@@ -116,7 +117,7 @@
               </div>
 
               <div class="form-group">
-                <label>身份证号：<span class="text-danger">*</span><%= show_error(@user.errors, :id_card) %></label>
+                <label>身份证号：<%= show_error(@user.errors, :id_card) %></label>
                 <br>
                 <%= f.text_field :id_card, :class => "form-control input-sm" %>
               </div>

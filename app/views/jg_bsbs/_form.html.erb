@@ -99,7 +99,10 @@
     <table class="table table-bordered" style="table-layout: fixed;" id="tblGrid">
       <tr>
         <th colspan="6">机构编号</th>
-        <td colspan="34"><%= @jg_bsb.code %></td>
+        <td colspan="34">
+          <%= f.text_field :code, class: 'form-control input-sm' %>
+          <%= show_error(@jg_bsb.errors, :code) %>
+        </td>
       </tr>
       <tr>
         <th colspan="6">机构名称</th>
