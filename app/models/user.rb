@@ -446,6 +446,14 @@ class User < ActiveRecord::Base
     self.name.eql?('superadmin')
   end
 
+  def is_prov_manager?
+    self.is_account_manager? and self.user_i_js == 1
+  end
+
+  def is_jg_manager?
+    self.is_account_manager? and self.user_i_js == 0
+  end
+
   def email_required?
     false
   end
@@ -457,7 +465,7 @@ class User < ActiveRecord::Base
 
   # 根据 用户的 原有角色 为functype赋值
   def assign_function_type
-    if self.function_type.blank?
+    if self.function_type.blank? or self.function_type.to_i == -1
       if self.rwbs == 1
         self.function_type = '1'
       elsif self.rwxd
@@ -523,7 +531,9 @@ class User < ActiveRecord::Base
       Rails.logger.error "CANDICATE PART: #{self.uid}"
 
       Rails.logger.error User.where('uid LIKE ?', "#{self.uid}%").map { |u| u.uid[7..8].to_i }
-      available_ids = (1..99).to_a - User.where('uid LIKE ?', "#{self.uid}%").map { |u| u.uid[7..8].to_i }
+      existed_ids = User.where('uid LIKE ?', "#{self.uid}%").map { |u| u.uid[7..8].to_i }
+      Rails.logger.error "Existed IDs: #{existed_ids.to_json}"
+      available_ids = (1..99).to_a - existed_ids
       if available_ids.blank?
         self.errors.add(:uid, '满员')
         Rails.logger.error('满员')
