@@ -76,3 +76,6 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
 gem 'react-rails'
 gem 'select2-rails'
 gem 'virtus'
+
+# https://github.com/rubysherpas/paranoia
+gem "paranoia", "~> 2.0"

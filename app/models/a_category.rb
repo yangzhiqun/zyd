@@ -1,5 +1,5 @@
 class ACategory < ActiveRecord::Base
-  # attr_accessible :bgfl_id, :name, :note, :identifier
+  acts_as_paranoid
 
   has_many :b_categories, dependent: :delete_all
   has_many :c_categories, dependent: :delete_all

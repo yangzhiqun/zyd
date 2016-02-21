@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160221104851) do
+ActiveRecord::Schema.define(version: 20160221145334) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -21,7 +21,10 @@ ActiveRecord::Schema.define(version: 20160221104851) do
     t.datetime "updated_at",                            null: false
     t.string   "identifier", limit: 255
     t.boolean  "enable",                 default: true
+    t.datetime "deleted_at"
   end
+
+  add_index "a_categories", ["deleted_at"], name: "index_a_categories_on_deleted_at", using: :btree
 
   create_table "api_exchange_pools", force: :cascade do |t|
     t.integer  "application_id",     limit: 4,                   null: false
@@ -53,7 +56,10 @@ ActiveRecord::Schema.define(version: 20160221104851) do
     t.datetime "updated_at",                               null: false
     t.string   "identifier",    limit: 255
     t.boolean  "enable",                    default: true
+    t.datetime "deleted_at"
   end
+
+  add_index "b_categories", ["deleted_at"], name: "index_b_categories_on_deleted_at", using: :btree
 
   create_table "baosong_as", force: :cascade do |t|
     t.string   "name",       limit: 255
@@ -62,7 +68,10 @@ ActiveRecord::Schema.define(version: 20160221104851) do
     t.datetime "updated_at",             null: false
     t.string   "prov",       limit: 255
     t.string   "rwlylx",     limit: 255
+    t.datetime "deleted_at"
   end
+
+  add_index "baosong_as", ["deleted_at"], name: "index_baosong_as_on_deleted_at", using: :btree
 
   create_table "baosong_bs", force: :cascade do |t|
     t.string   "name",         limit: 255
@@ -72,7 +81,10 @@ ActiveRecord::Schema.define(version: 20160221104851) do
     t.datetime "updated_at",               null: false
     t.string   "identifier",   limit: 255
     t.string   "prov",         limit: 255
+    t.datetime "deleted_at"
   end
+
+  add_index "baosong_bs", ["deleted_at"], name: "index_baosong_bs_on_deleted_at", using: :btree
 
   create_table "baosong_mofify_logs", force: :cascade do |t|
     t.integer  "baosong_a_id", limit: 4
@@ -559,7 +571,10 @@ ActiveRecord::Schema.define(version: 20160221104851) do
     t.datetime "updated_at",                               null: false
     t.string   "identifier",    limit: 255
     t.boolean  "enable",                    default: true
+    t.datetime "deleted_at"
   end
+
+  add_index "c_categories", ["deleted_at"], name: "index_c_categories_on_deleted_at", using: :btree
 
   create_table "check_items", force: :cascade do |t|
     t.string   "name",          limit: 255
@@ -580,7 +595,10 @@ ActiveRecord::Schema.define(version: 20160221104851) do
     t.datetime "updated_at",                                 null: false
     t.string   "identifier",    limit: 255
     t.boolean  "enable",                      default: true
+    t.datetime "deleted_at"
   end
+
+  add_index "check_items", ["deleted_at"], name: "index_check_items_on_deleted_at", using: :btree
 
   create_table "company_standards", force: :cascade do |t|
     t.string   "name",            limit: 255
@@ -604,7 +622,10 @@ ActiveRecord::Schema.define(version: 20160221104851) do
     t.datetime "updated_at",                               null: false
     t.string   "identifier",    limit: 255
     t.boolean  "enable",                    default: true
+    t.datetime "deleted_at"
   end
+
+  add_index "d_categories", ["deleted_at"], name: "index_d_categories_on_deleted_at", using: :btree
 
   create_table "export_requests", force: :cascade do |t|
     t.string   "content",     limit: 255
