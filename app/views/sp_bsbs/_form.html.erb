@@ -1732,16 +1732,27 @@
         <% end %>
     <% end unless @pictures.blank? %>
 
-    <% if @pad_sp_bsbs != nil %>
+    <% if @sp_bsb.cyd_file_path.present? %>
         <div style="clear:both"></div>
         <div>
-          <% if !@pad_sp_bsbs.cyd_file_path.blank? %>
-              <a class="btn btn-default btn-xs" href="/pad_sp_bsbs/<%= @pad_sp_bsbs.id %>/cyd"><i class="glyphicon glyphicon-download-alt"></i>抽样单电子版</a>
+          <% if @sp_bsbs.cyd_file_path.present? %>
+              <a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @pad_sp_bsbs.id %>/cyd"><i class="glyphicon glyphicon-download-alt"></i>抽样单电子版</a>
           <% end %>
-          <% if !@pad_sp_bsbs.cyjygzs_file_path.blank? %>
-              <a class="btn btn-default btn-xs" href="/pad_sp_bsbs/<%= @pad_sp_bsbs.id %>/cyjygzs"><i class="glyphicon glyphicon-download-alt"></i>抽样检验告知书电子版</a>
+          <% if @sp_bsbs.cyjygzs_file_path.present? %>
+              <a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @pad_sp_bsbs.id %>/cyjygzs"><i class="glyphicon glyphicon-download-alt"></i>抽样检验告知书电子版</a>
           <% end %>
           <hr>
+        </div>
+    <% end %>
+
+    <% if (@sp_bsb["sp_i_state"]<2)&&current_user.user_d_authority==1 %>
+        <div class="accept-ctner well well-sm">
+          <label for="">抽样单电子版：</label>
+          <%= f.file_field :cyd_file, :class => "form-control", :style => "width: 400px;" %>
+          <br>
+          <label for="">抽样检验告知书电子版：</label>
+          <%= f.file_field :cyjygzs_file, :class => "form-control", :style => "width: 400px;" %>
+          <br>
         </div>
     <% end %>
 
