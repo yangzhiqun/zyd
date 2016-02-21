@@ -17,17 +17,6 @@
                 <label>姓&emsp;名：<span class="text-danger">*</span><%= show_error(@user.errors, :tname) %></label>
                 <%= f.text_field :tname, :class => "form-control input-sm" %>
               </div>
-              <div class="form-group">
-                <label>职&emsp;能：<span class="text-danger">*</span><%= show_error(@user.errors, :function_type) %>
-                </label>
-                <% User::FuncType.each do |k, v| %>
-                    <div class="checkbox">
-                      <label>
-                        <input type="checkbox" <%= 'checked' if ((params[:user]||{})[:function] || []).include?(v.to_s) %> name="user[function][]" value="<%= v %>"><%= k %>
-                      </label>
-                    </div>
-                <% end %>
-              </div>
               <% if @user.id_card.blank? or @user.errors.has_key?(:id_card) %>
                   <div class="form-group">
                     <label>身份证号：<span class="text-danger">*</span><%= show_error(@user.errors, :id_card) %></label>

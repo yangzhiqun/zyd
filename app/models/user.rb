@@ -454,8 +454,51 @@ class User < ActiveRecord::Base
     SysProvince.where(name: self.user_s_province).last
   end
 
+
+  # 根据 用户的 原有角色 为functype赋值
+  def assign_function_type
+    if self.function_type.blank?
+      if self.rwbs == 1
+        self.function_type = '1'
+      elsif self.rwxd
+        self.function_type = '2'
+      elsif self.zxcy
+        self.function_type = '3'
+      elsif self.jsyp
+        self.function_type = '4'
+      elsif self.user_d_authority_1 == 1
+        self.function_type = '5'
+      elsif self.user_d_authority_2 == 1
+        self.function_type = '6'
+      elsif self.user_d_authority_5 == 1
+        self.function_type = '7'
+      elsif self.user_i_js == 1
+        self.function_type = '8'
+      elsif self.user_i_switch == 1
+        self.function_type = '9'
+      elsif self.hcz_czap == 1
+        self.function_type = '10'
+      elsif self.hcz_czbl == 1
+        self.function_type = '11'
+      elsif self.hcz_czsh == 1
+        self.function_type = '12'
+      elsif self.yysl == 1
+        self.function_type = '13'
+      elsif self.yybl == 1
+        self.function_type = '14'
+      elsif self.yysh == 1
+        self.function_type = '15'
+      else
+        self.function_type = rand(16..99).to_s
+      end
+    end
+  end
+
   # 生成唯一编号
   def generate_uid
+    # 检查function_type
+    assign_function_type
+
     if self.uid.blank?
       prov = self.province
       if prov.nil?
