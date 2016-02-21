@@ -764,7 +764,7 @@ class SpBsbsController < ApplicationController
     elsif (session[:change_js]==2||session[:change_js]==3||session[:change_js]==4)&&params[:flag]=="tabs_1"
       @sp_bsbs = @sp_bsbs.where("sp_i_state = 6")
     elsif (session[:change_js]==2||session[:change_js]==3||session[:change_js]==4)&&params[:flag]=="tabs_2"
-      @sp_bsbs = @sp_bsbs.where("sp_i_state IN (7, 8)")
+      @sp_bsbs = @sp_bsbs.where('sp_i_state IN (7, 8)')
     elsif (session[:change_js]==2||session[:change_js]==3||session[:change_js]==4)&&params[:flag]=="tabs_4"
       @sp_bsbs = @sp_bsbs.where("sp_i_state = 9")
     elsif (session[:change_js]==1||session[:change_js]==5)&&params[:flag]=="tabs_1"
@@ -797,7 +797,7 @@ class SpBsbsController < ApplicationController
       @sp_bsbs = @sp_bsbs.where("sp_i_state = 9")
     end
     if params[:flag]=="tabs_5"
-      @sp_bsbs =@sp_bsbs.where("sp_i_state = 3")
+      @sp_bsbs =@sp_bsbs.where("sp_s_reason IS NOT NULL")
     end
     if params[:flag]=="tabs_6"
       @sp_bsbs =@sp_bsbs.where("czb_reverted_flag = 1")

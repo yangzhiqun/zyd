@@ -246,11 +246,9 @@
         <li>
           <a class="<%= (params[:flag].eql?('tabs_1') ? "active" : "") %>" style="cursor: pointer;" id="tabs_1">待处理数据</a>
         </li>
-        <% if current_user.user_d_authority_1==1 %>
-            <li>
-              <a class="<%= (params[:flag].eql?('tabs_5') ? "active" : "") %>" style="cursor: pointer;" id="tabs_5">退修数据</a>
-            </li>
-        <% end %>
+        <li>
+          <a class="<%= (params[:flag].eql?('tabs_5') ? "active" : "") %>" style="cursor: pointer;" id="tabs_5">退修数据</a>
+        </li>
         <% if session[:change_js]!=8 %>
             <li>
               <a class="<%= (params[:flag].eql?('tabs_2') ? "active" : "") %>" style="cursor: pointer;" id="tabs_2">已处理数据</a>
@@ -266,9 +264,6 @@
   </ul>
   <% if !params[:flag].nil? and !params[:flag].eql?("tabs_3") %>
       <div class="tab-content">
-        <br/>
-        <br/>
-
         <p><%= will_paginate @sp_bsbs, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
         <%= render 'part_index' %>
         <p><%= will_paginate @sp_bsbs, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
