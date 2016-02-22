@@ -23,6 +23,8 @@ module DemoyjsRuby2X
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
 
+    config.autoload_paths << Rails.root.join('lib')
+
     config.site = {
         enable_ca_login: true,
         ca_pdf_address: "10.0.39.223",
