@@ -210,6 +210,7 @@ Rails.application.routes.draw do
       post "sp_bsbs/sync"
       post "users/auth"
       post "users/ca_auth"
+			get 'users/ca_get_random'
       post "users/update_location"
 
 			get 'scqy' => 'sp_bsbs#scqy_infos'

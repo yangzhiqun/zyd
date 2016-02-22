@@ -27,6 +27,11 @@ class Api::V1::UsersController < ApplicationController
     end
   end
 
+	# 向客户端返回随机数
+	def ca_get_random
+		render json: { status: 'OK', msg: 'OK', random_info: Bjca::CaHelper.new.gen_client_verify_random_info}
+	end
+
   def auth
     respond_to do |format|
       if params[:device_uuid].blank?

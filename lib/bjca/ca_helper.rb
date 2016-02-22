@@ -14,11 +14,54 @@ module Bjca
 			@client = Savon.client(wsdl: "http://#{Rails.application.config.site[:ca_auth_address]}/webservice/services/SecurityEngineDeal?wsdl")
 		end
 
-		def get_random(appName, length)
-			response = client.call(:get_random, message: {appName: "SVSDefault", len: length})
-			puts response.to_json
-			# response_code = response.as_json['validate_cert_response']['out'].to_i
+		# 获取随机数
+		def gen_random(length)
+        begin
+					response = @client.call(:gen_random, message: {appName: "SVSDefault", len: length})
+					response.as_json['gen_random_response']['out']
+        rescue Savon::SOAPFault => error
+					Rails.logger.error "CAHelper#get_random: #{error.as_json}"
+          nil
+        end
 		end
 
+		# 获取服务器签名
+		def get_server_certificate
+        begin
+					response = @client.call(:get_server_certificate, message: {appName: "SVSDefault"})
+					response.as_json['get_server_certificate_response']['out']
+        rescue Savon::SOAPFault => error
+					Rails.logger.error "CAHelper#get_server_certificate: #{error.as_json}"
+          nil
+        end
+		end
+
+		# 数据签名
+		def sign_data_re_all_info(data)
+        begin
+					response = @client.call(:sign_data_re_all_info, message: {appName: 'SVSDefault', inData: data})
+					response.as_json['sign_data_re_all_info_response']['out']
+        rescue Savon::SOAPFault => error
+					Rails.logger.error "CAHelper#sign_data_re_all_info: #{error.as_json}"
+          nil
+        end
+		end
+
+		# 验证签名
+		def verify_signed_data_by_all_info(signedData)
+        begin
+					response = @client.call(:verify_signed_data_by_all_info, message: {appName: 'SVSDefault', verifySignedData: signedData})
+					response.as_json['verify_signed_data_by_all_info_response']['out'].to_i == 1
+        rescue Savon::SOAPFault => error
+					Rails.logger.error "CAHelper#verify_signed_data_by_all_info: #{error.as_json}"
+          false
+        end
+		end
+
+		# 返回值: [随机数, 服务器证书, 签名值]
+		def gen_client_verify_random_info
+			ca_random = gen_random(32)
+			{ ca_random: ca_random, certificate: get_server_certificate, signed: sign_data_re_all_info(ca_random) }
+		end
 	end
 end
