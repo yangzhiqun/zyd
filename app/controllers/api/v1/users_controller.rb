@@ -6,18 +6,15 @@ class Api::V1::UsersController < ApplicationController
 
   # CA AUTH
   def ca_auth
-    client = Savon.client(wsdl: "http://#{Rails.application.config.site[:ca_auth_address]}/webservice/services/SecurityEngineDeal?wsdl")
-    response = client.call(:validate_cert, message: {appName: "SVSDefault", password: params[:userCert]})
-    response_code = response.as_json[:validate_cert_response][:out].to_i
+    @ca_helper = Bjca::CaHelper.new
 
     respond_to do |format|
+      response_code = @ca_helper.validate_cert(params[:userCert])
       if response_code == 1
-        response = client.call(:get_cert_info_by_oid, message: {appName: "SVSDefault", base64EncodeCert: params[:userCert], oid: '1.2.156.112562.2.1.2.2'})
-        @SFid = response.as_json[:get_cert_info_by_oid_response][:out].gsub(/SF/, '')
-        session[:sfid] = @SFid
-        @user = User.find_by_id_card(@SFid)
+        session[:sfid] = @ca_helper.get_cert_info_by_oid(params[:userCert])
+        @user = User.find_by_id_card(session[:sfid])
         if @user.nil?
-          format.json { render :json => {status: 'ERR', msg: '该用户未在系统中登记，请在电脑上登录系统绑定您的KEY', key: @SFid, code: 444} }
+          format.json { render :json => {status: 'ERR', msg: '该用户未在系统中登记，请在电脑上登录系统绑定您的KEY', key: @user.id_card, code: 444} }
         else
           format.json { render :json => {status: 'OK', msg: '登录成功', user: @user} }
         end
