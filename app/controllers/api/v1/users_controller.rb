@@ -11,10 +11,10 @@ class Api::V1::UsersController < ApplicationController
     respond_to do |format|
       response_code = @ca_helper.validate_cert(params[:userCert])
       if response_code == 1
-        session[:sfid] = @ca_helper.get_cert_info_by_oid(params[:userCert])
-        @user = User.find_by_id_card(session[:sfid])
+        sfid = @ca_helper.get_cert_info_by_oid(params[:userCert])
+        @user = User.find_by_id_card(sfid)
         if @user.nil?
-          format.json { render :json => {status: 'ERR', msg: '该用户未在系统中登记，请在电脑上登录系统绑定您的KEY', key: @user.id_card, code: 444} }
+          format.json { render :json => {status: 'ERR', msg: '该用户未在系统中登记，请在电脑上登录系统绑定您的KEY', key: sfid, code: 444} }
         else
           format.json { render :json => {status: 'OK', msg: '登录成功', user: @user} }
         end

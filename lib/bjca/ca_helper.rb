@@ -61,19 +61,22 @@ module Bjca
 		# 验证客户端cert
 		def validate_cert(userCert)
 			response = @client.call(:validate_cert, message: {appName: "SVSDefault", password: userCert})
-			response.as_json[:validate_cert_response][:out].to_i
+			Rails.logger.error response.as_json
+			response.as_json['validate_cert_response']['out'].to_i
 		end
 
 		# 获取用户信息
 		def get_cert_info_by_oid(userCert)
-			response = client.call(:get_cert_info_by_oid, message: {appName: "SVSDefault", base64EncodeCert: userCert, oid: '1.2.156.112562.2.1.2.2'})
-			response.as_json[:get_cert_info_by_oid_response][:out].gsub(/SF/, '')
+			response = @client.call(:get_cert_info_by_oid, message: {appName: "SVSDefault", base64EncodeCert: userCert, oid: '1.2.156.112562.2.1.2.2'})
+			response.as_json['get_cert_info_by_oid_response']['out'].gsub(/SF/, '')
 		end
 
 		# 返回值: [随机数, 服务器证书, 签名值]
 		def gen_client_verify_random_info
 			ca_random = gen_random(32)
-			{ ca_random: ca_random, certificate: get_server_certificate, signed: sign_data_re_all_info(ca_random) }
+			t = { ca_random: ca_random, certificate: get_server_certificate, signed: sign_data_re_all_info(ca_random) }
+			Rails.logger.error t.as_json
+			t
 		end
 	end
 end

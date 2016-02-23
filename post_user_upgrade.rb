@@ -10,8 +10,8 @@ CLIENT = Mysql2::Client.new(DB_CONFIG)
 
 # 取出用户原tname与用户id的对应关系,放到 @user_mapper
 @user_mapper = {}
-CLIENT.query('select tname, id, uid from users').each do |user|
-  @user_mapper[user['tname']] = [user['id'], user['uid']]
+CLIENT.query('select name, id, uid from users').each do |user|
+  @user_mapper[user['name']] = [user['id'], user['uid']]
 end
 
 # 将系统中原有用户的状态更新为9, 即：正常在用InUse
@@ -82,6 +82,23 @@ threads << Thread.new do
       sql = "UPDATE wtyp_czb_parts SET #{fields.map { |f, v| "#{f} = #{v}" }.join(',')} where id=#{row['id']}"
       client.query(sql)
       puts "WTYP_PARTS: #{sql}\n"
+    end
+  end
+end
+
+# PAD
+threads << Thread.new do
+  puts 'PadSpbsb Thread Started.'
+  client = Mysql2::Client.new(DB_CONFIG)
+  client.query('SELECT id, tname, sp_s_37 FROM pad_sp_bsbs where sp_s_37 IS NOT NULL AND (sp_s_37_user_id IS NULL OR user_id IS NULL)').each do |row|
+    fields = {}
+    fields[:sp_s_37_user_id] = @user_mapper[row['sp_s_37']][0] if @user_mapper.has_key?(row['sp_s_37'])
+    fields[:user_id] = @user_mapper[row['tname']][0] if @user_mapper.has_key?(row['tname'])
+
+    unless fields.empty?
+      sql = "UPDATE pad_sp_bsbs SET #{fields.map { |f, v| "#{f} = #{v}" }.join(',')} where id=#{row['id']}"
+      client.query(sql)
+      puts "PadSpBsb: #{sql}\n"
     end
   end
 end
