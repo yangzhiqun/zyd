@@ -42,23 +42,23 @@
           <td>&nbsp;</td>
         </tr>
         <tr>
-          <td align="right" width="40%" height="60">食&ensp;品&ensp;名&ensp;称：</td>
+          <td align="right" width="40%" height="60" style="word-spacing:16px;">食 品 名 称：</td>
           <td align="left" height="60"><%= @spbsb.sp_s_14 %></td>
         </tr>
         <tr>
-          <td align="right" width="40%" height="60">被&ensp;抽&ensp;样&ensp;单&ensp;位：</td>
+          <td align="right" width="40%" height="60" style="word-spacing:7px;">被 抽 样 单 位：</td>
           <td align="left" height="60"><%= @spbsb.sp_s_1 %></td>
         </tr>
         <tr>
-          <td align="right" width="40%" height="60">标&ensp;称&ensp;生&ensp;产&ensp;者：</td>
+          <td align="right" width="40%" height="60" style="word-spacing:7px;">标 称 生 产 者：</td>
           <td align="left" height="60"><%= @spbsb.sp_s_64 %></td>
         </tr>
         <tr>
-          <td align="right" width="40%" height="60">委&ensp;托&ensp;单&ensp;位：</td>
+          <td align="right" width="40%" height="60" style="word-spacing:16px;">委 托 单 位：</td>
           <td align="left" height="60"><%= @spbsb.sp_s_2_1 %></td>
         </tr>
         <tr>
-          <td align="right" width="40%" height="60">检&ensp;验&ensp;类&ensp;别：</td>
+          <td align="right" width="40%" height="60" style="word-spacing:16px;">检 验 类 别：</td>
           <td align="left" height="60"><%= @spbsb.sp_s_44 %></td>
         </tr>
       </table>
@@ -122,7 +122,7 @@
         <tr>
           <td align="left"><p style="font-size:14pt">№：<%= @spbsb.sp_s_45 %></p>
           </td>
-          <td><p style="font-size:14pt" align="right">共<%= ((@cjx.count - 16).to_f / 16).ceil + 2 %>页&emsp;第1页</p>
+          <td><p style="font-size:14pt; word-spacing:10px;" align="right">共<%= ((@cjx.count - 16).to_f / 16).ceil + 2 %>页 第1页</p>
           </td>
         </tr>
       </table>
@@ -237,7 +237,7 @@
       <table width="100%" cellspacing="0" cellpadding="0" border="0">
         <tr>
           <td align="left"><p style="font-size:14pt">№：<%= @spbsb.sp_s_45 %></p></td>
-          <td><p style="font-size:14pt" align="right">共<%= ((@cjx.count - 16).to_f / 16).ceil + 2 %>页&emsp;第2页</p></td>
+          <td><p style="font-size:14pt; word-spacing:10px;" align="right">共<%= ((@cjx.count - 16).to_f / 16).ceil + 2 %>页 第2页</p></td>
         </tr>
       </table>
       <table class="table-bordered" border="1" cellspacing="0" cellpadding="0" style="height:22cm">
@@ -293,7 +293,7 @@
           <table style="height:1cm" width="100%" cellspacing="0" cellpadding="0" border="0">
             <tr>
               <td align="left"><p style="font-size:14pt">№：<%= @spbsb.sp_s_45 %></p></td>
-              <td><p style="font-size:14pt" align="right">共<%= total_page + 2 %>页&emsp;第<%= current_page +3 %>页</p></td>
+              <td><p style="font-size:14pt; word-spacing:10px;" align="right">共<%= total_page + 2 %>页 第<%= current_page +3 %>页</p></td>
             </tr>
           </table>
           <table class="table-bordered" border="1" cellspacing="0" cellpadding="0">
@@ -355,7 +355,7 @@
             <tr>
               <td align="left"><p style="font-size:14pt">№：<%= @spbsb.sp_s_45 %></p>
               </td>
-              <td><p style="font-size:14pt" align="right">共<%= ((@fxx.count - 17).to_f / 17).ceil + 2 %>页&emsp;第1页</p>
+              <td><p style="font-size:14pt; word-spacing:10px;" align="right">共<%= ((@fxx.count - 17).to_f / 17).ceil + 2 %>页 第1页</p>
               </td>
             </tr>
           </table>
@@ -419,8 +419,7 @@
   <% products_print_pager @fxx, 17, 1 do |products, start_index, current_page, is_last_page, total_page| %>
       <div class="page">
         <div class="subpage">
-          <p style="font-size:14pt; margin: 5px 0; position: absolute; right:25pt; top: -15pt" align="right">共<%= total_page +1 %>
-            页&emsp;第<%= current_page + 2 %>页</p>
+          <p style="font-size:14pt; margin: 5px 0; position: absolute; right:25pt; top: -15pt; word-spacing:10px;" align="right">共<%= total_page +1 %>页 第<%= current_page + 2 %>页</p>
           <table class="table-bordered" border="1" cellspacing="0" cellpadding="0" style="height:25cm">
             <tr>
               <th height="40" width="50">序号</th>
