@@ -267,8 +267,8 @@
             <input type="hidden" name="account-pass-request" value="1">
             <input type="hidden" name="account-pass" id="account-pass-flag">
             <% if current_user.is_account_manager %>
-                <% if (@user.state == User::State::ReviewJG and current_user.user_i_js == 0) or \
-                (current_user.user_s_province == @user.user_s_province and @user.state == User::State::ReviewSJ and current_user.user_i_js == 1) %>
+                <% if (@user.state == User::State::ReviewJG and current_user.is_jg_manager?) or \
+                (current_user.user_s_province == @user.user_s_province and @user.state == User::State::ReviewSJ and current_user.is_prov_manager?) %>
                     <button class="btn btn-sm btn-success pass pass-request" data-confirm="确定审核通过该账号吗？">
                       <i class="glyphicon glyphicon-ok"></i>&nbsp;审核通过
                     </button>

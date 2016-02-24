@@ -142,6 +142,16 @@ class Api::V1::SpBsbsController < ApplicationController
     end
   end
 
+	def ca_sign
+		@sp_bsb = PadSpBsb.find(params[:id])
+		sign = PadCaSign.new(sp_s_16: @sp_bsb.sp_s_16, pad_sp_bsb_id: @sp_bsb.id, user_cert: params[:userCert], orig_data: params[:origData], signed_data: params[:signedData], user_id: @user.id)
+		if sign.save
+			render json: { status: 'OK', msg: 'OK', ca_sign_id: sign.id}
+		else
+			render json: { status: 'ERR', msg: sign.errors.first.last }
+		end
+	end
+
 	# 生产企业信息
 	def scqy_infos
 		@qys = SpProductionInfo.order('id desc').limit(20)
@@ -255,13 +265,13 @@ class Api::V1::SpBsbsController < ApplicationController
       bsb.sp_s_13 = params[:sp_s_13]
       bsb.sp_s_14 = params[:sp_s_14]
       if bsb.check_bsb_validity
-        if bsb.sp_bsb_checked_count == -1
+        if bsb.sp_bsb_checked_count_info.blank?
           render json: {status: 'OK', msg: '营业执照号或生产许可证号或生产企业名称信息不完整, 无法判断有效性.' }
         else
-          render json: {status: 'OK', msg: "当前填报内容可以提交, 已经抽取#{bsb.sp_bsb_checked_count}批次." }
+          render json: {status: 'OK', msg: bsb.sp_bsb_checked_count_info }
         end
       else
-        render json: {status: 'ERR', msg: bsb.errors.first.last }
+        render json: {status: 'ERR', msg: bsb.sp_bsb_checked_count_info }
       end
     end
   end
