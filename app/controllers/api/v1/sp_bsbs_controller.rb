@@ -268,19 +268,16 @@ class Api::V1::SpBsbsController < ApplicationController
 
   private
   def authorize
-    unless params[:userCert].blank?
-      client = Savon.client(wsdl: "http://#{Rails.application.config.site[:ca_auth_address]}/webservice/services/SecurityEngineDeal?wsdl")
-      response = client.call(:validate_cert, message: {appName: "SVSDefault", password: params[:userCert]})
-      response_code = response.as_json[:validate_cert_response][:out].to_i
+    if params[:userCert].present?
+			@ca_helper = Bjca::CaHelper.new
+      response_code = @ca_helper.validate_cert(params[:userCert])
 
       if response_code == 1
-        response = client.call(:get_cert_info_by_oid, message: {appName: "SVSDefault", base64EncodeCert: params[:userCert], oid: '1.2.156.112562.2.1.2.2'})
-
-        @SFid = response.as_json[:get_cert_info_by_oid_response][:out].gsub(/SF/, '')
-        @user = User.find_by_id_card(@SFid)
+        sfid = @ca_helper.get_cert_info_by_oid(params[:userCert])
+        @user = User.find_by_id_card(sfid)
 
         if @user.nil?
-          format.json { render :json => {status: 'ERR', msg: '该用户未在系统中登记，请在电脑上登录系统绑定您的KEY', key: @SFid, code: 444} }
+          format.json { render :json => {status: 'ERR', msg: '该用户未在系统中登记，请在电脑上登录系统绑定您的KEY', key: sfid, code: 444} }
           return
         end
 
