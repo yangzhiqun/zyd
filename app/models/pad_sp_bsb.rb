@@ -103,7 +103,7 @@ class PadSpBsb < ActiveRecord::Base
 
   end
 
-  attr_accessor :sp_bsb_checked_count
+  attr_accessor :sp_bsb_checked_count_info
 
   # 1. 同一被抽样单位(sp_s_215: 营业执照号)，一个抽样周期内，流通环节，上传只能5个；
   # 2. 同一生产企业(sp_s_13: 生产号)，无论环节，不同产品，最多上传5个任务；
@@ -111,20 +111,23 @@ class PadSpBsb < ActiveRecord::Base
   def check_bsb_validity
     #return true if self.sp_s_215.blank? or self.sp_s_13.blank? or %w{抽检监测（总局本级一司） 抽检监测（总局本级三司） 抽检监测（三司专项）}.include?(self.sp_s_70)
     if self.sp_s_215.blank? or self.sp_s_13.blank? or self.sp_s_64.blank?
-      self.sp_bsb_checked_count = -1
       return true
     end
     now = Time.now
+
+		result = true
 
     # 条件: 1
     if !%w{餐饮 生产}.include?(self.sp_s_68) or !%w{/ 、 - \ 无}.include?(self.sp_s_215)
       pad_sp_bsbs = PadSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (1, 16, 18)", self.sp_s_215, (now - 60.days), now)
 
       sp_bsb_count = TmpSpBsb.where("sp_s_16 NOT IN (?) AND sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_215, (now - 60.days), now).count
-			self.sp_bsb_checked_count = sp_bsb_count + pad_sp_bsbs.count
-      if self.sp_bsb_checked_count >= 10
-        errors.add(:base, '同一被抽样单位，同一个抽样周期内，流通环节，只能下达10批')
-        return false
+			sp_bsb_checked_count = sp_bsb_count + pad_sp_bsbs.count
+			info = "同一被抽样单位，同一个抽样周期内，流通环节，只能下达10批, 已经抽取#{sp_bsb_checked_count}批次"
+			self.sp_bsb_checked_count_info = info + "\n"
+      if sp_bsb_checked_count >= 10
+        errors.add(:base, info)
+        result = false
       end
     end
 
@@ -133,10 +136,12 @@ class PadSpBsb < ActiveRecord::Base
       pad_sp_bsbs = PadSpBsb.where('sp_s_13 = ? AND sp_s_64 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (1, 16, 18)', self.sp_s_13, self.sp_s_64, (now - 60.days), now)
 
       sp_bsb_count = TmpSpBsb.where('sp_s_16 NOT IN (?) AND sp_s_13 = ? AND sp_s_64 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_13, self.sp_s_64, (now - 60.days), now).count
-			self.sp_bsb_checked_count = sp_bsb_count + pad_sp_bsbs.count
-      if self.sp_bsb_checked_count >= 5
-        errors.add(:base, '同一生产企业，同一个抽样周期内, 无论环节，不同产品，最多下达5批')
-        return false
+			sp_bsb_checked_count = sp_bsb_count + pad_sp_bsbs.count
+			info = "同一生产企业，同一个抽样周期内, 无论环节，不同产品，最多下达5批, 已抽取#{sp_bsb_checked_count}批次"
+			self.sp_bsb_checked_count_info  += (info + "\n")
+      if sp_bsb_checked_count >= 5
+        errors.add(:base, info)
+        result = false
       end
     end
 
@@ -145,13 +150,15 @@ class PadSpBsb < ActiveRecord::Base
       pad_sp_bsbs = PadSpBsb.where('sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_s_27 = ? AND created_at BETWEEN ? AND ? AND sp_i_state not in (1, 16, 18)', self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_s_27, (now - 60.days), now)
       sp_bsb_count = TmpSpBsb.where('sp_s_16 NOT IN (?) AND sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_s_27 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_s_27, (now - 60.days), now).count
 
-			self.sp_bsb_checked_count = sp_bsb_count + pad_sp_bsbs.count
-      if self.sp_bsb_checked_count >= 2
-        errors.add(:base, '同一生产企业，同一个抽样周期内, 同一样品名称，同一生产批次，不能下达第2批')
-        return false
+			sp_bsb_checked_count = sp_bsb_count + pad_sp_bsbs.count
+			info = "同一生产企业，同一个抽样周期内, 同一样品名称，同一生产批次，不能下达第2批, 已抽取#{sp_bsb_checked_count}批次"
+			self.sp_bsb_checked_count_info  += info
+      if sp_bsb_checked_count >= 2
+        errors.add(:base, info)
+        result = false
       end
     end
-		true
+		result
   end
 
   # 生成规则

@@ -142,6 +142,16 @@ class Api::V1::SpBsbsController < ApplicationController
     end
   end
 
+	def ca_sign
+		@sp_bsb = PadSpBsb.find(params[:id])
+		sign = PadCaSign.new(sp_s_16: @sp_bsb.sp_s_16, pad_sp_bsb_id: @sp_bsb.id, user_cert: params[:userCert], orig_data: params[:origData], signed_data: params[:signedData], user_id: @user.id)
+		if sign.save
+			render json: { status: 'OK', msg: 'OK', ca_sign_id: sign.id}
+		else
+			render json: { status: 'ERR', msg: sign.errors.first.last }
+		end
+	end
+
 	# 生产企业信息
 	def scqy_infos
 		@qys = SpProductionInfo.order('id desc').limit(20)
@@ -255,32 +265,29 @@ class Api::V1::SpBsbsController < ApplicationController
       bsb.sp_s_13 = params[:sp_s_13]
       bsb.sp_s_14 = params[:sp_s_14]
       if bsb.check_bsb_validity
-        if bsb.sp_bsb_checked_count == -1
+        if bsb.sp_bsb_checked_count_info.blank?
           render json: {status: 'OK', msg: '营业执照号或生产许可证号或生产企业名称信息不完整, 无法判断有效性.' }
         else
-          render json: {status: 'OK', msg: "当前填报内容可以提交, 已经抽取#{bsb.sp_bsb_checked_count}批次." }
+          render json: {status: 'OK', msg: bsb.sp_bsb_checked_count_info }
         end
       else
-        render json: {status: 'ERR', msg: bsb.errors.first.last }
+        render json: {status: 'ERR', msg: bsb.sp_bsb_checked_count_info }
       end
     end
   end
 
   private
   def authorize
-    unless params[:userCert].blank?
-      client = Savon.client(wsdl: "http://#{Rails.application.config.site[:ca_auth_address]}/webservice/services/SecurityEngineDeal?wsdl")
-      response = client.call(:validate_cert, message: {appName: "SVSDefault", password: params[:userCert]})
-      response_code = response.as_json[:validate_cert_response][:out].to_i
+    if params[:userCert].present?
+			@ca_helper = Bjca::CaHelper.new
+      response_code = @ca_helper.validate_cert(params[:userCert])
 
       if response_code == 1
-        response = client.call(:get_cert_info_by_oid, message: {appName: "SVSDefault", base64EncodeCert: params[:userCert], oid: '1.2.156.112562.2.1.2.2'})
-
-        @SFid = response.as_json[:get_cert_info_by_oid_response][:out].gsub(/SF/, '')
-        @user = User.find_by_id_card(@SFid)
+        sfid = @ca_helper.get_cert_info_by_oid(params[:userCert])
+        @user = User.find_by_id_card(sfid)
 
         if @user.nil?
-          format.json { render :json => {status: 'ERR', msg: '该用户未在系统中登记，请在电脑上登录系统绑定您的KEY', key: @SFid, code: 444} }
+          format.json { render :json => {status: 'ERR', msg: '该用户未在系统中登记，请在电脑上登录系统绑定您的KEY', key: sfid, code: 444} }
           return
         end
 

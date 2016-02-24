@@ -41,6 +41,7 @@ module Bjca
         begin
 					response = @client.call(:sign_data_re_all_info, message: {appName: 'SVSDefault', inData: data})
 					response.as_json['sign_data_re_all_info_response']['out']
+					Rails.logger.error response.as_json
         rescue Savon::SOAPFault => error
 					Rails.logger.error "CAHelper#sign_data_re_all_info: #{error.as_json}"
           nil
@@ -52,6 +53,7 @@ module Bjca
         begin
 					response = @client.call(:verify_signed_data_by_all_info, message: {appName: 'SVSDefault', verifySignedData: signedData})
 					response.as_json['verify_signed_data_by_all_info_response']['out'].to_i == 1
+					Rails.logger.error response.as_json
         rescue Savon::SOAPFault => error
 					Rails.logger.error "CAHelper#verify_signed_data_by_all_info: #{error.as_json}"
           false
@@ -61,19 +63,28 @@ module Bjca
 		# 验证客户端cert
 		def validate_cert(userCert)
 			response = @client.call(:validate_cert, message: {appName: "SVSDefault", password: userCert})
-			response.as_json[:validate_cert_response][:out].to_i
+			Rails.logger.error response.as_json
+			response.as_json['validate_cert_response']['out'].to_i
 		end
 
 		# 获取用户信息
 		def get_cert_info_by_oid(userCert)
-			response = client.call(:get_cert_info_by_oid, message: {appName: "SVSDefault", base64EncodeCert: userCert, oid: '1.2.156.112562.2.1.2.2'})
-			response.as_json[:get_cert_info_by_oid_response][:out].gsub(/SF/, '')
+			response = @client.call(:get_cert_info_by_oid, message: {appName: "SVSDefault", base64EncodeCert: userCert, oid: '1.2.156.112562.2.1.2.2'})
+			response.as_json['get_cert_info_by_oid_response']['out'].gsub(/SF/, '')
+		end
+
+		def get_cert_info(userCert, type)
+			response = @client.call(:get_cert_info, message: {appName: "SVSDefault", base64EncodeCert: userCert, type: type})
+			Rails.logger.error response.as_json
+			response.as_json['get_cert_info_response']['out']
 		end
 
 		# 返回值: [随机数, 服务器证书, 签名值]
 		def gen_client_verify_random_info
 			ca_random = gen_random(32)
-			{ ca_random: ca_random, certificate: get_server_certificate, signed: sign_data_re_all_info(ca_random) }
+			t = { ca_random: ca_random, certificate: get_server_certificate, signed: sign_data_re_all_info(ca_random) }
+			Rails.logger.error t.as_json
+			t
 		end
 	end
 end
