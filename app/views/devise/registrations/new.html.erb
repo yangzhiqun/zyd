@@ -3,16 +3,7 @@
     $('#user_user_s_province').change(function () {
       var o = $(this);
       if (o.val() == '') return false;
-      $.get('/jg_bsbs/by_province.json', {prov: o.find('option:selected').text()}, function (data) {
-        if (data.status == 'OK') {
-          $('#user_jg_bsb_id').empty();
-          $.each(data.msg, function (index, item) {
-            $("<option>").attr({'value': item[1]}).text(item[0]).appendTo($('#user_jg_bsb_id'));
-          });
-
-          $('#user_jg_bsb_id').select2({theme: 'bootstrap', placeholder: '请选择所在机构'});
-        }
-      }, 'json');
+      reload_jg_data();
 
       $('#user_prov_city').empty();
       $('#user_prov_country').empty();
@@ -71,7 +62,28 @@
         $(this).removeAttr('checked');
       }
     });
+
+    $('#user_jg_type').select2({theme: 'bootstrap', placeholder: '机构类型'}).change(function () {
+      reload_jg_data();
+    });
+
   });
+
+  function reload_jg_data() {
+    $.get('/jg_bsbs/by_province.json', {
+      prov: $('#user_user_s_province').find('option:selected').text(),
+      jg_type: $('#user_jg_type').val()
+    }, function (data) {
+      if (data.status == 'OK') {
+        $('#user_jg_bsb_id').empty();
+        $.each(data.msg, function (index, item) {
+          $("<option>").attr({'value': item[1]}).text(item[0]).appendTo($('#user_jg_bsb_id'));
+        });
+
+        $('#user_jg_bsb_id').select2({theme: 'bootstrap', placeholder: '请选择所在机构'});
+      }
+    }, 'json');
+  }
 </script>
 <br>
 <div class="container">
@@ -86,7 +98,6 @@
           <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
               <div class="form-group">
                 <label>省份：<span class="text-danger">*</span><%= show_error(@user.errors, :user_s_province) %></label>
-
                 <div class="form-inline">
                   <%= f.select :user_s_province, options_for_select(SysProvince.level1.pluck(:name, :id).map { |p| [p[0], p[0], {'data-id' => p[1]}] }.unshift(['-请选择-', nil])), {}, :class => 'form-control input-sm' %>
                   <%= f.select :prov_city, [], {}, :class => 'form-control input-sm' %>
@@ -94,9 +105,10 @@
                 </div>
               </div>
 
-              <div class="form-group">
+              <div class="form-group form-inline">
                 <label>机构：<span class="text-danger">*</span><%= show_error(@user.errors, :user_s_province) %></label>
-                <%= f.select :jg_bsb_id, [], {}, :class => 'form-control input-sm' %>
+                <br>
+                <%= f.select :jg_type, options_for_select([['请选择', 0], ['监管部门', 1], ['采样机构', 2], ['检验机构', 3]]), {}, class: 'form-control input-sm', style: 'width: 120px; margin-right: 10px;' %><%= f.select :jg_bsb_id, [], {}, :class => 'form-control input-sm', style: 'width: 300px;' %>
               </div>
 
               <div class="functions form-group">

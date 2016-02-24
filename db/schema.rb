@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160221145334) do
+ActiveRecord::Schema.define(version: 20160224133740) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -2404,6 +2404,7 @@ ActiveRecord::Schema.define(version: 20160221145334) do
     t.boolean  "is_account_manager",                   default: false
     t.datetime "apply_refused_at"
     t.integer  "state",                  limit: 4,     default: 0
+    t.integer "jg_type", limit: 4, default: 0
   end
 
   add_index "users", ["name"], name: "index_name", using: :btree
