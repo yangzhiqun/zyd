@@ -27,6 +27,7 @@ class User < ActiveRecord::Base
   # validate :password_non_blank
 
   before_save :generate_uid
+  before_create :config_user_state
   after_create :cleanup_after_create
 
   has_many :user_audit_logs
@@ -577,6 +578,17 @@ class User < ActiveRecord::Base
   # def password_non_blank
   #   errors.add(:password, "Missing password") if hashed_password.blank?
   # end
+
+  # 如果申请的用户机构类型为省局,则直接由省局管理员审核,否则走二级审核流程
+  def config_user_state
+    if self.jg_bsb.present? and self.state != State::InUse
+      if self.jg_bsb.jg_type == 1
+        self.state = State::ReviewSJ
+      else
+        self.state = State::ReviewJG
+      end
+    end
+  end
 
   def cleanup_after_create
     Rails.logger.error 'Do cleaning work after user create'
