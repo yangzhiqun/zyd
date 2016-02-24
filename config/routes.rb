@@ -212,6 +212,7 @@ Rails.application.routes.draw do
       post "users/ca_auth"
 			get 'users/ca_get_random'
       post "users/update_location"
+			post 'sp_bsbs/:id/ca_sign' => 'sp_bsbs#ca_sign'
 
 			get 'scqy' => 'sp_bsbs#scqy_infos'
 			get 'bcydw' => 'sp_bsbs#bcydw_infos'
