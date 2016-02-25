@@ -495,7 +495,7 @@
       <span> <%= current_user.tname %></span>
       <%= link_to '退出', '/users/sign_out', 'data-method' => :delete, 'data-confirm' => '确定退出吗？' %>
     </div>
-    <div class="time"><%= (Time.now).strftime("%Y年%m月%d日 %H:%M:%S") %></div>
+    <div class="time"><%= (current_user.current_sign_in_at).strftime("登录时间%m月%d日 %H:%M:%S") %></div>
   </div>
 </div>
 <!-- /TOP -->
