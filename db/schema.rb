@@ -1221,6 +1221,17 @@ ActiveRecord::Schema.define(version: 20160224133740) do
     t.datetime "updated_at",               null: false
   end
 
+  create_table "pad_ca_signs", force: :cascade do |t|
+    t.string   "sp_s_16",       limit: 255
+    t.integer  "pad_sp_bsb_id", limit: 4
+    t.text     "user_cert",     limit: 65535
+    t.text     "orig_data",     limit: 65535
+    t.text     "signed_data",   limit: 65535
+    t.integer  "user_id",       limit: 4
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
+
   create_table "pad_sp_bsbs", force: :cascade do |t|
     t.string   "sp_s_1",            limit: 60
     t.datetime "created_at",                                                     null: false
@@ -1865,8 +1876,8 @@ ActiveRecord::Schema.define(version: 20160224133740) do
     t.string   "scdz",       limit: 255
     t.date     "zsyxq"
     t.string   "zs",         limit: 255
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "spdl",       limit: 255
     t.string   "spyl",       limit: 255
     t.string   "spcyl",      limit: 255
@@ -2383,7 +2394,7 @@ ActiveRecord::Schema.define(version: 20160224133740) do
     t.boolean  "is_account_manager",                   default: false
     t.datetime "apply_refused_at"
     t.integer  "state",                  limit: 4,     default: 0
-    t.integer "jg_type", limit: 4, default: 0
+    t.integer  "jg_type",                limit: 4,     default: 0
   end
 
   add_index "users", ["name"], name: "index_name", using: :btree
