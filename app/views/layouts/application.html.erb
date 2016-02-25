@@ -29,6 +29,7 @@
     $(function () {
       //****一级导航*****//
       $(".leftmenu .title").live('click', function () {
+        if($(this).hasClass('not-expand')) return true;
         var nextMent = $(this).next('.menuson'), menus = $('.menuson').not(nextMent);
         menus.slideUp();
         if (nextMent.is(':visible')) {
@@ -599,7 +600,7 @@
           <% end %>
       <% end %>
       <dd>
-        <div class="title">
+        <div class="title not-expand">
           <span><img src="<%= asset_path('leftico13.png') %>"/></span><a href="/users_changeauthority">用户角色切换</a>
         </div>
       </dd>
@@ -633,44 +634,44 @@
                 </ul>
               </dd>
               <dd>
-                <div class="title">
+                <div class="title not-expand">
                   <span><img src="<%= asset_path('leftico07.png') %>"/></span><a href="/sp_production_infos">生产企业库维护</a>
                 </div>
               </dd>
               <dd>
-                <div class="title">
+                <div class="title not-expand">
                   <span><img src="<%= asset_path('leftico08.png') %>"/></span><a href="/sp_company_infos">被抽样单位库维护</a>
                 </div>
               </dd>
           <% end %>
           <dd>
-            <div class="title">
+            <div class="title not-expand">
               <span><img src="<%= asset_path('leftico09.png') %>"/></span><a href="/baosong_as">报送分类维护</a>
             </div>
           </dd>
       <% end %>
       <dd>
-        <div class="title">
+        <div class="title not-expand">
           <span><img src="<%= asset_path('leftico12.png') %>"/></span><a href="/users">登录用户管理</a>
         </div>
       </dd>
       <% if current_user.user_i_js == 1 %>
           <dd>
-            <div class="title">
+            <div class="title not-expand">
               <span><img src="<%= asset_path('leftico12.png') %>"/></span><a href="/sample_members">人员信息查看</a>
             </div>
           </dd>
       <% end %>
       <% if current_user.user_d_authority_1 == 1 or current_user.is_super? %>
           <dd>
-            <div class="title">
+            <div class="title not-expand">
               <span><img src="<%= asset_path('leftico10.png') %>"/></span><a href="/company_standards">企业标准库维护</a>
             </div>
           </dd>
       <% end %>
       <% if current_user.is_admin? %>
           <dd>
-            <div class="title">
+            <div class="title not-expand">
               <span><img src="<%= asset_path('leftico11.png') %>"/></span><a target="_blank" href="http://121.52.214.78:88/ExternalPage/BiaoZhunPage/BiaoZhun.aspx">标准查询</a>
             </div>
           </dd>
