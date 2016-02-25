@@ -2,11 +2,11 @@
 class JgBsb < ActiveRecord::Base
   validates_presence_of :jg_address, message: '请填写机构地址'
   validates_presence_of :jg_province, message: '请填写机构省份'
-  validates_uniqueness_of :jg_address, message: '机构地址重复'
+  # validates_uniqueness_of :jg_address, message: '机构地址重复'
   validates_uniqueness_of :code, message: '该编号已存在', scope: [:jg_province], allow_blank: true
   require 'RMagick'
 
-  has_many :jg_bsb_names
+  has_many :jg_bsb_names, dependent: :delete_all
   has_many :jg_bsb_stamps
   has_many :users
   has_many :jg_bsb_supers, foreign_key: :super_jg_bsb_id
@@ -143,12 +143,15 @@ class JgBsb < ActiveRecord::Base
 
   def update_super_jg_bsbs_info
     ids = self.super_jg_bsbs
-    ids.delete('')
-    ids = ids.map { |j| j.to_i }
-    self.jg_bsb_supers.where('id not in (?)', ids).destroy_all
-    self.jg_bsb_supers.reload
-    (ids - self.jg_bsb_supers.pluck(:id)).each do |i|
-      JgBsbSuper.create(jg_bsb_id: self.id, super_jg_bsb_id: i)
+    if ids.present?{
+      ids.delete('')
+      ids = ids.map { |j| j.to_i }
+      self.jg_bsb_supers.where('id not in (?)', ids).destroy_all
+      self.jg_bsb_supers.reload
+      (ids - self.jg_bsb_supers.pluck(:id)).each do |i|
+        JgBsbSuper.create(jg_bsb_id: self.id, super_jg_bsb_id: i)
+      end
+      }
     end
   end
 
