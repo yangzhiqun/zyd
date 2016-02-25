@@ -47,8 +47,8 @@ class SpBsbsController < ApplicationController
         if @spbsb.report_path.blank? or !File.exists?(@spbsb.absolute_report_path)
           if params[:pdf_rules].blank?
             #render text: '请选择签章规则号后使用'
-						flash[:error] = '无法生成或预览文件，请设置签章规则后使用'
-						redirect_to '/sp_bsbs/no_available_pdf_found'
+            flash[:error] = '无法生成或预览文件，请设置签章规则后使用'
+            redirect_to '/sp_bsbs/no_available_pdf_found'
             return
           end
 
@@ -515,93 +515,102 @@ class SpBsbsController < ApplicationController
         end
 
         @sp_bsb.assign_attributes(sp_bsb_params)
-        if @sp_bsb.save
-          # 如果original 存在，则回退updated_at时间
-          if @original_updated_at.present?
-            SpBsb.record_timestamps = false
-            @sp_bsb.update_attributes(updated_at: @original_updated_at)
-            SpBsb.record_timestamps = true
-          end
 
-          if params[:sp_bsb][:sp_i_state].to_i <= 4 || (params[:sp_bsb][:sp_i_state].to_i == 9 && current_user.is_admin?)
-            unless params[:spdata].blank?
-              params[:spdata].delete_if { |data| data.keys.length == 1 }
-              createlog=0
-              params[:spdata].each do |data|
-                if data[:id].nil?
-                  createlog = 1
-                  break
-                end
-              end
-              if createlog == 1
-                @sp_bsb.spdata.destroy_all
-                params[:spdata].each do |data|
-                  data.delete(:id)
-                  data[:sp_bsb_id] = params[:id]
-                  Spdatum.create!(data.as_json)
-                end
-              else
-                params[:spdata].each do |data|
-                  @spdata = Spdatum.find(data[:id])
-                  @spdata.update_attributes(data.as_json)
-                end
-              end
-            end
-          end
-
-          # 记录CA记录
-          if !session[:userCert].blank? and !@sp_bsb.ca_sign.blank?
-            SpBsbCert.create(source: @sp_bsb.ca_source, user_cert: session[:userCert], sign: @sp_bsb.ca_sign, user_id: current_user.id, sp_i_state: @sp_bsb.sp_i_state, sp_bsb_id: @sp_bsb.id)
-          end
-
-          if @role_name.blank?
-            if params[:sp_bsb][:sp_i_state].to_s == '6' or (params[:sp_bsb][:sp_i_state].to_s == '9' and @loglaststate.sp_i_state.to_s == '5')
-              @role_name = '检测机构批准'
-            end
-          end
-          SpLog.create(:sp_bsb_id => params[:id], :sp_i_state => params[:sp_bsb][:sp_i_state], :remark => @role_name, :user_id => current_user.id)
-
-          format.json { render :json => {:status => "保存成功!", :msg => "保存成功!"} }
-          format.html { redirect_to("/sp_bsbs_spsearch?#{session[:query]}") }
+        if @sp_bsb.changes.has_key?('sp_i_state') and @sp_bsb.changes['sp_i_state'][1] == 2 and [0, 1].include?(@sp_bsb.changes['sp_i_state'][0]) and (@sp_bsb.cyd_file.blank? or @sp_bsb.cyjygzs_file.blank?)
+          format.json { render :json => {:status => "保存出错!", :msg => "请填写完整【抽样单电子版】和【抽样检验告知书电子版"} }
+          format.html {
+            redirect_to :back, :flash => {import_result: "请填写完整【抽样单电子版】和【抽样检验告知书电子版】"}
+          }
         else
-          @sp_data = params[:spdata]
-          unless @sp_bsb.sp_s_70.blank?
-            @sp_s_67s = BaosongB.where(baosong_a_id: BaosongA.find_by_name(@sp_bsb.sp_s_70).id)
-          else
-            @sp_s_67s = []
-          end
 
-          if !@sp_s_67s.blank? and !@sp_bsb.sp_s_67.blank?
-            @sp_s_67 = @sp_s_67s.where(name: @sp_bsb.sp_s_67).first
-          end
+          if @sp_bsb.save
+            # 如果original 存在，则回退updated_at时间
+            if @original_updated_at.present?
+              SpBsb.record_timestamps = false
+              @sp_bsb.update_attributes(updated_at: @original_updated_at)
+              SpBsb.record_timestamps = true
+            end
 
-          unless @sp_s_67.nil?
-            @a_categories = ACategory.where(:identifier => @sp_s_67.identifier)
-          else
-            @a_categories = []
-          end
+            if params[:sp_bsb][:sp_i_state].to_i <= 4 || (params[:sp_bsb][:sp_i_state].to_i == 9 && current_user.is_admin?)
+              unless params[:spdata].blank?
+                params[:spdata].delete_if { |data| data.keys.length == 1 }
+                createlog=0
+                params[:spdata].each do |data|
+                  if data[:id].nil?
+                    createlog = 1
+                    break
+                  end
+                end
+                if createlog == 1
+                  @sp_bsb.spdata.destroy_all
+                  params[:spdata].each do |data|
+                    data.delete(:id)
+                    data[:sp_bsb_id] = params[:id]
+                    Spdatum.create!(data.as_json)
+                  end
+                else
+                  params[:spdata].each do |data|
+                    @spdata = Spdatum.find(data[:id])
+                    @spdata.update_attributes(data.as_json)
+                  end
+                end
+              end
+            end
 
-          if !@sp_bsb.sp_s_17.blank? and !@sp_bsb.sp_s_17.eql?("请选择")
-            @b_categories = BCategory.where(:identifier => @sp_s_67.identifier, a_category_id: @a_categories.where(name: @sp_bsb.sp_s_17).first.id)
-          else
-            @b_categories = []
-          end
+            # 记录CA记录
+            if !session[:userCert].blank? and !@sp_bsb.ca_sign.blank?
+              SpBsbCert.create(source: @sp_bsb.ca_source, user_cert: session[:userCert], sign: @sp_bsb.ca_sign, user_id: current_user.id, sp_i_state: @sp_bsb.sp_i_state, sp_bsb_id: @sp_bsb.id)
+            end
 
-          if !@sp_bsb.sp_s_18.blank? and !@sp_bsb.sp_s_18.eql?("请选择")
-            @c_categories = CCategory.where(:identifier => @sp_s_67.identifier, b_category_id: @b_categories.where(name: @sp_bsb.sp_s_18).first.id)
-          else
-            @c_categories = []
-          end
+            if @role_name.blank?
+              if params[:sp_bsb][:sp_i_state].to_s == '6' or (params[:sp_bsb][:sp_i_state].to_s == '9' and @loglaststate.sp_i_state.to_s == '5')
+                @role_name = '检测机构批准'
+              end
+            end
+            SpLog.create(:sp_bsb_id => params[:id], :sp_i_state => params[:sp_bsb][:sp_i_state], :remark => @role_name, :user_id => current_user.id)
 
-          if !@sp_bsb.sp_s_19.blank? and !@sp_bsb.sp_s_19.eql?("请选择")
-            @d_categories = DCategory.where(:identifier => @sp_s_67.identifier, c_category_id: @c_categories.where(name: @sp_bsb.sp_s_19).first.id)
+            format.json { render :json => {:status => "保存成功!", :msg => "保存成功!"} }
+            format.html { redirect_to("/sp_bsbs_spsearch?#{session[:query]}") }
           else
-            @d_categories = []
+            @sp_data = params[:spdata]
+            unless @sp_bsb.sp_s_70.blank?
+              @sp_s_67s = BaosongB.where(baosong_a_id: BaosongA.find_by_name(@sp_bsb.sp_s_70).id)
+            else
+              @sp_s_67s = []
+            end
+
+            if !@sp_s_67s.blank? and !@sp_bsb.sp_s_67.blank?
+              @sp_s_67 = @sp_s_67s.where(name: @sp_bsb.sp_s_67).first
+            end
+
+            unless @sp_s_67.nil?
+              @a_categories = ACategory.where(:identifier => @sp_s_67.identifier)
+            else
+              @a_categories = []
+            end
+
+            if !@sp_bsb.sp_s_17.blank? and !@sp_bsb.sp_s_17.eql?("请选择")
+              @b_categories = BCategory.where(:identifier => @sp_s_67.identifier, a_category_id: @a_categories.where(name: @sp_bsb.sp_s_17).first.id)
+            else
+              @b_categories = []
+            end
+
+            if !@sp_bsb.sp_s_18.blank? and !@sp_bsb.sp_s_18.eql?("请选择")
+              @c_categories = CCategory.where(:identifier => @sp_s_67.identifier, b_category_id: @b_categories.where(name: @sp_bsb.sp_s_18).first.id)
+            else
+              @c_categories = []
+            end
+
+            if !@sp_bsb.sp_s_19.blank? and !@sp_bsb.sp_s_19.eql?("请选择")
+              @d_categories = DCategory.where(:identifier => @sp_s_67.identifier, c_category_id: @c_categories.where(name: @sp_bsb.sp_s_19).first.id)
+            else
+              @d_categories = []
+            end
+            flash[:import_result] = @sp_bsb.errors.first.last
+            @sp_bsb = SpBsb.find(@sp_bsb.id)
+            format.html { render action: "edit" }
+            format.json { render json: {status: '保存出错!', msg: "修改不成功! #{flash[:import_result]}"} }
           end
-          flash[:import_result] = @sp_bsb.errors.first.last
-          @sp_bsb = SpBsb.find(@sp_bsb.id)
-          format.html { render action: "edit" }
-          format.json { render json: {status: '保存出错!', msg: "修改不成功! #{flash[:import_result]}"} }
         end
       end
     end
