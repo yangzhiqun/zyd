@@ -70,34 +70,50 @@ class ApplicationController < ActionController::Base
       session[:user_i_switch] = 0
     end
 
-    if session[:user_js] == 1 && session[:user_authority_1] == 1 #药监局数据采样
+    #药监局数据采样
+    if current_user.user_i_js == 1 && current_user.user_d_authority == 1
       session[:change_js] = 1
     end
-    if session[:user_js] == 1 && session[:user_authority_3] == 1 #药监局数据审核
+
+    #药监局数据审核
+    if current_user.user_i_js == 1 && current_user.user_d_authority_2 == 1
       session[:change_js]=2
     end
-    if session[:user_js]==1&&session[:user_authority_4]==1 #药监局问题样品处理
+
+    #药监局问题样品处理
+    if current_user.user_i_js == 1 && current_user.user_d_authority_3 == 1
       session[:change_js]=3
     end
-    if session[:user_js]==1&&session[:user_authority_5]==1 #药监局统计分析
+
+    #药监局统计分析
+    if current_user.user_i_js == 1 && current_user.user_d_authority_4 == 1
       session[:change_js]=4
     end
-    if session[:user_js]==0&&session[:user_authority_1]==1 #检测机构数据采样
+
+    #检测机构数据采样
+    if current_user.user_i_js == 0 && current_user.user_d_authority == 1
       session[:change_js]=5
     end
-    if session[:user_js]==0&&session[:user_authority_2]==1 #检测机构数据填报
+
+    #检测机构数据填报
+    if current_user.user_i_js == 0 && current_user.user_d_authority_1 == 1
       session[:change_js]=6
     end
-    if session[:user_js]==0&&session[:user_authority_3]==1 #检测机构数据审核
+
+    #检测机构数据审核
+    if current_user.user_i_js == 0 && current_user.user_d_authority_2 == 1
       session[:change_js]=7
     end
-    if session[:user_dl]!='' #检测机构牵头单位
+
+    #检测机构牵头单位
+    if current_user.user_s_dl.present?
       session[:change_js]=8
     end
-    if session[:user_spys]==1 #一司
+
+    if current_user.user_i_spys == 1 #一司
       session[:change_js]=9
     end
-    if session[:user_spss]==1 #三司
+    if current_user.user_i_spss == 1 #三司
       session[:change_js]=10
     end
     LoginLog.create(:name => current_user.name, :sessionid => session.id, :action => '登陆成功', :ip => request.env["REMOTE_ADDR"], :os => user_agent_parsed.os, :browser => user_agent_parsed.browser, :brover => user_agent_parsed.version)
