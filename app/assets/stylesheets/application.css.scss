@@ -21,10 +21,13 @@
  *= require bootstrap-editable
  *= require jquery.fileupload
  *= require jquery.fileupload-ui
- *= require bootstrap-table
  *= require dragtable
  *= require select2
  *= require select2-bootstrap
+
+ *= require bootstrap-table
+ *= require bootstrap-table-sticky-header
+ *= require bootstrap-table-fixed-columns
 */
 
 body{
