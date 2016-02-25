@@ -1,22 +1,18 @@
-<!-- START:head -->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!doctype html>
+<html lang="en">
 <head>
-  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-  <title><%= @title || "中国食品药品检定研究院数据报送系统"%></title>
-  <%= javascript_include_tag "application" %>
-  <%= javascript_include_tag "XTXSuite" %>
-	<!-- START_HIGHLIGHT -->
-  <%= stylesheet_link_tag 'login'%> 
-	<!-- END_HIGHLIGHT -->
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+  <title><%= @title || '中国食品药品检定研究院数据报送系统' %></title>
+  <%= javascript_include_tag 'application' %>
+  <%= javascript_include_tag 'XTXSuite' %>
+  <%= stylesheet_link_tag 'login' %>
 </head>
-<!-- END:head -->
 <body>
-<%= yield  %>
-<% unless Rails.env.eql?('development')%>
-<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1000354640'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s22.cnzz.com/z_stat.php%3Fid%3D1000354640' type='text/javascript'%3E%3C/script%3E"));</script>
+<%= yield %>
+<% unless Rails.env.development? %>
+    <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cspan id='cnzz_stat_icon_1000354640'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s22.cnzz.com/z_stat.php%3Fid%3D1000354640' type='text/javascript'%3E%3C/script%3E"));</script>
 <% end %>
+
 </body>
 </html>

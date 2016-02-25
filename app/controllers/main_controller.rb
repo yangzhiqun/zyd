@@ -7,12 +7,12 @@ class MainController < ApplicationController
 	def welcome
 		if !session[:change_js].blank? and session[:change_js] == 3
 			@files = Dir.glob(Rails.root.join("welcome2", "files", "*").to_s)
-			@files.select!{|file| file.include? session[:user_province]}
+			@files.select! { |file| file.include? current_user.user_s_province }
 		end
 	end
 
 	def file
-		if params[:name].include? session[:user_province] and session[:change_js] == 3
+		if params[:name].include? current_user.user_s_province and session[:change_js] == 3
 			send_file Rails.root.join("welcome2", 'files', "#{params[:name]}.xlsx")
 		end
 	end

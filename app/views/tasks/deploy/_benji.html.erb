@@ -1,0 +1,106 @@
+<div class="tab-pane active">
+  <br>
+  <div class="panel panel-default">
+    <div class="panel-heading">添加牵头机构计划</div>
+    <div class="panel-body">
+      <div class="form-inline">
+        <label for="">报送分类：</label>
+        <%= select_tag "baosong_a", options_for_select(BaosongA.where(rwlylx: '国家').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+        <%= select_tag "baosong_b", options_for_select(@baosong_bs.map { |b| [b.name, b.name, {"data-identifier" => b.identifier}] }.unshift(["请选择", ""]), params[:baosong_b]), {:class => "form-control input-sm", id: "baosong_b", style: "width: 150px;"} %>
+        <br>
+        <br>
+        <label>食品分类：</label>
+        <%= select_tag "dl", options_for_select(@a_categories.map { |c| [c.name, c.id, {'data-id' => c.id}] }.unshift(["请选择", ""])), {:class => "form-control input-sm", id: "dl", style: "width: 150px;"} %>
+        <select style="width: 150px;" class="form-control input-sm" name="yl" id="yl"></select>
+        <select style="width: 150px;" class="form-control input-sm" name="cyl" id="cyl"></select>
+        <select style="width: 150px;" class="form-control input-sm" name="xl" id="xl"></select>
+        <br>
+        <br>
+        <label>采样机构：</label>
+        <% cache 'jg_data' do %>
+            <!-- 采样机构列表 -->
+            <select style="width: 300px;" id="cyjg" class="form-control input-sm">
+              <option value="">请选择采样机构</option>
+              <% @jg_bsbs.each do |jg_bsb| %>
+                  <% if jg_bsb.code.blank? %>
+                      <option value="<%= jg_bsb.id %>" data-jg-type="<%= jg_bsb.jg_type.to_i %>" disabled="disabled"><%= jg_bsb.jg_name %>
+                        (未设编号,无法安排)
+                      </option>
+                  <% else %>
+                      <option value="<%= jg_bsb.id %>" data-jg-type="<%= jg_bsb.jg_type.to_i %>"><%= jg_bsb.jg_name %></option>
+                  <% end %>
+              <% end %>
+            </select>
+            <br>
+            <br>
+            <label>检验机构：</label>
+            <!-- 检验机构列表 -->
+            <select style="width: 300px;" id="jyjg" class="form-control input-sm">
+              <option value="">请选择检验机构</option>
+              <% @jg_bsbs.each do |jg_bsb| %>
+                  <% if jg_bsb.code.blank? %>
+                      <option value="<%= jg_bsb.id %>" data-jg-type="<%= jg_bsb.jg_type.to_i %>" disabled="disabled"><%= jg_bsb.jg_name %>
+                        (未设编号,无法安排)
+                      </option>
+                  <% else %>
+                      <option value="<%= jg_bsb.id %>" data-jg-type="<%= jg_bsb.jg_type.to_i %>"><%= jg_bsb.jg_name %></option>
+                  <% end %>
+              <% end %>
+            </select>
+        <% end %>
+        <br>
+        <br>
+        <label>采样数量：</label>
+        <input type="number" class="form-control input-sm" placeholder="采样数" name="quota" id="quota">
+        <button id="create_direct_plan" class="btn btn-primary btn-sm">创建</button>
+      </div>
+      <hr>
+      <% unless @tasks.blank? %>
+          <!-- 如果报送任务不为空，则显示当前已经安排了的任务 -->
+          <table data-undefined-text="" class="table task-deploy">
+            <thead>
+            <tr>
+              <th data-field="dl" data-width="100px">&emsp;&emsp;&emsp;食品大类&emsp;&emsp;&emsp;</th>
+              <th data-field="yl" data-width="100px">&emsp;&emsp;&emsp;亚类&emsp;&emsp;&emsp;</th>
+              <th data-field="cyl" data-width="100px">&emsp;&emsp;&emsp;次亚类&emsp;&emsp;&emsp;</th>
+              <th data-width="100">&emsp;&emsp;&emsp;细类&emsp;&emsp;&emsp;</th>
+              <% @tasks.select('distinct(jg_bsb_id)').each do |task| %>
+                  <th width="150"><%= task.jg_bsb.jg_name unless task.jg_bsb.nil? %></th>
+              <% end %>
+            </tr>
+            </thead>
+            <tbody>
+            <% DCategory.where(identifier: @baosong_b.identifier).order('a_category_id, b_category_id, c_category_id').each do |d| %>
+                <tr>
+                  <% if @current_dl.nil? or d.a_category_id != @current_dl.id %>
+                      <!-- 大类 -->
+                      <% @current_dl = ACategory.find(d.a_category_id) %>
+                      <td <%= "rowspan=\"#{@current_dl.rowspan}\"".html_safe if @current_dl.rowspan > 1 %>><%= @current_dl.name %></td>
+                  <% end %>
+
+                  <% if (@current_yl.nil? or d.b_category_id != @current_yl.id) %>
+                      <!-- 亚类 -->
+                      <% @current_yl = BCategory.find(d.b_category_id) %>
+                      <td <%= "rowspan=\"#{@current_yl.rowspan}\"".html_safe if @current_yl.rowspan > 1 %>><%= @current_yl.name %></td>
+                  <% end %>
+
+                  <% if (@current_cyl.nil? or d.c_category_id != @current_cyl.id) %>
+                      <!-- 次亚类 -->
+                      <% @current_cyl = CCategory.find(d.c_category_id) %>
+                      <td <%= "rowspan=\"#{@current_cyl.rowspan}\"".html_safe if @current_cyl.rowspan > 1 %>><%= @current_cyl.name %></td>
+                  <% end %>
+
+                  <!-- 细类名称 -->
+                  <td><%= d.name %></td>
+                  <% @tasks.select('distinct(jg_bsb_id)').each do |task| %>
+                      <!-- 交叉点 -->
+                      <%= grid4(task, d) %>
+                  <% end %>
+                </tr>
+            <% end %>
+            </tbody>
+          </table>
+      <% end %>
+    </div>
+  </div>
+</div>

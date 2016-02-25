@@ -373,7 +373,7 @@
     <br>
   <% end %>
   <input type="hidden" id="current_step_finished" name="current_step_finished" value="0">
-  <% if params[:preview].blank? and @djb.can_be_handled_by?(User.find(session[:user_id]))%>
+    <% if params[:preview].blank? and @djb.can_be_handled_by?(current_user) %>
     <% if @djb.current_state == ::SpYydjb::State::LOGGED %>
     <%= f.submit "确认处置安排", :id => "save1", :class => 'btn btn-primary' %>
     <% else %>

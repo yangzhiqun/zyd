@@ -1,80 +1,111 @@
 <style type="text/css">
+  .style1 {
+    border-collapse: collapse;
+    font-size: 9pt;
+    font-family: Calibri, sans-serif;
+    border-style: none;
+    border-color: inherit;
+    border-width: medium;
+    table-layout: fixed;
+  }
 
-    .style1 {
-        border-collapse: collapse;
-        font-size: 9pt;
-        font-family: Calibri, sans-serif;
-        border-style: none;
-        border-color: inherit;
-        border-width: medium;
-        table-layout: fixed;
-    }
+  .style1 td {
+    border: solid windowtext 1.0px;
+    padding: 0cm 5.4pt 0cm 5.4pt;
+    height: 30px;
+  }
 
-    .style1 td {
-        border: solid windowtext 1.0px;
-        padding: 0cm 5.4pt 0cm 5.4pt;
-        height: 30px;
-    }
-
-    .style1 th {
-        border: solid windowtext 1.0px;
-        padding: 0cm 5.4pt 0cm 5.4pt;
-        height: 30px;
-    }
-
-    .form-control input-sm {
-        font-size: 12px;
-        border-right-width: 0px;
-        border-left-width: 0px;
-        border-top-width: 0px;
-        border-bottom: 1px solid;
-        background-color: transparent;
-
-    }
-
+  .style1 th {
+    border: solid windowtext 1.0px;
+    padding: 0cm 5.4pt 0cm 5.4pt;
+    height: 30px;
+  }
 </style>
 <script type="text/javascript">
-    $(document).ready(function () {
-        $('input:text:first').focus();
+  $(document).ready(function () {
+    $('input:text:first').focus();
 
-        <% unless @jg_bsb.new_record? %>
-        $('#btn-modify').click(function () {
-            $(this).addClass('hidden');
-            $('.modify-name-ctner').removeClass('hidden');
-            return false;
-        });
-
-        $('#do-modify-jg-name').click(function () {
-            var name = $('#new_name').val();
-            if (name == '') {
-                alert('请填写名称');
-                $('#new_name').focus();
-                return false;
-            }
-            if (confirm('确定进行机构改名操作吗？')) {
-                $.post('/jg_bsbs/<%= @jg_bsb.id %>/rename.json', {
-                    jg_bsb_id: <%= @jg_bsb.id %>,
-                    name: name,
-                    note: $('#note').val()
-                }, function (res) {
-                    if (res.status == 'OK') {
-                        location.reload();
-                    } else {
-                        alert(res.msg);
-                    }
-                });
-            }
-            return false;
-        });
-        <% end %>
+    <% unless @jg_bsb.new_record? %>
+    $('#btn-modify').click(function () {
+      $(this).addClass('hidden');
+      $('.modify-name-ctner').removeClass('hidden');
+      return false;
     });
+
+    $('#do-modify-jg-name').click(function () {
+      var name = $('#new_name').val();
+      if (name == '') {
+        alert('请填写名称');
+        $('#new_name').focus();
+        return false;
+      }
+      if (confirm('确定进行机构改名操作吗？')) {
+        $.post('/jg_bsbs/<%= @jg_bsb.id %>/rename.json', {
+          jg_bsb_id: <%= @jg_bsb.id %>,
+          name: name,
+          note: $('#note').val()
+        }, function (res) {
+          if (res.status == 'OK') {
+            location.reload();
+          } else {
+            alert(res.msg);
+          }
+        });
+      }
+      return false;
+    });
+    <% end %>
+
+    $('#jg_bsb_jg_province').change(function () {
+      var o = $(this);
+      if (o.val() == '') return false;
+      $('#jg_bsb_city').empty();
+      $('#jg_bsb_country').empty();
+
+      $.get('/prov.json', {prov: o.find('option:selected').attr('data-id')}, function (data) {
+        $('<option>-请选择-</option>').appendTo($('#jg_bsb_city'));
+        $.each(data.msg, function (i, item) {
+          $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#jg_bsb_city'));
+        });
+      }, 'json');
+    }).trigger('change');
+
+    $('#jg_bsb_city').change(function () {
+      var o = $(this);
+
+      $('#jg_bsb_country').empty();
+      $('<option>-请选择-</option>').appendTo($('#jg_bsb_country'));
+
+      $.get('/prov.json', {city: o.find('option:selected').attr('data-id')}, function (data) {
+        $.each(data.msg, function (i, item) {
+          $('<option>').attr('value', item.name).text(item.name).appendTo($('#jg_bsb_country'));
+        });
+      }, 'json');
+    });
+
+    setTimeout(function () {
+      $('#jg_bsb_city').val('<%= @jg_bsb.city %>').trigger('change');
+      setTimeout(function () {
+        $('#jg_bsb_country').val('<%= @jg_bsb.country %>');
+      }, 1000);
+    }, 1000);
+
+    $('#jg_bsb_super_jg_bsbs').select2({theme: 'bootstrap', placeholder: '请选择上级业务部门'});
+  });
 </script>
 <%= form_for(@jg_bsb) do |f| %>
     <h1 style="color:red"><%= flash[:import_result] unless flash[:import_result].nil? %></h1>
     <%= flash[:notice] %>
-    <table class="table table-bordered" id="tblGrid">
+    <table class="table table-bordered" style="table-layout: fixed;" id="tblGrid">
       <tr>
-        <td colspan="6">机构名称</td>
+        <th colspan="6">机构编号</th>
+        <td colspan="34">
+          <%= f.text_field :code, class: 'form-control input-sm' %>
+          <%= show_error(@jg_bsb.errors, :code) %>
+        </td>
+      </tr>
+      <tr>
+        <th colspan="6">机构名称</th>
         <td colspan="34">
           <p class="current_name">
             <% if @jg_bsb.new_record? %>
@@ -127,128 +158,119 @@
         </td>
       </tr>
       <tr>
-        <td colspan="6">地址</td>
+        <td colspan="40">
+          <label for=""><%= f.check_box :jg_enable %>是否有效期内</label>
+          <label><%= f.check_box :jg_sampling %>是否采样</label>
+          <label for=""><%= f.check_box :jg_detection %>是否检测</label>
+        </td>
+      </tr>
+      <tr>
+        <th colspan="6">所属地<%= show_error(@jg_bsb.errors, :jg_province) %></th>
         <td colspan="34">
-          <%= f.text_field :jg_address, :class => "form-control input-sm" %>
+          <div class="form-inline">
+            <%= f.select :jg_province, options_for_select(SysProvince.level1.pluck(:name, :id).map { |p| [p[0], p[0], {'data-id' => p[1]}] }.unshift(['-请选择-', nil]), @jg_bsb.jg_province), {}, :class => 'form-control input-sm' %>
+            <%= f.select :city, [], {}, :class => 'form-control input-sm' %>
+            <%= f.select :country, [], {}, :class => 'form-control input-sm' %>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th colspan="6">地址</th>
+        <td colspan="34">
+          <%= f.text_area :jg_address, placeholder: '请输入机构具体地址', :class => "form-control input-sm" %>
           <%= show_error(@jg_bsb.errors, :jg_address) %>
         </td>
       </tr>
       <tr>
-        <td colspan="6">机构法人</td>
-        <td colspan="6"><%= f.text_field :jg_leader, :class => "form-control input-sm" %></td>
-        <td colspan="6">机构联系人</td>
-        <td colspan="6"><%= f.text_field :jg_contacts, :class => "form-control input-sm" %></td>
-        <td colspan="6">上级行政主管部门名称</td>
+        <th colspan="6">机构类型</th>
+        <td colspan="6"><%= f.select :jg_type, options_for_select(JgBsb::JG_TYPE.map { |jg| [jg[:name], jg[:code]] }.unshift(['-请选择-', nil]), @jg_bsb.jg_type), {}, class: 'form-control input-sm' %></td>
+        <th colspan="6">邮编</th>
+        <td colspan="6"><%= f.text_field :zipcode, placeholder: '请输入邮编', :class => "form-control input-sm" %></td>
+        <th colspan="6">传真</th>
+        <td colspan="10"><%= f.text_field :fax, placeholder: '请输入传真', :class => "form-control input-sm" %></td>
+      </tr>
+      <tr>
+        <th colspan="6">机构法人</th>
+        <td colspan="6"><%= f.text_field :jg_leader, placeholder: '请输入机构法定代表人', :class => "form-control input-sm" %></td>
+        <th colspan="6">机构联系人</th>
+        <td colspan="6"><%= f.text_field :jg_contacts, placeholder: '请输入联系人', :class => "form-control input-sm" %></td>
+        <th colspan="6">上级行政主管部门名称</th>
         <td colspan="10"><%= f.text_field :jg_higher_level, :class => "form-control input-sm" %></td>
       </tr>
       <tr>
-        <td colspan="6">联系邮箱</td>
-        <td colspan="6"><%= f.text_field :jg_email, :class => "form-control input-sm" %></td>
-        <td colspan="6">联系电话</td>
-        <td colspan="6"><%= f.text_field :jg_tel, :class => "form-control input-sm" %></td>
-        <td colspan="6">所属省份</td>
-        <td colspan="10">
-          <%= f.select :jg_province, options_for_select(SysProvince.level1.pluck(:name).unshift(''), @jg_bsb.jg_province), {}, class: 'form-control input-sm' %>
-          <%= show_error(@jg_bsb.errors, :jg_province) %>
-        </td>
+        <th colspan="6">联系邮箱</th>
+        <td colspan="6"><%= f.text_field :jg_email, placeholder: '请输入邮箱', :class => "form-control input-sm" %></td>
+        <th colspan="6">联系电话</th>
+        <td colspan="6"><%= f.text_field :jg_tel, placeholder: '请输入电话', :class => "form-control input-sm" %></td>
+        <td colspan="16"></td>
+      </tr>
+      <% if false %>
+          <tr>
+            <td colspan="6">
+              <p>
+                <label>
+                  <%= f.check_box :jg_administrion %>
+                  是否地方局
+                </label>
+              </p>
+            </td>
+            <td colspan="6">
+              <p>
+                <label>
+                  <%= f.check_box :jg_sp_permission %>
+                  食品权限
+                </label>
+              </p>
+            </td>
+            <td colspan="6">
+              <p>
+                <label>
+                  <%= f.check_box :jg_bjp_permission %>
+                  保健品权限
+                </label>
+              </p>
+            </td>
+            <td colspan="6">
+              <p>
+                <label>
+                  <%= f.check_box :jg_hzp_permission %>
+                  化妆品权限
+                </label>
+              </p>
+            </td>
+            <td colspan="6">
+              <p>
+                <label>
+                  <%= f.check_box :jg_group %>
+                  是否牵头单位
+                </label>
+              </p>
+            </td>
+            <td colspan="10" class="form-inline">牵头:<%= f.select :jg_group_category, options_for_select(ACategory.select('distinct name').map { |c| [c.name, c.name] }, @jg_bsb.jg_group_category), {}, {style: 'width: 100px', class: 'form-control input-sm'} %></td>
+          </tr>
+      <% end %>
+      <tr>
+        <th colspan="10">食品检验机构资质认定证书编号及有效期</th>
+        <td colspan="30"><%= f.text_field :jg_certification, :class => "form-control input-sm" %></td>
       </tr>
       <tr>
-        <td colspan="6">
-          <p>
-            <label>
-              <%= f.check_box :jg_administrion %>
-              是否地方局
-            </label>
-          </p>
-        </td>
-        <td colspan="6">
-          <p>
-            <label>
-              <%= f.check_box :jg_sp_permission %>
-              食品权限
-            </label>
-          </p>
-        </td>
-        <td colspan="6">
-          <p>
-            <label>
-              <%= f.check_box :jg_bjp_permission %>
-              保健品权限
-            </label>
-          </p>
-        </td>
-        <td colspan="6">
-          <p>
-            <label>
-              <%= f.check_box :jg_hzp_permission %>
-              化妆品权限
-            </label>
-          </p>
-        </td>
-        <td colspan="6">
-          <p>
-            <label>
-              <%= f.check_box :jg_group %>
-              是否牵头单位
-            </label>
-          </p>
-        </td>
-        <td colspan="10" class="form-inline">牵头:<%= f.select :jg_group_category, options_for_select(ACategory.select('distinct name').map { |c| [c.name, c.name] }, @jg_bsb.jg_group_category), {}, {style: 'width: 100px', class: 'form-control input-sm'} %></td>
+        <th colspan="6">委托承检范围</th>
+        <td colspan="34"><%= f.text_field :jg_word_area, placeholder: '请输入委托承检范围', :class => "form-control input-sm" %></td>
       </tr>
       <tr>
-        <td colspan="6">
-          <p>
-            <label>
-              <%= f.check_box :jg_enable %>
-              是否有效期内
-            </label>
-          </p>
-        </td>
-        <td colspan="6">
-          <p>
-            <label>
-              <%= f.check_box :jg_sampling %>
-              是否采样
-            </label>
-          </p>
-        </td>
-        <td colspan="6">
-          <p>
-            <label>
-              <%= f.check_box :jg_detection %>
-              是否检测
-            </label>
-          </p>
-        </td>
-        <td colspan="6">食品检验机构资质认定证书编号及有效期</td>
-        <td colspan="6"><%= f.text_field :jg_certification, :class => "form-control input-sm" %></td>
-        <td colspan="4">委托承检范围</td>
-        <td colspan="6"><%= f.text_field :jg_word_area, :class => "form-control input-sm" %></td>
+        <th colspan="6">检测机构接口地址</th>
+        <td colspan="34"><%= f.text_field :api_ip_address, placeholder: '请输入接口对接地址', :class => "form-control input-sm" %></td>
       </tr>
       <tr>
-        <td colspan="5">采样机构编号</td>
-        <td colspan="10">
-          <%= f.text_field :code, :class => "form-control input-sm" %>
-        </td>
-        <td colspan="8">检测机构接口地址</td>
-        <td colspan="17">
-          <%= f.text_field :api_ip_address, :class => "form-control input-sm" %>
-        </td>
+        <th colspan="6">GPS用户名</th>
+        <td colspan="14"><%= f.text_field :gpsname, placeholder: '请输入GPS用户名', :class => "form-control input-sm" %></td>
+        <th colspan="6">GPS密码</th>
+        <td colspan="14"><%= f.text_field :gpspassword, placeholder: '请输入GPS密码', :class => "form-control input-sm" %></td>
       </tr>
       <tr>
-        <td colspan="5">GPS用户名</td>
-        <td colspan="10">
-          <%= f.text_field :gpsname, :class => "form-control input-sm" %>
-        </td>
-        <td colspan="8">GPS密码</td>
-        <td colspan="17">
-          <%= f.text_field :gpspassword, :class => "form-control input-sm" %>
-        </td>
-      </tr>
-      <tr>
-        <td colspan="10">公章<br/><span style="color:#999">（请上传PNG格式背景透明，<br/>&nbsp;&nbsp;图片宽高不超过200px，<br/>&nbsp;&nbsp;文件大小不超过0.5M）</span>
-        </td>
-        <td colspan="30">
+        <th colspan="6">公章</th>
+        <td colspan="34">
+          <span style="color:#999">（请上传PNG格式背景透明，&nbsp;&nbsp;图片宽高不超过200px，&nbsp;&nbsp;文件大小不超过0.5M）</span><br>
           <% if @jg_bsb["attachment_path"].blank? %>
               <span class="text-danger">尚未上传公章</span>
           <% else %>
@@ -263,7 +285,7 @@
         </td>
       </tr>
       <tr>
-        <td colspan="10">检验报告签章规则号<span style="color:#999">（多个规则号用#分隔）</span></td>
+        <th colspan="10">检验报告签章规则号</th>
         <td colspan="30">
           <% if @jg_bsb.new_record? %>
               <i class="text-info">请新建保存后再管理机构签章</i>
@@ -273,10 +295,28 @@
           <% end %>
         </td>
       </tr>
-      <% if @show==0||@show==nil %>
+      <tr>
+        <th colspan="6">上级业务部门</th>
+        <td colspan="34">
+          <%= f.select :super_jg_bsbs, options_for_select(JgBsb.all.map { |jg| [jg.jg_name, jg.id] }, @jg_bsb.jg_bsb_supers.pluck(:id)), {}, multiple: true, class: 'form-control input-sm' %>
+        </td>
+      </tr>
+      <tr>
+        <th colspan="6">下级业务部门</th>
+        <td colspan="34">
+          <ul class="list-group">
+            <% @jg_bsb.jg_bsb_supers.each_with_index do |s, i| %>
+                <li class="list-group-item"><%= i + 1 %>.
+                  <a href="/jg_bsbs/<%= s.jg_bsb.id %>"><%= s.jg_bsb.jg_name %></a>
+                </li>
+            <% end %>
+          </ul>
+        </td>
+      </tr>
+      <% if current_user.is_admin? %>
           <tr>
             <td colspan="40">
-              <%= f.submit(vaule="保存并退出", options={"id" => "save_and_exit", :class => "btn btn-xs btn-primary"}) %>
+              <%= f.submit(vaule='保存并退出', options={id: 'save_and_exit', class: 'btn btn-sm btn-success'}) %>
             </td>
           </tr>
       <% end %>

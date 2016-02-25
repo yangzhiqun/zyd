@@ -1,1221 +1,1272 @@
 <script type="text/javascript">
-    /////////////CA\\\\\\\\\\\\\\
-    window.SP.SP_BSB_CA_FIELDS = <%= SpBsb::CA_FIELDS.to_json.html_safe %>;
-    window.SP.SP_DATA_CA_FIELDS = <%= Spdatum::CA_FIELDS.to_json.html_safe %>;
-    ///////////////////
-    var spdata = <%=@sp_data.to_json.html_safe%>;
-    <% cache 'jg_data' do %>
-    var jg_data = <%= @jg_bsbs.select('id, jg_name, jg_contacts, jg_tel, jg_email').to_json.html_safe%>;
+  /////////////CA\\\\\\\\\\\\\\
+  window.SP.SP_BSB_CA_FIELDS = <%= SpBsb::CA_FIELDS.to_json.html_safe %>;
+  window.SP.SP_DATA_CA_FIELDS = <%= Spdatum::CA_FIELDS.to_json.html_safe %>;
+  ///////////////////
+  var spdata = <%=@sp_data.to_json.html_safe%>;
+  <% cache 'jg_data' do %>
+  var jg_data = <%= @jg_bsbs.select('id, jg_name, jg_contacts, jg_tel, jg_email').to_json.html_safe%>;
+  <% end %>
+  var spdata_condition = "<%= "#{@sp_bsb["sp_s_17"]}#{@sp_bsb["sp_s_18"]}#{@sp_bsb["sp_s_19"]}#{@sp_bsb["sp_s_20"]}"%>";
+  SP.sp_bsb = <%= @sp_bsb.to_json.html_safe %>;
+  ///////////////////
+
+  // 按检测名称查找已记录的检测项目
+  function find_sp_data_by_name(name) {
+    if (spdata == null) return null;
+    var ret = null;
+    $.each(spdata, function (i, data) {
+      if (data.spdata_0 == name) {
+        ret = data;
+        return false;
+      }
+    });
+    return ret;
+  }
+
+  // 生成待签名的原文
+  function generateCAsrc() {
+    var sp_bsb = {spdata: []};
+    $.each(SP.SP_BSB_CA_FIELDS, function () {
+      var val = $('#sp_bsb_' + this).val();
+      if (!!val) {
+        sp_bsb[this] = val;
+      }
+    });
+    $.each($('.fancyTable .analysis-item'), function () {
+      var spdatum = {};
+      var tr = $(this);
+      $.each(SP.SP_DATA_CA_FIELDS, function () {
+        spdatum[this] = tr.find('input[name="spdata[][' + this + ']"]').val();
+      });
+      sp_bsb.spdata.push(spdatum);
+    });
+    return JSON.stringify(sp_bsb);
+  }
+
+  // 判断是否为数据库保存的数据
+  function is_previous_data() {
+    var current = $('#sp_bsb_sp_s_17').val() + $('#sp_bsb_sp_s_18').val() + $('#sp_bsb_sp_s_19').val() + $('#sp_bsb_sp_s_20').val();
+    return current == spdata_condition;
+  }
+
+  // 渲染检查项目
+  function render_spec_list(items) {
+    $('.analysis-item').remove();
+    var row = $('.analysis-item-templ').first().clone();
+    row.removeClass('analysis-item-templ').addClass('analysis-item').find('input').removeAttr('value').val('');
+
+    $.each(items, function (index, item) {
+      var copied = row.clone();
+      var o = find_sp_data_by_name(item.name);
+
+      copied.css('display', 'table-row');
+      copied.find('span.idx').text(index + 1 + "、");
+      copied.find('.JYXM').attr({'value': item.name, 'title': item.name}).val(item.name);
+
+      if (!!item.JYYJ)
+        $.each(item.JYYJ.split("#"), function (index, data) {
+          copied.find('.JYYJ').append("<option value='" + data + "'>" + data + "</option>");
+        });
+
+      if (!!item.PDYJ)
+        $.each(item.PDYJ.split("#"), function (index, data) {
+          copied.find('.PDYJ').append("<option value='" + data + "'>" + data + "</option>");
+        });
+
+      if ((item.PDYJ || "").split("#")[0].length < 4) {
+        copied.find('.JGPD').append("<option value='未检验'>未检验</option>");
+        copied.find('.JGPD').append("<option value='不判定项'>不判定项</option>");
+        copied.find('.JGPD').append("<option value='问题项'>问题项</option>");
+      } else {
+        copied.find('.JGPD').append("<option value='未检验'>未检验</option>");
+        copied.find('.JGPD').append("<option value='合格项'>合格项</option>");
+        copied.find('.JGPD').append("<option value='不合格项'>不合格项</option>");
+      }
+
+      // 标准方法检出限
+      if (!!item.BZFFJCX)
+        $.each(item.BZFFJCX.split("#"), function (index, data) {
+          copied.find('.BZFFJCX').append("<option value='" + data + "'>" + data + "</option>");
+        });
+
+      copied.find('.FFJCX').attr({
+        'value': copied.find('.BZFFJCX').val(),
+        'title': copied.find('.BZFFJCX').val()
+      }).val(copied.find('.BZFFJCX').val());
+
+      // 标准方法检出限单位
+      if (!!item.BZFFJCXDW)
+        $.each(item.BZFFJCXDW.split("#"), function (index, data) {
+          copied.find('.BZJCXDW').append("<option value='" + data + "'>" + data + "</option>");
+        });
+
+      copied.find('.JCXDW').attr({
+        'value': copied.find('.BZJCXDW').val(),
+        'title': copied.find('.BZJCXDW').val()
+      }).val(copied.find('.BZJCXDW').val());
+
+      if (!!item.BZZXYXX)
+        $.each(item.BZZXYXX.split("#"), function (index, data) {
+          copied.find('.BZZXYXX').append("<option value='" + data + "'>" + data + "</option>");
+        });
+
+      copied.find('.ZXYXX').attr({
+        'value': copied.find('.BZZXYXX').val(),
+        'title': copied.find('.BZZXYXX').val()
+      }).val(copied.find('.BZZXYXX').val());
+
+      if (!!item.BZZXYXXDW)
+        $.each(item.BZZXYXXDW.split("#"), function (index, data) {
+          copied.find('.BZZXYXXDW').append("<option value='" + data + "'>" + data + "</option>");
+        });
+
+      copied.find('.ZXYXXDW').attr({
+        'value': copied.find('.BZZXYXXDW').val(),
+        'title': copied.find('.BZZXYXXDW').val()
+      }).val(copied.find('.BZZXYXXDW').val());
+
+      if (!!item.BZZDYXX)
+        $.each(item.BZZDYXX.split("#"), function (index, data) {
+          copied.find('.BZZDYXX').append("<option value='" + data + "'>" + data + "</option>");
+        });
+      copied.find('.ZDYXX').attr({
+        'value': copied.find('.BZZDYXX').val(),
+        'title': copied.find('.BZZDYXX').val()
+      }).val(copied.find('.BZZDYXX').val());
+
+      if (!!item.BZZDYXXDW)
+        $.each(item.BZZDYXXDW.split("#"), function (index, data) {
+          copied.find('.BZZDYXXDW').append("<option value='" + data + "'>" + data + "</option>");
+        });
+      copied.find('.ZDYXXDW').attr({
+        'value': copied.find('.BZZDYXXDW').val(),
+        'title': copied.find('.BZZDYXXDW').val()
+      }).val(copied.find('.BZZDYXXDW').val());
+
+      copied.find('.JGDW').attr({
+        'value': item.JGDW,
+        'title': item.JGDW
+      }).val(item.JGDW);
+
+      if (o != null && is_previous_data()) {
+        copied.find('.JYYJ').attr({'value': o.spdata_3, 'title': o.spdata_3}).val(o.spdata_3);
+        copied.find('.PDYJ').attr({'value': o.spdata_4, 'title': o.spdata_4}).val(o.spdata_4);
+        copied.find('.BZFFJCX').attr({'value': o.spdata_5, 'title': o.spdata_5}).val(o.spdata_5);
+        copied.find('.BZJCXDW').attr({'value': o.spdata_6, 'title': o.spdata_6}).val(o.spdata_6);
+        copied.find('.BZZXYXX').attr({'value': o.spdata_9, 'title': o.spdata_9}).val(o.spdata_9);
+        copied.find('.BZZXYXXDW').attr({'value': o.spdata_10, 'title': o.spdata_10}).val(o.spdata_10);
+        copied.find('.BZZDYXX').attr({'value': o.spdata_13, 'title': o.spdata_13}).val(o.spdata_13);
+        copied.find('.BZZDYXXDW').attr({'value': o.spdata_14, 'title': o.spdata_14}).val(o.spdata_14);
+        copied.find('.JYJG').attr({'value': o.spdata_1, 'title': o.spdata_1}).val(o.spdata_1);
+        copied.find('.JGDW').attr({'value': o.spdata_18, 'title': o.spdata_18}).val(o.spdata_18);
+        copied.find('.FFJCX').attr({'value': o.spdata_7, 'title': o.spdata_7}).val(o.spdata_7);
+        copied.find('.JCXDW').attr({'value': o.spdata_8, 'title': o.spdata_8}).val(o.spdata_8);
+        copied.find('.ZXYXX').attr({'value': o.spdata_11, 'title': o.spdata_11}).val(o.spdata_11);
+        copied.find('.ZXYXXDW').attr({'value': o.spdata_12, 'title': o.spdata_12}).val(o.spdata_12);
+        copied.find('.ZDYXX').attr({'value': o.spdata_15, 'title': o.spdata_15}).val(o.spdata_15);
+        copied.find('.ZDYXXDW').attr({'value': o.spdata_16, 'title': o.spdata_16}).val(o.spdata_16);
+        copied.find('.JGPD').attr({'value': o.spdata_2, 'title': o.spdata_2}).val(o.spdata_2);
+        copied.find('.SM').attr({'value': o.spdata_17, 'title': o.spdata_17}).val(o.spdata_17);
+      }
+      if (o == null) {
+        copied.find('.id').remove();
+      } else {
+        copied.find('.id').val(o.id);
+      }
+      copied.insertBefore($('#result'));
+    });
+
+    // 因固定检验结果导致必须刷新两边的值
+    $('body').delegate('.fht-fixed-column .JYJG', 'keyup blur', function () {
+      var index = $('.fht-fixed-column .JYJG').index($(this));
+      $($('.fht-fixed-body .JYJG').get(index)).val($(this).val()).trigger('change');
+    });
+
+    $('#tblGrid').fixedHeaderTable("destroy");
+    $('#tblGrid').fixedHeaderTable({altClass: 'odd', fixedColumns: 3});
+
+    setTimeout(function () {
+      $('.fht-fixed-column .JYJG, .fht-fixed-column .JYXM').attr('name', null);
+    }, 1000);
+
+    //利用检验依椐和判定依椐两项分别计数，相等时为监督抽检，不等时有两种情况，一是判定依椐为零，则为风险监测，另一种情况为抽检监测[由于判定带一null行，所以程序中风险监测以1做判断]
+    if ($('#sp_bsb_sp_s_44').val() == '请选择' || $('#sp_bsb_sp_s_44').val() == '') {
+      var jyyj_num = $('.JYYJ').length;
+      var pdyj_num = 0;
+      $('.PDYJ').each(function () {
+        if (($(this).val() != '-') && ($(this).val() != '/')) {
+          pdyj_num = pdyj_num + 1;
+        }
+      });
+
+      if (!((jyyj_num == 1) && (pdyj_num == 1))) {
+        if (jyyj_num == pdyj_num) {
+          $('#sp_bsb_sp_s_44').val('监督抽检');
+        } else {
+          if (pdyj_num == 1) {
+            $('#sp_bsb_sp_s_44').val('风险监测');
+          } else {
+            $('#sp_bsb_sp_s_44').val('抽检监测');
+          }
+        }
+      }
+    }
+
+    var baseIndex = 100;
+    $("#tblGrid").find("tr").each(function (r) {
+      $(this).find("th,td").each(function (c) {
+        $(this).find("input").attr("tabindex", r * 100 + c + baseIndex);
+      });
+    });
+
+    $("#tblGrid .inputText").bind("keydown", function (evt) {
+      var tabIndex = parseInt($(this).attr("tabindex"));
+      switch (evt.which) {
+        case 38: //上
+          tabIndex -= 100;
+          break;
+        case 40: //下
+          tabIndex += 100;
+          break;
+        case 37: //左(會導致輸入時無法使用左右移)
+          tabIndex--;
+          break;
+        case 39: //右(會導致輸入時無法使用左右移)
+          tabIndex++;
+          break;
+        default:
+          return true;
+      }
+      if (tabIndex > 0) {
+        $(".inputText[tabindex=" + tabIndex + "]").focus();
+        return false;
+      }
+      return true;
+    });
+  }
+  $(function () {
+    if ($("#sp_bsb_sp_s_63").val() == "散装") {
+      <%@check=[26,27,13,72,73,74]%>
+      <%@check.each do |i|%>
+      if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
+        $("#sp_bsb_sp_s_" +<%=i%>).val('/');
+      }
+      <%end%>
+    }
+    $("#sp_bsb_sp_s_63").change(function () {
+      var checkText = $("#sp_bsb_sp_s_63").find("option:selected").text();
+      if (checkText == "散装") {
+        <%@check=[26,27,13,72,73,74]%>
+        <%@check.each do |i|%>
+        if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
+          $("#sp_bsb_sp_s_" +<%=i%>).val('/');
+        }
+        <%end%>
+      } else if (checkText == "预包装") {
+        <%@check=[26,27,13,72,73,74]%>
+        <%@check.each do |i|%>
+        if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()) == '/') {
+          $("#sp_bsb_sp_s_" +<%=i%>).val('');
+        }
+        <%end%>
+      }
+    });
+    //根据任务来源过滤报送分类A
+    //$("#sp_bsb_sp_s_2_1").unbind("change", eDropLangChange).bind("change", eDropLangChange);
+    //过滤文本框中的手工输入时的空格
+    $('.inputText').blur(function () {
+      var o = $(this);
+      var result = o.val().replace(/\s/g, "");
+      o.val(result);
+    });
+
+    $('.fancyTable').delegate('.inputText', 'blur', function () {
+      var o = $(this);
+      var result = o.val().replace(/\s/g, "");
+      o.val(result);
+    });
+
+    //抽样编号自动大写
+    $('#sp_bsb_sp_s_16').on('blur keyup', function () {
+      this.value = this.value.toUpperCase();
+    });
+
+    //通过比较标准最大、小允许限和检验结果自动调整结果判定[等于算合格，响应blur、keyup事件，单条件只判断有条件的，只影响合格、不合格项不影响不判定项问题项]
+    //检验结果非数字不自动判断 最大最小允许限中包含非-及数字内容时不自动判断
+    <% if(current_user.user_d_authority==1) || (current_user.user_d_authority_1==1) %>
+    $('body').delegate('.fht-fixed-body .JYJG', 'change', function () {
+      var o = $(this);
+      var jgpd = o.parents('tr').find('.JGPD');
+      var bzzdyxxval = o.parents('tr').find('.BZZDYXX').val();
+      var bzzdyxxnum = parseFloat(bzzdyxxval);
+      var bzzxyxxval = o.parents('tr').find('.BZZXYXX').val();
+      var bzzxyxxnum = parseFloat(bzzxyxxval);
+      var jyjgnum = parseFloat(o.val());
+      if ((isNaN(bzzdyxxval) && bzzdyxxval != '-') || (isNaN(bzzxyxxval) && bzzxyxxval != '-')) {
+        return 0;
+      }
+      if (isNaN(o.val())) {
+        return 0;
+      }
+      if ((bzzdyxxval != '-') && (bzzxyxxval != '-')) {
+        if ((jyjgnum > bzzdyxxnum) || (jyjgnum < bzzxyxxnum)) {
+          jgpd.val('不合格项');
+        } else {
+          jgpd.val('合格项');
+        }
+        if (o.val() == '') {
+          jgpd.val('未检验');
+        }
+      }
+      if ((bzzdyxxval != '-') && (bzzxyxxval == '-')) {
+        if (jyjgnum > bzzdyxxnum) {
+          jgpd.val('不合格项');
+        } else {
+          jgpd.val('合格项');
+        }
+        if (o.val() == '') {
+          jgpd.val('未检验');
+        }
+      }
+      if ((bzzdyxxval == '-') && (bzzxyxxval != '-')) {
+        if (jyjgnum < bzzdyxxnum) {
+          jgpd.val('不合格项');
+        } else {
+          jgpd.val('合格项');
+        }
+        if (o.val() == '') {
+          jgpd.val('未检验');
+        }
+      }
+      jgpd.trigger('change');
+    });
     <% end %>
-    var spdata_condition = "<%= "#{@sp_bsb["sp_s_17"]}#{@sp_bsb["sp_s_18"]}#{@sp_bsb["sp_s_19"]}#{@sp_bsb["sp_s_20"]}"%>";
-    SP.sp_bsb = <%= @sp_bsb.to_json.html_safe %>;
-    ///////////////////
-
-    // 按检测名称查找已记录的检测项目
-    function find_sp_data_by_name(name) {
-        if (spdata == null) return null;
-        var ret = null;
-        $.each(spdata, function (i, data) {
-            if (data.spdata_0 == name) {
-                ret = data;
-                return false;
-            }
-        });
-        return ret;
+    $(".region").ProvinceCity({
+      dprovince: "<%= @sp_bsb.sp_s_3 %>",
+      dcity: "<%= @sp_bsb.sp_s_4 %>",
+      lcity: "<%= @sp_bsb.sp_s_5 %>"
+    });
+    $(".region2").ProvinceCity({
+      dprovince: "<%= @sp_bsb.sp_s_202 %>",
+      dcity: "<%= @sp_bsb.sp_s_220 %>",
+      lcity: "<%= @sp_bsb.sp_s_221 %>"
+    });
+    $("#sp_bsb_sp_d_22, #sp_bsb_sp_d_28, #sp_bsb_sp_d_38, #sp_bsb_sp_d_46, #sp_bsb_sp_d_86, #sp_bsb_sp_s_209").datepicker({
+      dateFormat: "yy-mm-dd",
+      changeMonth: true,
+      changeYear: true,
+      maxDate: new Date()
+    });
+    <% if [5, 9].include? @sp_bsb["sp_i_state"] %>
+    $("#sp_bsb_sp_d_47").datepicker({
+      dateFormat: "yy-mm-dd",
+      changeMonth: true,
+      changeYear: true,
+      maxDate: new Date()
+    });
+    // 设置默认值
+    if (!SP.sp_bsb.sp_d_47 && SP.sp_bsb.sp_d_47 != '') {
+      $('#sp_bsb_sp_d_47').datepicker("setDate", new Date());
     }
+    <% end %>
+    //$("#sp_bsb_sp_d_47").datepicker("disable").attr("readonly", "readonly");
 
-    // 生成待签名的原文
-    function generateCAsrc() {
-        var sp_bsb = {spdata: []};
-        $.each(SP.SP_BSB_CA_FIELDS, function () {
-            var val = $('#sp_bsb_' + this).val();
-            if (!!val) {
-                sp_bsb[this] = val;
-            }
-        });
-        $.each($('.fancyTable .analysis-item'), function () {
-            var spdatum = {};
-            var tr = $(this);
-            $.each(SP.SP_DATA_CA_FIELDS, function () {
-                spdatum[this] = tr.find('input[name="spdata[][' + this + ']"]').val();
-            });
-            sp_bsb.spdata.push(spdatum);
-        });
-        return JSON.stringify(sp_bsb);
-    }
+    var s = '#jcx';
+    var count = 1;
 
-    // 判断是否为数据库保存的数据
-    function is_previous_data() {
-        var current = $('#sp_bsb_sp_s_17').val() + $('#sp_bsb_sp_s_18').val() + $('#sp_bsb_sp_s_19').val() + $('#sp_bsb_sp_s_20').val();
-        return current == spdata_condition;
-    }
+    // 营业执照
+    $('.yyzz').on('blur keyup', function () {
+      var o = $(this);
+      $.get('/sp_company_info_by_yyzz.json', {yyzz: o.val()}, function (data) {
+        if (data.status == 'OK') {
+          $('#sp_bsb_sp_s_1').val(data.msg.sp_s_1);
+          $('#sp_bsb_sp_s_68').val(data.msg.sp_s_68).trigger('change');
+          setTimeout(function () {
+            $('#sp_bsb_sp_s_2').val(data.msg.sp_s_2);
+          }, 1000);
 
-    // 渲染检查项目
-    function render_spec_list(items) {
-        $('.analysis-item').remove();
-        var row = $('.analysis-item-templ').first().clone();
-        row.removeClass('analysis-item-templ').addClass('analysis-item').find('input').removeAttr('value').val('');
+          $('#sp_bsb_sp_s_23').val(data.msg.sp_s_23);
+          $('#sp_bsb_sp_s_bsfl').val(data.msg.sp_s_bsfl);
+          $('#sp_bsb_sp_s_201').val(data.msg.sp_s_201);
+          $('#sp_bsb_sp_s_7').val(data.msg.sp_s_7);
+          $('#sp_bsb_sp_s_10').val(data.msg.sp_s_10);
+          $('#sp_bsb_sp_s_8').val(data.msg.sp_s_8);
+          $('#sp_bsb_sp_s_9').val(data.msg.sp_s_9);
+          $('#sp_bsb_sp_s_11').val(data.msg.sp_s_11);
+          $('#sp_bsb_sp_s_12').val(data.msg.sp_s_12);
 
-        $.each(items, function (index, item) {
-            var copied = row.clone();
-            var o = find_sp_data_by_name(item.name);
-
-            copied.css('display', 'table-row');
-            copied.find('span.idx').text(index + 1 + "、");
-            copied.find('.JYXM').attr({'value': item.name, 'title': item.name}).val(item.name);
-
-            if (!!item.JYYJ)
-                $.each(item.JYYJ.split("#"), function (index, data) {
-                    copied.find('.JYYJ').append("<option value='" + data + "'>" + data + "</option>");
-                });
-
-            if (!!item.PDYJ)
-                $.each(item.PDYJ.split("#"), function (index, data) {
-                    copied.find('.PDYJ').append("<option value='" + data + "'>" + data + "</option>");
-                });
-
-            if ((item.PDYJ || "").split("#")[0].length < 4) {
-                copied.find('.JGPD').append("<option value='未检验'>未检验</option>");
-                copied.find('.JGPD').append("<option value='不判定项'>不判定项</option>");
-                copied.find('.JGPD').append("<option value='问题项'>问题项</option>");
-            } else {
-                copied.find('.JGPD').append("<option value='未检验'>未检验</option>");
-                copied.find('.JGPD').append("<option value='合格项'>合格项</option>");
-                copied.find('.JGPD').append("<option value='不合格项'>不合格项</option>");
-            }
-
-            // 标准方法检出限
-            if (!!item.BZFFJCX)
-                $.each(item.BZFFJCX.split("#"), function (index, data) {
-                    copied.find('.BZFFJCX').append("<option value='" + data + "'>" + data + "</option>");
-                });
-
-            copied.find('.FFJCX').attr({
-                'value': copied.find('.BZFFJCX').val(),
-                'title': copied.find('.BZFFJCX').val()
-            }).val(copied.find('.BZFFJCX').val());
-
-            // 标准方法检出限单位
-            if (!!item.BZFFJCXDW)
-                $.each(item.BZFFJCXDW.split("#"), function (index, data) {
-                    copied.find('.BZJCXDW').append("<option value='" + data + "'>" + data + "</option>");
-                });
-
-            copied.find('.JCXDW').attr({
-                'value': copied.find('.BZJCXDW').val(),
-                'title': copied.find('.BZJCXDW').val()
-            }).val(copied.find('.BZJCXDW').val());
-
-            if (!!item.BZZXYXX)
-                $.each(item.BZZXYXX.split("#"), function (index, data) {
-                    copied.find('.BZZXYXX').append("<option value='" + data + "'>" + data + "</option>");
-                });
-
-            copied.find('.ZXYXX').attr({
-                'value': copied.find('.BZZXYXX').val(),
-                'title': copied.find('.BZZXYXX').val()
-            }).val(copied.find('.BZZXYXX').val());
-
-            if (!!item.BZZXYXXDW)
-                $.each(item.BZZXYXXDW.split("#"), function (index, data) {
-                    copied.find('.BZZXYXXDW').append("<option value='" + data + "'>" + data + "</option>");
-                });
-
-            copied.find('.ZXYXXDW').attr({
-                'value': copied.find('.BZZXYXXDW').val(),
-                'title': copied.find('.BZZXYXXDW').val()
-            }).val(copied.find('.BZZXYXXDW').val());
-
-            if (!!item.BZZDYXX)
-                $.each(item.BZZDYXX.split("#"), function (index, data) {
-                    copied.find('.BZZDYXX').append("<option value='" + data + "'>" + data + "</option>");
-                });
-            copied.find('.ZDYXX').attr({
-                'value': copied.find('.BZZDYXX').val(),
-                'title': copied.find('.BZZDYXX').val()
-            }).val(copied.find('.BZZDYXX').val());
-
-            if (!!item.BZZDYXXDW)
-                $.each(item.BZZDYXXDW.split("#"), function (index, data) {
-                    copied.find('.BZZDYXXDW').append("<option value='" + data + "'>" + data + "</option>");
-                });
-            copied.find('.ZDYXXDW').attr({
-                'value': copied.find('.BZZDYXXDW').val(),
-                'title': copied.find('.BZZDYXXDW').val()
-            }).val(copied.find('.BZZDYXXDW').val());
-
-            copied.find('.JGDW').attr({
-                'value': item.JGDW,
-                'title': item.JGDW
-            }).val(item.JGDW);
-
-            if (o != null && is_previous_data()) {
-                copied.find('.JYYJ').attr({'value': o.spdata_3, 'title': o.spdata_3}).val(o.spdata_3);
-                copied.find('.PDYJ').attr({'value': o.spdata_4, 'title': o.spdata_4}).val(o.spdata_4);
-                copied.find('.BZFFJCX').attr({'value': o.spdata_5, 'title': o.spdata_5}).val(o.spdata_5);
-                copied.find('.BZJCXDW').attr({'value': o.spdata_6, 'title': o.spdata_6}).val(o.spdata_6);
-                copied.find('.BZZXYXX').attr({'value': o.spdata_9, 'title': o.spdata_9}).val(o.spdata_9);
-                copied.find('.BZZXYXXDW').attr({'value': o.spdata_10, 'title': o.spdata_10}).val(o.spdata_10);
-                copied.find('.BZZDYXX').attr({'value': o.spdata_13, 'title': o.spdata_13}).val(o.spdata_13);
-                copied.find('.BZZDYXXDW').attr({'value': o.spdata_14, 'title': o.spdata_14}).val(o.spdata_14);
-                copied.find('.JYJG').attr({'value': o.spdata_1, 'title': o.spdata_1}).val(o.spdata_1);
-                copied.find('.JGDW').attr({'value': o.spdata_18, 'title': o.spdata_18}).val(o.spdata_18);
-                copied.find('.FFJCX').attr({'value': o.spdata_7, 'title': o.spdata_7}).val(o.spdata_7);
-                copied.find('.JCXDW').attr({'value': o.spdata_8, 'title': o.spdata_8}).val(o.spdata_8);
-                copied.find('.ZXYXX').attr({'value': o.spdata_11, 'title': o.spdata_11}).val(o.spdata_11);
-                copied.find('.ZXYXXDW').attr({'value': o.spdata_12, 'title': o.spdata_12}).val(o.spdata_12);
-                copied.find('.ZDYXX').attr({'value': o.spdata_15, 'title': o.spdata_15}).val(o.spdata_15);
-                copied.find('.ZDYXXDW').attr({'value': o.spdata_16, 'title': o.spdata_16}).val(o.spdata_16);
-                copied.find('.JGPD').attr({'value': o.spdata_2, 'title': o.spdata_2}).val(o.spdata_2);
-                copied.find('.SM').attr({'value': o.spdata_17, 'title': o.spdata_17}).val(o.spdata_17);
-            }
-            if (o == null) {
-                copied.find('.id').remove();
-            } else {
-                copied.find('.id').val(o.id);
-            }
-            copied.insertBefore($('#result'));
-        });
-
-        // 因固定检验结果导致必须刷新两边的值
-        $('body').delegate('.fht-fixed-column .JYJG', 'keyup blur', function () {
-            var index = $('.fht-fixed-column .JYJG').index($(this));
-            $($('.fht-fixed-body .JYJG').get(index)).val($(this).val()).trigger('change');
-        });
-
-        $('#tblGrid').fixedHeaderTable("destroy");
-        $('#tblGrid').fixedHeaderTable({altClass: 'odd', fixedColumns: 3});
-
-        setTimeout(function () {
-            $('.fht-fixed-column .JYJG, .fht-fixed-column .JYXM').attr('name', null);
-        }, 1000);
-
-        //利用检验依椐和判定依椐两项分别计数，相等时为监督抽检，不等时有两种情况，一是判定依椐为零，则为风险监测，另一种情况为抽检监测[由于判定带一null行，所以程序中风险监测以1做判断]
-        if ($('#sp_bsb_sp_s_44').val() == '请选择' || $('#sp_bsb_sp_s_44').val() == '') {
-            var jyyj_num = $('.JYYJ').length;
-            var pdyj_num = 0;
-            $('.PDYJ').each(function () {
-                if (($(this).val() != '-') && ($(this).val() != '/')) {
-                    pdyj_num = pdyj_num + 1;
-                }
-            });
-
-            if (!((jyyj_num == 1) && (pdyj_num == 1))) {
-                if (jyyj_num == pdyj_num) {
-                    $('#sp_bsb_sp_s_44').val('监督抽检');
-                } else {
-                    if (pdyj_num == 1) {
-                        $('#sp_bsb_sp_s_44').val('风险监测');
-                    } else {
-                        $('#sp_bsb_sp_s_44').val('抽检监测');
-                    }
-                }
-            }
         }
+      }, 'json')
+    });
 
-        var baseIndex = 100;
-        $("#tblGrid").find("tr").each(function (r) {
-            $(this).find("th,td").each(function (c) {
-                $(this).find("input").attr("tabindex", r * 100 + c + baseIndex);
+    // 生产许可证
+    /*$('.scxkz').on('blur keyup', function(){
+     var o = $(this);
+     $.get('/sp_production_info_by_scxkz.json', {scxkz: o.val()}, function(data){
+     if(data.status == 'OK') {
+     $('#sp_bsb_sp_s_14').val(data.msg.cpmc);
+     $('#sp_bsb_sp_s_64').val(data.msg.qymc);
+     $('#sp_bsb_sp_s_65').val(data.msg.scdz);
+     $('#sp_bsb_sp_s_202').val(data.msg.sp_s_3);
+     }
+     }, 'json')
+     });*/
+
+    // 报送分类第一列
+    $('#sp_bsb_sp_s_70').change(function () {
+      var o = $(this);
+      if (o.val() != '') {
+        $.get('/baosong_bs/by_name.json', {a_name: o.val()}, function (data) {
+          if (data.status == 'OK') {
+            $('#sp_bsb_sp_s_17, #sp_bsb_sp_s_18, #sp_bsb_sp_s_19, #sp_bsb_sp_s_20').empty();
+            render_spec_list([]);
+
+            $('#sp_bsb_sp_s_67').empty();
+            $("<option>").text("请选择").appendTo($('#sp_bsb_sp_s_67'));
+            $.each(data.data, function () {
+              $("<option>").attr('data-identifier', this.identifier).attr("value", this.name).text(this.name).appendTo($('#sp_bsb_sp_s_67'));
             });
-        });
+          }
+        }, "json")
+      }
+    });
 
-        $("#tblGrid .inputText").bind("keydown", function (evt) {
-            var tabIndex = parseInt($(this).attr("tabindex"));
-            switch (evt.which) {
-                case 38: //上  
-                    tabIndex -= 100;
-                    break;
-                case 40: //下  
-                    tabIndex += 100;
-                    break;
-                case 37: //左(會導致輸入時無法使用左右移)  
-                    tabIndex--;
-                    break;
-                case 39: //右(會導致輸入時無法使用左右移)  
-                    tabIndex++;
-                    break;
-                default:
-                    return true;
-            }
-            if (tabIndex > 0) {
-                $(".inputText[tabindex=" + tabIndex + "]").focus();
-                return false;
-            }
-            return true;
-        });
+    // 报送分类第二列
+    $('#sp_bsb_sp_s_67').change(function () {
+      $.get('/a_categories_by_identifier.json', {identifier: $(this).find('option:selected').attr('data-identifier')}, function (data) {
+        if (data.status == 'OK') {
+          $('#sp_bsb_sp_s_17, #sp_bsb_sp_s_18, #sp_bsb_sp_s_19, #sp_bsb_sp_s_20').empty();
+          render_spec_list([]);
+
+          $('<option>').text("请选择").appendTo($('#sp_bsb_sp_s_17'));
+          $.each(data.data, function () {
+            $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#sp_bsb_sp_s_17'));
+          });
+        }
+      }, 'json');
+    });
+
+    // 大类
+    $('#sp_bsb_sp_s_17').change(function () {
+      $.get('/b_categories_by_a_id.json', {a_category_id: $(this).find('option:selected').attr('data-id')}, function (data) {
+        if (data.status == 'OK') {
+          $('#sp_bsb_sp_s_18, #sp_bsb_sp_s_19, #sp_bsb_sp_s_20').empty();
+          render_spec_list([]);
+
+          $('<option>').text("请选择").appendTo($('#sp_bsb_sp_s_18'));
+          $.each(data.data, function () {
+            $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#sp_bsb_sp_s_18'));
+          });
+        }
+      }, 'json');
+    });
+    // 亚类
+    $('#sp_bsb_sp_s_18').change(function () {
+      $.get('/c_categories_by_b_id.json', {b_category_id: $(this).find('option:selected').attr('data-id')}, function (data) {
+        if (data.status == 'OK') {
+          $('#sp_bsb_sp_s_19, #sp_bsb_sp_s_20').empty();
+          render_spec_list([]);
+
+          $('#sp_bsb_sp_s_19').empty();
+          $('<option>').text("请选择").appendTo($('#sp_bsb_sp_s_19'));
+          $.each(data.data, function () {
+            $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#sp_bsb_sp_s_19'));
+          });
+        }
+      }, 'json');
+    });
+    // 次亚类
+    $('#sp_bsb_sp_s_19').change(function () {
+      $.get('/d_categories_by_c_id.json', {c_category_id: $(this).find('option:selected').attr('data-id')}, function (data) {
+        if (data.status == 'OK') {
+          $('#sp_bsb_sp_s_20').empty();
+          render_spec_list([]);
+          $('<option>').text("请选择").appendTo($('#sp_bsb_sp_s_20'));
+          $.each(data.data, function () {
+            $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#sp_bsb_sp_s_20'));
+          });
+        }
+      }, 'json');
+    });
+    // 细类
+    $('#sp_bsb_sp_s_20').change(function () {
+      var dataid = $(this).find('option:selected').attr('data-id');
+      if (!!dataid) {
+        $.get('/check_items_by_d_id.json', {d_category_id: dataid}, function (data) {
+          if (data.status == 'OK') {
+            render_spec_list(data.items);
+          }
+        }, 'json');
+      } else {
+        render_spec_list([]);
+      }
+    });
+
+    <% if !@sp_bsb.sp_s_20.blank? and !@sp_bsb.sp_s_20.eql?("请选择")%>
+    $('#sp_bsb_sp_s_20').trigger('change');
+    <% end %>
+
+    // 查看标准
+    $('body').delegate('.check-detail', 'click', function (e) {
+      $.get("/checkout_standard.json", {
+        name: $(e.target).prev('select').val(),
+        flag: $(e.target).attr('data-flag')
+      }, function (data) {
+        if (data.status == 'OK') {
+          window.open(data.msg.fileUrl);
+        } else {
+          alert("无法找到文件");
+        }
+      });
+    });
+
+    $("#sp_bsb_sp_n_15").blur(function () {
+      if (isNaN($("#sp_bsb_sp_n_15").val())) {
+        alert("该项为数值项，请输入数值！");
+        $("#sp_bsb_sp_n_15").focus();
+      }
+      return;
+    });
+
+    <% if [2, 4, 5].include? @sp_bsb["sp_i_state"] %>
+    // [2, 4, 5] 步骤无法修改基本信息
+    $("#province").attr("disabled", "disabled");
+
+    <%@check=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,17,18,19,20,21,23,24,25,26,27,30,33,34,35,36,37,39,40,41,42,61,62,63,64,65,67,68,70]%>
+    <%@check.each do |i|%>
+    $("#sp_bsb_sp_s_" +<%=i%>).attr("disabled", "disabled");
+    <%end%>
+
+    <%@check=[22,28,38]%>
+    <%@check.each do |i|%>
+    $("#sp_bsb_sp_d_" +<%=i%>).attr("disabled", "disabled");
+    <%end%>
+
+    <%@check=[15,29,31,32]%>
+    <%@check.each do |i|%>
+    $("#sp_bsb_sp_n_" +<%=i%>).attr("disabled", "disabled");
+    <%end%>
+
+    $('#sp_bsb_sp_xkz, #sp_bsb_sp_xkz_id').attr("disabled", "disabled");
+    <% end %>
+
+    index68 = $('#sp_bsb_sp_s_68 option').index($('#sp_bsb_sp_s_68 option:selected'));
+
+    if (index68 != -1) {
+      $.each(CYDD[index68], function (index, data) {
+        $("#sp_bsb_sp_s_2").append("<option value='" + data + "'>" + data + "</option>");
+      });
     }
-    $(function () {
-            if($("#sp_bsb_sp_s_63").val() == "散装"){
-                <%@check=[26,27,13,72,73,74]%>
-                <%@check.each do |i|%>
-                if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
-                    $("#sp_bsb_sp_s_" +<%=i%>).val('/');
-                }
-                <%end%>
-            }
-         $("#sp_bsb_sp_s_63").change(function(){
-            var checkText=$("#sp_bsb_sp_s_63").find("option:selected").text();
-            if(checkText == "散装"){
-                <%@check=[26,27,13,72,73,74]%>
-                <%@check.each do |i|%>
-                if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
-                    $("#sp_bsb_sp_s_" +<%=i%>).val('/');
-                }
-                <%end%>
-            }else if(checkText == "预包装"){
-                <%@check=[26,27,13,72,73,74]%>
-                <%@check.each do |i|%>
-                if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()) == '/') {
-                    $("#sp_bsb_sp_s_" +<%=i%>).val('');
-                }
-                <%end%>
-            }
-         })
-        //根据任务来源过滤报送分类A
-        //$("#sp_bsb_sp_s_2_1").unbind("change", eDropLangChange).bind("change", eDropLangChange);
-        //过滤文本框中的手工输入时的空格
-        $('.inputText').blur(function () {
-            var o = $(this);
-            var result = o.val().replace(/\s/g, "");
-            o.val(result);
-        });
+    $("#sp_bsb_sp_s_2").val('<%=@sp_bsb["sp_s_2"]%>');
 
-        $('.fancyTable').delegate('.inputText', 'blur', function () {
-            var o = $(this);
-            var result = o.val().replace(/\s/g, "");
-            o.val(result);
-        });
+    $("#sp_bsb_sp_s_68").change(function () {
+      $("#sp_bsb_sp_s_2").get(0).options.length = 0;
+      index68 = this.selectedIndex;
+      $.each(CYDD[index68], function (index, data) {
+        $("#sp_bsb_sp_s_2").append("<option value='" + data + "'>" + data + "</option>");
+      });
+      $("#sp_bsb_sp_s_2").val(CYDD[index68][0]);
+      return;
+    });
 
-				//抽样编号自动大写
-        $('#sp_bsb_sp_s_16').on('blur keyup', function () {
-					this.value = this.value.toUpperCase();
-					});
+    $('#province').change(function () {
+      $('#sp_bsb_sp_s_3').val($('#province').val());
+      $('#sp_bsb_sp_s_4').val($('#city').val());
+      $('#sp_bsb_sp_s_5').val($('#lcity').val());
+    });
 
-        //通过比较标准最大、小允许限和检验结果自动调整结果判定[等于算合格，响应blur、keyup事件，单条件只判断有条件的，只影响合格、不合格项不影响不判定项问题项]
-        //检验结果非数字不自动判断 最大最小允许限中包含非-及数字内容时不自动判断
-        <% if(session[:user_authority_1]==1) || (session[:user_authority_2]==1) %>
-        $('body').delegate('.fht-fixed-body .JYJG', 'change', function () {
-            var o = $(this);
-            var jgpd = o.parents('tr').find('.JGPD');
-            var bzzdyxxval = o.parents('tr').find('.BZZDYXX').val();
-            var bzzdyxxnum = parseFloat(bzzdyxxval);
-            var bzzxyxxval = o.parents('tr').find('.BZZXYXX').val();
-            var bzzxyxxnum = parseFloat(bzzxyxxval);
-            var jyjgnum = parseFloat(o.val());
-            if ((isNaN(bzzdyxxval) && bzzdyxxval != '-') || (isNaN(bzzxyxxval) && bzzxyxxval != '-')) {
-                return 0;
-            }
-            if (isNaN(o.val())) {
-                return 0;
-            }
-            if ((bzzdyxxval != '-') && (bzzxyxxval != '-')) {
-                if ((jyjgnum > bzzdyxxnum) || (jyjgnum < bzzxyxxnum)) {
-                    jgpd.val('不合格项');
-                } else {
-                    jgpd.val('合格项');
-                }
-                if (o.val() == '') {
-                    jgpd.val('未检验');
-                }
-            }
-            if ((bzzdyxxval != '-') && (bzzxyxxval == '-')) {
-                if (jyjgnum > bzzdyxxnum) {
-                    jgpd.val('不合格项');
-                } else {
-                    jgpd.val('合格项');
-                }
-                if (o.val() == '') {
-                    jgpd.val('未检验');
-                }
-            }
-            if ((bzzdyxxval == '-') && (bzzxyxxval != '-')) {
-                if (jyjgnum < bzzdyxxnum) {
-                    jgpd.val('不合格项');
-                } else {
-                    jgpd.val('合格项');
-                }
-                if (o.val() == '') {
-                    jgpd.val('未检验');
-                }
-            }
-            jgpd.trigger('change');
-        });
-        <% end %>
-        $(".region").ProvinceCity({dprovince: "<%= @sp_bsb.sp_s_3 %>", dcity: "<%= @sp_bsb.sp_s_4 %>", lcity: "<%= @sp_bsb.sp_s_5 %>"});
-        $(".region2").ProvinceCity({dprovince: "<%= @sp_bsb.sp_s_202 %>", dcity: "<%= @sp_bsb.sp_s_220 %>", lcity: "<%= @sp_bsb.sp_s_221 %>"});
-        $("#sp_bsb_sp_d_22, #sp_bsb_sp_d_28, #sp_bsb_sp_d_38, #sp_bsb_sp_d_46, #sp_bsb_sp_d_86, #sp_bsb_sp_s_209").datepicker({
-            dateFormat: "yy-mm-dd",
-            changeMonth: true,
-            changeYear: true,
-            maxDate: new Date()
-        });
-        <% if [5, 9].include? @sp_bsb["sp_i_state"] %>
-        $("#sp_bsb_sp_d_47").datepicker({
-            dateFormat: "yy-mm-dd",
-            changeMonth: true,
-            changeYear: true,
-            maxDate: new Date()
-        });
-        // 设置默认值
-        if (!SP.sp_bsb.sp_d_47 && SP.sp_bsb.sp_d_47 != '') {
-            $('#sp_bsb_sp_d_47').datepicker("setDate", new Date());
+    $('#city').change(function () {
+      $('#sp_bsb_sp_s_4').val($('#city').val());
+      $('#sp_bsb_sp_s_5').val($('#lcity').val());
+    });
+
+    $('#lcity').change(function () {
+      $('#sp_bsb_sp_s_5').val($('#lcity').val());
+    });
+
+    <% if current_user.is_admin? %>
+    <%@avala.each do |i|%>
+    var strtemp = "#sp_bsb_sp_s_" + "<%=i%>";
+    $(strtemp).bind("contextmenu", function (e) {
+      return false;
+    });
+    $("#sp_bsb_sp_s_" +<%=i%>).mousedown(function (e) {
+      if (e.which == 3) {
+        digStr = "dialogHeight:400px;dialogWidth:500px;center:yes";
+        var ReturnValue = window.open("/flexcontents?flex_fields=sp_bsb_sp_s_" + "<%=i%>", "sp_bsb_sp_s_" + "<%=i%>", digStr)
+      }
+    });
+    <%end%>
+    <% end %>
+
+    $('input:text:first').focus();
+
+    var $inp = $('input:text');
+    $inp.bind('keydown', function (e) {
+      var key = e.which;
+      if (key == 13) {
+        e.preventDefault();
+        var nxtIdx = $inp.index(this) + 1;
+        $(":input:text:eq(" + nxtIdx + ")").focus();
+      }
+    });
+
+    $("#tblGrid").delegate(".tb_select", "change", function () {
+      var parentTD = $(this).parents('td');
+      var ths = $(this).parents('tr').children('td');
+      var index = ths.index(parentTD);
+      ths.eq(index + 2).find('input').val($(this).val());
+    });
+
+    $("#tblGrid").delegate(".jy_select", "change", function () {
+      var result = '';
+      $("#tblGrid select[name='spdata[][spdata_2]']").each(function () {
+        if (result.indexOf($(this).val()) < 0) {
+          result = result + $(this).val();
         }
-        <% end %>
-        //$("#sp_bsb_sp_d_47").datepicker("disable").attr("readonly", "readonly");
+      });
+      if (result.indexOf('不合格项') >= 0 && result.indexOf('问题项') >= 0) {
+        $("#sp_bsb_sp_s_71").val("抽检不合格样品并监测问题样品");
+      }
+      else if (result.indexOf('不合格项') >= 0 && result.indexOf('不判定') >= 0) {
+        $("#sp_bsb_sp_s_71").val("抽检不合格样品并监测不判定样品");
+      }
+      else if (result.indexOf('合格项') >= 0 && result.indexOf('问题项') >= 0) {
+        $("#sp_bsb_sp_s_71").val("抽检合格样品并监测问题样品");
+      }
+      else if (result.indexOf('合格项') >= 0 && result.indexOf('不判定项') >= 0) {
+        $("#sp_bsb_sp_s_71").val("抽检合格样品并监测不判定样品");
+      }
+      else if (result.indexOf('不合格项') >= 0) {
+        $("#sp_bsb_sp_s_71").val("纯抽检不合格样品");
+      }
+      else if (result.indexOf('合格项') >= 0) {
+        $("#sp_bsb_sp_s_71").val("纯抽检合格样品");
+      }
+      else if (result.indexOf('问题项') >= 0) {
+        $("#sp_bsb_sp_s_71").val("纯监测问题样品");
+      }
+      else if (result.indexOf('不判定项') >= 0) {
+        $("#sp_bsb_sp_s_71").val("纯监测不判定合格样品");
+      }
+      else {
+        $("#sp_bsb_sp_s_71").val("未检验样品");
+      }
+    });
 
-        var s = '#jcx';
-        var count = 1;
+    /**
+     * Submit1:
+     * 基本信息提交入库
+     * */
+    $('#submit1').click(function () {
+      //抽检检测总局本级一司/三司抽样编号需以GC1500开头
+      if ($('#sp_bsb_sp_s_16').val().length != 12) {
+        alert('抽样编号应为12位');
+        return false;
+      }
+      var bsfla = $('#sp_bsb_sp_s_70').val();
+      var cybh6 = $('#sp_bsb_sp_s_16').val().substring(0, 6);
+      if ((bsfla == '抽检监测（总局本级一司）' || bsfla == '抽检监测（总局本级三司）') && cybh6 != 'GC1600') {
+        alert('抽检检测总局本级一司/三司抽样编号需以GC1600开头');
+        return false;
+      }
 
-        // 营业执照
-        $('.yyzz').on('blur keyup', function () {
-            var o = $(this);
-            $.get('/sp_company_info_by_yyzz.json', {yyzz: o.val()}, function (data) {
-                if (data.status == 'OK') {
-                    $('#sp_bsb_sp_s_1').val(data.msg.sp_s_1);
-                    $('#sp_bsb_sp_s_68').val(data.msg.sp_s_68).trigger('change');
-                    setTimeout(function () {
-                        $('#sp_bsb_sp_s_2').val(data.msg.sp_s_2);
-                    }, 1000);
+      <%@check=[1,2,3,4,5,6,7,8,11,12,14,16,21,24,30,33,35,36,37,39,40,41,42,61,62,63,65,70]%>
+      <%@check.each do |i|%>
+      if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
+        alert("该项为必填项");
+        $("#sp_bsb_sp_s_" +<%=i%>).focus();
+        return false;
+      }
+      <%end%>
 
-                    $('#sp_bsb_sp_s_23').val(data.msg.sp_s_23);
-                    $('#sp_bsb_sp_s_bsfl').val(data.msg.sp_s_bsfl);
-                    $('#sp_bsb_sp_s_201').val(data.msg.sp_s_201);
-                    $('#sp_bsb_sp_s_7').val(data.msg.sp_s_7);
-                    $('#sp_bsb_sp_s_10').val(data.msg.sp_s_10);
-                    $('#sp_bsb_sp_s_8').val(data.msg.sp_s_8);
-                    $('#sp_bsb_sp_s_9').val(data.msg.sp_s_9);
-                    $('#sp_bsb_sp_s_11').val(data.msg.sp_s_11);
-                    $('#sp_bsb_sp_s_12').val(data.msg.sp_s_12);
+      <%@check=["xkz","xkz_id"]%>
+      <%@check.each do |i|%>
+      if ($.trim($("#sp_bsb_sp_" + "<%=i%>").val()).length == 0) {
+        alert("该项为必填项");
+        $("#sp_bsb_sp_" + "<%=i%>").focus();
+        return false;
+      }
+      <%end%>
 
-                }
-            }, 'json')
-        });
+      <%@check=[38]%>
+      <%@check.each do |i|%>
+      if ($.trim($("#sp_bsb_sp_d_" +<%=i%>).val()).length == 0) {
+        alert("该日期项为必填项");
+        $("#sp_bsb_sp_d_" +<%=i%>).focus();
+        return false;
+      }
+      <%end%>
 
-        // 生产许可证
-        /*$('.scxkz').on('blur keyup', function(){
-         var o = $(this);
-         $.get('/sp_production_info_by_scxkz.json', {scxkz: o.val()}, function(data){
-         if(data.status == 'OK') {
-         $('#sp_bsb_sp_s_14').val(data.msg.cpmc);
-         $('#sp_bsb_sp_s_64').val(data.msg.qymc);
-         $('#sp_bsb_sp_s_65').val(data.msg.scdz);
-         $('#sp_bsb_sp_s_202').val(data.msg.sp_s_3);
-         }
-         }, 'json')
-         });*/
+      <%@check=[15]%>
+      <%@check.each do |i|%>
+      if ($.trim($("#sp_bsb_sp_n_" +<%=i%>).val()).length == 0) {
+        alert("该数据项为必填项");
+        $("#sp_bsb_sp_n_" +<%=i%>).focus();
+        return false;
+      }
+      <%end%>
 
-        // 报送分类第一列
-        $('#sp_bsb_sp_s_70').change(function () {
-            var o = $(this);
-            if (o.val() != '') {
-                $.get('/baosong_bs/by_name.json', {a_name: o.val()}, function (data) {
-                    if (data.status == 'OK') {
-                        $('#sp_bsb_sp_s_17, #sp_bsb_sp_s_18, #sp_bsb_sp_s_19, #sp_bsb_sp_s_20').empty();
-                        render_spec_list([]);
+      <%@check=[68,17,18,19,20,62,202]%>
+      <%@check.each do |i|%>
+      var o = $.trim($("#sp_bsb_sp_s_" +<%=i%>).val());
+      if (o == '请选择' || o == '') {
+        alert("该项为必选项");
+        $("#sp_bsb_sp_s_" +<%=i%>).focus();
+        return false;
+      }
+      <%end%>
 
-                        $('#sp_bsb_sp_s_67').empty();
-                        $("<option>").text("请选择").appendTo($('#sp_bsb_sp_s_67'));
-                        $.each(data.data, function () {
-                            $("<option>").attr('data-identifier', this.identifier).attr("value", this.name).text(this.name).appendTo($('#sp_bsb_sp_s_67'));
-                        });
-                    }
-                }, "json")
+      if (!confirm('确定提交吗？')) {
+        return false;
+      }
+
+      varDate = $("#sp_bsb_sp_d_86").val();
+      varData = varDate.split("-");
+      varDate = new Date(varData[0], varData[1] - 1, varData[2]);
+      varnow_Date = new Date();
+      var settime = varDate.getTime();
+      var nowtime = varnow_Date.getTime();
+      if (settime > nowtime) {
+        alert("填报日期不能大于今天日期");
+        $("#sp_bsb_sp_d_86").focus();
+        return false;
+      }
+      $("#sp_bsb_sp_s_70").removeAttr("disabled");
+      $("#sp_bsb_sp_s_20").removeAttr("disabled");
+      $('#sp_bsb_sp_i_state').val("2");
+      return true;
+    });
+
+    /**
+     * 检验数据提交入库
+     * */
+    $('#submit2').click(function () {
+      var jcxnull = 0;
+      $("#tblGrid input[name='spdata[][spdata_1]']").each(
+          function () {
+            if (($.trim($(this).val())).length == 0) {
+              alert("该检测结果必须填写！");
+              $(this).focus();
+              jcxnull = 1;
+              return false;
             }
-        });
-
-        // 报送分类第二列
-        $('#sp_bsb_sp_s_67').change(function () {
-            $.get('/a_categories_by_identifier.json', {identifier: $(this).find('option:selected').attr('data-identifier')}, function (data) {
-                if (data.status == 'OK') {
-                    $('#sp_bsb_sp_s_17, #sp_bsb_sp_s_18, #sp_bsb_sp_s_19, #sp_bsb_sp_s_20').empty();
-                    render_spec_list([]);
-
-                    $('<option>').text("请选择").appendTo($('#sp_bsb_sp_s_17'));
-                    $.each(data.data, function () {
-                        $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#sp_bsb_sp_s_17'));
-                    });
-                }
-            }, 'json');
-        });
-
-        // 大类
-        $('#sp_bsb_sp_s_17').change(function () {
-            $.get('/b_categories_by_a_id.json', {a_category_id: $(this).find('option:selected').attr('data-id')}, function (data) {
-                if (data.status == 'OK') {
-                    $('#sp_bsb_sp_s_18, #sp_bsb_sp_s_19, #sp_bsb_sp_s_20').empty();
-                    render_spec_list([]);
-
-                    $('<option>').text("请选择").appendTo($('#sp_bsb_sp_s_18'));
-                    $.each(data.data, function () {
-                        $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#sp_bsb_sp_s_18'));
-                    });
-                }
-            }, 'json');
-        });
-        // 亚类
-        $('#sp_bsb_sp_s_18').change(function () {
-            $.get('/c_categories_by_b_id.json', {b_category_id: $(this).find('option:selected').attr('data-id')}, function (data) {
-                if (data.status == 'OK') {
-                    $('#sp_bsb_sp_s_19, #sp_bsb_sp_s_20').empty();
-                    render_spec_list([]);
-
-                    $('#sp_bsb_sp_s_19').empty();
-                    $('<option>').text("请选择").appendTo($('#sp_bsb_sp_s_19'));
-                    $.each(data.data, function () {
-                        $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#sp_bsb_sp_s_19'));
-                    });
-                }
-            }, 'json');
-        });
-        // 次亚类
-        $('#sp_bsb_sp_s_19').change(function () {
-            $.get('/d_categories_by_c_id.json', {c_category_id: $(this).find('option:selected').attr('data-id')}, function (data) {
-                if (data.status == 'OK') {
-                    $('#sp_bsb_sp_s_20').empty();
-                    render_spec_list([]);
-                    $('<option>').text("请选择").appendTo($('#sp_bsb_sp_s_20'));
-                    $.each(data.data, function () {
-                        $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#sp_bsb_sp_s_20'));
-                    });
-                }
-            }, 'json');
-        });
-        // 细类
-        $('#sp_bsb_sp_s_20').change(function () {
-            var dataid = $(this).find('option:selected').attr('data-id');
-            if (!!dataid) {
-                $.get('/check_items_by_d_id.json', {d_category_id: dataid}, function (data) {
-                    if (data.status == 'OK') {
-                        render_spec_list(data.items);
-                    }
-                }, 'json');
-            } else {
-                render_spec_list([]);
+          }
+      );
+      if (jcxnull) {
+        return false;
+      }
+      $("#tblGrid input[name='spdata[][spdata_18]']").each(
+          function () {
+            if (($.trim($(this).val())).length == 0) {
+              alert("该检测结果单位必须填写！");
+              $(this).focus();
+              jcxnull = 1;
+              return false;
             }
-        });
-
-        <% if !@sp_bsb.sp_s_20.blank? and !@sp_bsb.sp_s_20.eql?("请选择")%>
-        $('#sp_bsb_sp_s_20').trigger('change');
-        <% end %>
-
-        // 查看标准
-        $('body').delegate('.check-detail', 'click', function (e) {
-            $.get("/checkout_standard.json", {
-                name: $(e.target).prev('select').val(),
-                flag: $(e.target).attr('data-flag')
-            }, function (data) {
-                if (data.status == 'OK') {
-                    window.open(data.msg.fileUrl);
-                } else {
-                    alert("无法找到文件");
-                }
-            });
-        });
-
-        $("#sp_bsb_sp_n_15").blur(function () {
-            if (isNaN($("#sp_bsb_sp_n_15").val())) {
-                alert("该项为数值项，请输入数值！");
-                $("#sp_bsb_sp_n_15").focus();
-            }
-            return;
-        });
-
-        <% if [2, 4, 5].include? @sp_bsb["sp_i_state"] %>
-        // [2, 4, 5] 步骤无法修改基本信息
-        $("#province").attr("disabled", "disabled");
-
-        <%@check=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,17,18,19,20,21,23,24,25,26,27,30,33,34,35,36,37,39,40,41,42,61,62,63,64,65,67,68,70]%>
-        <%@check.each do |i|%>
-        $("#sp_bsb_sp_s_" +<%=i%>).attr("disabled", "disabled");
-        <%end%>
-
-        <%@check=[22,28,38]%>
-        <%@check.each do |i|%>
-        $("#sp_bsb_sp_d_" +<%=i%>).attr("disabled", "disabled");
-        <%end%>
-
-        <%@check=[15,29,31,32]%>
-        <%@check.each do |i|%>
-        $("#sp_bsb_sp_n_" +<%=i%>).attr("disabled", "disabled");
-        <%end%>
-
-        $('#sp_bsb_sp_xkz, #sp_bsb_sp_xkz_id').attr("disabled", "disabled");
-        <% end %>
-
-        index68 = $('#sp_bsb_sp_s_68 option').index($('#sp_bsb_sp_s_68 option:selected'));
-
-        if (index68 != -1) {
-            $.each(CYDD[index68], function (index, data) {
-                $("#sp_bsb_sp_s_2").append("<option value='" + data + "'>" + data + "</option>");
-            });
-        }
-        $("#sp_bsb_sp_s_2").val('<%=@sp_bsb["sp_s_2"]%>');
-
-        $("#sp_bsb_sp_s_68").change(function () {
-            $("#sp_bsb_sp_s_2").get(0).options.length = 0;
-            index68 = this.selectedIndex;
-            $.each(CYDD[index68], function (index, data) {
-                $("#sp_bsb_sp_s_2").append("<option value='" + data + "'>" + data + "</option>");
-            });
-            $("#sp_bsb_sp_s_2").val(CYDD[index68][0]);
-            return;
-        });
-
-        $('#province').change(function () {
-            $('#sp_bsb_sp_s_3').val($('#province').val());
-            $('#sp_bsb_sp_s_4').val($('#city').val());
-            $('#sp_bsb_sp_s_5').val($('#lcity').val());
-        });
-
-        $('#city').change(function () {
-            $('#sp_bsb_sp_s_4').val($('#city').val());
-            $('#sp_bsb_sp_s_5').val($('#lcity').val());
-        });
-
-        $('#lcity').change(function () {
-            $('#sp_bsb_sp_s_5').val($('#lcity').val());
-        });
-
-        <% if current_user.is_admin? %>
-        <%@avala.each do |i|%>
-        var strtemp = "#sp_bsb_sp_s_" + "<%=i%>";
-        $(strtemp).bind("contextmenu", function (e) {
-            return false;
-        });
-        $("#sp_bsb_sp_s_" +<%=i%>).mousedown(function (e) {
-            if (e.which == 3) {
-                digStr = "dialogHeight:400px;dialogWidth:500px;center:yes";
-                var ReturnValue = window.open("/flexcontents?flex_fields=sp_bsb_sp_s_" + "<%=i%>", "sp_bsb_sp_s_" + "<%=i%>", digStr)
-            }
-        });
-        <%end%>
-        <% end %>
-
-        $('input:text:first').focus();
-
-        var $inp = $('input:text');
-        $inp.bind('keydown', function (e) {
-            var key = e.which;
-            if (key == 13) {
-                e.preventDefault();
-                var nxtIdx = $inp.index(this) + 1;
-                $(":input:text:eq(" + nxtIdx + ")").focus();
-            }
-        });
-
-        $("#tblGrid").delegate(".tb_select", "change", function () {
+          }
+      );
+      if (jcxnull) {
+        return false;
+      }
+      $("#tblGrid select[name='spdata[][spdata_2]']").each(
+          function () {
             var parentTD = $(this).parents('td');
             var ths = $(this).parents('tr').children('td');
             var index = ths.index(parentTD);
-            ths.eq(index + 2).find('input').val($(this).val());
-        });
-
-        $("#tblGrid").delegate(".jy_select", "change", function () {
-            var result = '';
-            $("#tblGrid select[name='spdata[][spdata_2]']").each(function () {
-                if (result.indexOf($(this).val()) < 0) {
-                    result = result + $(this).val();
-                }
-            });
-            if (result.indexOf('不合格项') >= 0 && result.indexOf('问题项') >= 0) {
-                $("#sp_bsb_sp_s_71").val("抽检不合格样品并监测问题样品");
+            if (($.trim($(this).val())) == '未检验' && ($.trim(ths.eq(index + 15).find('input').val())).length <= 3) {
+              alert("该项必须检测！如果根据实际情况不需检验，请将必填项填'/',并在说明项中加以不检验的说明且说明文字多于三个字。");
+              $(this).focus();
+              jcxnull = 1;
+              return false;
             }
-            else if (result.indexOf('不合格项') >= 0 && result.indexOf('不判定') >= 0) {
-                $("#sp_bsb_sp_s_71").val("抽检不合格样品并监测不判定样品");
-            }
-            else if (result.indexOf('合格项') >= 0 && result.indexOf('问题项') >= 0) {
-                $("#sp_bsb_sp_s_71").val("抽检合格样品并监测问题样品");
-            }
-            else if (result.indexOf('合格项') >= 0 && result.indexOf('不判定项') >= 0) {
-                $("#sp_bsb_sp_s_71").val("抽检合格样品并监测不判定样品");
-            }
-            else if (result.indexOf('不合格项') >= 0) {
-                $("#sp_bsb_sp_s_71").val("纯抽检不合格样品");
-            }
-            else if (result.indexOf('合格项') >= 0) {
-                $("#sp_bsb_sp_s_71").val("纯抽检合格样品");
-            }
-            else if (result.indexOf('问题项') >= 0) {
-                $("#sp_bsb_sp_s_71").val("纯监测问题样品");
-            }
-            else if (result.indexOf('不判定项') >= 0) {
-                $("#sp_bsb_sp_s_71").val("纯监测不判定合格样品");
-            }
-            else {
-                $("#sp_bsb_sp_s_71").val("未检验样品");
-            }
-        });
-
-        /**
-         * Submit1:
-         * 基本信息提交入库
-         * */
-        $('#submit1').click(function () {
-            //抽检检测总局本级一司/三司抽样编号需以GC1500开头
-            if ($('#sp_bsb_sp_s_16').val().length != 12) {
-                alert('抽样编号应为12位');
-                return false;
-            }
-            var bsfla = $('#sp_bsb_sp_s_70').val();
-            var cybh6 = $('#sp_bsb_sp_s_16').val().substring(0, 6);
-            if ((bsfla == '抽检监测（总局本级一司）' || bsfla == '抽检监测（总局本级三司）') && cybh6 != 'GC1600') {
-                alert('抽检检测总局本级一司/三司抽样编号需以GC1500开头');
-                return false;
-            }
-
-            <%@check=[1,2,3,4,5,6,7,8,11,12,14,16,21,24,30,33,35,36,37,39,40,41,42,61,62,63,65,70]%>
-            <%@check.each do |i|%>
-            if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
-                alert("该项为必填项");
-                $("#sp_bsb_sp_s_" +<%=i%>).focus();
-                return false;
-            }
-            <%end%>
-
-            <%@check=["xkz","xkz_id"]%>
-            <%@check.each do |i|%>
-            if ($.trim($("#sp_bsb_sp_" +"<%=i%>").val()).length == 0) {
-                alert("该项为必填项");
-                $("#sp_bsb_sp_" +"<%=i%>").focus();
-                return false;
-            }
-            <%end%>
-
-            <%@check=[38]%>
-            <%@check.each do |i|%>
-            if ($.trim($("#sp_bsb_sp_d_" +<%=i%>).val()).length == 0) {
-                alert("该日期项为必填项");
-                $("#sp_bsb_sp_d_" +<%=i%>).focus();
-                return false;
-            }
-            <%end%>
-
-            <%@check=[15]%>
-            <%@check.each do |i|%>
-            if ($.trim($("#sp_bsb_sp_n_" +<%=i%>).val()).length == 0) {
-                alert("该数据项为必填项");
-                $("#sp_bsb_sp_n_" +<%=i%>).focus();
-                return false;
-            }
-            <%end%>
-
-            <%@check=[68,17,18,19,20,62,202,220,221]%>
-            <%@check.each do |i|%>
-            var o = $.trim($("#sp_bsb_sp_s_" +<%=i%>).val());
-            if (o == '请选择' || o == '') {
-                alert("该项为必选项");
-                $("#sp_bsb_sp_s_" +<%=i%>).focus();
-                return false;
-            }
-            <%end%>
-
-            if (!confirm('确定提交吗？')) {
-                return false;
-            }
-
-            varDate = $("#sp_bsb_sp_d_86").val();
-            varData = varDate.split("-");
-            varDate = new Date(varData[0], varData[1] - 1, varData[2]);
-            varnow_Date = new Date();
-            var settime = varDate.getTime();
-            var nowtime = varnow_Date.getTime();
-            if (settime > nowtime) {
-                alert("填报日期不能大于今天日期");
-                $("#sp_bsb_sp_d_86").focus();
-                return false;
-            }
-            $("#sp_bsb_sp_s_70").removeAttr("disabled");
-            $("#sp_bsb_sp_s_20").removeAttr("disabled");
-            $('#sp_bsb_sp_i_state').val("2");
-            return true;
-        });
-
-        /**
-         * 检验数据提交入库
-         * */
-        $('#submit2').click(function () {
-
-            var jcxnull = 0;
-            $("#tblGrid input[name='spdata[][spdata_1]']").each(
-                    function () {
-                        if (($.trim($(this).val())).length == 0) {
-                            alert("该检测结果必须填写！");
-                            $(this).focus();
-                            jcxnull = 1;
-                            return false;
-                        }
-                    }
-            );
-            if (jcxnull) {
-                return false;
-            }
-            $("#tblGrid input[name='spdata[][spdata_18]']").each(
-                    function () {
-                        if (($.trim($(this).val())).length == 0) {
-                            alert("该检测结果单位必须填写！");
-                            $(this).focus();
-                            jcxnull = 1;
-                            return false;
-                        }
-                    }
-            );
-            if (jcxnull) {
-                return false;
-            }
-            $("#tblGrid select[name='spdata[][spdata_2]']").each(
-                    function () {
-                        var parentTD = $(this).parents('td');
-                        var ths = $(this).parents('tr').children('td');
-                        var index = ths.index(parentTD);
-                        if (($.trim($(this).val())) == '未检验' && ($.trim(ths.eq(index + 15).find('input').val())).length <= 3) {
-                            alert("该项必须检测！如果根据实际情况不需检验，请将必填项填'/',并在说明项中加以不检验的说明且说明文字多于三个字。");
-                            $(this).focus();
-                            jcxnull = 1;
-                            return false;
-                        }
-                    }
-            );
-            if (jcxnull) {
-                return false;
-            }
-
-            <%@check=[1,2,3,4,5,6,7,11,12,14,16,21,24,30,33,35,36,37,39,40,41,42,61,62,63,70]%>
-            <%@check.each do |i|%>
-            if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
-                alert("该项为必填项");
-                $("#sp_bsb_sp_s_" +<%=i%>).focus();
-                return false;
-            }
-            <%end%>
-            <%@check=[38]%>
-            <%@check.each do |i|%>
-            if ($.trim($("#sp_bsb_sp_d_" +<%=i%>).val()).length == 0) {
-                alert("该日期项为必填项");
-                $("#sp_bsb_sp_d_" +<%=i%>).focus();
-                return false;
-            }
-            <%end%>
-            <%@check=[15]%>
-            <%@check.each do |i|%>
-            if ($.trim($("#sp_bsb_sp_n_" +<%=i%>).val()).length == 0) {
-                alert("该数据项为必填项");
-                $("#sp_bsb_sp_n_" +<%=i%>).focus();
-                return false;
-            }
-
-            <%end%>
-            <%@check=[68,17,62,202,220,221]%>
-            <%@check.each do |i|%>
-              var o = $.trim($("#sp_bsb_sp_s_" +<%=i%>).val());
-              if (o == '请选择' || o == '') {
-                alert("该项为必选项");
-                $("#sp_bsb_sp_s_" +<%=i%>).focus();
-                return false;
-              }
-            <%end%>
-
-            <%@check=[43,44,45,49,50,51,85,87,88]%>
-            <%@check.each do |i|%>
-            if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
-                alert("该项为必填项");
-                $("#sp_bsb_sp_s_" +<%=i%>).focus();
-                return false;
-            }
-            <%end%>
-            <%@check=[46,86]%>
-            <%@check.each do |i|%>
-            if ($.trim($("#sp_bsb_sp_d_" +<%=i%>).val()).length == 0) {
-                alert("该日期项为必填项");
-                $("#sp_bsb_sp_d_" +<%=i%>).focus();
-                return false;
-            }
-            <%end%>
-
-            <%@check=[71]%>
-            <%@check.each do |i|%>
-            if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()) == '未完成') {
-                alert("该项为必选项");
-                $("#sp_bsb_sp_s_" +<%=i%>).focus();
-                return false;
-            }
-            <%end%>
-
-          if (!confirm('确定提交吗？')) {
-            return false;
           }
-            varDate = $("#sp_bsb_sp_d_86").val();
-            varData = varDate.split("-")
-            varDate = new Date(varData[0], varData[1] - 1, varData[2]);
-            varnow_Date = new Date();
-            var settime = varDate.getTime();
-            var nowtime = varnow_Date.getTime();
-            if (settime > nowtime) {
-                alert("填报日期不能大于今天日期");
-                $("#sp_bsb_sp_d_86").focus();
-                return false;
-            }
-            $("#sp_bsb_sp_s_70").removeAttr("disabled");
-            $("#sp_bsb_sp_s_20").removeAttr("disabled");
-            $('#sp_bsb_sp_i_state').val("4");
-            return true;
-        });
-        $('#save').click(function () {
-            <%@check=[3,16]%>
-            <%@check.each do |i|%>
-            if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
-                alert("保存时该项必须填写");
-                $("#sp_bsb_sp_s_" +<%=i%>).focus();
-                return false;
-            }
-            <%end%>
-            varDate = $("#sp_bsb_sp_d_86").val();
-            varData = varDate.split("-")
-            varDate = new Date(varData[0], varData[1] - 1, varData[2]);
-            varnow_Date = new Date();
-            var settime = varDate.getTime();
-            var nowtime = varnow_Date.getTime();
-            if (settime > nowtime) {
-                alert("填报日期不能大于今天日期");
-                $("#sp_bsb_sp_d_86").focus();
-                return false;
-            }
-            $('#sp_bsb_sp_i_state').val("1");
-            $("#sp_bsb_sp_s_70").removeAttr("disabled");
-            $("#sp_bsb_sp_s_20").removeAttr("disabled");
-            return true;
-        });
-        $('#save_and_create').click(function () {
-            <%@check=[3,16]%>
-            <%@check.each do |i|%>
-            if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
-                alert("保存时该项必须填写");
-                $("#sp_bsb_sp_s_" +<%=i%>).focus();
-                return false;
-            }
-            <%end%>
-            varDate = $("#sp_bsb_sp_d_86").val();
-            varData = varDate.split("-");
-            varDate = new Date(varData[0], varData[1] - 1, varData[2]);
-            varnow_Date = new Date();
-            var settime = varDate.getTime();
-            var nowtime = varnow_Date.getTime();
-            if (settime > nowtime) {
-                alert("填报日期不能大于今天日期");
-                $("#sp_bsb_sp_d_86").focus();
-                return false;
-            }
-            $('#sp_bsb_sp_i_state').val("1");
-            $("#sp_bsb_sp_s_70").removeAttr("disabled");
-            $("#sp_bsb_sp_s_20").removeAttr("disabled");
+      );
+      if (jcxnull) {
+        return false;
+      }
 
-            $("#new_sp_bsb, form.edit_sp_bsb").ajaxSubmit({
-                dataType: "json",
-                success: function (message) {
-                    if (message.status == '保存成功!') {
-                        alert("您的信息已经成功存入数据库！");
-                    } else if (message.status == '保存出错!') {
-                        alert(message.msg);
-                    }
-                    $('#sp_bsb_sp_s_16').focus();
-                }
-            });
-            return false;
-        });
+      <%@check=[1,2,3,4,5,6,7,11,12,14,16,21,24,30,33,35,36,37,39,40,41,42,61,62,63,70]%>
+      <%@check.each do |i|%>
+      if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
+        alert("该项为必填项" + <%= i %>);
+        $("#sp_bsb_sp_s_" +<%=i%>).focus();
+        return false;
+      }
+      <%end%>
+      <%@check=[38]%>
+      <%@check.each do |i|%>
+      if ($.trim($("#sp_bsb_sp_d_" +<%=i%>).val()).length == 0) {
+        alert("该日期项为必填项");
+        $("#sp_bsb_sp_d_" +<%=i%>).focus();
+        return false;
+      }
+      <%end%>
 
-        /**
-         * 临时保存
-         * */
-        $('#save_1').click(function () {
-            <%@check=[3,16]%>
-            <%@check.each do |i|%>
-            if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
-                alert("保存时该项必须填写");
-                $("#sp_bsb_sp_s_" +<%=i%>).focus();
-                return false;
-            }
-            <%end%>
-            varDate = $("#sp_bsb_sp_d_86").val();
-            varData = varDate.split("-");
-            varDate = new Date(varData[0], varData[1] - 1, varData[2]);
-            varnow_Date = new Date();
-            var settime = varDate.getTime();
-            var nowtime = varnow_Date.getTime();
-            if (settime > nowtime) {
-                alert("填报日期不能大于今天日期");
-                $("#sp_bsb_sp_d_86").focus();
-                return false;
-            }
-            $("#sp_bsb_sp_s_70").removeAttr("disabled");
-            $("#sp_bsb_sp_s_20").removeAttr("disabled");
-            $('#sp_bsb_sp_i_state').val("2");
-            return true;
-        });
+      <%@check=[15]%>
+      <%@check.each do |i|%>
+      if ($.trim($("#sp_bsb_sp_n_" +<%=i%>).val()).length == 0) {
+        alert("该数据项为必填项");
+        $("#sp_bsb_sp_n_" +<%=i%>).focus();
+        return false;
+      }
+
+      <%end%>
+      <%@check=[68,17,62,202]%>
+      <%@check.each do |i|%>
+      if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()) == '请选择') {
+        alert("该项为必填项" + <%= i %>);
+        $("#sp_bsb_sp_s_" +<%=i%>).focus();
+        return false;
+      }
+      <%end%>
 
 
-        /**
-         * 检测机构审核通过
-         * */
-        $('#save_2').click(function () {
-            if (!confirm('确定提交吗？')) {
-                return false;
-            }
-            $("select").attr("disabled", "disabled");
-            $("input.inputText").attr("disabled", "disabled");
-            $("#sp_bsb_sp_s_16").removeAttr("disabled");
-            $("#sp_bsb_sp_s_55").removeAttr("disabled");
-            $("#sp_bsb_sp_s_56").removeAttr("disabled");
-            $("#sp_bsb_sp_s_70").removeAttr("disabled");
-            $("#sp_bsb_sp_s_20").removeAttr("disabled");
+      <%@check=[43,44,45,49,50,51,85,87,88]%>
+      <%@check.each do |i|%>
+      if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
+        alert("该项为必填项" + <%= i %>);
+        $("#sp_bsb_sp_s_" +<%=i%>).focus();
+        return false;
+      }
+      <%end%>
+      <%@check=[46,86]%>
+      <%@check.each do |i|%>
+      if ($.trim($("#sp_bsb_sp_d_" +<%=i%>).val()).length == 0) {
+        alert("该日期项为必填项");
+        $("#sp_bsb_sp_d_" +<%=i%>).focus();
+        return false;
+      }
+      <%end%>
 
-            $('#sp_bsb_sp_i_state').val("5");
-            return true;
-        });
+      <%@check=[71]%>
+      <%@check.each do |i|%>
+      if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()) == '未完成') {
+        alert("该项为必选项");
+        $("#sp_bsb_sp_s_" +<%=i%>).focus();
+        return false;
+      }
+      <%end%>
+      varDate = $("#sp_bsb_sp_d_86").val();
+      varData = varDate.split("-")
+      varDate = new Date(varData[0], varData[1] - 1, varData[2]);
+      varnow_Date = new Date();
+      var settime = varDate.getTime();
+      var nowtime = varnow_Date.getTime();
+      if (settime > nowtime) {
+        alert("填报日期不能大于今天日期");
+        $("#sp_bsb_sp_d_86").focus();
+        return false;
+      }
+      $("#sp_bsb_sp_s_70").removeAttr("disabled");
+      $("#sp_bsb_sp_s_20").removeAttr("disabled");
+      $('#sp_bsb_sp_i_state').val("4");
 
-        /**
-         * 药监局审核通过
-         * */
-        $('#save_3').click(function () {
-            if (!confirm('确定提交吗？')) {
-                return false;
-            }
-            $("select").attr("disabled", "disabled");
-            $("input.inputText").attr("disabled", "disabled");
-            $("#sp_bsb_sp_s_16").removeAttr("disabled");
-            $("#sp_bsb_sp_s_55").removeAttr("disabled");
-            $("#sp_bsb_sp_s_56").removeAttr("disabled");
-            $("#sp_bsb_sp_s_70").removeAttr("disabled");
-            $("#sp_bsb_sp_s_20").removeAttr("disabled");
-            $('#sp_bsb_sp_i_state').val("8");
-            return true;
-        });
+      $('#stamp-dlg').modal('show');
+      return false;
 
-        /**
-         * 牵头单位审核通过
-         * */
-        $('#save_4').click(function () {
-            if (!confirm('确定提交吗？')) {
-                return false;
-            }
-            $("select").attr("disabled", "disabled");
-            $("input.inputText").attr("disabled", "disabled");
-            $("#sp_bsb_sp_s_16").removeAttr("disabled");
-            $("#sp_bsb_sp_s_55").removeAttr("disabled");
-            $("#sp_bsb_sp_s_56").removeAttr("disabled");
-            $("#sp_bsb_sp_s_70").removeAttr("disabled");
-            $("#sp_bsb_sp_s_20").removeAttr("disabled");
-            $('#sp_bsb_sp_i_state').val("9");
-            return true;
-        });
+      if (!confirm('确定提交吗？')) {
+        return false;
+      }
 
-        /**
-         * 检验机构批准
-         */
-        $('#save_5').click(function () {
 
-            <%@check=[47]%>
-            <%@check.each do |i|%>
-            if ($.trim($("#sp_bsb_sp_d_" +<%=i%>).val()).length == 0) {
-                alert("该日期项为必填项");
-                $("#sp_bsb_sp_d_" +<%=i%>).focus();
-                return false;
-            }
-            <%end%>
-            //$('#stamp-dlg').modal('show');
-            if (!confirm('确定提交吗？')) {
-                return false;
-            }
-            var spxlxz = $('#sp_bsb_sp_s_70').val();
-            $("select").attr("disabled", "disabled");
-            $("input.inputText").attr("disabled", "disabled");
-            $("#sp_bsb_sp_s_16").removeAttr("disabled");
-            $("#sp_bsb_sp_s_55").removeAttr("disabled");
-            $("#sp_bsb_sp_s_56").removeAttr("disabled");
-            $("#sp_bsb_sp_s_70").removeAttr("disabled");
-            $("#sp_bsb_sp_s_20").removeAttr("disabled");
-            $("#sp_bsb_sp_d_47").removeAttr("disabled").removeAttr('readonly');
-
-            if (spxlxz == "抽检监测（总局本级三司）" || spxlxz == "抽检监测（总局本级一司）" || spxlxz == "抽检监测（三司专项）") {
-                $('#sp_bsb_sp_i_state').val("9");
-            } else if (spxlxz == "三司专项检验") {
-                $('#sp_bsb_sp_i_state').val("9");
-            } else if (spxlxz == "网络专项检验") {
-                $('#sp_bsb_sp_i_state').val("9");
-            } else {
-                $('#sp_bsb_sp_i_state').val("6");
-            }
-            return true;
-        });
-
-        // 退回操作
-        $('#back_1').click(function () {
-            $("select").attr("disabled", "disabled");
-            $("input.inputText").attr("disabled", "disabled");
-            $("#sp_bsb_sp_s_16").removeAttr("disabled");
-            $("#sp_bsb_sp_s_55").removeAttr("disabled");
-            $("#sp_bsb_sp_s_56").removeAttr("disabled");
-            $("#sp_bsb_sp_s_70").removeAttr("disabled");
-            $("#sp_bsb_sp_s_20").removeAttr("disabled");
-            if ($.trim($("#sp_bsb_sp_s_55").val()).length == 0) {
-                alert("退修原因必须填写");
-                $("#sp_bsb_sp_s_55").focus();
-                return false;
-            }
-            <% if @sp_bsb.sp_i_state == 2 %>
-            $('#sp_bsb_sp_i_state').val("1");
-            <% else %>
-            $('#sp_bsb_sp_i_state').val("3");
-            <% end %>
-            return true;
-        });
-
-        $('#admin_alter').click(function () {
-            if (!confirm('确定提交吗？')) {
-                return false;
-            }
-            if ($.trim($("#sp_bsb_sp_s_55").val()).length == 0) {
-                alert("提交该项将修改数据，但必须在退修原因处填写修改原因");
-                $("#sp_bsb_sp_s_55").focus();
-                return false;
-            }
-            $('#sp_bsb_sp_i_state').val("9");
-            return true;
-        });
-
-        /**
-         * 提交FORM
-         * */
-        $("#new_sp_bsb, form.edit_sp_bsb").submit(function () {
-            <% unless session[:certId].blank? %>
-            var source = generateCAsrc();
-            $('#sp_bsb_ca_source').val(source);
-            var signed_data = SignedData('<%= session[:certId]%>', source);
-            $('#sp_bsb_ca_sign').val(signed_data);
-            <% end %>
-
-            $("#new_sp_bsb, form.edit_sp_bsb").ajaxSubmit({
-                dataType: "json",
-                success: function (message) {
-                    if (message.status == '保存成功!') {
-                        alert(message.msg);
-                        if (SP.sp_bsb.sp_i_state != parseInt($('#sp_bsb_sp_i_state').val())) {
-                            location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
-                        }
-                    } else if (message.status == '保存出错!') {
-                        alert(message.msg);
-                    }
-                }
-            });
-            return false;
-        });
-
-        <%if session[:user_authority_1]==0&&session[:user_authority_2]==0%>
-        $("select").attr("disabled", "disabled");
-        $("input").attr("readonly", "readonly");
-        <%end%>
-
-        <%if (session[:user_name] == "admin"&&@sp_bsb["sp_i_state"].to_i == 9)%>
-        <%elsif @sp_bsb["sp_i_state"].to_i >= 4&&@sp_bsb["sp_i_state"].to_i < 10 %>
-        $("select").attr("disabled", "disabled");
-        $("input").attr("readonly", "readonly");
-        $("#sp_bsb_sp_s_55").removeAttr("readonly");
-        <%end%>
-
-        $.each(jg_data, function () {
-            $('#jg_jg_id').append($('<option/>').attr('value', this.jg_name).text(this.jg_name));
-        });
-
-        $('#jg_jg_id').change(function () {
-            index_jg = this.selectedIndex;
-            if (index_jg != -1) {
-                $("#sp_bsb_sp_s_43").val($("#jg_jg_id").val());
-                $("#sp_bsb_sp_s_49").val(jg_data[index_jg].jg_contacts);
-                $("#sp_bsb_sp_s_50").val(jg_data[index_jg].jg_tel);
-                $("#sp_bsb_sp_s_51").val(jg_data[index_jg].jg_email);
-            }
-        });
-        <%if @sp_bsb["sp_s_43"].blank? %>
-        $("#jg_jg_id").val($("#sp_bsb_sp_s_35").val())
-        <%else%>
-        $('#jg_jg_id').val('<%= @sp_bsb.sp_s_43 %>');
-        <%end%>
-        $('#jg_jg_id').trigger('change');
-
-        // 机构签章选择
-        $('.stamp-selector').click(function () {
-            var o = $(this);
-            o.find('i').toggleClass('selected');
-            return false;
-        });
+      return true;
     });
+    $('#save').click(function () {
+      <%@check=[3,16]%>
+      <%@check.each do |i|%>
+      if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
+        alert("保存时该项必须填写");
+        $("#sp_bsb_sp_s_" +<%=i%>).focus();
+        return false;
+      }
+      <%end%>
+      varDate = $("#sp_bsb_sp_d_86").val();
+      varData = varDate.split("-")
+      varDate = new Date(varData[0], varData[1] - 1, varData[2]);
+      varnow_Date = new Date();
+      var settime = varDate.getTime();
+      var nowtime = varnow_Date.getTime();
+      if (settime > nowtime) {
+        alert("填报日期不能大于今天日期");
+        $("#sp_bsb_sp_d_86").focus();
+        return false;
+      }
+      $('#sp_bsb_sp_i_state').val("1");
+      $("#sp_bsb_sp_s_70").removeAttr("disabled");
+      $("#sp_bsb_sp_s_20").removeAttr("disabled");
+      return true;
+    });
+    $('#save_and_create').click(function () {
+      <%@check=[3,16]%>
+      <%@check.each do |i|%>
+      if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
+        alert("保存时该项必须填写");
+        $("#sp_bsb_sp_s_" +<%=i%>).focus();
+        return false;
+      }
+      <%end%>
+      varDate = $("#sp_bsb_sp_d_86").val();
+      varData = varDate.split("-");
+      varDate = new Date(varData[0], varData[1] - 1, varData[2]);
+      varnow_Date = new Date();
+      var settime = varDate.getTime();
+      var nowtime = varnow_Date.getTime();
+      if (settime > nowtime) {
+        alert("填报日期不能大于今天日期");
+        $("#sp_bsb_sp_d_86").focus();
+        return false;
+      }
+
+      $('#sp_bsb_sp_i_state').val("1");
+      $("#sp_bsb_sp_s_70").removeAttr("disabled");
+      $("#sp_bsb_sp_s_20").removeAttr("disabled");
+
+      $("#new_sp_bsb, form.edit_sp_bsb").ajaxSubmit({
+        dataType: "json",
+        success: function (message) {
+          if (message.status == '保存成功!') {
+            alert("您的信息已经成功存入数据库！");
+          } else if (message.status == '保存出错!') {
+            alert(message.msg);
+          }
+          $('#sp_bsb_sp_s_16').focus();
+        }
+      });
+      return false;
+    });
+
+    /**
+     * 临时保存
+     * */
+    $('#save_1').click(function () {
+      <%@check=[3,16]%>
+      <%@check.each do |i|%>
+      if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
+        alert("保存时该项必须填写");
+        $("#sp_bsb_sp_s_" +<%=i%>).focus();
+        return false;
+      }
+      <%end%>
+      varDate = $("#sp_bsb_sp_d_86").val();
+      varData = varDate.split("-");
+      varDate = new Date(varData[0], varData[1] - 1, varData[2]);
+      varnow_Date = new Date();
+      var settime = varDate.getTime();
+      var nowtime = varnow_Date.getTime();
+      if (settime > nowtime) {
+        alert("填报日期不能大于今天日期");
+        $("#sp_bsb_sp_d_86").focus();
+        return false;
+      }
+      $("#sp_bsb_sp_s_70").removeAttr("disabled");
+      $("#sp_bsb_sp_s_20").removeAttr("disabled");
+      $('#sp_bsb_sp_i_state').val("2");
+      return true;
+    });
+
+
+    /**
+     * 检测机构审核通过
+     * */
+    $('#save_2').click(function () {
+      $("select").attr("disabled", "disabled");
+      $("input.inputText").attr("disabled", "disabled");
+      $("#sp_bsb_sp_s_16").removeAttr("disabled");
+      $("#sp_bsb_sp_s_55").removeAttr("disabled");
+      $("#sp_bsb_sp_s_56").removeAttr("disabled");
+      $("#sp_bsb_sp_s_70").removeAttr("disabled");
+      $("#sp_bsb_sp_s_20").removeAttr("disabled");
+
+      $('#sp_bsb_sp_i_state').val("5");
+
+      if (!confirm('确定提交吗？')) {
+        return false;
+      }
+
+      return true;
+    });
+
+    /**
+     * 药监局审核通过
+     * */
+    $('#save_3').click(function () {
+      if (!confirm('确定提交吗？')) {
+        return false;
+      }
+      $("select").attr("disabled", "disabled");
+      $("input.inputText").attr("disabled", "disabled");
+      $("#sp_bsb_sp_s_16").removeAttr("disabled");
+      $("#sp_bsb_sp_s_55").removeAttr("disabled");
+      $("#sp_bsb_sp_s_56").removeAttr("disabled");
+      $("#sp_bsb_sp_s_70").removeAttr("disabled");
+      $("#sp_bsb_sp_s_20").removeAttr("disabled");
+      $('#sp_bsb_sp_i_state').val("8");
+      return true;
+    });
+
+    /**
+     * 牵头单位审核通过
+     * */
+    $('#save_4').click(function () {
+      if (!confirm('确定提交吗？')) {
+        return false;
+      }
+      $("select").attr("disabled", "disabled");
+      $("input.inputText").attr("disabled", "disabled");
+      $("#sp_bsb_sp_s_16").removeAttr("disabled");
+      $("#sp_bsb_sp_s_55").removeAttr("disabled");
+      $("#sp_bsb_sp_s_56").removeAttr("disabled");
+      $("#sp_bsb_sp_s_70").removeAttr("disabled");
+      $("#sp_bsb_sp_s_20").removeAttr("disabled");
+      $('#sp_bsb_sp_i_state').val("9");
+      return true;
+    });
+
+    /**
+     * 检验机构批准
+     */
+    $('#save_5').click(function () {
+
+      <%@check=[47]%>
+      <%@check.each do |i|%>
+      if ($.trim($("#sp_bsb_sp_d_" +<%=i%>).val()).length == 0) {
+        alert("该日期项为必填项");
+        $("#sp_bsb_sp_d_" +<%=i%>).focus();
+        return false;
+      }
+      <%end%>
+      var spxlxz = $('#sp_bsb_sp_s_70').val();
+      $("select").attr("disabled", "disabled");
+      $("input.inputText").attr("disabled", "disabled");
+      $("#sp_bsb_sp_s_16").removeAttr("disabled");
+      $("#sp_bsb_sp_s_55").removeAttr("disabled");
+      $("#sp_bsb_sp_s_56").removeAttr("disabled");
+      $("#sp_bsb_sp_s_70").removeAttr("disabled");
+      $("#sp_bsb_sp_s_20").removeAttr("disabled");
+      $("#sp_bsb_sp_d_47").removeAttr("disabled").removeAttr('readonly');
+
+      if (spxlxz == "抽检监测（总局本级三司）" || spxlxz == "抽检监测（总局本级一司）" || spxlxz == "抽检监测（三司专项）") {
+        $('#sp_bsb_sp_i_state').val("9");
+      } else if (spxlxz == "三司专项检验") {
+        $('#sp_bsb_sp_i_state').val("9");
+      } else if (spxlxz == "网络专项检验") {
+        $('#sp_bsb_sp_i_state').val("9");
+      } else {
+        $('#sp_bsb_sp_i_state').val("6");
+      }
+      if (!confirm('确定提交吗？')) {
+        return false;
+      }
+      return true;
+    });
+
+    // 退回操作
+    $('#back_1').click(function () {
+      $("select").attr("disabled", "disabled");
+      $("input.inputText").attr("disabled", "disabled");
+      $("#sp_bsb_sp_s_16").removeAttr("disabled");
+      $("#sp_bsb_sp_s_55").removeAttr("disabled");
+      $("#sp_bsb_sp_s_56").removeAttr("disabled");
+      $("#sp_bsb_sp_s_70").removeAttr("disabled");
+      $("#sp_bsb_sp_s_20").removeAttr("disabled");
+      if ($.trim($("#sp_bsb_sp_s_55").val()).length == 0) {
+        alert("退修原因必须填写");
+        $("#sp_bsb_sp_s_55").focus();
+        return false;
+      }
+      <% if @sp_bsb.sp_i_state == 2 %>
+      $('#sp_bsb_sp_i_state').val("1");
+      <% else %>
+      $('#sp_bsb_sp_i_state').val("3");
+      <% end %>
+      return true;
+    });
+
+    $('#admin_alter').click(function () {
+      if (!confirm('确定提交吗？')) {
+        return false;
+      }
+      if ($.trim($("#sp_bsb_sp_s_55").val()).length == 0) {
+        alert("提交该项将修改数据，但必须在退修原因处填写修改原因");
+        $("#sp_bsb_sp_s_55").focus();
+        return false;
+      }
+      $('#sp_bsb_sp_i_state').val("9");
+      return true;
+    });
+
+    /**
+     * 提交FORM
+     * */
+    $("#new_sp_bsb, form.edit_sp_bsb").submit(function () {
+      <% unless session[:certId].blank? %>
+      var source = generateCAsrc();
+      $('#sp_bsb_ca_source').val(source);
+      var signed_data = SignedData('<%= session[:certId]%>', source);
+      $('#sp_bsb_ca_sign').val(signed_data);
+      <% end %>
+
+      $("#new_sp_bsb, form.edit_sp_bsb").ajaxSubmit({
+        dataType: "json",
+        success: function (message) {
+          if (message.status == '保存成功!') {
+            alert(message.msg);
+            if (SP.sp_bsb.sp_i_state != parseInt($('#sp_bsb_sp_i_state').val())) {
+              location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
+            }
+          } else if (message.status == '保存出错!') {
+            alert(message.msg);
+          }
+        }
+      });
+      return false;
+    });
+
+    <%if current_user.user_d_authority==0&&current_user.user_d_authority_1==0%>
+    $("select").attr("disabled", "disabled");
+    $("input").attr("readonly", "readonly");
+    <%end%>
+
+    <%if (current_user.is_admin? && @sp_bsb["sp_i_state"].to_i == 9)%>
+    <%elsif @sp_bsb["sp_i_state"].to_i >= 4&&@sp_bsb["sp_i_state"].to_i < 10 %>
+    $("select").attr("disabled", "disabled");
+    $("input").attr("readonly", "readonly");
+    $("#sp_bsb_sp_s_55").removeAttr("readonly");
+    <%end%>
+
+    $.each(jg_data, function () {
+      $('#jg_jg_id').append($('<option/>').attr('value', this.jg_name).text(this.jg_name));
+    });
+
+    $('#jg_jg_id').change(function () {
+      index_jg = this.selectedIndex;
+      if (index_jg != -1) {
+        $("#sp_bsb_sp_s_43").val($("#jg_jg_id").val());
+        $("#sp_bsb_sp_s_49").val(jg_data[index_jg].jg_contacts);
+        $("#sp_bsb_sp_s_50").val(jg_data[index_jg].jg_tel);
+        $("#sp_bsb_sp_s_51").val(jg_data[index_jg].jg_email);
+      }
+    });
+    <%if @sp_bsb["sp_s_43"].blank? %>
+    $("#jg_jg_id").val($("#sp_bsb_sp_s_35").val())
+    <%else%>
+    $('#jg_jg_id').val('<%= @sp_bsb.sp_s_43 %>');
+    <%end%>
+    $('#jg_jg_id').trigger('change');
+
+    // 机构签章选择
+    $('.stamp-selector').click(function () {
+      var o = $(this);
+      o.find('i').toggleClass('selected');
+      return false;
+    });
+
+    $('#stamp-dlg .ok').click(function () {
+      $('#stamp-dlg .modal-footer .btn').attr('disabled', true);
+      check_stamp_selector(false);
+    });
+    $('#stamp-dlg .preview').click(function () {
+      $('#stamp-dlg .modal-footer .btn').attr('disabled', true);
+      check_stamp_selector(true);
+    });
+
+    function check_stamp_selector(preview) {
+      var selected = $('#stamp-dlg .stamp-selector i.selected');
+      if (!preview && selected.length == 0) {
+        $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
+        alert('请选择签章.');
+        return false;
+      } else {
+        var stamp_nos = [];
+        $.each(selected, function (i, stamp) {
+          stamp_nos.push($(stamp).attr('data-stamp-no'));
+        });
+        if (preview) {
+          window.open('/sp_bsbs/' + SP.sp_bsb.id + '/print.html?pdf_rules=' + stamp_nos.join(','));
+          $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
+        } else {
+          if (confirm('确定报告执行该操作吗?')) {
+            window.open('/sp_bsbs/' + SP.sp_bsb.id + '/print.pdf?pdf_rules=' + stamp_nos.join(','));
+            $("#new_sp_bsb, form.edit_sp_bsb").trigger('submit');
+          } else {
+            $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
+          }
+        }
+        return false;
+      }
+      return false;
+    }
+  });
 </script>
 <style type="text/css">
-    .style1 {
-        border-collapse: collapse;
-        font-size: 9pt;
-        font-family: Calibri, sans-serif;
-        border-style: none;
-        border-color: inherit;
-        border-width: medium;
-        table-layout: fixed;
-    }
+  .style1 {
+    border-collapse: collapse;
+    font-size: 9pt;
+    font-family: Calibri, sans-serif;
+    border-style: none;
+    border-color: inherit;
+    border-width: medium;
+    table-layout: fixed;
+  }
 
-    .style1 td {
-        border: solid windowtext 1.0px;
-        padding: 0cm 5.4pt 0cm 5.4pt;
-        height: 30px;
-    }
+  .style1 td {
+    border: solid windowtext 1.0px;
+    padding: 0cm 5.4pt 0cm 5.4pt;
+    height: 30px;
+  }
 
-    .style1 th {
-        border: solid windowtext 1.0px;
-        padding: 0cm 5.4pt 0cm 5.4pt;
-        height: 30px;
-    }
+  .style1 th {
+    border: solid windowtext 1.0px;
+    padding: 0cm 5.4pt 0cm 5.4pt;
+    height: 30px;
+  }
 
-    .inputText {
-        font-size: 12px;
-        border-right-width: 0px;
-        border-left-width: 0px;
-        border-top-width: 0px;
-        border-bottom: 1px solid;
-        background-color: transparent;
+  .inputText {
+    font-size: 12px;
+    border-right-width: 0px;
+    border-left-width: 0px;
+    border-top-width: 0px;
+    border-bottom: 1px solid;
+    background-color: transparent;
 
-    }
+  }
 
-    .height600 {
-        height: 600px;
-        width: 3000px;
-        overflow-y: auto;
-        overflow-x: auto;
-    }
+  .height600 {
+    height: 600px;
+    width: 3000px;
+    overflow-y: auto;
+    overflow-x: auto;
+  }
 
-    .stamp-selector {
-        display: inline-block;
-        position: relative;
-    }
+  .stamp-selector {
+    display: inline-block;
+    position: relative;
+  }
 
-    .stamp-selector img {
-        width: 80px;
-        height: 80px;
-    }
+  .stamp-selector img {
+    width: 80px;
+    height: 80px;
+  }
 
-    .stamp-selector-list {
-        list-style: none;
-    }
+  .stamp-selector-list {
+    list-style: none;
+  }
 
-    .stamp-selector-list li {
-        display: inline-block;
-        margin-bottom: 5px;
-    }
+  .stamp-selector-list li {
+    display: inline-block;
+    margin-bottom: 5px;
+  }
 
-    .selected {
-        color: green;
-        position: absolute;
-        right: 10px !important;
-        bottom: 10px !important;
-        top: initial;
-        display: block !important;
-    }
+  #stamp-dlg i.selected {
+    color: green;
+    position: absolute;
+    right: 10px !important;
+    bottom: 30px !important;
+    top: initial;
+    display: block !important;
+  }
 </style>
 
 <!-- 用于容纳检测项的tr模板 -->
@@ -1227,13 +1278,13 @@
     </td>
     <td colspan="5" style="width:10%" align="left">
       <input class="JYXM inputText" name="spdata[][spdata_0]" style="width: 160px;" readonly="readonly">
-		</td>
+    </td>
     <td colspan="3" align="left">
       <span><input class="JYJG inputText" name="spdata[][spdata_1]" style="width: 100px;"></span>
     </td>
     <td colspan="2" align="left">
       <span><input class="JGDW inputText" name="spdata[][spdata_18]" style="width: 70px;"></span>
-		</td>
+    </td>
     <td colspan="2" align="left">
       <span><%= select_tag "spdata[][spdata_2]", '', {:style => "width: 70px;", :class => "jy_select JGPD"} %></span>
     </td>
@@ -1313,7 +1364,7 @@
         <tr>
           <td colspan="3">年销售额</td>
           <td colspan="4"><%= f.text_field :sp_s_23, :class => "inputText" ,:style => "width: 100%; height: 19px" %></td>
-          <td colspan="3">营业执照号</td>
+          <td colspan="3">社会信用代码</td>
           <td colspan="6"><%= f.text_field :sp_s_215, :class => "inputText yyzz", :style => "width: 100%; height: 19px" %></td>
           <td colspan="2">传真</td>
           <td colspan="4"><%= f.text_field :sp_s_bsfl, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
@@ -1323,15 +1374,15 @@
         <tr class="region">
           <td colspan="3" style="width: 73px">单位地址*</td>
           <td colspan="5" style="border-right:none;">
-						省：<%= f.select :sp_s_3, {}, {name: 'province'}%>
+            省：<%= f.select :sp_s_3, {}, {name: 'province'} %>
           </td>
           <td colspan="5" style="border-right:none; border-left:none">
-						市：<%= f.select :sp_s_4, {}, {name: 'city'}%>
+            市：<%= f.select :sp_s_4, {}, {name: 'city'} %>
           </td>
           <td colspan="5" style="border-left:none;">
-						县：<%= f.select :sp_s_5, {}, {name: 'lcity'}%>
+            县：<%= f.select :sp_s_5, {}, {name: 'lcity'} %>
             </span>
-					</td>
+          </td>
           <td colspan="12"><%= f.text_field :sp_s_7, :class => "inputText", placeholder: '请填写详细地址', :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
@@ -1369,7 +1420,7 @@
           <td colspan="3" rowspan="2">样品分类*</td>
           <td colspan="27">
             <span>
-            食品大类&emsp;&emsp;<%= f.select :sp_s_17, options_for_select(@a_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_17), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+              食品大类&emsp;&emsp;<%= f.select :sp_s_17, options_for_select(@a_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_17), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
               食品亚类&emsp;<%= f.select :sp_s_18, options_for_select(@b_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_18), {}, {:style => "width: 220px;"} %>
             </span>
           </td>
@@ -1377,7 +1428,7 @@
         <tr>
           <td colspan="27">
             <span>
-            食品次亚类&emsp;<%= f.select :sp_s_19, options_for_select(@c_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_19), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+              食品次亚类&emsp;<%= f.select :sp_s_19, options_for_select(@c_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_19), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
               食品细类&emsp;<%= f.select :sp_s_20, options_for_select(@d_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_20), {}, {:style => "width: 220px;"} %>
             </span>
           </td>
@@ -1439,15 +1490,15 @@
         <tr class="region2">
           <td colspan="5">标识生产企业地址*</td>
           <td colspan="5" style="border-right:none;">
-						省：<%= f.select :sp_s_202, {}, {name: 'province'}%>
+            省：<%= f.select :sp_s_202, {}, {name: 'province'} %>
           </td>
           <td colspan="5" style="border-right:none; border-left:none">
-						市：<%= f.select :sp_s_220, {}, {name: 'city'}%>
+            市：<%= f.select :sp_s_220, {}, {name: 'city'} %>
           </td>
           <td colspan="5" style="border-left:none;">
-						县：<%= f.select :sp_s_221, {}, {name: 'lcity'}%>
+            县：<%= f.select :sp_s_221, {}, {name: 'lcity'} %>
             </span>
-					</td>
+          </td>
           <td colspan="7"><%= f.text_field :sp_s_65, :class => "inputText", placeholder: '请填写详细地址', :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
@@ -1601,7 +1652,7 @@
               <td colspan="26"><%= f.text_field :sp_s_55, :class => "inputText", :style => "width: 600px;height: 19px;margin:8px" %></td>
           <% end %>
         </tr>
-        <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<=9&&(session[:user_authority_2]==1 || current_user.is_admin?) %>
+        <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<=9&&(current_user.user_d_authority_1==1 || current_user.is_admin?) %>
             <tr>
               <td colspan="4">报告分类*</td>
               <td colspan="26">
@@ -1681,16 +1732,27 @@
         <% end %>
     <% end unless @pictures.blank? %>
 
-    <% if @pad_sp_bsbs != nil %>
+    <% if @sp_bsb.cyd_file_path.present? %>
         <div style="clear:both"></div>
         <div>
-          <% if !@pad_sp_bsbs.cyd_file_path.blank? %>
-              <a class="btn btn-default btn-xs" href="/pad_sp_bsbs/<%= @pad_sp_bsbs.id %>/cyd"><i class="glyphicon glyphicon-download-alt"></i>抽样单电子版</a>
+          <% if @sp_bsb.cyd_file_path.present? %>
+              <a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @sp_bsb.id %>/cyd"><i class="glyphicon glyphicon-download-alt"></i>抽样单电子版</a>
           <% end %>
-          <% if !@pad_sp_bsbs.cyjygzs_file_path.blank? %>
-              <a class="btn btn-default btn-xs" href="/pad_sp_bsbs/<%= @pad_sp_bsbs.id %>/cyjygzs"><i class="glyphicon glyphicon-download-alt"></i>抽样检验告知书电子版</a>
+          <% if @sp_bsb.cyjygzs_file_path.present? %>
+              <a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @sp_bsb.id %>/cyjygzs"><i class="glyphicon glyphicon-download-alt"></i>抽样检验告知书电子版</a>
           <% end %>
           <hr>
+        </div>
+    <% end %>
+
+    <% if (@sp_bsb["sp_i_state"]<2)&&current_user.user_d_authority==1 %>
+        <div class="accept-ctner well well-sm">
+          <label for="">抽样单电子版：</label>
+          <%= f.file_field :cyd_file, :class => "form-control", :style => "width: 400px;" %>
+          <br>
+          <label for="">抽样检验告知书电子版：</label>
+          <%= f.file_field :cyjygzs_file, :class => "form-control", :style => "width: 400px;" %>
+          <br>
         </div>
     <% end %>
 
@@ -1699,21 +1761,17 @@
           <%= f.submit(vaule="保存并新建", options={"id" => "save_and_create", :class => "btn btn-xs btn-success"}) %>
       <% end %>
 
-      <% if (@sp_bsb["sp_i_state"]<2)&&session[:user_authority_1]==1 %>
+      <% if (@sp_bsb["sp_i_state"]<2)&&current_user.user_d_authority==1 %>
           <%= f.submit(vaule="临时保存", options={"id" => "save", :class => "btn btn-xs btn-default"}) %>
           <%= f.submit(vaule="基本信息提交入库", options={"id" => "submit1", :class => "btn btn-xs btn-primary"}) %>
       <% end %>
 
-      <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<4&&session[:user_authority_2]==1 %>
+      <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<4&&current_user.user_d_authority_1==1 %>
           <%= f.submit(vaule="临时保存", options={"id" => "save_1", :class => "btn btn-xs btn-default"}) %>
           <%= f.submit(vaule="检测数据提交入库", options={"id" => "submit2", :class => "btn btn-xs btn-success"}) %>
           <% if @sp_bsb.sp_i_state == 2 %>
               <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
           <% end %>
-      <% elsif @sp_bsb["sp_i_state"]==4&&session[:change_js]==7 %>
-          <%= f.submit(vaule="检测机构审核通过", options={"id" => "save_2", :class => "btn btn-xs btn-success"}) %>
-          <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
-      <% elsif @sp_bsb["sp_i_state"]==5&&session[:change_js]==11 %>
           <div class="modal fade" id="stamp-dlg" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
               <div class="modal-content">
@@ -1728,21 +1786,36 @@
                         <li>
                           <a href="javascript:void(0);" data-stamp-no="<%= stamp.stamp_no %>" class="stamp-selector">
                             <img src="/jg_bsb_stamps/<%= stamp.id %>/cover" class="img-thumbnail" alt="<%= stamp.stamp_no %>">
-                            <i class="hidden glyphicon glyphicon-ok"></i>
+                            <div class="text-center"><%= stamp.stamp_type_desc %></div>
+                            <i data-stamp-no="<%= stamp.stamp_no %>" class="hidden glyphicon glyphicon-ok"></i>
                           </a>
                         </li>
                     <% end %>
                   </ul>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-primary btn-sm">确定执行【检测机构批准】</button>
-                  <button type="button" class="btn btn-default btn-sm">报告预览</button>
+                  <button type="button" class="btn btn-primary btn-sm ok">确定执行【主检人审核】</button>
+                  <button type="button" class="btn btn-default btn-sm preview">报告预览</button>
                 </div>
               </div>
             </div>
           </div>
+      <% elsif @sp_bsb["sp_i_state"]==4&&session[:change_js]==7 %>
+          <%= f.submit(vaule="检测机构审核通过", options={"id" => "save_2", :class => "btn btn-xs btn-success"}) %>
+          <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
+          <% if @jg_bsb.present? and @jg_bsb.jg_bsb_stamps.count > 0 %>
+              <a href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf" data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default">检验报告</a>
+          <% else %>
+              <a href="/sp_bsbs/<%= @sp_bsb.id %>/print" data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default">检验报告</a>
+          <% end %>
+      <% elsif @sp_bsb["sp_i_state"]==5&&session[:change_js]==11 %>
           <%= f.submit(vaule="检测机构批准", options={"id" => "save_5", :class => "btn btn-xs btn-success"}) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
+          <% if @jg_bsb.present? and @jg_bsb.jg_bsb_stamps.count > 0 %>
+              <a href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf" data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default">检验报告</a>
+          <% else %>
+              <a href="/sp_bsbs/<%= @sp_bsb.id %>/print" data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default">检验报告</a>
+          <% end %>
       <% elsif @sp_bsb["sp_i_state"]==6&&session[:change_js]==2 %>
           <%= f.submit(vaule="药监局审核通过", options={"id" => "save_3", :class => "btn btn-xs btn-success"}) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>

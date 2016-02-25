@@ -3,11 +3,11 @@ class SpBsb < ActiveRecord::Base
   include ApplicationHelper
 
   trigger.after(:insert) do
-    "INSERT INTO tmp_sp_bsbs(id, sp_i_state, sp_s_16, sp_s_3, sp_s_202, sp_s_14, sp_s_43, sp_s_2_1, sp_s_35, sp_s_64, sp_s_1, sp_s_17, sp_s_20, sp_s_85, created_at, updated_at, sp_s_214, sp_s_71, fail_report_path, tname, sp_s_18, sp_s_70, sp_s_215, sp_s_68, sp_s_13, sp_s_27, czb_reverted_flag) values(NEW.id, NEW.sp_i_state, NEW.sp_s_16, NEW.sp_s_3, NEW.sp_s_202, NEW.sp_s_14, NEW.sp_s_43, NEW.sp_s_2_1, NEW.sp_s_35, NEW.sp_s_64, NEW.sp_s_1, NEW.sp_s_17, NEW.sp_s_20, NEW.sp_s_85, NEW.created_at, NEW.updated_at, NEW.sp_s_214, NEW.sp_s_71, NEW.fail_report_path, NEW.tname, NEW.sp_s_18, NEW.sp_s_70, NEW.sp_s_215, NEW.sp_s_68, NEW.sp_s_13, NEW.sp_s_27, NEW.czb_reverted_flag)"
+    "INSERT INTO tmp_sp_bsbs(sp_s_reason, id, sp_i_state, sp_s_16, sp_s_3, sp_s_202, sp_s_14, sp_s_43, sp_s_2_1, sp_s_35, sp_s_64, sp_s_1, sp_s_17, sp_s_20, sp_s_85, created_at, updated_at, sp_s_214, sp_s_71, fail_report_path, tname, user_id, uid, sp_s_18, sp_s_70, sp_s_215, sp_s_68, sp_s_13, sp_s_27, czb_reverted_flag) values(NEW.sp_s_reason, NEW.id, NEW.sp_i_state, NEW.sp_s_16, NEW.sp_s_3, NEW.sp_s_202, NEW.sp_s_14, NEW.sp_s_43, NEW.sp_s_2_1, NEW.sp_s_35, NEW.sp_s_64, NEW.sp_s_1, NEW.sp_s_17, NEW.sp_s_20, NEW.sp_s_85, NEW.created_at, NEW.updated_at, NEW.sp_s_214, NEW.sp_s_71, NEW.fail_report_path, NEW.tname, NEW.user_id, NEW.uid, NEW.sp_s_18, NEW.sp_s_70, NEW.sp_s_215, NEW.sp_s_68, NEW.sp_s_13, NEW.sp_s_27, NEW.czb_reverted_flag)"
   end
 
   trigger.after(:update).of(:updated_at, :sp_i_state) do
-    "UPDATE tmp_sp_bsbs SET sp_i_state=NEW.sp_i_state, sp_s_16=NEW.sp_s_16, sp_s_3=NEW.sp_s_3, sp_s_202=NEW.sp_s_202, sp_s_14=NEW.sp_s_14, sp_s_43=NEW.sp_s_43, sp_s_2_1=NEW.sp_s_2_1, sp_s_35=NEW.sp_s_35, sp_s_64=NEW.sp_s_64, sp_s_1=NEW.sp_s_1, sp_s_17=NEW.sp_s_17, sp_s_20=NEW.sp_s_20, sp_s_85=NEW.sp_s_85, created_at=NEW.created_at, updated_at=NEW.updated_at, sp_s_214=NEW.sp_s_214, sp_s_71=NEW.sp_s_71, fail_report_path=NEW.fail_report_path, tname=NEW.tname, sp_s_18=NEW.sp_s_18, sp_s_70=NEW.sp_s_70, sp_s_215=NEW.sp_s_215, sp_s_68=NEW.sp_s_68, sp_s_13=NEW.sp_s_13, sp_s_27=NEW.sp_s_27, czb_reverted_flag=NEW.czb_reverted_flag where id=NEW.id"
+    "UPDATE tmp_sp_bsbs SET sp_s_reason=NEW.sp_s_reason, sp_i_state=NEW.sp_i_state, sp_s_16=NEW.sp_s_16, sp_s_3=NEW.sp_s_3, sp_s_202=NEW.sp_s_202, sp_s_14=NEW.sp_s_14, sp_s_43=NEW.sp_s_43, sp_s_2_1=NEW.sp_s_2_1, sp_s_35=NEW.sp_s_35, sp_s_64=NEW.sp_s_64, sp_s_1=NEW.sp_s_1, sp_s_17=NEW.sp_s_17, sp_s_20=NEW.sp_s_20, sp_s_85=NEW.sp_s_85, created_at=NEW.created_at, updated_at=NEW.updated_at, sp_s_214=NEW.sp_s_214, sp_s_71=NEW.sp_s_71, fail_report_path=NEW.fail_report_path, tname=NEW.tname, user_id=NEW.user_id, uid=NEW.uid, sp_s_18=NEW.sp_s_18, sp_s_70=NEW.sp_s_70, sp_s_215=NEW.sp_s_215, sp_s_68=NEW.sp_s_68, sp_s_13=NEW.sp_s_13, sp_s_27=NEW.sp_s_27, czb_reverted_flag=NEW.czb_reverted_flag where id=NEW.id"
   end
 
   trigger.after(:delete) do
@@ -18,8 +18,8 @@ class SpBsb < ActiveRecord::Base
   validates_presence_of :sp_s_16, message: '请提供抽检单编号'
   validates_uniqueness_of :sp_s_16, message: '该单号已存在', allow_nil: true
 
-	before_save :check_bsb_validity
-	after_update :callback_when_updated
+  before_save :check_bsb_validity
+  after_update :callback_when_updated
 
   # 核查处置完成情况
   def status_desc
@@ -156,24 +156,24 @@ class SpBsb < ActiveRecord::Base
       state = 6
     end
     @logfive = SpLog.where(sp_bsb_id: self.id, sp_i_state: 5).order('id asc').last
-		if @logfive.nil?
-			return "<font color='#999'>未记录</font>".html_safe
-		else
-			@log = SpLog.where("sp_bsb_id = ? and sp_i_state = ? and id > ?",self.id, state, @logfive.id).order('id asc').first
-			if @log.nil?
-				@log = SpLog.where(sp_bsb_id: self.id, sp_i_state: 8).order('sp_i_state asc').last
-			end
-			unless @log.nil?
-				@user = User.find(@log.user_id)
-				if @user.user_sign.blank?
-					return "-#{@user.tname}-".html_safe
-				else
-					return "<img src='data:image/png;base64,#{@user.user_sign}'>".html_safe
-				end
-			else
-				return "<font color='#999'>未记录</font>".html_safe
-			end
-		end
+    if @logfive.nil?
+      return "<font color='#999'>未记录</font>".html_safe
+    else
+      @log = SpLog.where("sp_bsb_id = ? and sp_i_state = ? and id > ?", self.id, state, @logfive.id).order('id asc').first
+      if @log.nil?
+        @log = SpLog.where(sp_bsb_id: self.id, sp_i_state: 8).order('sp_i_state asc').last
+      end
+      unless @log.nil?
+        @user = User.find(@log.user_id)
+        if @user.user_sign.blank?
+          return "-#{@user.tname}-".html_safe
+        else
+          return "<img src='data:image/png;base64,#{@user.user_sign}'>".html_safe
+        end
+      else
+        return "<font color='#999'>未记录</font>".html_safe
+      end
+    end
   end
 
   # 延长15天异议登记时间
@@ -235,53 +235,56 @@ class SpBsb < ActiveRecord::Base
   # 2. 同一生产企业(sp_s_13: 生产号)，无论环节，不同产品，最多上传5个任务；
   # 3. 同一生产企业，同一样品名称，同一生产批次，不能下达第二次；
   def check_bsb_validity
-    return true #if self.sp_s_215.blank? or self.sp_s_13.blank? or %w{抽检监测（总局本级一司） 抽检监测（总局本级三司） 抽检监测（三司专项）}.include?(self.sp_s_70)
-		return true if self.sp_s_reason.present?
-		if self.changes[:sp_i_state].present? and [0, 1].include?(self.changes['sp_i_state'][0]) and self.changes['sp_i_state'][1] == 2
-			now = Time.now
+    #return true #if self.sp_s_215.blank? or self.sp_s_13.blank? or %w{抽检监测（总局本级一司） 抽检监测（总局本级三司） 抽检监测（三司专项）}.include?(self.sp_s_70)
+    return true if self.sp_s_215.blank? or self.sp_s_13.blank? or self.sp_s_64.blank?
+    return true if self.sp_s_reason.present?
+    if self.changes[:sp_i_state].present? and [0, 1].include?(self.changes['sp_i_state'][0]) and self.changes['sp_i_state'][1] == 2
+      now = Time.now
 
-			# 条件: 1
-			if !%w{餐饮 生产}.include?(self.sp_s_68.strip) or !%w{/ 、 - \ 无}.include?(self.sp_s_215.strip)
-			sp_bsb_count = TmpSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)", self.sp_s_215, (now - 60.days), now).count
-			pad_sp_bsb_count = PadSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (1, 16, 18)", self.sp_s_215, (now - 60.days), now).count
-			if sp_bsb_count + pad_sp_bsb_count >= 20
-				errors.add(:base, '同一被抽样单位，同一个抽样周期内，流通环节，只能下达10批')
-				return false
-			end
+      # 条件: 1
+      if !%w{餐饮 生产}.include?(self.sp_s_68.strip) or !%w{/ 、 - \ 无}.include?(self.sp_s_215.strip)
+        pad_sp_bsbs = PadSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (1, 16, 18)", self.sp_s_215, (now - 60.days), now)
+
+        sp_bsb_count = TmpSpBsb.where("sp_s_16 NOT IN (?) AND sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_215, (now - 60.days), now).count
+        if sp_bsb_count + pad_sp_bsbs.count >= 10
+          errors.add(:base, '同一被抽样单位，同一个抽样周期内，流通环节，只能下达10批')
+          return false
+        end
       end
 
-			# 条件: 2
-			if !%w{/ 、 - \ 无}.include?(self.sp_s_13.strip)
-				sp_bsb_count = TmpSpBsb.where('sp_s_13 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', self.sp_s_13, (now - 60.days), now).count
-				pad_sp_bsb_count = PadSpBsb.where('sp_s_13 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (1, 16, 18)', self.sp_s_13, (now - 60.days), now).count
-				if sp_bsb_count + pad_sp_bsb_count >= 10
-					errors.add(:base, '同一生产企业，同一个抽样周期内, 无论环节，不同产品，最多下达5批')
-					return false
-				end
-			end
+      # 条件: 2
+      unless %w{/ 、 - \ 无}.include?(self.sp_s_13)
+        pad_sp_bsbs = PadSpBsb.where('sp_s_13 = ? AND sp_s_64 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (1, 16, 18)', self.sp_s_13, self.sp_s_64, (now - 60.days), now)
 
-			# 条件: 3
-		if !%w{/ 、 - \ 无}.include?(self.sp_s_13.strip)
-			sp_bsb_count = TmpSpBsb.where('sp_s_14 = ? AND sp_s_13 = ? AND sp_s_27 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', self.sp_s_14, self.sp_s_13, self.sp_s_27, (now - 60.days), now).count
-			pad_sp_bsb_count = PadSpBsb.where('sp_s_14 = ? AND sp_s_13 = ? AND sp_s_27 = ? AND created_at BETWEEN ? AND ? AND sp_i_state not in (1, 16, 18)', self.sp_s_14, self.sp_s_13, self.sp_s_27, (now - 60.days), now).count
+        sp_bsb_count = TmpSpBsb.where('sp_s_16 NOT IN (?) AND sp_s_13 = ? AND sp_s_64 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_13, self.sp_s_64, (now - 60.days), now).count
+        if sp_bsb_count + pad_sp_bsbs.count >= 5
+          errors.add(:base, '同一生产企业，同一个抽样周期内, 无论环节，不同产品，最多下达5批')
+          return false
+        end
+      end
 
-			if sp_bsb_count + pad_sp_bsb_count >= 3
-				errors.add(:base, '同一生产企业，同一个抽样周期内, 同一样品名称，同一生产批次，不能下达第2批')
-				return false
-			end
-		end
-		end
+      # 条件: 3
+      unless %w{/ 、 - \ 无}.include?(self.sp_s_13)
+        pad_sp_bsbs = PadSpBsb.where('sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_s_27 = ? AND created_at BETWEEN ? AND ? AND sp_i_state not in (1, 16, 18)', self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_s_27, (now - 60.days), now)
+        sp_bsb_count = TmpSpBsb.where('sp_s_16 NOT IN (?) AND sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_s_27 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_s_27, (now - 60.days), now).count
+
+        if sp_bsb_count + pad_sp_bsbs.count >= 2
+          errors.add(:base, '同一生产企业，同一个抽样周期内, 同一样品名称，同一生产批次，不能下达第2批')
+          return false
+        end
+      end
+    end
   end
 
-	def callback_when_updated
-		if self.via_api
-			pool = ApiExchangePool.where(sp_s_16: self.sp_s_16, application_id: self.application_id, sp_bsb_id: self.id, fetched: false).last
-			if pool.present?
-				pool.attributes_changed = [pool.attributes_changed, self.changed_attributes.keys.join(',')].join(',')
-				pool.save
-			else
-				ApiExchangePool.create(sp_s_16: self.sp_s_16, application_id: self.application_id, sp_bsb_id: self.id, attributes_changed: self.changed_attributes.keys.join(','))
-			end
-		end
-	end
+  def callback_when_updated
+    if self.via_api
+      pool = ApiExchangePool.where(sp_s_16: self.sp_s_16, application_id: self.application_id, sp_bsb_id: self.id, fetched: false).last
+      if pool.present?
+        pool.attributes_changed = [pool.attributes_changed, self.changed_attributes.keys.join(',')].join(',')
+        pool.save
+      else
+        ApiExchangePool.create(sp_s_16: self.sp_s_16, application_id: self.application_id, sp_bsb_id: self.id, attributes_changed: self.changed_attributes.keys.join(','))
+      end
+    end
+  end
 end

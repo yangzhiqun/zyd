@@ -6,18 +6,18 @@ class BaosongB < ActiveRecord::Base
   validates_presence_of :name, :message => "名称不可为空"
   validates_presence_of :file, :message => "Excel源文件不可为空"
 
-	belongs_to :baosong_a
+  belongs_to :baosong_a
 
   def a_categories
     ACategory.where(identifier: self.identifier)
   end
 
-	module CategoryType
-		A = 0
-		B = 1
-		C = 2
-		D = 3
-	end
+  module CategoryType
+    A = 0
+    B = 1
+    C = 2
+    D = 3
+  end
 
   def file
     @file
@@ -56,7 +56,7 @@ class BaosongB < ActiveRecord::Base
 
         # 判定依据
         @PDYJ = row[12].to_s.delete("\n").strip unless row[12].nil?
-        # 排出非合并项
+        # 排除非合并项
         # @PDYJ = nil if (row[12].nil? and row.format(12).top != :none)
 
         # 标准方法检出限
@@ -92,18 +92,38 @@ class BaosongB < ActiveRecord::Base
         @lines.push({A_category: @A_category, B_category: @B_category, C_category: @C_category, D_category: @D_category, JYXM: @JYXM, JGDW: @JGDW, JYYJ: @JYYJ, PDYJ: @PDYJ, BZFFJCX: @BZFFJCX, BZFFJCXDW: @BZFFJCXDW, BZZXYXX: @BZZXYXX, BZZXYXXDW: @BZZXYXXDW, BZZDYXX: @BZZDYXX, BZZDYXXDW: @BZZDYXXDW})
       end
 
-			self.generate_identifier
+      self.generate_identifier
 
       ActiveRecord::Base.transaction do
-				CheckItem.where(identifier: self.identifier).update_all({ JGDW: nil, JYYJ: nil, PDYJ: nil, BZFFJCX: nil, BZFFJCXDW: nil, BZZXYXX: nil, BZZXYXXDW: nil, BZZDYXX: nil, BZZDYXXDW: nil })
+        CheckItem.where(identifier: self.identifier).update_all({JGDW: nil, JYYJ: nil, PDYJ: nil, BZFFJCX: nil, BZFFJCXDW: nil, BZZXYXX: nil, BZZXYXXDW: nil, BZZDYXX: nil, BZZDYXXDW: nil})
+
+        category_ids = {
+            a_category_ids: [],
+            b_category_ids: [],
+            c_category_ids: [],
+            d_category_ids: [],
+            item_ids: []
+        }
 
         @lines.each do |line|
-          a_category = ACategory.where(name: line[:A_category], identifier: self.identifier).first_or_create
-          b_category = BCategory.where(name: line[:B_category], identifier: self.identifier, a_category_id: a_category.id).first_or_create
-          c_category = CCategory.where(name: line[:C_category], identifier: self.identifier, a_category_id: a_category.id, b_category_id: b_category.id).first_or_create
-          d_category = DCategory.where(name: line[:D_category], identifier: self.identifier, a_category_id: a_category.id, b_category_id: b_category.id, c_category_id: c_category.id).first_or_create
+          a_category = ACategory.with_deleted.where(name: line[:A_category], identifier: self.identifier).first_or_create
+          a_category.restore if a_category.deleted?
+          category_ids[:a_category_ids].push(a_category.id)
 
-          item = CheckItem.where(identifier: self.identifier, a_category_id: a_category.id, b_category_id: b_category.id, c_category_id: c_category.id, d_category_id: d_category.id, name: line[:JYXM]).first_or_create
+          b_category = BCategory.with_deleted.where(name: line[:B_category], identifier: self.identifier, a_category_id: a_category.id).first_or_create
+          b_category.restore if b_category.deleted?
+          category_ids[:b_category_ids].push(b_category.id)
+
+          c_category = CCategory.with_deleted.where(name: line[:C_category], identifier: self.identifier, a_category_id: a_category.id, b_category_id: b_category.id).first_or_create
+          c_category.restore if c_category.deleted?
+          category_ids[:c_category_ids].push(c_category.id)
+
+          d_category = DCategory.with_deleted.where(name: line[:D_category], identifier: self.identifier, a_category_id: a_category.id, b_category_id: b_category.id, c_category_id: c_category.id).first_or_create
+          d_category.restore if d_category.deleted?
+          category_ids[:d_category_ids].push(d_category.id)
+
+          item = CheckItem.with_deleted.where(identifier: self.identifier, a_category_id: a_category.id, b_category_id: b_category.id, c_category_id: c_category.id, d_category_id: d_category.id, name: line[:JYXM]).first_or_create
+          item.restore if item.deleted?
 
           item.JGDW = (item.JGDW || "").split("#").push(line[:JGDW]).uniq.join("#") unless line[:JGDW].blank?
           item.JYYJ = (item.JYYJ || "").split("#").push(line[:JYYJ]).uniq.join("#") unless line[:JYYJ].blank?
@@ -117,6 +137,14 @@ class BaosongB < ActiveRecord::Base
           item.BZZDYXXDW = (item.BZZDYXXDW || "").split("#").push(line[:BZZDYXXDW]).uniq.join("#") unless line[:BZZDYXXDW].blank?
 
           item.save
+          category_ids[:item_ids].push(item.id)
+
+          ACategory.where('id NOT IN (?) AND identifier = ?', category_ids[:a_category_ids], self.identifier).destroy_all
+          BCategory.where('id NOT IN (?) AND identifier = ?', category_ids[:b_category_ids], self.identifier).destroy_all
+          CCategory.where('id NOT IN (?) AND identifier = ?', category_ids[:c_category_ids], self.identifier).destroy_all
+          DCategory.where('id NOT IN (?) AND identifier = ?', category_ids[:d_category_ids], self.identifier).destroy_all
+          CheckItem.where('id NOT IN (?) AND identifier = ?', category_ids[:item_ids], self.identifier).destroy_all
+
         end
       end
     end
@@ -124,6 +152,6 @@ class BaosongB < ActiveRecord::Base
 
   def generate_identifier
     #self.identifier = "#{rand(1000000)}#{Time.now.to_i}#{rand(1000000)}".to_i.to_s(16)
-		self.identifier = Digest::SHA1.hexdigest(self.baosong_a.name + self.name)
+    self.identifier = Digest::SHA1.hexdigest(self.baosong_a.name + self.name)
   end
 end

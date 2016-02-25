@@ -1,124 +1,124 @@
 <style type="text/css">
-    ul.data-tabs li {
-        display: inline-block;
-    }
+  ul.data-tabs li {
+    display: inline-block;
+  }
 
-    ul.data-tabs {
-        border-bottom: 1px solid #999;
-        padding-left: 15px;
-        position: relative;
-    }
+  ul.data-tabs {
+    border-bottom: 1px solid #999;
+    padding-left: 15px;
+    position: relative;
+  }
 
-    ul.data-tabs a {
-        display: inline-block;
-        color: black;
-        text-decoration: none;
-        border: 1px solid #999;
-        padding: 5px 10px;
-        position: relative;
-        bottom: -1px;
-    }
+  ul.data-tabs a {
+    display: inline-block;
+    color: black;
+    text-decoration: none;
+    border: 1px solid #999;
+    padding: 5px 10px;
+    position: relative;
+    bottom: -1px;
+  }
 
-    ul.data-tabs a.active {
-        border-bottom: 1px solid #FFFFFF;
-    }
+  ul.data-tabs a.active {
+    border-bottom: 1px solid #FFFFFF;
+  }
 
-    .cjbh .label {
-        margin: 5px auto;
-        display: block;
-    }
+  .cjbh .label {
+    margin: 5px auto;
+    display: block;
+  }
 </style>
 <script type="text/javascript">
-    $(function () {
-        $('body').delegate('#select-all', 'click', function () {
-            var o = $(this);
-            if (o.is(':checked')) {
-                $('.yycz-list tbody input[type="checkbox"]').attr('checked', 'checked');
-            } else {
-                $('.yycz-list tbody input[type="checkbox"]').removeAttr('checked');
-            }
-        });
-        $('#assign-task').click(function () {
-            var yycz_ids = [];
-            $.each($('.yycz-list tbody .checkbox:checked'), function () {
-                yycz_ids.push($(this).attr('data-id'));
-            });
-            if (yycz_ids.length == 0 || $('.task-info #czbm').val() == '' || $('.task-info #czfzr').val() == '') {
-                alert('请选择、填写完整信息');
-            } else {
-                var ids_str = yycz_ids.join(',');
-                $.post('/wtyp_assign_task.json', {
-                    ids: ids_str,
-                    czbm: $('.task-info #czbm').val(),
-                    czfzr: $('.task-info #czfzr').val()
-                }, function (data) {
-                    if (data.status == 'OK') {
-                        location.reload();
-                    } else {
-                        alert("错误！ERR: " + data.msg);
-                    }
-                });
-            }
-            return false;
-        });
-        $("#czbm").change(function () {
-            var v = $(this).val();
-            $.get("/users_by_jcjg.json", {jcjg: v, model: "wtyp_czb"}, function (data) {
-                console.log(data);
-                if (data.status == 'OK') {
-                    $('#czfzr').empty();
-                    $.each(data.msg, function (i, user) {
-                        $('<option value="' + user.id + '">' + user.tname + '</option>').appendTo($('#czfzr'));
-                    });
-                } else {
-                    alert("获取用户失败");
-                }
-            }, 'json');
-        }).trigger("change");
-
-        // 退回
-        $("#revert").click(function () {
-            var thyy = $('#thyy').val();
-
-            var yycz_ids = [];
-            $.each($('.yycz-list tbody .checkbox:checked'), function () {
-                yycz_ids.push($(this).attr('data-id'));
-            });
-
-            if (yycz_ids.length == 0) {
-                alert("请选择要退回的项");
-                return false;
-            }
-
-            if (thyy == '') {
-                alert('请填写退回原因');
-            } else {
-                $.post("/wtyp_czb_revert.json", {
-                    ids: yycz_ids.join(','),
-                    thyy: thyy,
-                    is_ap: <%= params[:state].to_i == 0 %>
-                }, function (data) {
-                    if (data.status == 'OK') {
-                        alert("退回成功!");
-                        location.reload();
-                    } else {
-                        alert("退回失败！ERR: " + data.msg);
-                    }
-                }, 'json');
-            }
-        });
-
-        $('.yycz-list tbody .dopreview').click(function () {
-            var o = $(this);
-            $('#preview').attr("src", "/wtyp_czbs/" + o.attr('data-id') + "/edit?preview=true");
-        });
-
-        $('.yycz-list tbody .dopreview:first').trigger("click");
-
-        $("#preview").load(function () {
-            $(this).height($(this).contents().find("body").height());
-        });
+  $(function () {
+    $('body').delegate('#select-all', 'click', function () {
+      var o = $(this);
+      if (o.is(':checked')) {
+        $('.yycz-list tbody input[type="checkbox"]').attr('checked', 'checked');
+      } else {
+        $('.yycz-list tbody input[type="checkbox"]').removeAttr('checked');
+      }
     });
+    $('#assign-task').click(function () {
+      var yycz_ids = [];
+      $.each($('.yycz-list tbody .checkbox:checked'), function () {
+        yycz_ids.push($(this).attr('data-id'));
+      });
+      if (yycz_ids.length == 0 || $('.task-info #czbm').val() == '' || $('.task-info #czfzr').val() == '') {
+        alert('请选择、填写完整信息');
+      } else {
+        var ids_str = yycz_ids.join(',');
+        $.post('/wtyp_assign_task.json', {
+          ids: ids_str,
+          czbm: $('.task-info #czbm').val(),
+          czfzr: $('.task-info #czfzr').val()
+        }, function (data) {
+          if (data.status == 'OK') {
+            location.reload();
+          } else {
+            alert("错误！ERR: " + data.msg);
+          }
+        });
+      }
+      return false;
+    });
+    $("#czbm").change(function () {
+      var v = $(this).val();
+      $.get("/users_by_jcjg.json", {jcjg: v, model: "wtyp_czb"}, function (data) {
+        console.log(data);
+        if (data.status == 'OK') {
+          $('#czfzr').empty();
+          $.each(data.msg, function (i, user) {
+            $('<option value="' + user.id + '">' + user.tname + '</option>').appendTo($('#czfzr'));
+          });
+        } else {
+          alert("获取用户失败");
+        }
+      }, 'json');
+    }).trigger("change");
+
+    // 退回
+    $("#revert").click(function () {
+      var thyy = $('#thyy').val();
+
+      var yycz_ids = [];
+      $.each($('.yycz-list tbody .checkbox:checked'), function () {
+        yycz_ids.push($(this).attr('data-id'));
+      });
+
+      if (yycz_ids.length == 0) {
+        alert("请选择要退回的项");
+        return false;
+      }
+
+      if (thyy == '') {
+        alert('请填写退回原因');
+      } else {
+        $.post("/wtyp_czb_revert.json", {
+          ids: yycz_ids.join(','),
+          thyy: thyy,
+          is_ap: <%= params[:state].to_i == 0 %>
+        }, function (data) {
+          if (data.status == 'OK') {
+            alert("退回成功!");
+            location.reload();
+          } else {
+            alert("退回失败！ERR: " + data.msg);
+          }
+        }, 'json');
+      }
+    });
+
+    $('.yycz-list tbody .dopreview').click(function () {
+      var o = $(this);
+      $('#preview').attr("src", "/wtyp_czbs/" + o.attr('data-id') + "/edit?preview=true");
+    });
+
+    $('.yycz-list tbody .dopreview:first').trigger("click");
+
+    $("#preview").load(function () {
+      $(this).height($(this).contents().find("body").height());
+    });
+  });
 </script>
 
 <% if params[:state].to_i == 0 %>

@@ -43,7 +43,7 @@
           <td>
             <%= link_to "查看", bs, :class => "btn btn-xs btn-primary" %>
             <%= link_to "编辑", "/baosong_bs/#{bs.id}/edit", :class => "btn btn-xs btn-primary" %>
-            <%= link_to '删除', bs, :class => "btn btn-xs btn-danger", method: :delete, data: { confirm: '确定删除吗？' } %>
+            <%= link_to '删除', bs, :class => "btn btn-xs btn-danger", method: :delete, data: {confirm: '确定删除吗？此操作相当危险,可能导致报送表取值错误,删除前请确认承受风险的能力.'} %>
           </td>
         </tr>
         <% end %>

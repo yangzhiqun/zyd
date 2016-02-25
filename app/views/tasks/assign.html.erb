@@ -141,7 +141,7 @@
                     if (data.status == 'OK') {
                         $.each(data.companies, function () {
                             var o = $('<option/>').attr('value', this.id).text(this.title + ", 30天内抽样" + this.count + "次");
-                            if (this.count >= 5 && this.sp_s_68 == '流通') o.attr('disabled', 'disabled');
+//                            if (this.count >= 5 && this.sp_s_68 == '流通') o.attr('disabled', 'disabled');
                             o.appendTo($('#company-id'));
                         });
                     }

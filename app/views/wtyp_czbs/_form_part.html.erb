@@ -13,7 +13,7 @@
     <br><p class="bg-danger"><b>退回历史：</b><br><%= czb.thyy.html_safe %></p><br>
     <% end %>
 
-    <% if (current_user.hcz_admin == 0 and czb.current_state != ::WtypCzb::State::PASSED)%>
+    <% if current_user.hcz_admin == 0 and czb.current_state != ::WtypCzb::State::PASSED %>
 		<!-- 条件性显示这些隐藏字段 -->
     <input type="hidden" name="parts[][cjbh]" value="<%= czb.cjbh %>">
     <input type="hidden" name="parts[][ypmc]" value="<%= czb.ypmc %>">
@@ -203,7 +203,9 @@
         </td>
        </tr>
        <tr>
-        <th colspan="4" style="vertical-align: middle;"><div style="width:30px; margin-left:auto; margin-right:auto;">排查整改复查</th>
+         <th colspan="4" style="vertical-align: middle;">
+           <div style="width:30px; margin-left:auto; margin-right:auto;">排查整改复查</div>
+         </th>
         <td colspan="26" class="form-inline" style="line-height: 40px; position: relative;">
           <% if is_fill_enabled?(czb) and !czb.part_submit_flag2 %>
             召回<input type="text" name="parts[][cpkzqk_16]" class="form-control input-sm" style="width: 50px;" value="<%= czb.cpkzqk_16 %>">

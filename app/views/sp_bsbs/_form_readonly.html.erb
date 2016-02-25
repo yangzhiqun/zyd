@@ -676,12 +676,12 @@
             return false;
         });
 
-        <%if session[:user_authority_1]==0&&session[:user_authority_2]==0%>
+        <%if current_user.user_d_authority==0&&current_user.user_d_authority_1==0%>
         $("select").attr("disabled", "disabled");
         $("input").attr("readonly", "readonly");
         <%end%>
 
-        <%if (session[:user_name] == "admin"&&@sp_bsb["sp_i_state"].to_i == 9)%>
+        <%if (current_user.is_admin? && @sp_bsb["sp_i_state"].to_i == 9)%>
         <%elsif @sp_bsb["sp_i_state"].to_i >= 4&&@sp_bsb["sp_i_state"].to_i < 10 %>
         $("select").attr("disabled", "disabled");
         $("input").attr("readonly", "readonly");
@@ -874,20 +874,17 @@
           <td colspan="5"><%= @sp_bsb.sp_s_201 %></td>
         </tr>
         <tr id="region">
-          <td colspan="3" style="width: 73px">所在地区*</td>
-          <td colspan="9" style="border-right:none;">[<%= @sp_bsb.sp_s_3 %>]省(市、自治区)</td>
-          <td colspan="9" style="border-right:none; border-left:none">[<%= @sp_bsb.sp_s_4 %>]地区(市、州、盟)</td>
-          <td colspan="9" style="border-left:none;">[<%= @sp_bsb.sp_s_5 %>]县(市、区)</td>
+          <td colspan="3" style="width: 73px">单位地址*</td>
+          <td colspan="5" style="border-right:none;">省：<%= @sp_bsb.sp_s_3 %></td>
+          <td colspan="5" style="border-right:none; border-left:none">市：<%= @sp_bsb.sp_s_4 %></td>
+          <td colspan="5" style="border-left:none;">区：<%= @sp_bsb.sp_s_5 %></td>
+          <td colspan="12"><%= @sp_bsb.sp_s_7 %></td>
         </tr>
         <tr>
-          <td colspan="3">单位地址*</td>
-          <td colspan="19"><%= @sp_bsb.sp_s_7 %></td>
           <td colspan="3"><p style="width: 43px">邮编</p></td>
-          <td colspan="5"><%= @sp_bsb.sp_s_10 %></td>
-        </tr>
-        <tr>
+          <td colspan="4"><%= @sp_bsb.sp_s_10 %></td>
           <td colspan="7">被抽样单位法人（负责人）*</td>
-          <td colspan="11"><%= @sp_bsb.sp_s_8 %></td>
+          <td colspan="4"><%= @sp_bsb.sp_s_8 %></td>
           <td colspan="3">电话</td>
           <td colspan="9"><%= @sp_bsb.sp_s_9 %></td>
         </tr>
@@ -906,8 +903,8 @@
           <td colspan="3">样品属性</td>
           <td colspan="5"><%= @sp_bsb.sp_s_203 %></td>
           <td colspan="3">抽样数量*</td>
-          <td colspan="3"><%= @sp_bsb.sp_n_15 %></td>
-          <td colspan="3">单位*</td>
+          <td colspan="4"><%= @sp_bsb.sp_n_15 %></td>
+          <td colspan="2">单位*</td>
           <td colspan="3"><%= @sp_bsb.sp_s_6 %></td>
         </tr>
         <tr>
@@ -919,7 +916,7 @@
           <td colspan="27">食品大类&emsp;&emsp;<%= @sp_bsb.sp_s_17 %><br>食品亚类&emsp;&emsp;<%= @sp_bsb.sp_s_18 %></td>
         </tr>
         <tr>
-          <td colspan="27">食品次亚类&emsp;<%= @sp_bsb.sp_s_19 %><br>食品细类&emsp;<%= @sp_bsb.sp_s_20 %></td>
+          <td colspan="27">食品次亚类&emsp;<%= @sp_bsb.sp_s_19 %><br>食品细类&emsp;&emsp;<%= @sp_bsb.sp_s_20 %></td>
         </tr>
         <tr>
           <td colspan="3">样品形态*</td>
@@ -932,12 +929,12 @@
         <tr>
           <td colspan="3">样品来源*</td>
           <td colspan="4"><%= @sp_bsb.sp_s_21 %></td>
-          <td colspan="5">生产/加工/购进日期</td>
-          <td colspan="4"><%= @sp_bsb.sp_d_22 %></td>
-          <td colspan="3">抽样方式*</td>
-          <td colspan="4"><%= @sp_bsb.sp_s_24 %></td>
-          <td colspan="3">抽样工具</td>
-          <td colspan="4"><%= @sp_bsb.sp_s_25 %></td>
+          <!--<td colspan="5">生产/加工/购进日期</td>
+          <td colspan="4"><%= @sp_bsb.sp_d_22 %></td>-->
+          <td colspan="5">抽样方式*</td>
+          <td colspan="7"><%= @sp_bsb.sp_s_24 %></td>
+          <td colspan="4">抽样工具</td>
+          <td colspan="7"><%= @sp_bsb.sp_s_25 %></td>
         </tr>
         <tr>
           <td rowspan="7" colspan="3">预包装<br>产品*</td>
@@ -970,37 +967,43 @@
         <tr>
           <td colspan="5">抽样基数/批量*</td>
           <td colspan="4"><%= @sp_bsb.sp_s_206 %></td>
-          <td colspan="4">抽样数</td>
-          <td colspan="5"><%= @sp_bsb.sp_s_207 %></td>
+          <td colspan="4">条形码</td>
+          <td colspan="5"><%= @sp_bsb.sp_s_222 %></td>
           <td colspan="4">备样数量*</td>
           <td colspan="5"><%= @sp_bsb.sp_s_208 %></td>
         </tr>
         <tr>
-          <td colspan="5">标识生产企业省份*</td>
-          <td colspan="4" align="center"><%= @sp_bsb.sp_s_202 %></td>
+          <td colspan="5">标识生产企业地址*</td>
+          <td colspan="5" style="border-right:none;">
+            省：<%= @sp_bsb.sp_s_202 %>
+          </td>
+          <td colspan="5" style="border-right:none; border-left:none">
+            市：<%= @sp_bsb.sp_s_220 %>
+          </td>
+          <td colspan="5" style="border-left:none;">
+            县：<%= @sp_bsb.sp_s_221 %>
+          </td>
+          <td colspan="7"><%= @sp_bsb.sp_s_65 %></td>
+        <tr>
+          <td colspan="5">标识生产企业名称*</td>
+          <td colspan="5"><%= @sp_bsb.sp_s_64 %></td>
           <td colspan="4">生产企业联系人*</td>
-          <td colspan="5"><%= @sp_bsb.sp_s_75 %></td>
+          <td colspan="4"><%= @sp_bsb.sp_s_75 %></td>
           <td colspan="4">生产企业电话*</td>
           <td colspan="5"><%= @sp_bsb.sp_s_76 %></td>
         </tr>
         <tr>
-          <td colspan="5">标识生产企业名称*</td>
-          <td colspan="8"><%= @sp_bsb.sp_s_64 %></td>
-          <td colspan="5">标识生产企业地址*</td>
-          <td colspan="9"><%= @sp_bsb.sp_s_65 %></td>
-        </tr>
-        <tr>
           <td rowspan="2" colspan="5">抽样时样品<br>存储状态*</td>
           <td rowspan="2" colspan="3"><%= @sp_bsb.sp_s_30 %></td>
-          <td rowspan="2" colspan="4">储存条件</td>
+          <td rowspan="2" colspan="5">储存条件</td>
           <td colspan="4">温度(℃)</td>
-          <td colspan="5"><%= @sp_bsb.sp_n_31 %></td>
+          <td colspan="4"><%= @sp_bsb.sp_n_31 %></td>
           <td rowspan="2" colspan="4">抽样样品包装*</td>
           <td rowspan="2" colspan="5"><%= @sp_bsb.sp_s_33 %></td>
         </tr>
         <tr>
           <td colspan="4">湿度(%)</td>
-          <td colspan="5"><%= @sp_bsb.sp_n_32 %></td>
+          <td colspan="4"><%= @sp_bsb.sp_n_32 %></td>
         </tr>
         <!--
         <tr>
@@ -1017,32 +1020,32 @@
         <tr>
           <td colspan="5">抽样单位名称*</td>
           <td colspan="7"><%= @sp_bsb.sp_s_35 %></td>
-          <td colspan="4">单位级别*</td>
+          <td colspan="3">单位级别*</td>
           <td colspan="6"><%= @sp_bsb.sp_s_36 %></td>
           <td colspan="3">所在省份*</td>
-          <td colspan="5"><%= @sp_bsb.sp_s_52 %></td>
+          <td colspan="6"><%= @sp_bsb.sp_s_52 %></td>
         </tr>
         <tr>
           <td colspan="5">抽样人员*</td>
           <td colspan="7"><%= @sp_bsb.sp_s_37 %></td>
-          <td colspan="4">抽样时间*</td>
+          <td colspan="3">抽样时间*</td>
           <td colspan="6"><%= @sp_bsb.sp_d_38 %></td>
           <td colspan="3">电话*</td>
-          <td colspan="5"><%= @sp_bsb.sp_s_39 %></td>
+          <td colspan="6"><%= @sp_bsb.sp_s_39 %></td>
         </tr>
         <tr>
           <td colspan="6">抽样单位负责（联系）人*</td>
           <td colspan="6"><%= @sp_bsb.sp_s_40 %></td>
-          <td colspan="2">电话*</td>
-          <td colspan="7"><%= @sp_bsb.sp_s_41 %></td>
+          <td colspan="3">电话*</td>
+          <td colspan="6"><%= @sp_bsb.sp_s_41 %></td>
           <td colspan="3">电子邮箱*</td>
           <td colspan="6"><%= @sp_bsb.sp_s_42 %></td>
         </tr>
         <tr>
           <td colspan="3">单位地址</td>
           <td colspan="9"><%= @sp_bsb.sp_s_211 %></td>
-          <td colspan="2">邮编</td>
-          <td colspan="7"><%= @sp_bsb.sp_s_212 %></td>
+          <td colspan="3">邮编</td>
+          <td colspan="6"><%= @sp_bsb.sp_s_212 %></td>
           <td colspan="3">传真</td>
           <td colspan="6"><%= @sp_bsb.sp_s_213 %></td>
         </tr>
@@ -1082,8 +1085,8 @@
           <td colspan="6"><%= @sp_bsb.sp_s_71 %></td>
           <td colspan="3">确认情况</td>
           <td colspan="8"><%= @sp_bsb.sp_s_214 %></td>
-          <td colspan="3">备注</td>
-          <td colspan="7"><%= @sp_bsb.sp_s_84 %></td>
+          <td colspan="4">备注</td>
+          <td colspan="6"><%= @sp_bsb.sp_s_84 %></td>
         </tr>
         <tr>
           <td colspan="3">填报人*</td>
@@ -1092,8 +1095,8 @@
           <td colspan="3"><%= @sp_bsb.sp_d_86 %></td>
           <td colspan="3">电话*</td>
           <td colspan="5"><%= @sp_bsb.sp_s_87 %></td>
-          <td colspan="3">电子邮箱*</td>
-          <td colspan="7"><%= @sp_bsb.sp_s_88 %></td>
+          <td colspan="4">电子邮箱*</td>
+          <td colspan="6"><%= @sp_bsb.sp_s_88 %></td>
         </tr>
 
         <tr id="reason">
@@ -1114,7 +1117,7 @@
               <td colspan="26"><%= f.text_field :sp_s_55, :class => "inputText", :style => "width: 600px;height: 19px;margin:8px" %></td>
           <% end %>
         </tr>
-        <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<=9&&(session[:user_authority_2]==1 || current_user.is_admin?) %>
+        <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<=9&&(current_user.user_d_authority_1==1 || current_user.is_admin?) %>
             <tr>
               <td colspan="4">报告分类*</td>
               <td colspan="26">
@@ -1235,12 +1238,12 @@
           <%= f.submit(vaule="保存并新建", options={"id" => "save_and_create", :class => "btn btn-xs btn-success"}) %>
       <% end %>
 
-      <% if (@sp_bsb["sp_i_state"]<2)&&session[:user_authority_1]==1 %>
+      <% if (@sp_bsb["sp_i_state"]<2)&&current_user.user_d_authority==1 %>
           <%= f.submit(vaule="临时保存", options={"id" => "save", :class => "btn btn-xs btn-default"}) %>
           <%= f.submit(vaule="基本信息提交入库", options={"id" => "submit1", :class => "btn btn-xs btn-primary"}) %>
       <% end %>
 
-      <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<4&&session[:user_authority_2]==1 %>
+      <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<4&&current_user.user_d_authority_1==1 %>
           <%= f.submit(vaule="临时保存", options={"id" => "save_1", :class => "btn btn-xs btn-default"}) %>
           <%= f.submit(vaule="检测数据提交入库", options={"id" => "submit2", :class => "btn btn-xs btn-success"}) %>
           <% if @sp_bsb.sp_i_state == 2 %>
@@ -1271,7 +1274,7 @@
                   </ul>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-primary btn-sm">确定执行【检测机构批准】</button>
+                  <button type="button" class="btn btn-primary btn-sm">确定执行【主检人审核】</button>
                   <button type="button" class="btn btn-default btn-sm">报告预览</button>
                 </div>
               </div>

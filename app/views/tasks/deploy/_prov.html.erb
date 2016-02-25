@@ -1,0 +1,123 @@
+<script type="text/javascript">
+  $(function () {
+
+    // 省局下达任务
+    $('#create_delegate_plan').click(function () {
+      if (confirm('确定部署该任务吗？')) {
+        $.post('/tasks/create_delegate_plan.json', {
+          quota: $('#quota').val(),
+          jg_id: $('#jcjg').val(),
+          dl: $('#dl').val(),
+          yl: $('#yl').val(),
+          cyl: $('#cyl').val(),
+          xl: $('#xl').val(),
+          identifier: $('#baosong_b').find('option:selected').attr('data-identifier')
+        }, function (data) {
+          if (data.status == 'OK') {
+            location.reload();
+          } else {
+            alert(data.msg);
+          }
+        }, 'json');
+      }
+    });
+  });
+</script>
+<h3 class="text-center"><%= current_user.user_s_province %>采样任务部署</h3>
+<div class="ctner" style="overflow-x: scroll;">
+  <div class="form-inline">
+    <label for="">报送分类：</label>
+    <%= select_tag "baosong_a", options_for_select(BaosongA.all.map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+    <%= select_tag "baosong_b", options_for_select(@baosong_bs.map { |a| [a.name, a.name, {"data-identifier" => a.identifier}] }.unshift(["请选择", ""]), params[:baosong_b]), {:class => "form-control input-sm", id: "baosong_b", style: "width: 150px;"} %>
+    <br>
+    <br>
+    <label for="">食品分类：</label>
+    <select class="form-control input-sm" name="dl" id="dl">
+      <option value="">请选择</option>
+      <% @a_categories.each do |a_category| %>
+          <option value="<%= a_category.id %>" data-id="<%= a_category.id %>"><%= a_category.name %></option>
+      <% end %>
+    </select>
+    <select class="form-control input-sm" name="yl" id="yl"></select>
+    <select class="form-control input-sm" name="cyl" id="cyl"></select>
+    <select class="form-control input-sm" name="xl" id="xl"></select>
+    <br>
+    <br>
+    <label for="">采样机构：</label>
+    <select id="jcjg" style="width: 400px;" class="form-control input-sm">
+      <option value="">请选择采样机构</option>
+      <% @jcjgs.each do |jcjg| %>
+          <% if jcjg.code.blank? %>
+              <option value="<%= jcjg.id %>" disabled="disabled"><%= jcjg.jg_name %>(未设编号,无法安排)</option>
+          <% else %>
+              <option value="<%= jcjg.id %>"><%= jcjg.jg_name %></option>
+          <% end %>
+      <% end %>
+    </select>
+    <br>
+    <label for="">检验机构：</label>
+    <select id="jcjg" style="width: 400px;" class="form-control input-sm">
+      <option value="">请选择检验机构</option>
+      <% @jcjgs.each do |jcjg| %>
+          <% if jcjg.code.blank? %>
+              <option value="<%= jcjg.id %>" disabled="disabled"><%= jcjg.jg_name %>(未设编号,无法安排)</option>
+          <% else %>
+              <option value="<%= jcjg.id %>"><%= jcjg.jg_name %></option>
+          <% end %>
+      <% end %>
+    </select>
+    <br>
+    <br>
+    <label for="">采样数量：</label>
+    <input type="number" class="form-control input-sm" placeholder="采样数" name="quota" id="quota">
+    <button id="create_delegate_plan" class="btn btn-primary btn-sm">创建</button>
+  </div>
+  <hr>
+  <table class="table table-bordered task-deploy table-striped table-hover" style="width: <%= @count * 150 + 550 %>px;">
+    <thead>
+    <tr>
+      <th width="100">食品大类</th>
+      <th width="100">亚类</th>
+      <th width="100">次亚类</th>
+      <th width="100">细类</th>
+      <th width="150">#</th>
+      <% @delegates.each do |del| %>
+          <th width="150"><%= del.jg_bsb.jg_name %></th>
+      <% end %>
+    </tr>
+    </thead>
+    <tbody>
+    <% @d_categories.each do |d| %>
+        <tr>
+          <!-- 大类 -->
+          <% if @current_dl.nil? or d.a_category_id != @current_dl.id %>
+              <% @current_dl = ACategory.find(d.a_category_id) %>
+              <td rowspan="<%= @current_dl.rowspan %>"><%= @current_dl.name %></td>
+          <% end %>
+
+          <!-- 亚类 -->
+          <% if @current_yl.nil? or d.b_category_id != @current_yl.id %>
+              <% @current_yl = BCategory.find(d.b_category_id) %>
+              <td rowspan="<%= @current_yl.rowspan %>"><%= @current_yl.name %></td>
+          <% end %>
+
+          <!-- 次亚类 -->
+          <% if @current_cyl.nil? or d.c_category_id != @current_cyl.id %>
+              <% @current_cyl = CCategory.find(d.c_category_id) %>
+              <td rowspan="<%= @current_cyl.rowspan %>"><%= @current_cyl.name %></td>
+          <% end %>
+
+          <!-- 细类名称 -->
+          <td><%= d.name %></td>
+
+          <%= grid3(SysProvince.level1.find_by_name(current_user.user_s_province), d) %>
+          <!-- 交叉点 -->
+          <% @delegates.each do |del| %>
+              <%= grid5(del, d) %>
+          <% end %>
+        </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>
+<br>
