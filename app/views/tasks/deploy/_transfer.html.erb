@@ -1,0 +1,79 @@
+<div class="tab-pane active">
+  <br>
+  <div class="panel panel-default">
+    <div class="panel-heading">安排新任务
+      <small class="text-info">总局食品安全抽检监测计划（地方承担）</small>
+    </div>
+    <div class="panel-body">
+      <div class="form-inline">
+        <label for="">报送分类：</label>
+        <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx <> "国家"').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+        <%= select_tag "baosong_b", options_for_select(@baosong_bs.map { |b| [b.name, b.name, {"data-identifier" => b.identifier}] }.unshift(["请选择", ""]), params[:baosong_b]), {:class => "form-control input-sm", id: "baosong_b", style: "width: 150px;"} %>
+        <br>
+        <br>
+        <label>食品分类：</label>
+        <%= select_tag "dl", options_for_select(@a_categories.map { |c| [c.name, c.id, {'data-id' => c.id}] }.unshift(["请选择", ""])), {:class => "form-control input-sm", id: "dl", style: "width: 150px;"} %>
+        <select style="width: 150px;" class="form-control input-sm" name="yl" id="yl"></select>
+        <select style="width: 150px;" class="form-control input-sm" name="cyl" id="cyl"></select>
+        <select style="width: 150px;" class="form-control input-sm" name="xl" id="xl"></select>
+        <br>
+        <br>
+        <select class="form-control input-sm" name="prov" id="prov">
+          <% SysProvince.level1.each do |prov| %>
+              <option value="<%= prov.id %>"><%= prov.name %></option>
+          <% end %>
+        </select>
+        <input type="number" class="form-control input-sm" placeholder="采样数" name="quota" id="quota">
+        <button id="create_prov_plan" class="btn btn-primary btn-sm">创建</button>
+      </div>
+    </div>
+  </div>
+  <div class="ctner" style="overflow-x: scroll;">
+    <% if !@baosong_b.nil? %>
+        <!-- 中央转移地方的任务安排表 -->
+        <table class="table-bordered task-deploy table-hover table-striped">
+          <thead>
+          <tr>
+            <th width="100">&emsp;&emsp;&emsp;大类&emsp;&emsp;&emsp;</th>
+            <th width="100">&emsp;&emsp;&emsp;亚类&emsp;&emsp;&emsp;</th>
+            <th width="100">&emsp;&emsp;&emsp;次亚类&emsp;&emsp;&emsp;</th>
+            <th width="100">&emsp;&emsp;&emsp;细类&emsp;&emsp;&emsp;</th>
+            <% @provinces.each do |prov| %>
+                <th>&emsp;&emsp;&emsp;&emsp;<%= prov.name %>&emsp;&emsp;&emsp;&emsp;</th>
+            <% end %>
+          </tr>
+          </thead>
+          <tbody>
+          <% DCategory.where(identifier: @baosong_b.identifier).order("a_category_id, b_category_id, c_category_id").each do |d| %>
+              <tr>
+                <!-- 大类 -->
+                <% if @current_dl.nil? or d.a_category_id != @current_dl.id %>
+                    <% @current_dl = ACategory.find(d.a_category_id) %>
+                    <td rowspan="<%= @current_dl.rowspan %>"><%= @current_dl.name %></td>
+                <% end %>
+
+                <!-- 亚类 -->
+                <% if @current_yl.nil? or d.b_category_id != @current_yl.id %>
+                    <% @current_yl = BCategory.find(d.b_category_id) %>
+                    <td rowspan="<%= @current_yl.rowspan %>"><%= @current_yl.name %></td>
+                <% end %>
+
+                <!-- 次亚类 -->
+                <% if @current_cyl.nil? or d.c_category_id != @current_cyl.id %>
+                    <% @current_cyl = CCategory.find(d.c_category_id) %>
+                    <td rowspan="<%= @current_cyl.rowspan %>"><%= @current_cyl.name %></td>
+                <% end %>
+
+                <!-- 细类名称 -->
+                <td><%= d.name %></td>
+                <!-- 交叉点 -->
+                <% @provinces.each do |prov| %>
+                    <%= grid3(prov, d) %>
+                <% end %>
+              </tr>
+          <% end %>
+          </tbody>
+        </table>
+    <% end %>
+  </div>
+</div>

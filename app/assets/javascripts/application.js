@@ -35,9 +35,11 @@
 //= require jquery.dragtable
 //= require jquery.storageapi
 
-//= require bootstrap-table-all
+//= require bootstrap-table
 //= require bootstrap-table-zh-CN
 //= require bootstrap-editable
+//= require bootstrap-table-sticky-header
+//= require bootstrap-table-fixed-columns
 
 // AngularJs
 //= require angular

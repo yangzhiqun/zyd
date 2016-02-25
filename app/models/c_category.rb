@@ -3,5 +3,7 @@ class CCategory < ActiveRecord::Base
 
   def rowspan
     DCategory.where('c_category_id = ?', self.id).count
+    return @rowspan if @rowspan.present?
+    @rowspan = DCategory.where('c_category_id = ?', self.id).count
   end
 end
