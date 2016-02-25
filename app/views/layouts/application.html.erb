@@ -525,7 +525,7 @@
               <li class="<%= "active" if action?("check") %>"><cite></cite><a href="/tasks/check">任务查看</a><i></i></li>
               <% if false and (current_user.rwxd == 1 or current_user.is_admin?) and !current_user.jg_bsb.nil? %>
                   <li>
-                    <a target="_blank" href="http://210.72.225.133/webgps/logins.aspx?username=<%= current_user.jg_bsb.gpsname %>&pwd=<%= current_user.jg_bsb.gpspassword %>">GPS信息留存</a>
+                    <a target="_blank" href="http://210.72.225.133/webgps/logins.aspx?username=<%= current_user.jg_bsb.gpsname %>&pwd=<%= current_user.jg_bsb.gpspassword %>">GPS信息留存</a><i></i>
                   </li>
               <% end %>
             </ul>
@@ -538,12 +538,12 @@
             </div>
             <ul class="menuson" style="<%= "display: block;" if controller?("sp_bsbs") or controller?("sp_bsbs_spsearch") %>">
               <% if current_user.user_d_authority == 1 %>
-                  <li class="<%= "active" if action?("new") %>"><cite></cite><a href="/sp_bsbs/new">食品检验数据录入</a>
+                  <li class="<%= "active" if action?("new") %>"><cite></cite><a href="/sp_bsbs/new">食品检验数据录入</a><i></i>
                   </li>
               <% end %>
               <% if current_user.user_d_authority_5 == 1 or current_user.user_i_switch == 1 or current_user.user_d_authority == 1 or current_user.user_d_authority_1 == 1 or current_user.user_d_authority_2 == 1 or current_user.user_d_authority_3 == 1 %>
                   <li class="<%= "active" if controller?("sp_bsbs") and action?('spsearch') %>">
-                    <cite></cite><a href="/sp_bsbs_spsearch?<%= session[:query] %>">食品检验数据查看</a>
+                    <cite></cite><a href="/sp_bsbs_spsearch?<%= session[:query] %>">食品检验数据查看</a><i></i>
                   </li>
               <% end %>
             </ul>
@@ -566,7 +566,7 @@
                           </li>
                       <% end %>
                       <% if false and current_user.zhxt == 1 %>
-                          <li class="<%= "active" if action?("gzap") %>"><cite></cite><a href="/yycz/gzap">处置工作安排</a>
+                          <li class="<%= "active" if action?("gzap") %>"><cite></cite><a href="/yycz/gzap">处置工作安排</a><i></i>
                           </li>
                       <% end %>
                       <% if current_user.yyadmin == 1 or current_user.yybl == 1 %>
