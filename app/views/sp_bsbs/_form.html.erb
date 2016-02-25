@@ -863,13 +863,14 @@
       $("#sp_bsb_sp_s_20").removeAttr("disabled");
       $('#sp_bsb_sp_i_state').val("4");
 
+      <% if current_user.jg_bsb.jg_bsb_stamps.count > 0_%>
       $('#stamp-dlg').modal('show');
       return false;
+      <% end %>
 
       if (!confirm('确定提交吗？')) {
         return false;
       }
-
 
       return true;
     });
