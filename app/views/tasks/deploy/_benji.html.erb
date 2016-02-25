@@ -57,13 +57,13 @@
       <hr>
       <% unless @tasks.blank? %>
           <!-- 如果报送任务不为空，则显示当前已经安排了的任务 -->
-          <table data-undefined-text="" class="table task-deploy" data-show-columns="true">
+          <table data-undefined-text="" class="table task-deploy">
             <thead>
             <tr>
-              <th data-field="dl" data-width="100px">食品大类</th>
-              <th data-field="yl" data-width="100px">亚类</th>
-              <th data-field="cyl" data-width="100px">次亚类</th>
-              <th data-width="100">细类</th>
+              <th data-field="dl" data-width="100px">&emsp;&emsp;&emsp;食品大类&emsp;&emsp;&emsp;</th>
+              <th data-field="yl" data-width="100px">&emsp;&emsp;&emsp;亚类&emsp;&emsp;&emsp;</th>
+              <th data-field="cyl" data-width="100px">&emsp;&emsp;&emsp;次亚类&emsp;&emsp;&emsp;</th>
+              <th data-width="100">&emsp;&emsp;&emsp;细类&emsp;&emsp;&emsp;</th>
               <% @tasks.select('distinct(jg_bsb_id)').each do |task| %>
                   <th width="150"><%= task.jg_bsb.jg_name unless task.jg_bsb.nil? %></th>
               <% end %>

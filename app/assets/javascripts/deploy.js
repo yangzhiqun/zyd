@@ -148,6 +148,7 @@ $(function () {
     $('.task-deploy').bootstrapTable({
         onPostBody: function () {
             $('.task-deploy td:empty').remove();
-        }
+        },
+        undefinedText: ''
     });
 });

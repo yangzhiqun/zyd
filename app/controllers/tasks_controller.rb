@@ -285,7 +285,7 @@ class TasksController < ApplicationController
       @baosong_bs = []
     else
       # ACategory
-      @a_categories = ACategory.select('distinct(a.id), a.*').joins('AS a RIGHT JOIN task_jg_bsbs AS ab ON ab.a_category_id=a.id').where('a.identifier = ? AND ab.jg_bsb_id = ?', @baosong_b.identifier, @jg_bsb.id)
+      @a_categories = ACategory.select('distinct(a_categories.id), a_categories.*').joins('RIGHT JOIN task_jg_bsbs AS ab ON ab.a_category_id=a_categories.id').where('a_categories.identifier = ? AND ab.jg_bsb_id = ?', @baosong_b.identifier, @jg_bsb.id)
 
       # Task
       @tasks = TaskJgBsb.where(:jg_bsb_id => @jg_bsb.id, :sys_province_id => params[:rwly]) #, identifier: @baosong_b.identifier)
