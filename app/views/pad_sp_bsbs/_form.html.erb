@@ -482,8 +482,8 @@
           <td colspan="3">样品属性</td>
           <td colspan="5"><%= f.select :sp_s_203, @options[203], {}, {:style => "width: 100%;"} %></td>
           <td colspan="3">抽样数量*</td>
-          <td colspan="3"><%= f.text_field :sp_n_15, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
-          <td colspan="3">单位*</td>
+          <td colspan="4"><%= f.text_field :sp_n_15, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="2">单位*</td>
           <td colspan="3"><%= f.text_field :sp_s_6, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
@@ -499,14 +499,16 @@
         <tr>
           <td colspan="3" rowspan="2">样品分类*</td>
           <td colspan="27">
-              <span>食品大类&emsp;&emsp;<%= f.select :sp_s_17, options_for_select(@a_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_17), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-                食品亚类&emsp;<%= f.select :sp_s_18, options_for_select(@b_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_18), {}, {:style => "width: 220px;"} %></span>
+            <span>
+              食品大类&emsp;&emsp;<%= f.select :sp_s_17, options_for_select(@a_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_17), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+              食品亚类&emsp;<%= f.select :sp_s_18, options_for_select(@b_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_18), {}, {:style => "width: 220px;"} %>
+            </span>
           </td>
         </tr>
         <tr>
           <td colspan="27">
             <span>
-            食品次亚类&emsp;<%= f.select :sp_s_19, options_for_select(@c_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_19), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+              食品次亚类&emsp;<%= f.select :sp_s_19, options_for_select(@c_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_19), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
               食品细类&emsp;<%= f.select :sp_s_20, options_for_select(@d_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_20), {}, {:style => "width: 220px;"} %>
             </span>
           </td>
@@ -591,21 +593,21 @@
         <tr>
           <td rowspan="2" colspan="5">抽样时样品<br>存储状态*</td>
           <td rowspan="2" colspan="3"><%= f.select :sp_s_30, @options[30], {}, :style => "width: 100%" %></td>
-          <td rowspan="2" colspan="4">储存条件</td>
+          <td rowspan="2" colspan="5">储存条件</td>
           <td colspan="4">温度(℃)</td>
-          <td colspan="5"><%= f.number_field :sp_n_31, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="4"><%= f.number_field :sp_n_31, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
           <td rowspan="2" colspan="4">抽样样品包装*</td>
           <td rowspan="2" colspan="5"><%= f.select :sp_s_33, @options[33], {}, :style => "width: 100%" %></td>
         </tr>
         <tr>
           <td colspan="4">湿度(%)</td>
-          <td colspan="5"><%= f.number_field :sp_n_32, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="4"><%= f.number_field :sp_n_32, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
           <td colspan="5">寄、送样品截止日期</td>
-          <td colspan="7"><%= f.text_field :sp_s_209, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+          <td colspan="8"><%= f.text_field :sp_s_209, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
           <td colspan="4">寄送样品地址</td>
-          <td colspan="14"><%= f.text_field :sp_s_210, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="13"><%= f.text_field :sp_s_210, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
           <td colspan="5">备注</td>
@@ -614,10 +616,10 @@
         <tr>
           <td colspan="5">抽样单位名称*</td>
           <td colspan="7"><%= f.text_field :sp_s_35, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
-          <td colspan="4">单位级别*</td>
+          <td colspan="3">单位级别*</td>
           <td colspan="6"><%= f.select :sp_s_36, @options[36], {}, {:style => "width: 100%;"} %></td>
           <td colspan="3">所在省份*</td>
-          <td colspan="5"><%= f.text_field :sp_s_52, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+          <td colspan="6"><%= f.text_field :sp_s_52, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
         </tr>
         <tr>
           <td colspan="5">抽样人员*</td>
@@ -633,24 +635,24 @@
                 <%= @sp_bsb.sp_s_37 %>
             <% end %>
           </td>
-          <td colspan="4">抽样时间*</td>
+          <td colspan="3">抽样时间*</td>
           <td colspan="6"><%= f.text_field :sp_d_38, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
           <td colspan="3">电话*</td>
-          <td colspan="5"><%= f.text_field :sp_s_39, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="6"><%= f.text_field :sp_s_39, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
           <td colspan="6">抽样单位负责（联系）人*</td>
           <td colspan="6"><%= f.text_field :sp_s_40, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
-          <td colspan="2">电话*</td>
-          <td colspan="7"><%= f.text_field :sp_s_41, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">电话*</td>
+          <td colspan="6"><%= f.text_field :sp_s_41, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
           <td colspan="3">电子邮箱*</td>
           <td colspan="6"><%= f.text_field :sp_s_42, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
           <td colspan="3">单位地址</td>
           <td colspan="9"><%= f.text_field :sp_s_211, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
-          <td colspan="2">邮编</td>
-          <td colspan="7"><%= f.text_field :sp_s_212, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">邮编</td>
+          <td colspan="6"><%= f.text_field :sp_s_212, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
           <td colspan="3">传真</td>
           <td colspan="6"><%= f.text_field :sp_s_213, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>

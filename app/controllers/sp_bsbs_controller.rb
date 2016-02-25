@@ -46,7 +46,9 @@ class SpBsbsController < ApplicationController
 
         if @spbsb.report_path.blank? or !File.exists?(@spbsb.absolute_report_path)
           if params[:pdf_rules].blank?
-            render text: '请选择签章规则号后使用'
+            #render text: '请选择签章规则号后使用'
+						flash[:error] = '无法生成或预览文件，请设置签章规则后使用'
+						redirect_to '/sp_bsbs/no_available_pdf_found'
             return
           end
 
