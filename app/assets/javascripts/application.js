@@ -35,7 +35,7 @@
 //= require jquery.dragtable
 //= require jquery.storageapi
 
-//= require bootstrap-table-all
+//= require bootstrap-table
 //= require bootstrap-table-zh-CN
 //= require bootstrap-editable
 
