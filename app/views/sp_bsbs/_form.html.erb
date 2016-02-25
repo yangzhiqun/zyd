@@ -271,7 +271,7 @@
         }
         <%end%>
       }
-    })
+    });
     //根据任务来源过滤报送分类A
     //$("#sp_bsb_sp_s_2_1").unbind("change", eDropLangChange).bind("change", eDropLangChange);
     //过滤文本框中的手工输入时的空格
@@ -294,7 +294,7 @@
 
     //通过比较标准最大、小允许限和检验结果自动调整结果判定[等于算合格，响应blur、keyup事件，单条件只判断有条件的，只影响合格、不合格项不影响不判定项问题项]
     //检验结果非数字不自动判断 最大最小允许限中包含非-及数字内容时不自动判断
-    <% if(session[:user_authority_1]==1) || (session[:user_authority_2]==1) %>
+    <% if(current_user.user_d_authority==1) || (current_user.user_d_authority_1==1) %>
     $('body').delegate('.fht-fixed-body .JYJG', 'change', function () {
       var o = $(this);
       var jgpd = o.parents('tr').find('.JGPD');
@@ -343,13 +343,13 @@
     });
     <% end %>
     $(".region").ProvinceCity({
-      dprovince: "<%= escape_javascript(@sp_bsb.sp_s_3) %>",
-      dcity: "<%= escape_javascript(@sp_bsb.sp_s_4) %>",
-      lcity: "<%= escape_javascript(@sp_bsb.sp_s_5) %>"
+      dprovince: "<%= @sp_bsb.sp_s_3 %>",
+      dcity: "<%= @sp_bsb.sp_s_4 %>",
+      lcity: "<%= @sp_bsb.sp_s_5 %>"
     });
     $(".region2").ProvinceCity({
-      dprovince: "<%= escape_javascript(@sp_bsb.sp_s_202) %>",
-      dcity: "<%= escape_javascript(@sp_bsb.sp_s_220) %>",
+      dprovince: "<%= @sp_bsb.sp_s_202 %>",
+      dcity: "<%= @sp_bsb.sp_s_220 %>",
       lcity: "<%= @sp_bsb.sp_s_221 %>"
     });
     $("#sp_bsb_sp_d_22, #sp_bsb_sp_d_28, #sp_bsb_sp_d_38, #sp_bsb_sp_d_46, #sp_bsb_sp_d_86, #sp_bsb_sp_s_209").datepicker({
@@ -667,8 +667,8 @@
       }
       var bsfla = $('#sp_bsb_sp_s_70').val();
       var cybh6 = $('#sp_bsb_sp_s_16').val().substring(0, 6);
-      if ((bsfla == '抽检监测（总局本级一司）' || bsfla == '抽检监测（总局本级三司）') && cybh6 != 'GC1500') {
-        alert('抽检检测总局本级一司/三司抽样编号需以GC1500开头');
+      if ((bsfla == '抽检监测（总局本级一司）' || bsfla == '抽检监测（总局本级三司）') && cybh6 != 'GC1600') {
+        alert('抽检检测总局本级一司/三司抽样编号需以GC1600开头');
         return false;
       }
 
@@ -708,7 +708,7 @@
       }
       <%end%>
 
-      <%@check=[68,17,18,19,20,62,202,220,221]%>
+      <%@check=[68,17,18,19,20,62,202]%>
       <%@check.each do |i|%>
       var o = $.trim($("#sp_bsb_sp_s_" +<%=i%>).val());
       if (o == '请选择' || o == '') {
@@ -743,7 +743,6 @@
      * 检验数据提交入库
      * */
     $('#submit2').click(function () {
-
       var jcxnull = 0;
       $("#tblGrid input[name='spdata[][spdata_1]']").each(
           function () {
@@ -791,7 +790,7 @@
       <%@check=[1,2,3,4,5,6,7,11,12,14,16,21,24,30,33,35,36,37,39,40,41,42,61,62,63,70]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
-        alert("该项为必填项");
+        alert("该项为必填项" + <%= i %>);
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
       }
@@ -804,6 +803,7 @@
         return false;
       }
       <%end%>
+
       <%@check=[15]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_n_" +<%=i%>).val()).length == 0) {
@@ -813,20 +813,20 @@
       }
 
       <%end%>
-      <%@check=[68,17,62,202,220,221]%>
+      <%@check=[68,17,62,202]%>
       <%@check.each do |i|%>
-      var o = $.trim($("#sp_bsb_sp_s_" +<%=i%>).val());
-      if (o == '请选择' || o == '') {
-        alert("该项为必选项");
+      if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()) == '请选择') {
+        alert("该项为必填项" + <%= i %>);
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
       }
       <%end%>
 
+
       <%@check=[43,44,45,49,50,51,85,87,88]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
-        alert("该项为必填项");
+        alert("该项为必填项" + <%= i %>);
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
       }
@@ -848,7 +848,6 @@
         return false;
       }
       <%end%>
-
       varDate = $("#sp_bsb_sp_d_86").val();
       varData = varDate.split("-")
       varDate = new Date(varData[0], varData[1] - 1, varData[2]);
@@ -864,14 +863,13 @@
       $("#sp_bsb_sp_s_20").removeAttr("disabled");
       $('#sp_bsb_sp_i_state').val("4");
 
-      <% if @jg_bsb.present? and @jg_bsb.jg_bsb_stamps.count > 0 %>
       $('#stamp-dlg').modal('show');
       return false;
-      <% end %>
 
       if (!confirm('确定提交吗？')) {
         return false;
       }
+
 
       return true;
     });
@@ -920,6 +918,7 @@
         $("#sp_bsb_sp_d_86").focus();
         return false;
       }
+
       $('#sp_bsb_sp_i_state').val("1");
       $("#sp_bsb_sp_s_70").removeAttr("disabled");
       $("#sp_bsb_sp_s_20").removeAttr("disabled");
@@ -972,9 +971,6 @@
      * 检测机构审核通过
      * */
     $('#save_2').click(function () {
-      if (!confirm('确定提交吗？')) {
-        return false;
-      }
       $("select").attr("disabled", "disabled");
       $("input.inputText").attr("disabled", "disabled");
       $("#sp_bsb_sp_s_16").removeAttr("disabled");
@@ -984,6 +980,11 @@
       $("#sp_bsb_sp_s_20").removeAttr("disabled");
 
       $('#sp_bsb_sp_i_state').val("5");
+
+      if (!confirm('确定提交吗？')) {
+        return false;
+      }
+
       return true;
     });
 
@@ -1036,10 +1037,6 @@
         return false;
       }
       <%end%>
-      //$('#stamp-dlg').modal('show');
-      if (!confirm('确定提交吗？')) {
-        return false;
-      }
       var spxlxz = $('#sp_bsb_sp_s_70').val();
       $("select").attr("disabled", "disabled");
       $("input.inputText").attr("disabled", "disabled");
@@ -1058,6 +1055,9 @@
         $('#sp_bsb_sp_i_state').val("9");
       } else {
         $('#sp_bsb_sp_i_state').val("6");
+      }
+      if (!confirm('确定提交吗？')) {
+        return false;
       }
       return true;
     });
@@ -1124,12 +1124,12 @@
       return false;
     });
 
-    <%if session[:user_authority_1]==0&&session[:user_authority_2]==0%>
+    <%if current_user.user_d_authority==0&&current_user.user_d_authority_1==0%>
     $("select").attr("disabled", "disabled");
     $("input").attr("readonly", "readonly");
     <%end%>
 
-    <%if (session[:user_name] == "admin"&&@sp_bsb["sp_i_state"].to_i == 9)%>
+    <%if (current_user.is_admin? && @sp_bsb["sp_i_state"].to_i == 9)%>
     <%elsif @sp_bsb["sp_i_state"].to_i >= 4&&@sp_bsb["sp_i_state"].to_i < 10 %>
     $("select").attr("disabled", "disabled");
     $("input").attr("readonly", "readonly");
@@ -1259,11 +1259,11 @@
     margin-bottom: 5px;
   }
 
-  .selected {
+  #stamp-dlg i.selected {
     color: green;
     position: absolute;
     right: 10px !important;
-    bottom: 10px !important;
+    bottom: 30px !important;
     top: initial;
     display: block !important;
   }
@@ -1652,7 +1652,7 @@
               <td colspan="26"><%= f.text_field :sp_s_55, :class => "inputText", :style => "width: 600px;height: 19px;margin:8px" %></td>
           <% end %>
         </tr>
-        <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<=9&&(session[:user_authority_2]==1 || current_user.is_admin?) %>
+        <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<=9&&(current_user.user_d_authority_1==1 || current_user.is_admin?) %>
             <tr>
               <td colspan="4">报告分类*</td>
               <td colspan="26">
@@ -1732,16 +1732,27 @@
         <% end %>
     <% end unless @pictures.blank? %>
 
-    <% if @pad_sp_bsbs != nil %>
+    <% if @sp_bsb.cyd_file_path.present? %>
         <div style="clear:both"></div>
         <div>
-          <% if !@pad_sp_bsbs.cyd_file_path.blank? %>
-              <a class="btn btn-default btn-xs" href="/pad_sp_bsbs/<%= @pad_sp_bsbs.id %>/cyd"><i class="glyphicon glyphicon-download-alt"></i>抽样单电子版</a>
+          <% if @sp_bsb.cyd_file_path.present? %>
+              <a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @sp_bsb.id %>/cyd"><i class="glyphicon glyphicon-download-alt"></i>抽样单电子版</a>
           <% end %>
-          <% if !@pad_sp_bsbs.cyjygzs_file_path.blank? %>
-              <a class="btn btn-default btn-xs" href="/pad_sp_bsbs/<%= @pad_sp_bsbs.id %>/cyjygzs"><i class="glyphicon glyphicon-download-alt"></i>抽样检验告知书电子版</a>
+          <% if @sp_bsb.cyjygzs_file_path.present? %>
+              <a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @sp_bsb.id %>/cyjygzs"><i class="glyphicon glyphicon-download-alt"></i>抽样检验告知书电子版</a>
           <% end %>
           <hr>
+        </div>
+    <% end %>
+
+    <% if (@sp_bsb["sp_i_state"]<2)&&current_user.user_d_authority==1 %>
+        <div class="accept-ctner well well-sm">
+          <label for="">抽样单电子版：</label>
+          <%= f.file_field :cyd_file, :class => "form-control", :style => "width: 400px;" %>
+          <br>
+          <label for="">抽样检验告知书电子版：</label>
+          <%= f.file_field :cyjygzs_file, :class => "form-control", :style => "width: 400px;" %>
+          <br>
         </div>
     <% end %>
 
@@ -1750,12 +1761,12 @@
           <%= f.submit(vaule="保存并新建", options={"id" => "save_and_create", :class => "btn btn-xs btn-success"}) %>
       <% end %>
 
-      <% if (@sp_bsb["sp_i_state"]<2)&&session[:user_authority_1]==1 %>
+      <% if (@sp_bsb["sp_i_state"]<2)&&current_user.user_d_authority==1 %>
           <%= f.submit(vaule="临时保存", options={"id" => "save", :class => "btn btn-xs btn-default"}) %>
           <%= f.submit(vaule="基本信息提交入库", options={"id" => "submit1", :class => "btn btn-xs btn-primary"}) %>
       <% end %>
 
-      <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<4&&session[:user_authority_2]==1 %>
+      <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<4&&current_user.user_d_authority_1==1 %>
           <%= f.submit(vaule="临时保存", options={"id" => "save_1", :class => "btn btn-xs btn-default"}) %>
           <%= f.submit(vaule="检测数据提交入库", options={"id" => "submit2", :class => "btn btn-xs btn-success"}) %>
           <% if @sp_bsb.sp_i_state == 2 %>
@@ -1775,6 +1786,7 @@
                         <li>
                           <a href="javascript:void(0);" data-stamp-no="<%= stamp.stamp_no %>" class="stamp-selector">
                             <img src="/jg_bsb_stamps/<%= stamp.id %>/cover" class="img-thumbnail" alt="<%= stamp.stamp_no %>">
+                            <div class="text-center"><%= stamp.stamp_type_desc %></div>
                             <i data-stamp-no="<%= stamp.stamp_no %>" class="hidden glyphicon glyphicon-ok"></i>
                           </a>
                         </li>
@@ -1782,7 +1794,7 @@
                   </ul>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-primary btn-sm ok">确认检验数据提交入库</button>
+                  <button type="button" class="btn btn-primary btn-sm ok">确定执行【主检人审核】</button>
                   <button type="button" class="btn btn-default btn-sm preview">报告预览</button>
                 </div>
               </div>

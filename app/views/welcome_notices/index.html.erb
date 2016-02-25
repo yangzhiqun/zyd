@@ -1,111 +1,111 @@
 <!-- Button to trigger modal -->
 <style type="text/css">
-.modal {
-  position: fixed;
-  top: 10%;
-  left: 50%;
-  z-index: 1050;
-  width: 560px;
-  margin-left: -280px;
-	padding-right: 0px !important;
-  background-color: #ffffff;
-  border: 1px solid #999;
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  *border: 1px solid #999;
-  -webkit-border-radius: 6px;
-     -moz-border-radius: 6px;
-          border-radius: 6px;
-  outline: none;
-  -webkit-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-     -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-          box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-  -webkit-background-clip: padding-box;
-     -moz-background-clip: padding-box;
-          background-clip: padding-box;
-}
+  .modal {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    z-index: 1050;
+    width: 560px;
+    margin-left: -280px;
+    padding-right: 0px !important;
+    background-color: #ffffff;
+    border: 1px solid #999;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    *border: 1px solid #999;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+    outline: none;
+    -webkit-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding-box;
+    background-clip: padding-box;
+  }
 
-.modal.fade {
-  top: -25%;
-  -webkit-transition: opacity 0.3s linear, top 0.3s ease-out;
-     -moz-transition: opacity 0.3s linear, top 0.3s ease-out;
-       -o-transition: opacity 0.3s linear, top 0.3s ease-out;
-          transition: opacity 0.3s linear, top 0.3s ease-out;
-}
+  .modal.fade {
+    top: -25%;
+    -webkit-transition: opacity 0.3s linear, top 0.3s ease-out;
+    -moz-transition: opacity 0.3s linear, top 0.3s ease-out;
+    -o-transition: opacity 0.3s linear, top 0.3s ease-out;
+    transition: opacity 0.3s linear, top 0.3s ease-out;
+  }
 
-.modal.fade.in {
-  top: 10%;
-}
+  .modal.fade.in {
+    top: 10%;
+  }
 
-.modal-header {
-  padding: 9px 15px;
-  border-bottom: 1px solid #eee;
-}
+  .modal-header {
+    padding: 9px 15px;
+    border-bottom: 1px solid #eee;
+  }
 
-.modal-header .close {
-  margin-top: 2px;
-}
+  .modal-header .close {
+    margin-top: 2px;
+  }
 
-.modal-header h3 {
-  margin: 0;
-  line-height: 30px;
-}
+  .modal-header h3 {
+    margin: 0;
+    line-height: 30px;
+  }
 
-.modal-body {
-  position: relative;
-  max-height: 400px;
-  padding: 15px;
-  overflow-y: auto;
-}
+  .modal-body {
+    position: relative;
+    max-height: 400px;
+    padding: 15px;
+    overflow-y: auto;
+  }
 
-.modal-form {
-  margin-bottom: 0;
-}
+  .modal-form {
+    margin-bottom: 0;
+  }
 
-.modal-footer {
-  padding: 14px 15px 15px;
-  margin-bottom: 0;
-  text-align: right;
-  background-color: #f5f5f5;
-  border-top: 1px solid #ddd;
-  -webkit-border-radius: 0 0 6px 6px;
-     -moz-border-radius: 0 0 6px 6px;
-          border-radius: 0 0 6px 6px;
-  *zoom: 1;
-  -webkit-box-shadow: inset 0 1px 0 #ffffff;
-     -moz-box-shadow: inset 0 1px 0 #ffffff;
-          box-shadow: inset 0 1px 0 #ffffff;
-}
+  .modal-footer {
+    padding: 14px 15px 15px;
+    margin-bottom: 0;
+    text-align: right;
+    background-color: #f5f5f5;
+    border-top: 1px solid #ddd;
+    -webkit-border-radius: 0 0 6px 6px;
+    -moz-border-radius: 0 0 6px 6px;
+    border-radius: 0 0 6px 6px;
+    *zoom: 1;
+    -webkit-box-shadow: inset 0 1px 0 #ffffff;
+    -moz-box-shadow: inset 0 1px 0 #ffffff;
+    box-shadow: inset 0 1px 0 #ffffff;
+  }
 
-.modal-footer:before,
-.modal-footer:after {
-  display: table;
-  line-height: 0;
-  content: "";
-}
+  .modal-footer:before,
+  .modal-footer:after {
+    display: table;
+    line-height: 0;
+    content: "";
+  }
 
-.modal-footer:after {
-  clear: both;
-}
+  .modal-footer:after {
+    clear: both;
+  }
 
-.modal-footer .btn + .btn {
-  margin-bottom: 0;
-  margin-left: 5px;
-}
+  .modal-footer .btn + .btn {
+    margin-bottom: 0;
+    margin-left: 5px;
+  }
 
-.modal-footer .btn-group .btn + .btn {
-  margin-left: -1px;
-}
+  .modal-footer .btn-group .btn + .btn {
+    margin-left: -1px;
+  }
 
-.modal-footer .btn-block + .btn-block {
-  margin-left: 0;
-}
+  .modal-footer .btn-block + .btn-block {
+    margin-left: 0;
+  }
 </style>
 <script type="text/javascript">
-$(function(){
-  $('#ImportantNotice').modal('show');
- })
+  $(function () {
+    $('#ImportantNotice').modal('show');
+  })
 </script>
- <div id="ImportantNotice" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:9999; width:580px; height:270px;">
+<div id="ImportantNotice" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:9999; width:580px; height:270px;">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h3 id="myModalLabel"><b>重要通知</b></h3>
@@ -118,46 +118,53 @@ $(function(){
   </div>
 </div>
 
-<H2 style="TEXT-ALIGN: center">欢迎使用</H2>
+<H2 style="TEXT-ALIGN: center"><%= flash[:notice] %>欢迎使用</H2>
 <P>尊敬的用户：<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-欢迎您使用检验检测数据管理平台，本平台根据中国食品药品检定研究院特点和需要定制开发，充分发挥了现代信息技术对检验检测数据的管理作用，通过平台有效整合资源、提高工作效率、提升管理水平，进一步推动我院向“精细化管理”转变。平台主要功能如下：<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-1、录入包括保健食品安全检测数据填报表，化妆品安全检测数据填报表、餐饮服务食品安全检测数据填报表；<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2、对需审批的项目进行审批操作；<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3、通过数据统计功能对库内表单进行统计；<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-4、备份数据及查看操作日志；<BR>
-<BR>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  欢迎您使用检验检测数据管理平台，本平台根据中国食品药品检定研究院特点和需要定制开发，充分发挥了现代信息技术对检验检测数据的管理作用，通过平台有效整合资源、提高工作效率、提升管理水平，进一步推动我院向“精细化管理”转变。平台主要功能如下：<BR>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1、录入包括保健食品安全检测数据填报表，化妆品安全检测数据填报表、餐饮服务食品安全检测数据填报表；<BR>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2、对需审批的项目进行审批操作；<BR>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3、通过数据统计功能对库内表单进行统计；<BR>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4、备份数据及查看操作日志；<BR>
+  <BR>
   &nbsp;
 </P>
 <H2 style="TEXT-ALIGN: center">重要通知</H2>
-1、为了保障数据安全，请大家收到用户名和初始密码后尽快登陆，并于5个工作日内修改登陆密码，否则将关闭用户（如：在5月14日总局本级抽检监测承检机构培训班上已公布用户名和密码的本级承检机构数据系统使用人员，请于5月21日前修改各自的登录密码）。<BR>
-2、为了方便工作中的联系，便于各单位使用有关文书，系统已挂出“食品安全抽检监测工作各省局联系方式”、“食品安全抽检监测工作组牵头单位基本信息表”、“食品监督抽检和风险监测实施细则修改单（1号）2014年5月15日”、“食品安全监督抽检和风险监测工作规范（试行）附件”等工作材料，请尽快按需下载。其中，“食品安全监督抽检和风险监测工作规范（试行）附件---局本级任务专用”与“食品抽样检验抽样单编号规则（总局本级专用）”仅适用于承担总局本级食品抽检监测任务的指定承检机构，请承担各省食药局分配的地方食品抽检监测任务的检验机构不要下载。<BR>
+1、为了保障数据安全，请大家收到用户名和初始密码后尽快登陆，并于5个工作日内修改登陆密码，否则将关闭用户（如：在5月14日总局本级抽检监测承检机构培训班上已公布用户名和密码的本级承检机构数据系统使用人员，请于5月21日前修改各自的登录密码）。
+<BR>
+2、为了方便工作中的联系，便于各单位使用有关文书，系统已挂出“食品安全抽检监测工作各省局联系方式”、“食品安全抽检监测工作组牵头单位基本信息表”、“食品监督抽检和风险监测实施细则修改单（1号）2014年5月15日”、“食品安全监督抽检和风险监测工作规范（试行）附件”等工作材料，请尽快按需下载。其中，“食品安全监督抽检和风险监测工作规范（试行）附件---局本级任务专用”与“食品抽样检验抽样单编号规则（总局本级专用）”仅适用于承担总局本级食品抽检监测任务的指定承检机构，请承担各省食药局分配的地方食品抽检监测任务的检验机构不要下载。
+<BR>
 3、“省级食品药品监督管理局委托抽检监测任务合同书（式样）”内容及式样仅供省级食品药品监督管理局作为工作参考。<BR>
 
 <% @welcome_notices.each do |welcome_notice| %>
-      <A  
-        <% if !welcome_notice.url.blank? %>  href="<%= welcome_notice.url%>" target="_blank()"<% end%>
-        <% if welcome_notice.url.blank? && !welcome_notice.attachment_path_file.blank? %>  href="/welcome_notices/<%= welcome_notice.id%>/attachment" <% end%>
-        <% if welcome_notice.red == 1%>  style="color:#F00" <% end%>
-      >
+    <A
+    <% if !welcome_notice.url.blank? %>  href="<%= welcome_notice.url %>" target="_blank()"
+    <% end %>
+    <% if welcome_notice.url.blank? && !welcome_notice.attachment_path_file.blank? %>  href="/welcome_notices/<%= welcome_notice.id %>/attachment"
+    <% end %>
+    <% if welcome_notice.red == 1 %>  style="color:#F00"
+    <% end %>
+    >
       <%= welcome_notice.title %></A>
-      <% if current_user.is_admin? %>
-            <% if welcome_notice.top  !=  0 %><font style="color:#999"><%= welcome_notice.top %>级置顶</font><% end%>
-            &nbsp;&nbsp;&nbsp;<%= link_to '修改', edit_welcome_notice_path(welcome_notice) %>
-            <%= link_to '删除', welcome_notice, method: :delete, data: { confirm: '确定删除？' } %>
-      <% end %>
-      <BR>
+    <% if current_user.is_admin? %>
+        <% if welcome_notice.top != 0 %><font style="color:#999"><%= welcome_notice.top %>级置顶</font>
+        <% end %>
+        &nbsp;&nbsp;&nbsp;<%= link_to '修改', edit_welcome_notice_path(welcome_notice) %>
+        <%= link_to '删除', welcome_notice, method: :delete, data: {confirm: '确定删除？'} %>
+    <% end %>
+    <BR>
 <% end %>
 
 <BR>
-    <% if current_user.is_admin? %>
-        <%= link_to '新建通知', new_welcome_notice_path %><BR><BR>
-    <% end %>
+<% if current_user.is_admin? %>
+    <%= link_to '新建通知', new_welcome_notice_path %><BR><BR>
+<% end %>
 <BR>
 <p>
-国家卫生计生委2015年1月29日发布了<font color="red">关于批准β－半乳糖苷酶为食品添加剂新品种等的公告（2015年 第1号）</font>，请关注，<a target="_blank" href="http://www.nhfpc.gov.cn/sps/s7890/201501/8455dc01b026484ebdef3122808abccd.shtml">点击此处查看</a>
+  国家卫生计生委2015年1月29日发布了<font color="red">关于批准β－半乳糖苷酶为食品添加剂新品种等的公告（2015年
+  第1号）</font>，请关注，<a target="_blank" href="http://www.nhfpc.gov.cn/sps/s7890/201501/8455dc01b026484ebdef3122808abccd.shtml">点击此处查看</a>
 </p>
 <br>
 <font color="red">最新注意事项：</font>关于样品判定结论的说明：全部为监测项目的产品，结论中才可以选择：不判定；其他样品都要根据抽检项目检测结果下结论。对监测项目，如发现被检样品存在安全问题或较高风险问题的，

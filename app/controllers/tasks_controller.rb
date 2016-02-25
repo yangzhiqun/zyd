@@ -63,7 +63,7 @@ class TasksController < ApplicationController
         # 总局本级任务
         if params[:tab].to_i == 0
           # 所有检测机构，按名称排序
-          @jcjgs = JgBsb.where(status: 0)
+          @jg_bsbs = JgBsb.where(status: 0)
 
           # 如果没有选择报送分类B，则不显示
           if @baosong_b.nil?
@@ -72,11 +72,15 @@ class TasksController < ApplicationController
             @tasks = TaskJgBsb.where(sys_province_id: -1, identifier: @baosong_b.identifier)
           end
 
-          @count = TaskJgBsb.select("count(distinct(jg_bsb_id)) as count").where(:sys_province_id => -1).first.count
+          count = TaskJgBsb.select('count(distinct(jg_bsb_id)) as count').where(:sys_province_id => -1)
+          if @baosong_b.present?
+            count = count.where(identifier: @baosong_b.identifier)
+          end
+          @count = count.first.count
         end
       else
         # 省局任务部署
-        @province = SysProvince.level1.find_by_name(session[:user_province])
+        @province = SysProvince.level1.find_by_name(current_user.user_s_province)
         tasks = @province.task_provinces
 
         unless params[:baosong_a].blank?
@@ -152,7 +156,7 @@ class TasksController < ApplicationController
     if params[:jg_id].blank? or params[:dl].blank? or params[:quota].blank?
       render json: {status: 'ERR', msg: '请提供必要参数'}
     else
-      @plan = TaskJgBsb.new(identifier: params[:identifier], sys_province_id: -1, jg_bsb_id: params[:jg_id], :a_category_id => params[:dl], :quota => params[:quota])
+      @plan = TaskJgBsb.new(identifier: params[:identifier], sys_province_id: -1, is_national: true, test_jg_bsb_id: params[:test_jg_id], jg_bsb_id: params[:jg_id], :a_category_id => params[:dl], :quota => params[:quota])
 
       destroy_category_level = 'a_category_id'
 
@@ -214,7 +218,7 @@ class TasksController < ApplicationController
     if params[:jg_id].blank? or params[:dl].blank? or params[:quota].blank?
       render json: {status: 'ERR', msg: '请提供必要参数'}
     else
-      @province = SysProvince.level1.find_by_name(session[:user_province])
+      @province = SysProvince.level1.find_by_name(current_user.user_s_province)
       @plan = TaskJgBsb.new(identifier: params[:identifier], sys_province_id: @province.id, jg_bsb_id: params[:jg_id], :a_category_id => params[:dl], :quota => params[:quota])
 
       destroy_category_level = 'a_category_id'
@@ -249,7 +253,7 @@ class TasksController < ApplicationController
   def assign
     @jg_bsb = current_user.jg_bsb
 
-    @baosong_as = BaosongA.by_identifiers(TaskJgBsb.where('jg_bsb_id = ?', @jg_bsb.id).map{|task| task.identifier})
+    @baosong_as = BaosongA.by_identifiers(TaskJgBsb.where('jg_bsb_id = ?', @jg_bsb.id).map { |task| task.identifier })
 
     unless params[:baosong_a].blank?
       @baosong_a = BaosongA.find_by_name(params[:baosong_a])
@@ -281,7 +285,7 @@ class TasksController < ApplicationController
       @baosong_bs = []
     else
       # ACategory
-      @a_categories = ACategory.select('distinct(a.id), a.*').joins('AS a RIGHT JOIN task_jg_bsbs AS ab ON ab.a_category_id=a.id').where('a.identifier = ? AND ab.jg_bsb_id = ?', @baosong_b.identifier, @jg_bsb.id)
+      @a_categories = ACategory.select('distinct(a_categories.id), a_categories.*').joins('RIGHT JOIN task_jg_bsbs AS ab ON ab.a_category_id=a_categories.id').where('a_categories.identifier = ? AND ab.jg_bsb_id = ?', @baosong_b.identifier, @jg_bsb.id)
 
       # Task
       @tasks = TaskJgBsb.where(:jg_bsb_id => @jg_bsb.id, :sys_province_id => params[:rwly]) #, identifier: @baosong_b.identifier)

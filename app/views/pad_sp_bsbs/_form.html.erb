@@ -627,9 +627,9 @@
             <% if @sp_bsb.sp_s_37.blank? or @sp_bsb.sp_i_state == 1 %>
                 <% if @sampling_users.blank? %>
                     <i class="text-danger">暂无可用抽样人员</i>
-                    <%= f.hidden_field :sp_s_37, :class => "required", :title => "抽样人员" %>
+                    <%= f.hidden_field :sp_s_37_user_id, :class => 'required', :title => '抽样人员' %>
                 <% else %>
-                    <%= f.select :sp_s_37, @sampling_users.map { |user| [user.tname, user.tname] }, {}, :class => "required", :title => "抽样人员" %>
+                    <%= f.select :sp_s_37_user_id, @sampling_users.map { |user| [user.tname, user.id] }, {}, :class => "required", :title => "抽样人员" %>
                 <% end %>
             <% else %>
                 <%= @sp_bsb.sp_s_37 %>
@@ -723,7 +723,7 @@
               <td colspan="26"><%= f.text_field :sp_s_55, :class => "inputText", :style => "width: 600px;height: 19px;margin:8px" %></td>
           <% end %>
         </tr>
-        <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<4&&session[:user_authority_2]==1 %>
+        <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<4&& current_user.user_d_authority_1 == 1 %>
             <tr>
               <td colspan="4">报告分类*</td>
               <td colspan="26">

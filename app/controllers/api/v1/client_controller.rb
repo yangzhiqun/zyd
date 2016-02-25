@@ -1,5 +1,6 @@
 class Api::V1::ClientController < ApplicationController
 	skip_before_filter :session_expiry, :verify_authenticity_token, :authorize
+  skip_before_action :authenticate_user!
 
 	CURRENT_VERSION_CODE = 36
   def version

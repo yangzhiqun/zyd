@@ -1,7 +1,8 @@
 #encoding=UTF-8
 class JgBsbsController < ApplicationController
 
-  before_filter :check_user_role
+  before_filter :check_user_role, except: [:by_province]
+  skip_before_action :authenticate_user!, only: [:by_province]
 
   # GET /jg_bsbs
   # GET /jg_bsbs.json
@@ -169,9 +170,9 @@ class JgBsbsController < ApplicationController
     if !uploaded_io.nil? and accepted_formats.include? File.extname(uploaded_io.original_filename) then
 
 
-      File.open(Rails.root.join('excel', session[:user_name]+(Time.now).to_s+uploaded_io.original_filename), 'wb') do |file|
+      File.open(Rails.root.join('excel', current_user.name + (Time.now).to_s+uploaded_io.original_filename), 'wb') do |file|
         file.write(uploaded_io.read)
-        book = Spreadsheet.open(Rails.root.join('excel', session[:user_name]+(Time.now).to_s+uploaded_io.original_filename))
+        book = Spreadsheet.open(Rails.root.join('excel', current_user.name + (Time.now).to_s + uploaded_io.original_filename))
         sheet1 = book.worksheet 0
         i_num=0
         temp_str=''
@@ -223,6 +224,16 @@ class JgBsbsController < ApplicationController
     end
   end
 
+  def by_province
+    @jg_bsbs = JgBsb.where(jg_province: params[:prov])
+
+    if params[:jg_type].to_i != 0
+      @jg_bsbs = @jg_bsbs.where(jg_type: params[:jg_type].to_i)
+    end
+
+    render json: {status: 'OK', msg: @jg_bsbs.map { |j| [j.jg_name, j.id] }}
+  end
+
   private
   def check_user_role
     return not_found if current_user.nil? or !current_user.is_admin?
@@ -230,7 +241,7 @@ class JgBsbsController < ApplicationController
 
   def jg_bsb_params
     params.require(:jg_bsb).permit(
-        :status, :pdf_sign_rules, :attachment_path_file, :gpsname, :gpspassword, :api_ip_address, :code, :jg_address, :jg_administrion, :jg_bjp_permission, :jg_certification, :jg_contacts, :jg_detection, :jg_enable, :jg_group, :jg_group_category, :jg_higher_level, :jg_hzp_permission, :jg_leader, :jg_name, :jg_sampling, :jg_sp_permission, :jg_tel, :jg_word_area, :jg_province, :jg_email
+        :zipcode, :fax, :jg_type, :city, :country, :status, :pdf_sign_rules, :attachment_path_file, :gpsname, :gpspassword, :api_ip_address, :code, :jg_address, :jg_administrion, :jg_bjp_permission, :jg_certification, :jg_contacts, :jg_detection, :jg_enable, :jg_group, :jg_group_category, :jg_higher_level, :jg_hzp_permission, :jg_leader, :jg_name, :jg_sampling, :jg_sp_permission, :jg_tel, :jg_word_area, :jg_province, :jg_email, super_jg_bsbs: []
     )
   end
 end

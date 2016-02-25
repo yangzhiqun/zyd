@@ -1,17 +1,37 @@
 #encoding: utf-8
 class JgBsb < ActiveRecord::Base
-  # attr_accessible :status, :pdf_sign_rules, :attachment_path_file, :gpsname, :gpspassword, :api_ip_address, :code, :jg_address, :jg_administrion, :jg_bjp_permission, :jg_certification, :jg_contacts, :jg_detection, :jg_enable, :jg_group, :jg_group_category, :jg_higher_level, :jg_hzp_permission, :jg_leader, :jg_name, :jg_sampling, :jg_sp_permission, :jg_tel, :jg_word_area, :jg_province, :jg_email
   validates_presence_of :jg_address, message: '请填写机构地址'
   validates_presence_of :jg_province, message: '请填写机构省份'
-  validates_uniqueness_of :jg_address, message: '机构地址重复'
+  # validates_uniqueness_of :jg_address, message: '机构地址重复'
+  validates_uniqueness_of :code, message: '该编号已存在', scope: [:jg_province], allow_blank: true
   require 'RMagick'
 
-  has_many :jg_bsb_names
+  has_many :jg_bsb_names, dependent: :delete_all
   has_many :jg_bsb_stamps
   has_many :users
+  has_many :jg_bsb_supers, foreign_key: :super_jg_bsb_id
+
+  attr_accessor :super_jg_bsbs
+
+  JG_TYPE = [{
+                 name: '监管部门',
+                 code: 1
+             },
+             {
+                 name: '采样机构',
+                 code: 2
+             },
+             {
+                 name: '检验机构',
+                 code: 3
+             }
+  ]
+
+  after_save :doings_after_save
+  before_save :generate_code
 
   def pdf_sign_rules
-		#return super
+    #return super
     self.jg_bsb_stamps.pluck(:stamp_no).join('#')
   end
 
@@ -36,7 +56,12 @@ class JgBsb < ActiveRecord::Base
   end
 
   def self.find_by_history_name(name)
-    JgBsb.find(JgBsbName.where(name: name).last.jg_bsb_id)
+    jg_name = JgBsbName.where(name: name).last
+    if jg_name.present?
+      JgBsb.find(jg_name.jg_bsb_id)
+    else
+      nil
+    end
   end
 
   def current
@@ -46,6 +71,7 @@ class JgBsb < ActiveRecord::Base
   def all_names
     self.jg_bsb_names.map { |jg_name| jg_name.name }
   end
+
 #=begin
   def jg_name
     if self.current.nil?
@@ -59,6 +85,7 @@ class JgBsb < ActiveRecord::Base
     return nil unless JgBsbName.exists?(name: name)
     return JgBsbName.where(name: name).first.jg_bsb
   end
+
 #=end
 
   def attachments_dir(folder)
@@ -107,5 +134,31 @@ class JgBsb < ActiveRecord::Base
 
   def attachment_path_file
     Rails.application.config.attachment_path + "/" + self.attachment_path unless self.attachment_path.blank?
+  end
+
+  def doings_after_save
+    update_super_jg_bsbs_info
+    ActionController::Base.new.expire_fragment('jg_data', options = nil)
+  end
+
+  def update_super_jg_bsbs_info
+    ids = self.super_jg_bsbs
+    if ids.present?{
+      ids.delete('')
+      ids = ids.map { |j| j.to_i }
+      self.jg_bsb_supers.where('id not in (?)', ids).destroy_all
+      self.jg_bsb_supers.reload
+      (ids - self.jg_bsb_supers.pluck(:id)).each do |i|
+        JgBsbSuper.create(jg_bsb_id: self.id, super_jg_bsb_id: i)
+      end
+      }
+    end
+  end
+
+# 对机构进行编号
+  def generate_code
+    if self.code.blank?
+      self.code = '%.2i' % [((1..99).to_a - JgBsb.where(jg_province: self.jg_province).map { |j| j.code.to_i })[0]]
+    end
   end
 end

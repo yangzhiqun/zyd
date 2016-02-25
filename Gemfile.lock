@@ -48,6 +48,16 @@ GEM
       rails (>= 3, < 5)
     angularjs-rails (1.4.7)
     arel (6.0.0)
+    axiom-types (0.1.1)
+      descendants_tracker (~> 0.0.4)
+      ice_nine (~> 0.11.0)
+      thread_safe (~> 0.3, >= 0.3.1)
+    babel-source (5.8.26)
+    babel-transpiler (0.7.0)
+      babel-source (>= 4.0, < 6)
+      execjs (~> 2.0)
+    bcrypt (3.1.10)
+    bcrypt (3.1.10-x64-mingw32)
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
     browser (1.0.1)
@@ -74,6 +84,8 @@ GEM
     celluloid-supervision (0.20.5)
       timers (>= 4.1.1)
     chronic (0.10.2)
+    coercible (1.0.0)
+      descendants_tracker (~> 0.0.1)
     coffee-rails (4.1.0)
       coffee-script (>= 2.2.0)
       railties (>= 4.0.0, < 5.0)
@@ -85,8 +97,19 @@ GEM
     connection_pool (2.2.0)
     debug_inspector (0.0.2)
     debugger-linecache (1.2.0)
+    descendants_tracker (0.0.4)
+      thread_safe (~> 0.3, >= 0.3.1)
+    devise (3.5.2)
+      bcrypt (~> 3.0)
+      orm_adapter (~> 0.1)
+      railties (>= 3.2.6, < 5)
+      responders
+      thread_safe (~> 0.1)
+      warden (~> 1.2.3)
+    devise-i18n (0.12.1)
     domain_name (0.5.24)
       unf (>= 0.0.5, < 1.0.0)
+    equalizer (0.0.11)
     erubis (2.7.0)
     execjs (2.6.0)
     ffi (1.9.10-x64-mingw32)
@@ -104,6 +127,7 @@ GEM
     httpi (2.4.1)
       rack
     i18n (0.7.0)
+    ice_nine (0.11.1)
     importex (0.1.1)
       spreadsheet (>= 0.6.4.1)
     jbuilder (2.3.2)
@@ -137,6 +161,9 @@ GEM
     nokogiri (1.6.8.rc2-x64-mingw32)
       mini_portile2 (~> 2.1.0)
     nori (2.6.0)
+    orm_adapter (0.5.0)
+    paranoia (2.1.5)
+      activerecord (~> 4.0)
     puma (2.15.3)
     rack (1.6.4)
     rack-test (0.6.3)
@@ -168,9 +195,18 @@ GEM
     rake (10.4.2)
     rdoc (4.2.0)
       json (~> 1.4)
+    react-rails (1.3.1)
+      babel-transpiler (>= 0.7.0)
+      coffee-script-source (~> 1.8)
+      connection_pool
+      execjs
+      rails (>= 3.2)
+      tilt
     redis (3.2.1)
     redis-namespace (1.5.2)
       redis (~> 3.0, >= 3.0.4)
+    responders (2.1.0)
+      railties (>= 4.2.0, < 5)
     rest-client (1.8.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
@@ -205,6 +241,8 @@ GEM
     sdoc (0.4.1)
       json (~> 1.7, >= 1.7.7)
       rdoc (~> 4.0)
+    select2-rails (4.0.1)
+      thor (~> 0.14)
     sexp_processor (4.6.0)
     sidekiq (3.5.3)
       celluloid (~> 0.17.2)
@@ -222,8 +260,6 @@ GEM
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       sprockets (>= 2.8, < 4.0)
-    sqlite3 (1.3.11)
-    sqlite3 (1.3.11-x64-mingw32)
     thor (0.19.1)
     thread_safe (0.3.5)
     tilt (2.0.1)
@@ -244,6 +280,13 @@ GEM
     unf_ext (0.0.7.1)
     unf_ext (0.0.7.1-x64-mingw32)
     useragent (0.16.3)
+    virtus (1.0.5)
+      axiom-types (~> 0.1)
+      coercible (~> 1.0)
+      descendants_tracker (~> 0.0, >= 0.0.3)
+      equalizer (~> 0.0, >= 0.0.9)
+    warden (1.2.3)
+      rack (>= 1.0)
     wasabi (3.5.0)
       httpi (~> 2.0)
       nokogiri (>= 1.4.2)
@@ -271,6 +314,8 @@ DEPENDENCIES
   browser
   byebug
   coffee-rails (~> 4.1.0)
+  devise
+  devise-i18n
   hairtrigger
   importex
   jbuilder (~> 2.0)
@@ -280,26 +325,29 @@ DEPENDENCIES
   mysql2 (~> 0.3.18)
   newrelic_rpm
   nokogiri (>= 1.6.7.rc)
+  paranoia (~> 2.0)
   puma
   rails (= 4.2.4)
+  react-rails
   rest-client
-  rmagick
+  rmagick (~> 2.15.4)
   sass-rails (~> 5.0)
   savon
   sdoc (~> 0.4.0)
+  select2-rails
   sidekiq
   spreadsheet
   spring
-  sqlite3
   turbolinks
   tzinfo-data
   uglifier (>= 1.3.0)
   underscore-rails
   useragent
+  virtus
   web-console (~> 2.0)
   whenever
   wicked_pdf
-  will_paginate (>= 3.0.pre)
+  will_paginate (~> 3.0.5)
   wkhtmltopdf-binary
 
 BUNDLED WITH

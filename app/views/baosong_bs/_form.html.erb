@@ -1,31 +1,31 @@
 <style type="text/css">
-    .category li {
-        list-style: none;
-    }
+  .category li {
+    list-style: none;
+  }
 
-    .category ul {
-        border-right: 1px solid #CECECE;
-    }
+  .category ul {
+    border-right: 1px solid #CECECE;
+  }
 
-    .category-link {
-        line-height: 30px;
-    }
+  .category-link {
+    line-height: 30px;
+  }
 
-    .category-link.active {
-        color: green;
-        text-decoration: underline;
-    }
+  .category-link.active {
+    color: green;
+    text-decoration: underline;
+  }
 
-    .list-group-item-heading {
-        cursor: pointer;
-    }
+  .list-group-item-heading {
+    cursor: pointer;
+  }
 
-    .category .actions{
-        border-bottom: 1px solid #CECECE;
-    }
+  .category .actions {
+    border-bottom: 1px solid #CECECE;
+  }
 </style>
 <script type="text/javascript">
-    app.value('BaosongB', <%= @baosong_b.to_json.html_safe %>);
+  app.value('BaosongB', <%= @baosong_b.to_json.html_safe %>);
 </script>
 <div data-ng-controller="PlanMakerCtrl">
   <div class="form-group">
@@ -35,7 +35,8 @@
 
   <div class="form-group">
     <label>备注：</label>
-    <a href="javascript:void(0);" e-style="width: 400px;" e-rows="10" editable-textarea="baosong_b.note">{{baosong_b.note || '无备注'}}</a>
+    <a href="javascript:void(0);" e-style="width: 400px;" e-rows="10" editable-textarea="baosong_b.note">{{baosong_b.note
+      || '无备注'}}</a>
     <!--p class="help-block">以上为备注</p-->
   </div>
   <div class="form-group">
@@ -238,5 +239,19 @@
   <div x-ng-if="!!selected.d_category_id">
     <hr>
     <button x-ng-click="doSave(selected.d_category_id)" class="btn btn-success btn-sm">保存</button>
+  </div>
+
+  <hr>
+  <div class="well well-sm">
+    <h3>报送分类模板更新</h3>
+    <%= form_for @baosong_b do |f| %>
+        <div class="form-group">
+          <%= f.label '模板文件' %> <a href="/baosong_tmpl.xls">导入模板下载</a>
+          <%= f.file_field :file, :class => "form-control input-sm" %>
+        </div>
+        <div class="actions">
+          <%= f.submit "提交", :class => "btn btn-sm btn-primary", 'data-confirm' => '确定提交报送分类的更新模板吗?此操作比较危险,可能会导致数据的取值问题,提交前请确认风险承受能力.' %>
+        </div>
+    <% end %>
   </div>
 </div>

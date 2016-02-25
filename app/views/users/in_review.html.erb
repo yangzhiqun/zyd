@@ -1,0 +1,11 @@
+<% if !current_user.is_passed? and !current_user.is_rejected? %>
+<p class="text-warning">您的账号正在审核中，请等待审核结果</p>
+<% end %>
+
+<% if current_user.is_rejected? %>
+    <p class="text-danger">您的账号未通过审核。<a href="/users/<%= current_user.id %>/edit">重新申请</a></p>
+<% end %>
+
+<% if current_user.is_passed? %>
+    <p class="text-success">您的账号通过审核。&emsp;<a href="/">回首页</a></p>
+<% end %>

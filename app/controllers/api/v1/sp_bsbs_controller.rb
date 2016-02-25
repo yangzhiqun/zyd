@@ -5,6 +5,7 @@ class Api::V1::SpBsbsController < ApplicationController
 
   skip_before_filter :session_expiry, :verify_authenticity_token
   before_filter :authorize, :except => [:picture, :transfer]
+  skip_before_action :authenticate_user!
 
   before_filter :doorkeeper_authorize!, :only => [:transfer]
 
@@ -135,11 +136,43 @@ class Api::V1::SpBsbsController < ApplicationController
   end
 
   def tasks
-    @tasks = PadSpBsb.where(:sp_i_state => [12, 13, 14, 15, 16], :sp_s_37 => @user.tname)
+    @tasks = PadSpBsb.where(:sp_i_state => [12, 13, 14, 15, 16], sp_s_37_user_id: @user.id)
     respond_to do |format|
       format.json { render :json => {:status => 'OK', :msg => @tasks.as_json(:include => [:sp_bsb_pictures])} }
     end
   end
+
+	def ca_sign
+		@sp_bsb = PadSpBsb.find(params[:id])
+		sign = PadCaSign.new(sp_s_16: @sp_bsb.sp_s_16, pad_sp_bsb_id: @sp_bsb.id, user_cert: params[:userCert], orig_data: params[:origData], signed_data: params[:signedData], user_id: @user.id)
+		if sign.save
+			render json: { status: 'OK', msg: 'OK', ca_sign_id: sign.id}
+		else
+			render json: { status: 'ERR', msg: sign.errors.first.last }
+		end
+	end
+
+	# 生产企业信息
+	def scqy_infos
+		@qys = SpProductionInfo.order('id desc').limit(20)
+
+		if params[:qymc].present?
+			@qys = @qys.where('qymc like ?', "%#{params[:qymc]}%")
+		end
+
+		render json: { status: 'OK', msg: @qys.select('scbh, qymc, scdz') }
+	end
+
+	# 被抽样单位信息
+	def bcydw_infos
+		@bcydws = SpCompanyInfo.order('id desc').limit(20)
+
+		if params[:sp_s_1].present?
+			@bcydws = @bcydws.where('sp_s_1 like ?', "%#{params[:sp_s_1]}%")
+		end
+
+		render json: { status: 'OK', msg: @bcydws.select('sp_s_1, sp_s_201, sp_s_8, sp_s_23, sp_s_215, sp_s_bsfl, sp_s_3, sp_s_4, sp_s_5, sp_s_7, sp_s_12, sp_s_10') }
+	end
 
   def upload_picture
     @sp_bsb_picture = SpBsbPicture.where(:sp_bsb_id => params[:id], :sort_index => params[:sort_index]).first
@@ -231,29 +264,30 @@ class Api::V1::SpBsbsController < ApplicationController
       bsb.sp_s_68 = params[:sp_s_68]
       bsb.sp_s_13 = params[:sp_s_13]
       bsb.sp_s_14 = params[:sp_s_14]
-      unless bsb.check_bsb_validity
-        render json: {status: 'ERR', msg: bsb.errors.first.last }
+      if bsb.check_bsb_validity
+        if bsb.sp_bsb_checked_count_info.blank?
+          render json: {status: 'OK', msg: '营业执照号或生产许可证号或生产企业名称信息不完整, 无法判断有效性.' }
+        else
+          render json: {status: 'OK', msg: bsb.sp_bsb_checked_count_info }
+        end
       else
-        render json: {status: 'OK', msg: "当前填报内容可以提交" }
+        render json: {status: 'ERR', msg: bsb.sp_bsb_checked_count_info }
       end
     end
   end
 
   private
   def authorize
-    unless params[:userCert].blank?
-      client = Savon.client(wsdl: "http://#{Rails.application.config.site[:ca_auth_address]}/webservice/services/SecurityEngineDeal?wsdl")
-      response = client.call(:validate_cert, message: {appName: "SVSDefault", password: params[:userCert]})
-      response_code = response.as_json[:validate_cert_response][:out].to_i
+    if params[:userCert].present?
+			@ca_helper = Bjca::CaHelper.new
+      response_code = @ca_helper.validate_cert(params[:userCert])
 
       if response_code == 1
-        response = client.call(:get_cert_info_by_oid, message: {appName: "SVSDefault", base64EncodeCert: params[:userCert], oid: '1.2.156.112562.2.1.2.2'})
-
-        @SFid = response.as_json[:get_cert_info_by_oid_response][:out].gsub(/SF/, '')
-        @user = User.find_by_id_card(@SFid)
+        sfid = @ca_helper.get_cert_info_by_oid(params[:userCert])
+        @user = User.find_by_id_card(sfid)
 
         if @user.nil?
-          format.json { render :json => {status: 'ERR', msg: '该用户未在系统中登记，请在电脑上登录系统绑定您的KEY', key: @SFid, code: 444} }
+          format.json { render :json => {status: 'ERR', msg: '该用户未在系统中登记，请在电脑上登录系统绑定您的KEY', key: sfid, code: 444} }
           return
         end
 
@@ -263,8 +297,8 @@ class Api::V1::SpBsbsController < ApplicationController
       end
     else
       if !(params[:username].blank? or params[:password].blank?)
-        @user = User.authenticate(params[:username], params[:password])
-        if @user.blank?
+        @user = User.where(uid: params[:username]).last
+        if @user.blank? or !@user.valid_password?(params[:password])
           respond_to do |format|
             format.json {
               render :json => {:status => 'ERR', :msg => '非法访问'}
