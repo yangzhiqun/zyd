@@ -1259,7 +1259,7 @@
     margin-bottom: 5px;
   }
 
-  .selected {
+  #stamp-dlg i.selected {
     color: green;
     position: absolute;
     right: 10px !important;
@@ -1420,7 +1420,7 @@
           <td colspan="3" rowspan="2">样品分类*</td>
           <td colspan="27">
             <span>
-            食品大类&emsp;&emsp;<%= f.select :sp_s_17, options_for_select(@a_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_17), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+              食品大类&emsp;&emsp;<%= f.select :sp_s_17, options_for_select(@a_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_17), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
               食品亚类&emsp;<%= f.select :sp_s_18, options_for_select(@b_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_18), {}, {:style => "width: 220px;"} %>
             </span>
           </td>
@@ -1428,7 +1428,7 @@
         <tr>
           <td colspan="27">
             <span>
-            食品次亚类&emsp;<%= f.select :sp_s_19, options_for_select(@c_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_19), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+              食品次亚类&emsp;<%= f.select :sp_s_19, options_for_select(@c_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_19), {}, {:style => "width: 220px;"} %>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
               食品细类&emsp;<%= f.select :sp_s_20, options_for_select(@d_categories.map { |a| [a.name, a.name, {"data-id" => a.id}] }.unshift(["请选择", nil]), @sp_bsb.sp_s_20), {}, {:style => "width: 220px;"} %>
             </span>
           </td>

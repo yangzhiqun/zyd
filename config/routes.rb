@@ -184,6 +184,10 @@ Rails.application.routes.draw do
       get "cyd"
       get "cyjygzs"
     end
+
+		collection do
+			get 'no_available_pdf_found'
+		end
   end
 
   resources :pad_sp_bsbs do

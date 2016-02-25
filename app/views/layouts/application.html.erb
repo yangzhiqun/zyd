@@ -26,6 +26,25 @@
       });
       <% end %>
     });
+    $(function () {
+      //****一级导航*****//
+      $(".leftmenu .title").live('click', function () {
+        var nextMent = $(this).next('.menuson'), menus = $('.menuson').not(nextMent);
+        menus.slideUp();
+        if (nextMent.is(':visible')) {
+          nextMent.slideUp();
+        } else {
+          nextMent.slideDown();
+        }
+      });
+      //导航切换
+      $(".menuson a").live('click', function () {
+        var parentLi = $(this).parent(), menuLis = $('.menuson li').not(parentLi);
+        menuLis.removeClass('active');
+        parentLi.addClass('active');
+      });
+
+    });
   </script>
   <style type="text/css">
     .collapse + .subnav {
@@ -34,6 +53,10 @@
 
     .subnav.active {
       display: block !important;
+    }
+
+    #nav li a:hover {
+      color: #000 !important;
     }
 
     .subnav .active {
@@ -45,158 +68,612 @@
       position: fixed;
       top: 0;
     }
+
+    * {
+      /*border: 0;*/
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: '微软雅黑';
+      margin: 0 auto;
+      min-width: 980px;
+      font-size: 9pt;
+    }
+
+    ul {
+      display: block;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    li {
+      display: block;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    img {
+      border: 0;
+    }
+
+    dl, dt, dd {
+      margin: 0;
+      padding: 0;
+      display: block;
+    }
+
+    a, a:focus {
+      text-decoration: none;
+      color: #000;
+      outline: none;
+      blr: expression(this.onFocus=this.blur());
+    }
+
+    a:hover {
+      color: #00a4ac;
+      text-decoration: none;
+    }
+
+    table {
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+
+    cite {
+      font-style: normal;
+    }
+
+    h2 {
+      font-weight: normal;
+    }
+
+    .topleft {
+      height: 88px;
+      background: url(<%= asset_path('topleft.jpg') %>) no-repeat;
+      float: left;
+      width: 456px;
+    }
+
+    .topleft img {
+      margin-top: 12px;
+    }
+
+    .topright {
+      height: 88px;
+      background: url(<%= asset_path('topright.jpg') %>) no-repeat right;
+      float: right;
+    }
+
+    .nav1 {
+      float: left;
+      position: absolute;
+      left: 456px;
+    }
+
+    .nav1 li {
+      float: left;
+      width: 87px;
+      height: 88px;
+      text-align: center;
+    }
+
+    .nav1 li a {
+      display: block;
+      width: 87px;
+      height: 88px;
+      -moz-transition: none;
+      transition: background-color 0.3s linear;
+      -moz-transition: background-color 0.3s linear;
+      -webkit-transition: background-color 0.3s linear;
+      -o-transition: background-color 0.3s linear;
+    }
+
+    .mainbox .nav1 li a.selected {
+      background: url(<%= asset_path('navbg.png') %>) no-repeat;
+    }
+
+    .nav1 li a:hover {
+      display: block;
+      background: #000;
+      color: #fff;
+      background: none repeat scroll 0% 0% rgb(43, 127, 181);
+    }
+
+    .nav1 li img {
+      margin-top: 10px;
+    }
+
+    .nav1 li a {
+      display: block;
+      padding: 0;
+    }
+
+    .nav1 a h2 {
+      font-size: 14px;
+      color: #d6e8f1;
+      margin: 0;
+    }
+
+    .nav1 a:hover h2 {
+      color: #fff;
+    }
+
+    .time {
+      display: inline-block;
+      margin-top: 16px;
+      color: #fff;
+    }
+
+    .topright {
+      width: 168px;
+    }
+
+    .user {
+      height: 30px;
+      background: url(<%= asset_path('ub1.png') %>) repeat-x;
+      clear: both;
+      margin-top: 10px;
+      float: right;
+      margin-right: 12px;
+      border-radius: 30px;
+      behavior: url(js/pie.htc);
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .user span {
+      display: inline-block;
+      padding-right: 10px;
+      background: url(<%= asset_path('user.png') %>) no-repeat 15px 10px;
+      line-height: 30px;
+      font-size: 14px;
+      color: #b8ceda;
+      padding-left: 20px;
+      padding-left: 35px;
+    }
+
+    .user a {
+      display: inline-block;
+      height: 18px;
+      padding: 0 5px;
+      background: #f00;
+      text-align: center;
+      font-weight: normal;
+      color: #fff;
+      font-size: 14px;
+      margin-right: 13px;
+      margin-top: 7px;
+      line-height: 18px;
+      border-radius: 5px;
+    }
+
+    .lefttop {
+      background: url(<%= asset_path('lefttop.gif') %>) repeat-x;
+      height: 40px;
+      color: #fff;
+      font-size: 14px;
+      line-height: 40px;
+    }
+
+    .lefttop span {
+      margin-left: 8px;
+      margin-top: 10px;
+      margin-right: 8px;
+      background: url(<%= asset_path('leftico.png') %>) no-repeat;
+      width: 20px;
+      height: 21px;
+      float: left;
+    }
+
+    .leftmenu {
+     /* padding-bottom: 9999px;
+      margin-bottom: -9999px;*/
+      overflow: hidden;
+      background: url(<%= asset_path('leftline.gif') %>) repeat-y right;
+    }
+
+    .leftmenu dd {
+      background: url(<%= asset_path('leftmenubg.gif') %>) repeat-x;
+      line-height: 35px;
+      font-weight: bold;
+      font-size: 9pt;
+      border-right: solid 1px #b7d5df;
+    }
+
+    .leftmenu dd span {
+      float: left;
+      margin: 10px 8px 0 12px;
+      line-height: normal;
+    }
+
+    .leftmenu dd .menuson {
+      display: none;
+    }
+
+    .menuson {
+      line-height: 30px;
+      font-weight: normal;
+    }
+
+    .menuson li {
+      cursor: pointer;
+    }
+
+    .menuson li.active {
+      position: relative;
+      background: url(<%= asset_path('libg.png') %>) repeat-x;
+      line-height: 30px;
+      color: #fff;
+    }
+
+    .menuson li cite {
+      display: block;
+      float: left;
+      margin-left: 32px;
+      background: url(<%= asset_path('list.gif') %>) no-repeat;
+      width: 16px;
+      height: 16px;
+      margin-top: 7px;
+    }
+
+    .menuson li.active cite {
+      background: url(<%= asset_path('list1.gif') %>) no-repeat;
+    }
+
+    .menuson li.active i {
+      display: block;
+      background: url(<%= asset_path('sj.png') %>) no-repeat;
+      width: 6px;
+      height: 11px;
+      position: absolute;
+      right: 0;
+      z-index: 10000;
+      top: 9px;
+      right: -1px;
+    }
+
+    .menuson li a {
+      display: block;
+      *display: inline;
+      *padding-top: 5px;
+    }
+
+    .menuson li.active a {
+      color: #fff;
+    }
+
+    .title {
+      cursor: pointer;
+    }
+
+    .mainbox {
+      padding: 8px;
+      position: relative;
+    }
+
+    .mainleft {
+      padding-right: 298px;
+    }
+
+    .leftinfo {
+      border: #d3dbde solid 1px;
+      height: 290px;
+    }
+
+    .mainright {
+      width: 298px;
+      position: absolute;
+      top: 8px;
+      right: 8px;
+    }
+
+    .dflist {
+      border: #d3dbde solid 1px;
+      width: 288px;
+      height: 290px;
+      float: right;
+    }
+
+    .dflist1 {
+      border: #d3dbde solid 1px;
+      width: 288px;
+      height: 238px;
+      float: right;
+      margin-top: 8px;
+    }
+
+    .listtitle {
+      background: url(<%= asset_path('tbg.png') %>) repeat-x;
+      height: 36px;
+      line-height: 36px;
+      border-bottom: solid 1px #d3dbde;
+      text-indent: 14px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .more1 {
+      float: right;
+      font-weight: normal;
+      color: #307fb1;
+      padding-right: 17px;
+    }
+
+    .maintj {
+      text-align: center;
+    }
+
+    .newlist {
+      padding-left: 14px;
+      padding-top: 15px;
+    }
+
+    .newlist li {
+      line-height: 25px;
+      background: url(<%= asset_path('list2.png') %>) no-repeat 0px 8px;
+      text-indent: 11px;
+    }
+
+    .newlist i {
+      width: 80px;
+      display: block;
+      float: left;
+      font-style: normal;
+    }
+
+    .newlist b {
+      font-weight: normal;
+      color: #7b7b7b;
+      padding-left: 10px;
+    }
+
+    .leftinfos {
+      height: 238px;
+      margin-top: 8px;
+    }
+
+    .infoleft {
+      border: #d3dbde solid 1px;
+      float: left;
+      height: 238px;
+    }
+
+    .inforight {
+      border: #d3dbde solid 1px;
+      float: right;
+      height: 238px;
+    }
+
+    .tooli {
+      padding: 30px 20px;
+    }
+
+    .tooli li {
+      float: left;
+      padding-left: 15px;
+      padding-right: 15px;
+      margin-bottom: 20px;
+    }
+
+    .tooli li span {
+      text-align: center;
+    }
+
+    .tooli li p {
+      line-height: 35px;
+      text-align: center;
+    }
+
   </style>
 </head>
-<body>
+<body style="background-image: url(<%= asset_path('topbg.gif') %>) ;  background-repeat: repeat-x; ">
 <!-- TOP -->
-<div id="top">
-  <%= image_tag('logo.jpg') %>
+<div class="mainbox" style="padding:0; width:100%;">
+  <div class="topleft">
+    <a href="/welcome_notices" target="_parent"><img src="<%= asset_path('logo.png') %>" title="平台首页"/></a>
+  </div>
 
-  <div id="top_right" class="form-inline">
-    <label>欢迎您:<%= current_user.tname %></label>
-    <%= link_to '退出', '/users/sign_out', 'data-method' => :delete, 'data-confirm' => '确定退出吗？', :class => "btn btn-xs btn-link" %>
-    <br>
-    登录时间：<%= current_user.current_sign_in_at.strftime("%Y年%m月%d日 %H:%M:%S") %>
+  <ul class="nav1">
+    <li><a href="/welcome_notices" class="selected"><img src="<%= asset_path('icon01.png') %>" title="系统首页"/>
+      <h2>系统首页</h2></a></li>
+    <li>
+      <a href="#"><img src="<%= asset_path('icon03.png') %>" title="检院主页"/>
+        <h2>检院主页</h2></a></li>
+    <li><a href="/sp_bsbs_download_file?filename=public/shuoming.doc"><img src="<%= asset_path('icon04.png') %>" title="系统说明"/>
+      <h2>系统说明</h2></a></li>
+    <li><a  target="_blank" href="http://www.cfda.gov.cn/WS01/CL1689/"><img src="<%= asset_path('icon02.png') %>" title="常见问题"/>
+      <h2>常见问题</h2></a></li>
+  </ul>
+  <div class="topright">
+    <div class="user">
+      <span> <%= current_user.tname %></span>
+      <a href="/admin/logout">退出</a>
+    </div>
+    <div class="time"><%= (Time.now).strftime("%Y年%m月%d日 %H:%M:%S") %></div>
   </div>
 </div>
 <!-- /TOP -->
-<div class="sys-nav">
-  <ul>
-    <li style="WIDTH: 90px"><a href="/welcome_notices">系统首页</a></li>
-    <li style="WIDTH: 150px"><a href="#" target=_blank>检院主页</a></li>
-    <li style="WIDTH: 200px"><a href="/sp_bsbs_download_file?filename=public/shuoming.doc" target=_blank>系统说明</a></li>
-    <li style="WIDTH: 145px"><a href="#" target=main_content>常见问题</a></li>
-  </ul>
-</div>
 <!-- BANNER -->
-<div class="nav_bg"></div>
+<div style="clear: both;"></div>
 <!-- /BANNER -->
 
-<div class="mainbox">
-  <div class="main_left">
-    <div class="nav-ctner" data-spy="affix" data-offset-top="350">
-      <ul id="nav">
-        <% if current_user.user_i_sp == 1 %>
-            <% if current_user.user_d_authority == 1 %>
-                <li><a style="font-size: 14px; text-align: center" href="/sp_bsbs/new">食品检验数据录入</a></li>
-            <% end %>
-            <% if current_user.user_d_authority_5 == 1 or current_user.user_i_switch == 1 or current_user.user_d_authority == 1 or current_user.user_d_authority_1 == 1 or current_user.user_d_authority_2 == 1 or current_user.user_d_authority_3 == 1 %>
-                <li>
-                  <a style="font-size: 14px; text-align: center" href="/sp_bsbs_spsearch?<%= session[:query] %>">食品检验数据查看</a>
-                </li>
-            <% end %>
-            <% if current_user.yycz_permission.to_i > 0 || current_user.is_admin? %>
-                <li>
-                  <a class="collapse" style="font-size: 14px; text-align: center" href="javascript:void(0);">异议处理</a>
-                  <ul class="subnav <%= "active" if controller?("yycz") %>">
-                    <% if current_user.yyadmin == 1 or current_user.yysl == 1 %>
-                        <li><a class="<%= "active" if action?("dj") %>" href="/yycz/dj">登记</a></li>
-                    <% end %>
-                    <% if current_user.yyadmin == 1 %>
-                        <li><a class="<%= "active" if action?("renew") %>" href="/yycz/renew">延期登记</a></li>
-                    <% end %>
-                    <% if false and current_user.zhxt == 1 %>
-                        <li><a class="<%= "active" if action?("gzap") %>" href="/yycz/gzap">处置工作安排</a></li>
-                    <% end %>
-                    <% if current_user.yyadmin == 1 or current_user.yybl == 1 %>
-                        <li><a class="<%= "active" if action?("cztb") %>" href="/yycz/cztb">处置填报</a></li>
-                    <% end %>
-                    <% if current_user.yyadmin == 1 or current_user.yysh == 1 %>
-                        <li><a class="<%= "active" if action?("czsh") %>" href="/yycz/czsh">处置审核</a></li>
-                    <% end %>
-                  </ul>
-                </li>
-            <% end %>
+<div class="mainbox" style="padding:0; width:100%;">
 
-            <% if current_user.hcz_permission.to_i > 0 || current_user.is_admin? %>
-                <li>
-                  <a class="collapse" style="font-size: 14px; text-align: center" href="javascript:void(0);">核查处置</a>
-                  <ul class="subnav <%= "active" if controller?("wtyp_czbs") %>">
-                    <% if current_user.hcz_czap == 1 or current_user.hcz_admin == 1 %>
-                        <li>
-                          <a class="<%= "active" if controller?("wtyp_czbs") and action?("index") and params[:state].to_i == 0 %>" href="/wtyp_czbs?current_tab=1">核查处置安排</a>
-                        </li>
-                    <% end %>
-                    <% if current_user.hcz_czbl == 1 or current_user.hcz_admin == 1 %>
-                        <li>
-                          <a class="<%= "active" if controller?("wtyp_czbs") and action?("index") and params[:state].to_i == 1 %>" href="/wtyp_czbs_by_state/1?current_tab=1">核查处置办理</a>
-                        </li>
-                    <% end %>
-                    <% if current_user.hcz_czsh == 1 or current_user.hcz_admin == 1 %>
-                        <li>
-                          <a class="<%= "active" if controller?("wtyp_czbs") and action?("index") and params[:state].to_i == 2 %>" href="/wtyp_czbs_by_state/2">核查处置审核</a>
-                        </li>
-                    <% end %>
-                  </ul>
-                </li>
-            <% end %>
-        <% end %>
-        <% if current_user.pad_permission.to_i > 0 || current_user.is_admin? %>
-            <li>
-              <a class="collapse" style="font-size: 14px; text-align: center" href="javascript:void(0);">样品采集</a>
-              <ul class="subnav <%= "active" if controller?("tasks") %>">
-                <% if current_user.rwbs == 1 or current_user.is_admin? %>
-                    <li><a class="<%= "active" if action?("deploy") %>" href="/tasks/deploy">计划部署</a></li>
-                <% end %>
-                <% if current_user.rwxd == 1 or current_user.is_admin? %>
-                    <li><a class="<%= "active" if action?("assign") %>" href="/tasks/assign">任务下达</a></li>
-                <% end %>
-                <li><a class="<%= "active" if action?("check") %>" href="/tasks/check">任务查看</a></li>
+  <div class="main_left" style="background:#f0f9fd; width:15%;">
+    <div class="lefttop"><span></span>操作列表</div>
+    <dl class="leftmenu">
+      <% if current_user.pad_permission.to_i > 0 || current_user.is_admin? %>
+          <dd>
+            <div class="title">
+              <span><img src="<%= asset_path('leftico05.png') %>"/></span>样品采集
+            </div>
+            <ul class="menuson" style="<%= "display: block;" if controller?("tasks") %>">
+              <% if current_user.rwbs == 1 or current_user.is_admin? %>
+                  <li class="<%= "active" if action?("deploy") %>"><cite></cite><a href="/tasks/deploy">计划部署</a><i></i>
+                  </li>
+              <% end %>
+              <% if current_user.rwxd == 1 or current_user.is_admin? %>
+                  <li class="<%= "active" if action?("assign") %>"><cite></cite><a href="/tasks/assign">任务下达</a><i></i>
+                  </li>
+              <% end %>
+              <li class="<%= "active" if action?("check") %>"><cite></cite><a href="/tasks/check">任务查看</a><i></i></li>
+              <% if false and (current_user.rwxd == 1 or current_user.is_admin?) and !current_user.jg_bsb.nil? %>
+                  <li>
+                    <a target="_blank" href="http://210.72.225.133/webgps/logins.aspx?username=<%= current_user.jg_bsb.gpsname %>&pwd=<%= current_user.jg_bsb.gpspassword %>">GPS信息留存</a>
+                  </li>
+              <% end %>
+            </ul>
+          </dd>
+      <% end %>
+      <% if session[:user_sp]==1 %>
 
-                <% if false and (current_user.rwxd == 1 or current_user.is_admin?) and !current_user.jg_bsb.nil? %>
-                    <li>
-                      <a target="_blank" href="http://210.72.225.133/webgps/logins.aspx?username=<%= current_user.jg_bsb.gpsname %>&pwd=<%= current_user.jg_bsb.gpspassword %>">GPS信息留存</a>
-                    </li>
-                <% end %>
-              </ul>
-            </li>
-        <% end %>
-        <% if current_user.pub_xxfb_sh == 1 or current_user.pub_xxfb == 1 %>
-            <li>
-              <a class="collapse" style="font-size: 14px; text-align: center" href="javascript:void(0);">抽检结果发布</a>
-              <ul class="subnav">
-                <li><a href="/sp_bsb_publications/check_duplicate">筛选发布数据</a></li>
-                <!--<li><a href="/sp_bsb_publications">筛选发布数据</a></li>-->
-                <li><a href="">核校发布数据</a></li>
-                <li><a href="">审核发布数据</a></li>
-                <li><a href="">发布数据查询</a></li>
-              </ul>
-            </li>
-        <% end %>
-        <% if current_user.is_admin? %>
-            <% if current_user.name == 'superadmin' %>
-                <li>
-                  <a class="collapse" href="javascript:void(0);" style="font-size: 14px; text-align: center" href="/jg_bsbs">机构信息维护</a>
-                  <ul class="subnav">
-                    <li><a href="/jg_bsbs">机构信息录入</a></li>
-                    <li><a href="/jg_bsbs/merge_request">机构合并</a></li>
-                  </ul>
-                </li>
-                <li><a style="font-size: 14px; text-align: center" href="/sp_production_infos">生产企业库维护</a></li>
-                <li><a style="font-size: 14px; text-align: center" href="/sp_company_infos">被抽样单位库维护</a></li>
-            <% end %>
-            <li><a style="font-size: 14px; text-align: center" href="/baosong_as">报送分类维护</a></li>
-        <% end %>
-        <% if current_user.user_d_authority_1 == 1 or current_user.name == 'superadmin' %>
-            <li><a style="font-size: 14px; text-align: center" href="/company_standards">企业标准库维护</a></li>
-        <% end %>
-        <% if current_user.is_admin? %>
-            <li>
-              <a style="font-size: 14px; text-align: center" target="_blank" href="http://121.52.214.78:88/ExternalPage/BiaoZhunPage/BiaoZhun.aspx">标准查询</a>
-            </li>
-        <% end %>
-        <li><a style="font-size: 14px; text-align: center" href="/users">登录用户管理</a></li>
 
-        <% if current_user.is_account_manager %>
-            <li><a style="font-size: 14px; text-align: center" href="/users/pending">用户审核</a></li>
-        <% end %>
-        <% if current_user.user_i_js == 1 %>
-            <li><a style="font-size: 14px; text-align: center" href="/sample_members">人员信息查看</a></li>
-        <% end %>
-        <li><a style="font-size: 14px; text-align: center" href="/users_changeauthority">用户角色切换</a></li>
-        <!-- <li><a style="font-size: 14px; text-align: center" href="/spkj_bsbs/new">食品现场抽检信息</a></li>-->
-      </ul>
-    </div>
+          <dd>
+            <div class="title">
+              <span><img src="<%= asset_path('leftico01.png') %>"/></span>数据报送
+            </div>
+            <ul class="menuson" style="<%= "display: block;" if controller?("sp_bsbs") or controller?("sp_bsbs_spsearch") %>">
+              <% if session[:user_authority_1]==1 %>
+                  <li class="<%= "active" if action?("new") %>"><cite></cite><a href="/sp_bsbs/new">食品检验数据录入</a>
+                  </li>
+              <% end %>
+              <% if current_user.user_d_authority_5 == 1 or current_user.user_i_switch == 1 or current_user.user_d_authority == 1 or current_user.user_d_authority_1 == 1 or current_user.user_d_authority_2 == 1 or current_user.user_d_authority_3 == 1 %>
+                  <li class="<%= "active" if controller?("sp_bsbs") and action?('spsearch') %>">
+                    <cite></cite><a href="/sp_bsbs_spsearch?<%= session[:query] %>">食品检验数据查看</a>
+                  </li>
+              <% end %>
+            </ul>
+          </dd>
+
+
+
+          <% if current_user.hcz_permission.to_i > 0 || current_user.is_admin? %>
+              <dd>
+                <div class="title">
+                  <span><img src="<%= asset_path('leftico04.png') %>"/></span>核查处置
+                </div>
+                <ul class="menuson" style="<%= "display: block;" if controller?("wtyp_czbs") or controller?("yycz") %>">
+
+                  <% if current_user.yycz_permission.to_i > 0 || current_user.is_admin? %>
+                      <% if current_user.yyadmin == 1 or current_user.yysl == 1 %>
+                          <li class="<%= "active" if action?("dj") %>"><cite></cite><a href="/yycz/dj">登记</a><i></i></li>
+                      <% end %>
+                      <% if current_user.yyadmin == 1 %>
+                          <li class="<%= "active" if action?("renew") %>"><cite></cite><a href="/yycz/renew">延期登记</a><i></i>
+                          </li>
+                      <% end %>
+                      <% if false and current_user.zhxt == 1 %>
+                          <li class="<%= "active" if action?("gzap") %>"><cite></cite><a href="/yycz/gzap">处置工作安排</a></li>
+                      <% end %>
+                      <% if current_user.yyadmin == 1 or current_user.yybl == 1 %>
+                          <li class="<%= "active" if action?("cztb") %>"><cite></cite><a href="/yycz/cztb">处置填报</a><i></i>
+                          </li>
+                      <% end %>
+                      <% if current_user.yyadmin == 1 or current_user.yysh == 1 %>
+                          <li class="<%= "active" if action?("czsh") %>"><cite></cite><a href="/yycz/czsh">处置审核</a><i></i>
+                          </li>
+                      <% end %>
+
+                  <% end %>
+
+                  <% if current_user.hcz_czap == 1 or current_user.hcz_admin == 1 %>
+                      <li class="<%= "active" if controller?("wtyp_czbs") and action?("index") and params[:state].to_i == 0 %>">
+                        <cite></cite><a href="/wtyp_czbs?current_tab=1">核查处置安排</a><i></i></li>
+                  <% end %>
+                  <% if current_user.hcz_czbl == 1 or current_user.hcz_admin == 1 %>
+                      <li class="<%= "active" if controller?("wtyp_czbs") and action?("index") and params[:state].to_i == 1 %>">
+                        <cite></cite><a href="/wtyp_czbs_by_state/1?current_tab=1">核查处置办理</a><i></i></li>
+                  <% end %>
+                  <% if current_user.hcz_czsh == 1 or current_user.hcz_admin == 1 %>
+                      <li class="<%= "active" if controller?("wtyp_czbs") and action?("index") and params[:state].to_i == 2 %>">
+                        <cite></cite><a href="/wtyp_czbs_by_state/2">核查处置审核</a><i></i></li>
+                  <% end %>
+                </ul>
+              </dd>
+          <% end %>
+      <% end %>
+      <dd>
+        <div class="title">
+          <span><img src="<%= asset_path('leftico13.png') %>"/></span><a href="/users_changeauthority">用户角色切换</a>
+        </div>
+      </dd>
+      <% if current_user.pub_xxfb_sh == 1 or current_user.pub_xxfb == 1 %>
+          <dd>
+            <div class="title">
+              <span><img src="<%= asset_path('leftico05.png') %>"/></span>抽检结果发布
+            </div>
+            <ul class="menuson" style="<%= "display: block;" if controller?("sp_bsb_publications") %>">
+              <li class="<%= "active" if action?("check_duplicate") %>">
+                <cite></cite><a href="/sp_bsb_publications/check_duplicate">筛选发布数据</a><i></i></li>
+              <!--<li><cite></cite><a href="/sp_bsb_publications">筛选发布数据</a></li>-->
+              <li><cite></cite><a href="">核校发布数据</a><i></i></li>
+              <li><cite></cite><a href="">审核发布数据</a><i></i></li>
+              <li><cite></cite><a href="">发布数据查询</a><i></i></li>
+            </ul>
+          </dd>
+      <% end %>
+      <% if current_user.is_admin? %>
+          <% if session[:user_name]=='superadmin' %>
+              <dd>
+                <div class="title">
+                  <span><img src="<%= asset_path('leftico06.png') %>"/></span>机构信息维护
+                </div>
+                <ul class="menuson" style="<%= "display: block;" if controller?("jg_bsbs") %>">
+                  <li class="<%= "active" if controller?("jg_bsbs") and action?("index")%>"><cite></cite><a href="/jg_bsbs">机构信息录入</a><i></i>
+                  </li>
+                  <li class="<%= "active" if controller?("jg_bsbs") and action?("merge_request")  %>">
+                    <cite></cite><a href="/jg_bsbs/merge_request">机构合并</a><i></i></li>
+                </ul>
+              </dd>
+              <dd>
+                <div class="title">
+                  <span><img src="<%= asset_path('leftico07.png') %>"/></span><a href="/sp_production_infos">生产企业库维护</a>
+                </div>
+              </dd>
+              <dd>
+                <div class="title">
+                  <span><img src="<%= asset_path('leftico08.png') %>"/></span><a href="/sp_company_infos">被抽样单位库维护</a>
+                </div>
+              </dd>
+          <% end %>
+          <dd>
+            <div class="title">
+              <span><img src="<%= asset_path('leftico09.png') %>"/></span><a href="/baosong_as">报送分类维护</a>
+            </div>
+          </dd>
+      <% end %>
+      <dd>
+        <div class="title">
+          <span><img src="<%= asset_path('leftico12.png') %>"/></span><a href="/users">登录用户管理</a>
+        </div>
+      </dd>
+      <% if current_user.user_i_js == 1 %>
+          <dd>
+            <div class="title">
+              <span><img src="<%= asset_path('leftico12.png') %>"/></span><a href="/sample_members">人员信息查看</a>
+            </div>
+          </dd>
+      <% end %>
+      <% if current_user.user_d_authority_1 == 1 or session[:user_name]=='superadmin' %>
+          <dd>
+            <div class="title">
+              <span><img src="<%= asset_path('leftico10.png') %>"/></span><a href="/company_standards">企业标准库维护</a>
+            </div>
+          </dd>
+      <% end %>
+      <% if current_user.is_admin? %>
+          <dd>
+            <div class="title">
+              <span><img src="<%= asset_path('leftico11.png') %>"/></span><a target="_blank" href="http://121.52.214.78:88/ExternalPage/BiaoZhunPage/BiaoZhun.aspx">标准查询</a>
+            </div>
+          </dd>
+      <% end %>
+    </dl>
+
   </div>
   <div class="main_right">
     <div class="right_content">

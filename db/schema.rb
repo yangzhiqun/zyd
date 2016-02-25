@@ -627,18 +627,6 @@ ActiveRecord::Schema.define(version: 20160225071100) do
 
   add_index "d_categories", ["deleted_at"], name: "index_d_categories_on_deleted_at", using: :btree
 
-  create_table "export_requests", force: :cascade do |t|
-    t.string   "content",     limit: 255
-    t.integer  "user_id",     limit: 4
-    t.datetime "begin_at"
-    t.datetime "end_at"
-    t.string   "result_path", limit: 255
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
-    t.integer  "state",       limit: 4
-    t.datetime "finished_at"
-  end
-
   create_table "flexcontents", force: :cascade do |t|
     t.string   "flex_field",   limit: 255
     t.string   "flex_name",    limit: 255
@@ -1888,8 +1876,8 @@ ActiveRecord::Schema.define(version: 20160225071100) do
     t.string   "scdz",       limit: 255
     t.date     "zsyxq"
     t.string   "zs",         limit: 255
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "spdl",       limit: 255
     t.string   "spyl",       limit: 255
     t.string   "spcyl",      limit: 255
@@ -1907,13 +1895,6 @@ ActiveRecord::Schema.define(version: 20160225071100) do
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
     t.integer  "pub_type",     limit: 4,   default: -1
-  end
-
-  create_table "sp_sort_bsbs", force: :cascade do |t|
-    t.string   "sp_sort_name", limit: 255
-    t.integer  "sp_sort_num",  limit: 4
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
   end
 
   create_table "sp_sta", id: false, force: :cascade do |t|
@@ -2412,8 +2393,6 @@ ActiveRecord::Schema.define(version: 20160225071100) do
     t.string   "prov_city",              limit: 10
     t.string   "prov_country",           limit: 10
     t.datetime "enabled_at"
-    t.boolean  "jbxx_sh",                              default: false
-    t.boolean  "jbxx_jy",                              default: false
     t.boolean  "is_account_manager",                   default: false
     t.datetime "apply_refused_at"
     t.integer  "state",                  limit: 4,     default: 0
@@ -2611,7 +2590,6 @@ ActiveRecord::Schema.define(version: 20160225071100) do
     t.string   "cpkzqk_23",           limit: 255
     t.string   "current_state_desc",  limit: 255
     t.integer  "blr_user_id",         limit: 4
-    t.integer  "czfzr_user_id",       limit: 4
     t.integer  "tbr_user_id",         limit: 4
     t.integer  "shr_user_id",         limit: 4
   end
