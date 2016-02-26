@@ -762,9 +762,12 @@
     <% end %>
     <hr>
     <% @pictures.each do |pic| %>
-        <a style="float: left; margin-right: 10px;" href="/pad_sp_bsbs/<%= pic.sp_bsb_id %>/picture/<%= pic.sort_index %>" target="_blank">
-          <img border="0" width="150" height="150" src="/pad_sp_bsbs/<%= pic.sp_bsb_id %>/picture/<%= pic.sort_index %>.jpeg"/>
+       <!-- <a style="float: left; margin-right: 10px;" href="/pad_sp_bsbs/<%#= pic.sp_bsb_id %>/picture/<%#= pic.sort_index %>" target="_blank">
+          <img border="0" width="150" height="150" src="/pad_sp_bsbs/<%#= pic.sp_bsb_id %>/picture/<%#= pic.sort_index %>.jpeg"/>-->
 
+
+          <a style="float: left; margin-right: 10px;" href="/pad_sp_bsbs/<%= pic.sp_bsb_id %>/picture/<%= pic.sort_index %>.jpeg"  data-lightbox="image" rel="lightbox">
+            <img  border="0" width="150" height="150" src="/pad_sp_bsbs/<%= pic.sp_bsb_id %>/picture/<%= pic.sort_index %>.jpeg" alt=""/>
           <p>
             <% case pic.sort_index
                  when 1 then %><%= "图一" %>

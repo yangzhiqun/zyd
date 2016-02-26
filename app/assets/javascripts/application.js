@@ -73,6 +73,8 @@
 //= require react_ujs
 //= require components
 
+
+//= require lightbox
 $(function(){
   $('#preview').iframeAutoHeight({debug: false});
   
