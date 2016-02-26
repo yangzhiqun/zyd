@@ -71,17 +71,21 @@ class SysProvincesController < ApplicationController
   end
 
   def prov
-    if params[:prov].present?
-      prov = SysProvince.find(params[:prov])
-      @provinces = SysProvince.where('level LIKE ? OR level LIKE ?', "#{prov.level}._", "#{prov.level}.__")
-    end
+		begin
+			if params[:prov].present?
+				prov = SysProvince.find(params[:prov])
+				@provinces = SysProvince.where('level LIKE ? OR level LIKE ?', "#{prov.level}._", "#{prov.level}.__")
+			end
 
-    if params[:city].present?
-      prov = SysProvince.find(params[:city])
-      @provinces = SysProvince.where('level LIKE ? OR level LIKE ?', "#{prov.level}._", "#{prov.level}.__")
-    end
+			if params[:city].present?
+				prov = SysProvince.find_by_id(params[:city])
+				@provinces = SysProvince.where('level LIKE ? OR level LIKE ?', "#{prov.level}._", "#{prov.level}.__")
+			end
 
-    render json: {status: 'OK', msg: (@provinces.select('name, id') if @provinces)}
+			render json: {status: 'OK', msg: (@provinces.select('name, id') if @provinces)}
+		rescue
+			render json: {status: 'OK', msg: []}
+		end
   end
 
   # DELETE /sys_provinces/1
