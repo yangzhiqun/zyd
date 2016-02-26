@@ -592,7 +592,8 @@ class User < ActiveRecord::Base
 
   def cleanup_after_create
     Rails.logger.error 'Do cleaning work after user create'
-    SmsLog.where(sms_type: 'signup', mobile: self.mobile).last.update_attributes(used_at: Time.now)
+    sms = SmsLog.where(sms_type: 'signup', mobile: self.mobile).last
+		sms.update_attributes(used_at: Time.now) unless sms.nil?
     UserAuditLog.create(user_id: self.id, operator_id: self.id, action: UserAuditLog::Action::UserReq, msg: '新注册')
   end
 
