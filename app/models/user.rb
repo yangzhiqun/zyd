@@ -531,8 +531,8 @@ class User < ActiveRecord::Base
       self.uid = "#{'%.2i' % prov.code.to_i}#{'%.2i' % self.jg_bsb.code.to_i }#{'%.2i' % self.function_type.split(',')[0]}"
       Rails.logger.error "CANDICATE PART: #{self.uid}"
 
-      Rails.logger.error User.where('uid LIKE ?', "#{self.uid}%").map { |u| u.uid[7..8].to_i }
-      existed_ids = User.where('uid LIKE ?', "#{self.uid}%").map { |u| u.uid[7..8].to_i }
+      Rails.logger.error User.where('uid LIKE ?', "#{self.uid}%").map { |u| u.uid[6..7].to_i }
+      existed_ids = User.where('uid LIKE ?', "#{self.uid}%").map { |u| u.uid[6..7].to_i }
       Rails.logger.error "Existed IDs: #{existed_ids.to_json}"
       available_ids = (1..99).to_a - existed_ids
       if available_ids.blank?
