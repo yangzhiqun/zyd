@@ -500,7 +500,7 @@ class PadSpBsbsController < ApplicationController
         if params[:pad_sp_bsb][:refuse_reason].blank? or params[:pad_sp_bsb][:accept_file].blank?
           redirect_to :back, :flash => {error: "请填写完整【拒绝信息】和【电子附件】"}
         else
-          if current_user.jg_bsb.all_names.include?(@pad_sp_bsb.sp_s_43) and @sp_bsb.sp_i_state == ::PadSpBsb::Step::FINISHED
+          if current_user.jg_bsb.all_names.include?(@sp_bsb.sp_s_43) and @sp_bsb.sp_i_state == ::PadSpBsb::Step::FINISHED
 
             params[:pad_sp_bsb][:sp_i_state] = ::PadSpBsb::Step::SAMPLE_REFUSED
 

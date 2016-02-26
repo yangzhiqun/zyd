@@ -262,15 +262,18 @@ class UsersController < ApplicationController
   def users_by_jcjg
     @jg_bsb = JgBsb.find_by_jg_name(params[:jcjg])
 
-    if (params[:model] || "yydjb").eql? "yydjb"
-      @users = User.where("jg_bsb_id = ? and yycz_permission & ? > 0", @jg_bsb.id, 0x0000000000100)
-    elsif params[:model].eql? "wtyp_czb"
-      @users = User.where("jg_bsb_id = ? and hcz_permission & ? > 0", @jg_bsb.id, 0x0000000000010)
-    end
-
     respond_to do |format|
-      format.json { render :json => {:status => 'OK', :msg => @users} }
-    end
+			if @jg_bsb.present?
+				format.json { render :json => {:status => 'ERR', :msg => '机构信息不存在'} }
+			else
+				if (params[:model] || "yydjb").eql? "yydjb"
+					@users = User.where("jg_bsb_id = ? and yycz_permission & ? > 0", @jg_bsb.id, 0x0000000000100)
+				elsif params[:model].eql? "wtyp_czb"
+					@users = User.where("jg_bsb_id = ? and hcz_permission & ? > 0", @jg_bsb.id, 0x0000000000010)
+				end
+				format.json { render :json => {:status => 'OK', :msg => @users} }
+			end
+		end
   end
 
   # DELETE /users/1
