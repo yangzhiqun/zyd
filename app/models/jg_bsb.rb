@@ -1,6 +1,6 @@
 #encoding: utf-8
 class JgBsb < ActiveRecord::Base
-  validates_presence_of :jg_address, message: '请填写机构地址'
+  #validates_presence_of :jg_address, message: '请填写机构地址'
   validates_presence_of :jg_province, message: '请填写机构省份'
   # validates_uniqueness_of :jg_address, message: '机构地址重复'
   validates_uniqueness_of :code, message: '该编号已存在', scope: [:jg_province], allow_blank: true
@@ -17,10 +17,10 @@ class JgBsb < ActiveRecord::Base
                  name: '监管部门',
                  code: 1
              },
-             {
-                 name: '采样机构',
-                 code: 2
-             },
+             # {
+             #     name: '采样机构',
+             #     code: 2
+             # },
              {
                  name: '检验机构',
                  code: 3
