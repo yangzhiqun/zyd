@@ -549,14 +549,14 @@
               <% end %>
             </ul>
           </dd>
-          <% if current_user.hcz_permission.to_i > 0 || current_user.is_admin? %>
+          <% if current_user.hcz_permission.to_i > 0 || current_user.yycz_permission.to_i > 0 %>
               <dd>
                 <div class="title">
                   <span><img src="<%= asset_path('leftico04.png') %>"/></span>核查处置
                 </div>
                 <ul class="menuson" style="<%= "display: block;" if controller?("wtyp_czbs") or controller?("yycz") %>">
 
-                  <% if current_user.yycz_permission.to_i > 0 || current_user.is_admin? %>
+                  <%# if current_user.yycz_permission.to_i > 0 || current_user.is_admin? %>
                       <% if current_user.yyadmin == 1 or current_user.yysl == 1 %>
                           <li class="<%= "active" if action?("dj") %>"><cite></cite><a href="/yycz/dj">登记</a><i></i>
                           </li>
@@ -581,7 +581,7 @@
                           </li>
                       <% end %>
 
-                  <% end %>
+                  <%# end %>
 
                   <% if current_user.hcz_czap == 1 or current_user.hcz_admin == 1 %>
                       <li class="<%= "active" if controller?("wtyp_czbs") and action?("index") and params[:state].to_i == 0 %>">
