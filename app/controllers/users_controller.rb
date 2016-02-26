@@ -264,14 +264,14 @@ class UsersController < ApplicationController
 
     respond_to do |format|
 			if @jg_bsb.present?
-				format.json { render :json => {:status => 'ERR', :msg => '机构信息不存在'} }
-			else
 				if (params[:model] || "yydjb").eql? "yydjb"
 					@users = User.where("jg_bsb_id = ? and yycz_permission & ? > 0", @jg_bsb.id, 0x0000000000100)
 				elsif params[:model].eql? "wtyp_czb"
 					@users = User.where("jg_bsb_id = ? and hcz_permission & ? > 0", @jg_bsb.id, 0x0000000000010)
 				end
 				format.json { render :json => {:status => 'OK', :msg => @users} }
+			else
+				format.json { render :json => {:status => 'ERR', :msg => '机构信息不存在'} }
 			end
 		end
   end
