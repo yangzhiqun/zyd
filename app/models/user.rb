@@ -508,7 +508,7 @@ class User < ActiveRecord::Base
     # 检查function_type
     assign_function_type
 
-    if self.uid.blank?
+    if self.mobile.present? and self.uid.blank?
       prov = self.province
       if prov.nil?
         self.errors.add(:uid, '用户省份不存在')

@@ -49,6 +49,10 @@ class ApplicationController < ActionController::Base
       return
     end
 
+    if current_user.present? and current_user.encrypted_password.blank?
+      session[:update_user_id] = current_user.id
+      redirect_to '/update-account'
+		end
   end
 
   # def authorize

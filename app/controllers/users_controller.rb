@@ -1,7 +1,7 @@
 #encoding=UTF-8
 class UsersController < ApplicationController
   include ApplicationHelper
-  skip_before_filter :check_user_info, only: [:update, :in_review, :edit]
+  skip_before_filter :check_user_info, only: [:update_account, :update, :in_review, :edit]
   skip_before_filter :authenticate_user!, only: [:update]
 
   # GET /users
