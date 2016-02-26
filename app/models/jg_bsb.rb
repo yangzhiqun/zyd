@@ -157,7 +157,7 @@ class JgBsb < ActiveRecord::Base
 
 # 对机构进行编号
   def generate_code
-    if self.code.blank?
+    if self.code.to_i == 0 or self.code.blank?
       self.code = '%.2i' % [((1..99).to_a - JgBsb.where(jg_province: self.jg_province).map { |j| j.code.to_i })[0]]
     end
   end
