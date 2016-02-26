@@ -4,6 +4,8 @@ class AdminController < ApplicationController
   skip_before_filter :authorize, :only => [:ca_login]
 
   def login
+		redirect_to '/'
+=begin
     @title = "登录"
     if request.post?
       user = User.authenticate(params[:name], params[:password])
@@ -81,10 +83,14 @@ class AdminController < ApplicationController
         LoginLog.create(:name => params[:name], :action => '登陆失败', :ip => request.env["REMOTE_ADDR"], :os => user_agent_parsed.os, :browser => user_agent_parsed.browser, :brover => user_agent_parsed.version)
       end
     end
+=end
   end
 
 
   def logout
+		redirect_to '/'
+=begin
+		return
     #logger.debug "hello logout"
     user_agent = request.env['HTTP_USER_AGENT']
     user_agent_parsed = UserAgent.parse(request.env['HTTP_USER_AGENT'])
@@ -111,6 +117,7 @@ class AdminController < ApplicationController
 
     flash[:notice] = "logout"
     redirect_to(:action => "login")
+=end
   end
 
   # POST /adduser  
