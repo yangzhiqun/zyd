@@ -655,6 +655,13 @@
           <span><img src="<%= asset_path('leftico12.png') %>"/></span><a href="/users">登录用户管理</a>
         </div>
       </dd>
+      <% if current_user.is_account_manager %>
+      <dd>
+        <div class="title not-expand">
+          <span><img src="<%= asset_path('leftico12.png') %>"/></span><a href="/users/pending">用户审核</a>
+        </div>
+      </dd>
+      <% end %>
       <% if current_user.user_i_js == 1 %>
           <dd>
             <div class="title not-expand">
