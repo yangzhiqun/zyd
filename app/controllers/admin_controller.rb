@@ -158,7 +158,7 @@ class AdminController < ApplicationController
         session[:sfid] = @SFid
         @user = User.find_by_id_card(@SFid)
         if @user.nil? or @user.user_sign.blank?
-          format.json { render :json => {status: 'ERR', msg: '该用户未在系统中登记，请在系统中进行绑定您的KEY', key: @SFid, code: 444} }
+          format.json { render :json => {status: 'ERR', msg: '第一次使用USBKEY登陆系统时，需要与用户在系统中的账号进行绑定，请点击确定按钮进入USBKEY绑定界面。', key: @SFid, code: 444} }
         else
           # TODO 完善CA登陆后逻辑
           sign_in @user
