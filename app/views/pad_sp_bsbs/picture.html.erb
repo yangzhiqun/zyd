@@ -7,10 +7,10 @@
 		float: left;
 	}
 	.rotate.left {
-		background: url('/assets/rotate_left.png');
+		background: url(<%= asset_path('rotate_left.png') %>);
 	}
 	.rotate.right {
-		background: url('/assets/rotate_right.png')
+		background: url(<%= asset_path('rotate_right.png') %>);
 	}
 	.clearfix {
 		clear: both;
@@ -21,7 +21,7 @@
 	}
 	img {
 		display: block;
-		margin: 5px auto;
+		margin: 0px auto;
 	}
 </style>
 <script type="text/javascript">

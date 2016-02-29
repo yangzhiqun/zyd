@@ -1,7 +1,6 @@
 #encoding: utf-8
 class CaHelperController < ApplicationController
-  skip_before_filter :authorize
-  skip_before_filter :session_expiry
+  skip_before_filter :authenticate_user!
 
   def verify_report
 

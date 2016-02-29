@@ -493,7 +493,7 @@
   </ul>
   <div class="topright">
     <div class="user">
-      <span> <%= current_user.tname %></span>
+      <span> <%= current_user.tname if current_user.present?%></span>
       <%= link_to '退出', '/users/sign_out', 'data-method' => :delete, 'data-confirm' => '确定退出吗？' %>
     </div>
     <div class="time"><%= (current_user.current_sign_in_at).strftime("登录时间%m月%d日 %H:%M:%S") %></div>
@@ -549,39 +549,39 @@
               <% end %>
             </ul>
           </dd>
-          <% if current_user.hcz_permission.to_i > 0 || current_user.is_admin? %>
+          <% if current_user.hcz_permission.to_i > 0 || current_user.yycz_permission.to_i > 0 %>
               <dd>
                 <div class="title">
                   <span><img src="<%= asset_path('leftico04.png') %>"/></span>核查处置
                 </div>
                 <ul class="menuson" style="<%= "display: block;" if controller?("wtyp_czbs") or controller?("yycz") %>">
 
-                  <% if current_user.yycz_permission.to_i > 0 || current_user.is_admin? %>
+                  <%# if current_user.yycz_permission.to_i > 0 || current_user.is_admin? %>
                       <% if current_user.yyadmin == 1 or current_user.yysl == 1 %>
-                          <li class="<%= "active" if action?("dj") %>"><cite></cite><a href="/yycz/dj">登记</a><i></i>
+                          <li class="<%= "active" if action?("dj") %>"><cite></cite><a href="/yycz/dj">异议登记</a><i></i>
                           </li>
                       <% end %>
                       <% if current_user.yyadmin == 1 %>
                           <li class="<%= "active" if action?("renew") %>">
-                            <cite></cite><a href="/yycz/renew">延期登记</a><i></i>
+                            <cite></cite><a href="/yycz/renew">异议延期登记</a><i></i>
                           </li>
                       <% end %>
                       <% if false and current_user.zhxt == 1 %>
-                          <li class="<%= "active" if action?("gzap") %>"><cite></cite><a href="/yycz/gzap">处置工作安排</a><i></i>
+                          <li class="<%= "active" if action?("gzap") %>"><cite></cite><a href="/yycz/gzap">异议工作安排</a><i></i>
                           </li>
                       <% end %>
                       <% if current_user.yyadmin == 1 or current_user.yybl == 1 %>
                           <li class="<%= "active" if action?("cztb") %>">
-                            <cite></cite><a href="/yycz/cztb">处置填报</a><i></i>
+                            <cite></cite><a href="/yycz/cztb">异议填报</a><i></i>
                           </li>
                       <% end %>
                       <% if current_user.yyadmin == 1 or current_user.yysh == 1 %>
                           <li class="<%= "active" if action?("czsh") %>">
-                            <cite></cite><a href="/yycz/czsh">处置审核</a><i></i>
+                            <cite></cite><a href="/yycz/czsh">异议审核</a><i></i>
                           </li>
                       <% end %>
 
-                  <% end %>
+                  <%# end %>
 
                   <% if current_user.hcz_czap == 1 or current_user.hcz_admin == 1 %>
                       <li class="<%= "active" if controller?("wtyp_czbs") and action?("index") and params[:state].to_i == 0 %>">
@@ -655,6 +655,13 @@
           <span><img src="<%= asset_path('leftico12.png') %>"/></span><a href="/users">登录用户管理</a>
         </div>
       </dd>
+      <% if current_user.is_account_manager %>
+      <dd>
+        <div class="title not-expand">
+          <span><img src="<%= asset_path('leftico12.png') %>"/></span><a href="/users/pending">用户审核</a>
+        </div>
+      </dd>
+      <% end %>
       <% if current_user.user_i_js == 1 %>
           <dd>
             <div class="title not-expand">

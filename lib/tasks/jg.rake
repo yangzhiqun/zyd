@@ -78,7 +78,7 @@ namespace :jg do
           if jg.save
             puts "标记：#{row[1]}|更新成功：#{row[2]}"
           else
-            puts "标记：#{row[1]}|更新失败：#{row[2]}  #{jg.errors.as_json}"
+            puts "标记：#{row[1]}|更新失败：#{row[2]}|id:#{jg.id}  #{jg.errors.as_json}"
           end
         else
           puts "标签：#{row[1]}|机构不存在：#{row[2]}"
