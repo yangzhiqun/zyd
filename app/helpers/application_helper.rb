@@ -29,6 +29,11 @@ module ApplicationHelper
     end
   end
 
+  # 是否为二级站
+  def is_ejz?
+    SysConfig.get(SysConfig::Key::IS_EJZ).to_i == 1
+  end
+
   def beautify_field(v)
     return "-" if v.blank?
     return v
