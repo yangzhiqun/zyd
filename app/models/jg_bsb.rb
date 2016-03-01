@@ -17,10 +17,10 @@ class JgBsb < ActiveRecord::Base
                  name: '监管部门',
                  code: 1
              },
-             {
-                 name: '采样机构',
-                 code: 2
-             },
+             # {
+             #     name: '采样机构',
+             #     code: 2
+             # },
              {
                  name: '检验机构',
                  code: 3

@@ -1,9 +1,9 @@
 namespace :jg do
   desc "导入机构信息"
   task import_jg_info: :environment do
-    xls_path = Rails.root.join('tmp', 'jginfo.xls')
+    xls_path = Rails.root.join('tmp', 'jginfo2.xls')
     book = Spreadsheet.open(xls_path)
-    book.worksheet(1).each do |row|
+    book.worksheet(0).each do |row|
       row = row.map { |r| r.to_s.strip }
       if row[2].empty? || row[2] == "\\"
       else
@@ -49,7 +49,12 @@ namespace :jg do
           jg.fax = row[16] unless row[16].eql? "\\"
           jg.jg_certification = row[17] unless row[17].eql? "\\"
           jg.jg_word_area = row[18] unless row[18].eql? "\\"
-          jg.code = row[22] unless row[22].eql? "\\"
+
+          if row[22].eql? "\\"
+            jg.code = ""
+          else
+            jg.code = row[22]
+          end
 
           if row[4].eql? "检验机构"
             jg.jg_type = 3
