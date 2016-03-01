@@ -15,20 +15,16 @@
       }
     });
     $('#user_jg_bsb_id').select2();
+    $(".region").ProvinceCity({
+      dprovince: "<%= @user.user_s_province %>",
+      dcity: "<%= @user.prov_city %>",
+      lcity: "<%= @user.prov_country %>"
+    });
   });
 </script>
 <div class="row" style="margin: 0;">
   <div class="col-sm-6 col-sm-offset-3">
     <%= form_for(@user, url: @user.new_record? ? '/manager_create_users' : "/users/#{@user.id}") do |f| %>
-        <script>
-          $(document).ready(function () {
-            $(".region").ProvinceCity({
-              dprovince: "<%= @user.user_s_province %>",
-              dcity: "<%= @user.prov_city %>",
-              lcity: "<%= @user.prov_country %>"
-            });
-          });
-        </script>
         <div class="text-danger"><%= flash[:notice] %></div>
         <% if @user.new_record? %>
             <h4>创建用户</h4>
