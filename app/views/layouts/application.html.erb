@@ -525,8 +525,7 @@
               <% end %>
               <li class="<%= "active" if action?("check") %>"><cite></cite><a href="/tasks/check">任务查看</a><i></i></li>
               <% if (current_user.rwxd == 1 or current_user.is_admin?) and !current_user.jg_bsb.nil? %>
-                  <li>
-                    <a target="_blank" href="http://210.72.225.133/webgps/logins.aspx?username=<%= current_user.jg_bsb.gpsname %>&pwd=<%= current_user.jg_bsb.gpspassword %>">GPS信息留存</a><i></i>
+                  <li><cite></cite><a target="_blank" href="http://210.72.225.133/webgps/logins.aspx?username=<%= current_user.jg_bsb.gpsname %>&pwd=<%= current_user.jg_bsb.gpspassword %>">GPS信息留存</a><i></i>
                   </li>
               <% end %>
             </ul>
