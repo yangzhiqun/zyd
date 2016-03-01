@@ -9,9 +9,9 @@ class SysConfig < ActiveRecord::Base
     CA_PDF_SERVER = 'CA-PDF-SERVER'
   end
 
-  def self.get(key)
+  def self.get(key, default='')
     config = SysConfig.find_by_key(key)
-    return nil if config.nil?
+    return default if config.nil?
     config.value
   end
 

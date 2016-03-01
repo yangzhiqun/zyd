@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html x-ng-app="Sp">
 <head>
-  <title>检验检测数据管理平台</title>
+  <title><%= SysConfig.get(SysConfig::Key::SITE_NAME, '检验检测数据管理平台') %></title>
   <%= stylesheet_link_tag "application", :media => "all" %>
   <%= javascript_include_tag "application" %>
 

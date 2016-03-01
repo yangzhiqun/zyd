@@ -72,8 +72,10 @@ class ConfigController < ApplicationController
   # 网站LOGO图
   def site_logo
     filepath = Rails.application.config.attachment_path + '/' + SysConfig.get(SysConfig::Key::LOGO)
-    if File.exists?(filepath)
+    if !File.directory?(filepath) and File.exists?(filepath)
       send_file filepath, filename: '站点LOGO', disposition: 'inline'
+    else
+      send_file Rails.root.join('assets', 'images', 'logo.png'), disposition: 'inline'
     end
   end
 end
