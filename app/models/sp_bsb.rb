@@ -236,7 +236,7 @@ class SpBsb < ActiveRecord::Base
   # 3. 同一生产企业，同一样品名称，同一生产批次，不能下达第二次；
   def check_bsb_validity
     #return true #if self.sp_s_215.blank? or self.sp_s_13.blank? or %w{抽检监测（总局本级一司） 抽检监测（总局本级三司） 抽检监测（三司专项）}.include?(self.sp_s_70)
-    return true if self.sp_s_215.blank? or self.sp_s_13.blank? or self.sp_s_64.blank? or %w{GC1600333159 GC1600153105 GC1600153106 GC1600153103 GC1600153066 GC1600153070 GC1600333182 GC1600333183 GC1600333160 GC1600333179 GC1600333247 GC1600333202 GC1600333240 GC1600333249 GC1600333181 GC1600333034 GC1600333033 GC1600333180}.include?(self.sp_s_16)
+    return true if self.sp_s_215.blank? or self.sp_s_13.blank? or self.sp_s_64.blank? or %w{GC1600333159 GC1600153105 GC1600153106 GC1600153103 GC1600153066 GC1600153070 GC1600333182 GC1600333183 GC1600333160 GC1600333179 GC1600333247 GC1600333202 GC1600333240 GC1600333249 GC1600333181 GC1600333034 GC1600333033 GC1600333180 GC1551022141 GC1500162095 GC1600153104 GC1600183151 GC1600183035 GC1600153104 GC1600153177 GC1600153037 GC1600153042 GC1600153044 GC1600153119 GC1600153118 GC1600183151 GC1600183035}.include?(self.sp_s_16)
     return true if self.sp_s_reason.present?
     if self.changes[:sp_i_state].present? and [0, 1].include?(self.changes['sp_i_state'][0]) and self.changes['sp_i_state'][1] == 2
       now = Time.now
