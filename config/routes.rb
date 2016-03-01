@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
 
+  match 'config/init_site', via: [:get, :post]
+  get 'site-logo' => 'config#site_logo'
+
   post 'sms_helper/send_msg'
 
   devise_for :users, controllers: {sessions: 'users/sessions', registrations: 'users/registrations'}

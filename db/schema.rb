@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160225182030) do
+ActiveRecord::Schema.define(version: 20160229141802) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -1317,6 +1317,13 @@ ActiveRecord::Schema.define(version: 20160225182030) do
     t.string   "sp_s_213",       limit: 255
     t.string   "sp_s_214",       limit: 255
     t.string   "sp_s_215",       limit: 255
+  end
+
+  create_table "sys_configs", force: :cascade do |t|
+    t.string   "key",        limit: 255
+    t.text     "value",      limit: 65535
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
   end
 
   create_table "sys_provinces", force: :cascade do |t|

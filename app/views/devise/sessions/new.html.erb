@@ -1,74 +1,74 @@
 <style type="text/css">
-    .no-key-tip {
-        color: red;
-    }
+  .no-key-tip {
+    color: red;
+  }
 </style>
 
 <script type="text/javascript">
-    function switchTo(type) {
-        if (type == 0) {
-            $('.login-ca').addClass('hidden');
-            $('.login-normal').removeClass('hidden');
-        } else if (type == 1) {
-            $('.login-normal').addClass('hidden');
-            $('.login-ca').removeClass('hidden');
-        }
-        return false;
+  function switchTo(type) {
+    if (type == 0) {
+      $('.login-ca').addClass('hidden');
+      $('.login-normal').removeClass('hidden');
+    } else if (type == 1) {
+      $('.login-normal').addClass('hidden');
+      $('.login-ca').removeClass('hidden');
     }
+    return false;
+  }
 
-    $(function () {
-        <% unless flash[:error].blank? %>
-        setTimeout(function () {
-            alert('<%= flash[:error] %>');
-        }, 500);
-        <% end %>
-        SetUserCertList('login_form_ca.user_cert_list', CERT_TYPE_ALL);
+  $(function () {
+    <% unless flash[:error].blank? %>
+    setTimeout(function () {
+      alert('<%= flash[:error] %>');
+    }, 500);
+    <% end %>
+    SetUserCertList('login_form_ca.user_cert_list', CERT_TYPE_ALL);
 
-        $('#cert-login').click(function () {
-            var ret = Login('login_form_ca', login_form_ca.user_cert_list.value, login_form_ca.cert_password.value)
-            if (ret) {
-                $('.login-ca *').attr('disabled', 'disabled');
-                $('.logining-tip').removeClass('hidden');
-                var userCert = $('input[name="UserCert"]').val();
-                $.post('/ca_login.json', {
-                    userCert: userCert,
-                    certId: login_form_ca.user_cert_list.value
-                }, function (data) {
-                    if (data.status == 'OK') {
-                        location.href = "/welcome_notices";
-                    } else {
-                        alert(data.msg);
-                        $('.login-ca *').removeAttr('disabled');
-                        if (data.code == 444) {
-                            location.href = "/bind_ca_key";
-                        }
-                    }
-                    $('.logining-tip').addClass('hidden');
-                }, 'json')
+    $('#cert-login').click(function () {
+      var ret = Login('login_form_ca', login_form_ca.user_cert_list.value, login_form_ca.cert_password.value)
+      if (ret) {
+        $('.login-ca *').attr('disabled', 'disabled');
+        $('.logining-tip').removeClass('hidden');
+        var userCert = $('input[name="UserCert"]').val();
+        $.post('/ca_login.json', {
+          userCert: userCert,
+          certId: login_form_ca.user_cert_list.value
+        }, function (data) {
+          if (data.status == 'OK') {
+            location.href = "/welcome_notices";
+          } else {
+            alert(data.msg);
+            $('.login-ca *').removeAttr('disabled');
+            if (data.code == 444) {
+              location.href = "/bind_ca_key";
             }
-            return false;
-        });
-
-        setTimeout(function () {
-            if (!!!login_form_ca.user_cert_list.value) {
-                $('.no-key-tip').removeClass('hidden');
-            } else {
-                $('.no-key-tip').addClass('hidden');
-            }
-        }, 1000);
-
-        SetOnUsbKeyChangeCallBack(function () {
-            setTimeout(function () {
-                if (!!!login_form_ca.user_cert_list.value) {
-                    $('.no-key-tip').removeClass('hidden');
-                } else {
-                    $('.no-key-tip').addClass('hidden');
-                }
-            }, 3000)
-        });
+          }
+          $('.logining-tip').addClass('hidden');
+        }, 'json')
+      }
+      return false;
     });
+
+    setTimeout(function () {
+      if (!!!login_form_ca.user_cert_list.value) {
+        $('.no-key-tip').removeClass('hidden');
+      } else {
+        $('.no-key-tip').addClass('hidden');
+      }
+    }, 1000);
+
+    SetOnUsbKeyChangeCallBack(function () {
+      setTimeout(function () {
+        if (!!!login_form_ca.user_cert_list.value) {
+          $('.no-key-tip').removeClass('hidden');
+        } else {
+          $('.no-key-tip').addClass('hidden');
+        }
+      }, 3000)
+    });
+  });
 </script>
-<DIV class="header"></DIV>
+<img src="/site-logo" width="500" height="120" style="display: block; margin: 15px auto;" alt="站点图片">
 <DIV class="logmainbox">
   <DIV class="left"></DIV>
   <DIV class="right">

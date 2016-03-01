@@ -1,0 +1,52 @@
+<br>
+<div class="container">
+  <h3>站点配置</h3>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <%= form_for @config, {url: '', method: 'post'} do |f| %>
+              <div class="checkbox">
+                <label>
+                  <%= f.check_box :is_ejz %>是否为二级站
+                  <%= show_error(@config.errors, :is_ejz) %>
+                </label>
+              </div>
+              <div class="form-group">
+                <label for="">站点名称<%= show_error(@config.errors, :site_name) %></label>
+                <%= f.text_field :site_name, class: 'form-control input-sm' %>
+              </div>
+              <div class="form-group">
+                <label for="">省份<%= show_error(@config.errors, :prov) %></label>
+                <%= f.select :prov, options_for_select(SysProvince.level1.map { |prov| [prov.name, prov.name] }, @config.prov), {}, {class: 'form-control input-sm'} %>
+              </div>
+              <div class="form-group">
+                <label for="">站点LOGO<%= show_error(@config.errors, :logo_file) %></label>
+                <%= f.file_field :logo_file, class: 'form-control input-sm' %>
+              </div>
+              <hr>
+              <div class="checkbox">
+                <label>
+                  <%= f.check_box :ca_login %>是否允许CA登录
+                  <%= show_error(@config.errors, :ca_login) %>
+                </label>
+              </div>
+              <div class="form-group ca-part hidden">
+                <label for="">CA认证服务器<%= show_error(@config.errors, :ca_auth_server) %></label>
+                <%= f.text_field :ca_auth_server, class: 'form-control input-sm' %>
+              </div>
+              <div class="form-group ca-part hidden">
+                <label for="">CA签章服务器<%= show_error(@config.errors, :ca_pdf_server) %></label>
+                <%= f.text_field :ca_pdf_server, class: 'form-control input-sm' %>
+              </div>
+              <hr>
+              <div class="actions">
+                <button style="width: 100%;" class="btn btn-sm btn-default">提交</button>
+              </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-8"></div>
+  </div>
+</div>
