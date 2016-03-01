@@ -16,7 +16,7 @@
     });
     $('#user_jg_bsb_id').select2();
     $(".region").ProvinceCity({
-      dprovince: "<%= @user.user_s_province %>",
+      dprovince: "<%= is_ejz? ? SysConfig.get(SysConfig::Key::PROV) : @user.user_s_province %>",
       dcity: "<%= @user.prov_city %>",
       lcity: "<%= @user.prov_country %>"
     });
