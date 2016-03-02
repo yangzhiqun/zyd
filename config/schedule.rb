@@ -19,6 +19,15 @@ set :output, "/tmp/cron_log.log"
 
 # Learn more: http://github.com/javan/whenever
 #
-every 5.minutes do
-	runner "SpYydjb.auto_commit_overdue"
+
+every 30.minutes do
+	runner 'SpYydjb.auto_commit_overdue'
+end
+
+every 15.minutes do
+  runner '::HeartbeatWorker.perform_async'
+end
+
+every 10.minutes do 
+  runner '::SyncToQzjWorker.perform_async'
 end
