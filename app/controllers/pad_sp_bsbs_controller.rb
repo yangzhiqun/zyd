@@ -46,7 +46,7 @@ class PadSpBsbsController < ApplicationController
       @options[i] = @options[i].map { |option| [option[:flex_name], option[:flex_id]] }.unshift(['请选择', nil])
     end
 
-    @xkz_options=[['请选择', ''], ['流通许可证', '流通许可证'], ['餐饮服务许可证', '餐饮服务许可证']]
+    @xkz_options=[['请选择', ''], ['经营许可证', '经营许可证'], ['生产许可证', '生产许可证']]
 
     @jg_bsbs = JgBsb.where('status = 0 and jg_sp_permission = 1 and jg_detection = 1', current_user.user_s_province).order('jg_province')
   end
