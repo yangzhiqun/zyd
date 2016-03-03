@@ -352,8 +352,10 @@
         });
         <% if @sp_bsb.sp_s_43.blank? %>
         $("#jg_jg_id").val("<%= current_user.jg_bsb.jg_name %>")
-        $('#jg_jg_id').trigger('change');
+        <% else %>
+        $("#jg_jg_id").val("<%= @sp_bsb.sp_s_43 %>")
         <% end %>
+        $('#jg_jg_id').trigger('change');
     });
 </script>
 <style type="text/css">
