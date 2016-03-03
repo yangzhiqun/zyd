@@ -661,7 +661,7 @@
      * */
     $('#submit1').click(function () {
       //抽检检测总局本级一司/三司抽样编号需以GC1500开头
-      if ($('#sp_bsb_sp_s_16').val().length != 12 || $('#sp_bsb_sp_s_16').val().length != 16) {
+      if ($('#sp_bsb_sp_s_16').val().length != 12 && $('#sp_bsb_sp_s_16').val().length != 16) {
         alert('抽样编号应为12位或者16位');
         return false;
       }
