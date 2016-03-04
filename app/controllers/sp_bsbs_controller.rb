@@ -772,37 +772,37 @@ class SpBsbsController < ApplicationController
         else
           @sp_bsbs = @sp_bsbs.where("sp_i_state between 0 and 10")
       end
-    elsif (session[:change_js]==2||session[:change_js]==3||session[:change_js]==4)&&params[:flag]=="tabs_1"
+    elsif (session[:change_js]==2||session[:change_js]==3||session[:change_js]==4) && ['tabs_1', 'tabs_5'].include?(params[:flag])
       @sp_bsbs = @sp_bsbs.where("sp_i_state = 6")
     elsif (session[:change_js]==2||session[:change_js]==3||session[:change_js]==4)&&params[:flag]=="tabs_2"
       @sp_bsbs = @sp_bsbs.where('sp_i_state IN (7, 8)')
     elsif (session[:change_js]==2||session[:change_js]==3||session[:change_js]==4)&&params[:flag]=="tabs_4"
       @sp_bsbs = @sp_bsbs.where("sp_i_state = 9")
-    elsif (session[:change_js]==1||session[:change_js]==5)&&params[:flag]=="tabs_1"
+    elsif (session[:change_js]==1||session[:change_js]==5) && ['tabs_1', 'tabs_5'].include?(params[:flag])
       @sp_bsbs = @sp_bsbs.where("sp_i_state IN (0, 1, 10)")
     elsif (session[:change_js]==1||session[:change_js]==5)&&params[:flag]=="tabs_2"
       @sp_bsbs = @sp_bsbs.where("sp_i_state between 2 and 8")
     elsif (session[:change_js]==1||session[:change_js]==5)&&params[:flag]=="tabs_4"
       @sp_bsbs = @sp_bsbs.where("sp_i_state = 9")
-    elsif session[:change_js]==6&&params[:flag]=="tabs_1"
+    elsif session[:change_js]==6 && ['tabs_1', 'tabs_5'].include?(params[:flag])
       @sp_bsbs = @sp_bsbs.where("sp_i_state IN (2, 3)")
     elsif session[:change_js]==6&&params[:flag]=="tabs_2"
       @sp_bsbs = @sp_bsbs.where("sp_i_state between 4 and 8")
     elsif session[:change_js]==6&&params[:flag]=="tabs_4"
       @sp_bsbs = @sp_bsbs.where("sp_i_state = 9")
-    elsif session[:change_js]==7&&params[:flag]=="tabs_1"
+    elsif session[:change_js]==7 && ['tabs_1', 'tabs_5'].include?(params[:flag])
       @sp_bsbs = @sp_bsbs.where("sp_i_state = 4")
     elsif session[:change_js]==7&&params[:flag]=="tabs_2"
       @sp_bsbs = @sp_bsbs.where("sp_i_state between 5 and 8")
     elsif session[:change_js]==7&&params[:flag]=="tabs_4"
       @sp_bsbs = @sp_bsbs.where("sp_i_state = 9")
-    elsif session[:change_js]==11&&params[:flag]=="tabs_1"
+    elsif session[:change_js]==11 && ['tabs_1', 'tabs_5'].include?(params[:flag])
       @sp_bsbs = @sp_bsbs.where("sp_i_state = 5")
     elsif session[:change_js]==11&&params[:flag]=="tabs_2"
       @sp_bsbs = @sp_bsbs.where("sp_i_state between 6 and 8")
     elsif session[:change_js]==11&&params[:flag]=="tabs_4"
       @sp_bsbs = @sp_bsbs.where("sp_i_state = 9")
-    elsif session[:change_js]==8&&params[:flag]=="tabs_1"
+    elsif session[:change_js]==8 && ['tabs_1', 'tabs_5'].include?(params[:flag])
       @sp_bsbs = @sp_bsbs.where("sp_i_state = 8")
     elsif session[:change_js]==8&&params[:flag]=="tabs_4"
       @sp_bsbs = @sp_bsbs.where("sp_i_state = 9")
