@@ -26,7 +26,7 @@ module DemoyjsRuby2X
     config.autoload_paths << Rails.root.join('lib')
 
     config.site = {
-        :enable_ca_login => false, 
+        :enable_ca_login => true, 
 	:is_ejz          => true,
 	:is_qzj          => false,
 	:province        => "河北",
