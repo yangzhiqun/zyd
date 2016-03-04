@@ -1,6 +1,6 @@
 #encoding: utf-8
 class SpYydjb < ActiveRecord::Base
-  attr_accessor :session
+  attr_accessor :session, :current_user
 	validates_presence_of :cjbh, message: "抽样单号务必填写"
 
 	validates_presence_of :cjbh, message: "抽样单号务必填写"

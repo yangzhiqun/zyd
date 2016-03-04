@@ -13,6 +13,7 @@ class YyczController < ApplicationController
     @yydjb.yysdsj = Time.now
     @yydjb.djsj = Time.now
     @yydjb.session = session
+    @yydjb.current_user = current_user
 
 
     if @yydjb.fjsqqk == 1
@@ -228,6 +229,7 @@ class YyczController < ApplicationController
   def update
     @djb = SpYydjb.find(params[:id])
     @djb.session = session
+    @djb.current_user = current_user
 
     if params[:current_step_finished].to_i == 1
       case @djb.current_state
@@ -368,6 +370,7 @@ class YyczController < ApplicationController
     
     @djbs.each do |djb|
       djb.session = session
+      djb.current_user = current_user
       djb.thyy = (djb.thyy || "") + "<br>" + "操作时间：" + Time.now.to_s + ", 原因：" + params[:thyy] + ", 操作人员：" + current_user.tname + "(#{current_user.uid})"
       case djb.current_state
       when SpYydjb::State::LOGGED

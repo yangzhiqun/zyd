@@ -77,6 +77,7 @@ class UsersController < ApplicationController
       @users = @users.where('user_d_authority_1 = 1') if @search_form.jbjcsj.to_i == 1
       @users = @users.where('user_d_authority_2 = 1') if @search_form.sbsh.to_i == 1
       @users = @users.where('user_d_authority_5 = 1') if @search_form.sbpz.to_i == 1
+
       if @search_form.qtjg.to_i == 1
         @users = @users.where('user_i_switch = 1')
       else
