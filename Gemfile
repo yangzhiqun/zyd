@@ -77,5 +77,5 @@ gem 'react-rails'
 gem 'select2-rails'
 gem 'virtus'
 
-# https://github.com/rubysherpas/paranoia
-gem "paranoia", "~> 2.0"
+gem 'unirest', '~>1.1.2'
+gem 'sinatra', :require => nil
