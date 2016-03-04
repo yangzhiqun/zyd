@@ -775,12 +775,8 @@
             <% end %>
           </p>
         </a>
-        <% if pic.sort_index == 4 %>
-            <br style="clear:both;">
-            <br style="clear:both;">
-            <br style="clear:both;">
-        <% end %>
     <% end unless @pictures.blank? %>
+		<div class="clearfix"></div>
     <% if current_user.jsyp == 1 and (current_user.user_d_authority_1 == 1 or current_user.user_d_authority == 1) and current_user.jg_bsb.all_names.include?(@sp_bsb.sp_s_43) and @sp_bsb.sp_i_state == ::PadSpBsb::Step::FINISHED %>
         <script type="text/javascript">
             $(function () {
