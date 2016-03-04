@@ -161,11 +161,6 @@
             return;
         });
 
-        $.each(GP, function (index, data) {
-            $("#pad_sp_bsb_sp_s_202").append("<option value='" + data + "'>" + data + "</option>");
-        });
-        $("#pad_sp_bsb_sp_s_202").val('<%=@sp_bsb["sp_s_202"]%>');
-
         $("#print").click(function () {
             $("#my_show").printArea();
         });
