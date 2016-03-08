@@ -6,7 +6,7 @@ development:
   reconnect: false
   database: tdepot_demo_production
   pool: 25
-  username: root
+  usernmae: root
   password: 123456
 
 production:
