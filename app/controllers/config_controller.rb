@@ -18,6 +18,8 @@ class ConfigController < ApplicationController
     attribute :ca_auth_server, String
     attribute :ca_pdf_server, String
     attribute :is_ejz, Integer, default: 1
+    attribute :client_id, String
+    attribute :client_secret, String
 
     def attachments_dir(folder)
       "#{Rails.application.config.attachment_path}/#{folder}"
@@ -55,7 +57,9 @@ class ConfigController < ApplicationController
       and SysConfig.put(SysConfig::Key::CA_LOGIN, self.ca_login) \
       and SysConfig.put(SysConfig::Key::CA_AUTH_SERVER, self.ca_auth_server) \
       and SysConfig.put(SysConfig::Key::CA_PDF_SERVER, self.ca_pdf_server) \
-      and SysConfig.put(SysConfig::Key::IS_EJZ, self.is_ejz)
+      and SysConfig.put(SysConfig::Key::IS_EJZ, self.is_ejz) \
+      and SysConfig.put(SysConfig::Key::CLIENT_ID, self.client_id) \
+      and SysConfig.put(SysConfig::Key::CLIENT_SECRET, self.client_secret)
     end
   end
 

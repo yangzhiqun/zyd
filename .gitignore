@@ -33,3 +33,4 @@ excel/*
 dump.rdb
 *.sql
 docker_database/data/
+database.yml

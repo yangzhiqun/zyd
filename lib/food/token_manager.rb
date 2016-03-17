@@ -7,11 +7,10 @@ module Food
 		attr_accessor :expired_at, :access_token, :created_at
 
 		def initialize
-
-			@client_id = Rails.application.config.site[:client_id]
-			raise Exception.new("未配置client_id") if @client_id.blank?
-			@client_secret = Rails.application.config.site[:client_secret]
-			raise Exception.new("未配置client_secret") if @client_secret.blank?
+			@client_id = SysConfig.get(SysConfig::Key::CLIENT_ID)
+			raise Exception.new('未配置client_id') if @client_id.blank?
+			@client_secret = SysConfig.get(SysConfig::Key::CLIENT_SECRET)
+			raise Exception.new('未配置client_secret') if @client_secret.blank?
 
 			read_from_file
 		end

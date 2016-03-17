@@ -27,8 +27,8 @@ module DemoyjsRuby2X
 
     config.site = {
         enable_ca_login: true,
-        ca_pdf_address: "10.0.39.223",
-        ca_auth_address: "10.0.39.222"
+        ca_pdf_address: '10.0.39.223',
+        ca_auth_address: '10.0.39.222'
     }
 
     config.fail_report_path = File.expand_path('../fail_reports', Rails.root).to_s
