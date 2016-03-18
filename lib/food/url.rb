@@ -1,6 +1,6 @@
 module Food
 	module Url
-		BaseUrl           = Rails.application.config.site[:api_base]
+		BaseUrl           = 'http://qzj.cfda.pub:8800'
 		GetToken          = "/oauth/token"
 		TransferSpBsb     = "/api/v2/sp_bsbs/transfer.json"
 		TransferWtypCzb   = "/api/v2/wtyp_czbs/transfer.json"
