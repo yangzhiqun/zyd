@@ -7,8 +7,8 @@
 <% if current_user.is_admin? %>
     <% #如果当前账户为admin 则 显示 【总局本级】和【转移地方】的任务 %>
     <ul class="nav nav-tabs" role="tablist">
-      <li role="presentation" class="<%= 'active' if params[:tab].to_i == 0 %>"><a href="?tab=0">总局本级</a></li>
-      <li role="presentation" class="<%= 'active' if params[:tab].to_i == 1 %>"><a href="?tab=1">地方承担</a></li>
+      <li role="presentation" class="<%= 'active' if params[:tab].to_i == 0 %>"><a href="?tab=0">总局任务</a></li>
+      <li role="presentation" class="<%= 'active' if params[:tab].to_i == 1 %>"><a href="?tab=1">下级承担</a></li>
     </ul>
     <div class="tab-content">
       <% # 总局本级 %>
