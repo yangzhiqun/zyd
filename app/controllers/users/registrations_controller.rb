@@ -4,18 +4,23 @@ class Users::RegistrationsController < Devise::RegistrationsController
   before_filter :configure_account_update_params, only: [:update]
 
 # GET /resource/sign_up
-# def new
-#   super
-# end
+  def new
+    @province = SysProvince.level1.where(name: SysConfig.get(SysConfig::Key::PROV)).last
+    build_resource({})
+    set_minimum_password_length
+    yield resource if block_given?
+    resource.user_s_province = @province.name
+    respond_with self.resource
+  end
 
-  # POST /resource
+# POST /resource
   def create
     build_resource(sign_up_params)
     if resource.is_signup_sms_code_available?
       super
     else
       respond_to do |format|
-        format.json { render json: {status: 'OK'}}
+        format.json { render json: {status: 'OK'} }
         format.html {
           respond_with resource
         }

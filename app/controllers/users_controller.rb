@@ -439,7 +439,7 @@ class UsersController < ApplicationController
   def pending
     return not_found unless current_user.is_account_manager
     if current_user.user_i_js == 1
-      @pending_users = User.where('state = ? and user_s_province = ?', User::State::ReviewSJ, current_user.user_s_province)
+      @pending_users = User.where('state = ? and user_s_province = ? and prov_city = ?', User::State::ReviewSJ, current_user.user_s_province, current_user.prov_city)
     else
       @pending_users = User.where('state = ? and jg_bsb_id = ?', User::State::ReviewJG, current_user.jg_bsb_id)
     end
