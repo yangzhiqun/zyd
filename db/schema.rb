@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160304131043) do
+ActiveRecord::Schema.define(version: 20160325110125) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -1652,6 +1652,15 @@ ActiveRecord::Schema.define(version: 20160304131043) do
     t.integer  "current_state", limit: 4,     default: 0
   end
 
+  create_table "sp_bsb_stamp_rules", force: :cascade do |t|
+    t.integer  "user_id",     limit: 4
+    t.string   "pdf_rules",   limit: 255
+    t.integer  "sp_bsb_id",   limit: 4
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+    t.string   "report_path", limit: 4096
+  end
+
   create_table "sp_bsbs", force: :cascade do |t|
     t.string   "sp_s_1",                   limit: 255,                  default: ""
     t.datetime "created_at",                                                            null: false
@@ -1795,9 +1804,11 @@ ActiveRecord::Schema.define(version: 20160304131043) do
     t.string   "jyxx_tbr",                 limit: 255,                  default: ""
     t.date     "jyxx_tbsj"
     t.text     "refuse_reason",            limit: 65535
+    t.datetime "deleted_at"
   end
 
   add_index "sp_bsbs", ["application_id"], name: "index_sp_bsbs_on_application_id", using: :btree
+  add_index "sp_bsbs", ["deleted_at"], name: "index_sp_bsbs_on_deleted_at", using: :btree
   add_index "sp_bsbs", ["id"], name: "index_sp_bsbs_on_id", using: :btree
   add_index "sp_bsbs", ["sp_d_86"], name: "index_sp_bsbs_on_sp_d_86", using: :btree
   add_index "sp_bsbs", ["sp_i_state"], name: "index_on_sp_i_state", using: :btree
@@ -1881,7 +1892,10 @@ ActiveRecord::Schema.define(version: 20160304131043) do
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
     t.integer  "user_id",    limit: 4
+    t.datetime "deleted_at"
   end
+
+  add_index "sp_logs", ["deleted_at"], name: "index_sp_logs_on_deleted_at", using: :btree
 
   create_table "sp_production_infos", force: :cascade do |t|
     t.string   "scbh",       limit: 255
@@ -2013,72 +2027,73 @@ ActiveRecord::Schema.define(version: 20160304131043) do
   end
 
   create_table "sp_yydjbs", force: :cascade do |t|
-    t.datetime "created_at",                                      null: false
-    t.datetime "updated_at",                                      null: false
-    t.string   "cjbh",            limit: 60
-    t.string   "ypmc",            limit: 60
-    t.string   "ypgg",            limit: 60
-    t.string   "ypph",            limit: 60
+    t.datetime "created_at",                                         null: false
+    t.datetime "updated_at",                                         null: false
+    t.string   "cjbh",               limit: 60
+    t.string   "ypmc",               limit: 60
+    t.string   "ypgg",               limit: 60
+    t.string   "ypph",               limit: 60
     t.datetime "scrq"
-    t.string   "spdl",            limit: 60
-    t.string   "spyl",            limit: 60
-    t.string   "spcyl",           limit: 60
-    t.string   "spxl",            limit: 60
-    t.string   "jyjl",            limit: 60
-    t.string   "yytcr",           limit: 60
+    t.string   "spdl",               limit: 60
+    t.string   "spyl",               limit: 60
+    t.string   "spcyl",              limit: 60
+    t.string   "spxl",               limit: 60
+    t.string   "jyjl",               limit: 60
+    t.string   "yytcr",              limit: 60
     t.datetime "yytcsj"
     t.datetime "yysdsj"
-    t.string   "yyfl",            limit: 60
-    t.text     "yynr",            limit: 65535
-    t.string   "yyczbm",          limit: 60
-    t.string   "yyczfzr",         limit: 60
-    t.string   "yyczqk",          limit: 60
-    t.string   "yyczzt",          limit: 60
-    t.string   "yyczjg",          limit: 255,   default: "异议处置中"
-    t.integer  "fjsqqk",          limit: 4,     default: 0
-    t.string   "fjzt",            limit: 255,   default: "初检结论"
-    t.string   "fjsqr",           limit: 60
+    t.string   "yyfl",               limit: 60
+    t.text     "yynr",               limit: 65535
+    t.string   "yyczbm",             limit: 60
+    t.string   "yyczfzr",            limit: 60
+    t.string   "yyczqk",             limit: 60
+    t.string   "yyczzt",             limit: 60
+    t.string   "yyczjg",             limit: 255,   default: "异议处置中"
+    t.integer  "fjsqqk",             limit: 4,     default: 0
+    t.string   "fjzt",               limit: 255,   default: "初检结论"
+    t.string   "fjsqr",              limit: 60
     t.datetime "fjsqsj"
     t.datetime "fjslrq"
     t.datetime "fjwcsj"
-    t.string   "fjxm",            limit: 60
-    t.string   "fjjg",            limit: 60
-    t.string   "fjjl",            limit: 60
-    t.string   "fjjgou",          limit: 60
-    t.string   "bljg",            limit: 60
-    t.string   "djbm",            limit: 60
-    t.string   "djr",             limit: 60
+    t.string   "fjxm",               limit: 60
+    t.string   "fjjg",               limit: 60
+    t.string   "fjjl",               limit: 60
+    t.string   "fjjgou",             limit: 60
+    t.string   "bljg",               limit: 60
+    t.string   "djbm",               limit: 60
+    t.string   "djr",                limit: 60
     t.datetime "djsj"
-    t.string   "blbm",            limit: 60
-    t.string   "blr",             limit: 60
+    t.string   "blbm",               limit: 60
+    t.string   "blr",                limit: 60
     t.datetime "blsj"
-    t.string   "tbbm",            limit: 60
-    t.string   "tbr",             limit: 60
+    t.string   "tbbm",               limit: 60
+    t.string   "tbr",                limit: 60
     t.datetime "tbsj"
-    t.string   "shbm",            limit: 60
-    t.string   "shr",             limit: 60
+    t.string   "shbm",               limit: 60
+    t.string   "shr",                limit: 60
     t.datetime "shsj"
-    t.string   "bcydw",           limit: 60
-    t.string   "bcydwsf",         limit: 60
-    t.string   "cydw",            limit: 60
-    t.string   "cydwsf",          limit: 60
-    t.string   "bsscqy",          limit: 60
-    t.string   "bsscqysf",        limit: 60
-    t.string   "jyxm",            limit: 60
-    t.string   "jgpd",            limit: 60
-    t.string   "jyjg",            limit: 60
-    t.integer  "current_state",   limit: 4
-    t.text     "thyy",            limit: 65535
-    t.boolean  "dj_delayed",                    default: false
-    t.integer  "sp_bsb_id",       limit: 4
+    t.string   "bcydw",              limit: 60
+    t.string   "bcydwsf",            limit: 60
+    t.string   "cydw",               limit: 60
+    t.string   "cydwsf",             limit: 60
+    t.string   "bsscqy",             limit: 60
+    t.string   "bsscqysf",           limit: 60
+    t.string   "jyxm",               limit: 60
+    t.string   "jgpd",               limit: 60
+    t.string   "jyjg",               limit: 60
+    t.integer  "current_state",      limit: 4
+    t.text     "thyy",               limit: 65535
+    t.boolean  "dj_delayed",                       default: false
+    t.integer  "sp_bsb_id",          limit: 4
     t.date     "gzscqyrq"
     t.date     "gzbcydwrq"
-    t.string   "attachment_path", limit: 255
-    t.string   "attachments",     limit: 255
-    t.integer  "djr_user_id",     limit: 4
-    t.integer  "blr_user_id",     limit: 4
-    t.integer  "tbr_user_id",     limit: 4
-    t.integer  "shr_user_id",     limit: 4
+    t.string   "attachment_path",    limit: 255
+    t.string   "attachments",        limit: 255
+    t.integer  "djr_user_id",        limit: 4
+    t.integer  "blr_user_id",        limit: 4
+    t.integer  "tbr_user_id",        limit: 4
+    t.integer  "shr_user_id",        limit: 4
+    t.string   "sh_attachment_path", limit: 100
   end
 
   create_table "spdata", force: :cascade do |t|
@@ -2104,8 +2119,10 @@ ActiveRecord::Schema.define(version: 20160304131043) do
     t.string   "spdata_16",  limit: 255
     t.string   "spdata_17",  limit: 255
     t.string   "spdata_18",  limit: 255
+    t.datetime "deleted_at"
   end
 
+  add_index "spdata", ["deleted_at"], name: "index_spdata_on_deleted_at", using: :btree
   add_index "spdata", ["sp_bsb_id"], name: "index_spdata_on_sp_bsb_id", using: :btree
 
   create_table "spkj_bsbs", force: :cascade do |t|
@@ -2629,6 +2646,15 @@ ActiveRecord::Schema.define(version: 20160304131043) do
     t.integer  "czfzr_user_id",       limit: 4
     t.integer  "tbr_user_id",         limit: 4
     t.integer  "shr_user_id",         limit: 4
+    t.string   "sp_s_220",            limit: 20
+    t.string   "sp_s_221",            limit: 20
+    t.string   "SPDL",                limit: 20
+    t.string   "SPYL",                limit: 20
+    t.string   "SPCYL",               limit: 20
+    t.string   "SPXL",                limit: 20
+    t.string   "xc_attachment_path",  limit: 100
+    t.string   "pc_attachment_path",  limit: 100
+    t.string   "xz_attachment_path",  limit: 100
   end
 
   add_index "wtyp_czb_parts", ["cjbh"], name: "index_wtyp_czb_parts_on_cjbh", using: :btree
@@ -2739,8 +2765,15 @@ ActiveRecord::Schema.define(version: 20160304131043) do
     t.string   "cydwsf",                 limit: 60
     t.string   "bsscqymc",               limit: 60
     t.datetime "scrq"
+    t.string   "sp_s_220",               limit: 20
+    t.string   "sp_s_221",               limit: 20
+    t.string   "SPDL",                   limit: 20
+    t.string   "SPYL",                   limit: 20
+    t.string   "SPCYL",                  limit: 20
+    t.string   "SPXL",                   limit: 20
   end
 
+  add_index "wtyp_czbs", ["bsscqymc"], name: "index_wtyp_czbs_on_bsscqymc", using: :btree
   add_index "wtyp_czbs", ["wtyp_sp_bsbs_id"], name: "index_sp_bsbs_id", using: :btree
 
   create_table "xsbg_tt_data", force: :cascade do |t|
