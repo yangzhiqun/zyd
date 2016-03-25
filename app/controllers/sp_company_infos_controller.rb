@@ -27,7 +27,7 @@ class SpCompanyInfosController < ApplicationController
   def new
     @sp_company_info = SpCompanyInfo.new
     @options = []
-    @options[68]=Flexcontent.find_all_by_flex_field("sp_bsb_sp_s_68",:order=>"flex_sortid ASC")
+    @options[68]=Flexcontent.where(flex_field: 'sp_bsb_sp_s_68').order('flex_sortid ASC')
     @options[68]=@options[68].map{|option|[option[:flex_name],option[:flex_id]]}
 
     respond_to do |format|
