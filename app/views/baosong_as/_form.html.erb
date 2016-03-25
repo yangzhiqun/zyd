@@ -1,31 +1,33 @@
 <div class="panel panel-default">
   <div class="panel-body">
     <%= form_for(@baosong_a) do |f| %>
-      <div class="field">
-        <label>报送分类A：</label>
+        <div class="field">
+          <label>报送分类A：</label>
+          <br>
+          <%= f.text_field :name, :class => "form-control input-sm" %>
+        </div>
         <br>
-        <%= f.text_field :name, :class => "form-control input-sm"%>
-      </div>
-      <br>
-      <div class="field">
-        <label>备注：</label>
+        <div class="field">
+          <label>备注：</label>
+          <br>
+          <%= f.text_field :note, :class => "form-control input-sm" %>
+        </div>
         <br>
-        <%= f.text_field :note, :class => "form-control input-sm" %>
-      </div>
-      <div class="field">
-        <label>任务来源类型：</label><font style="font-size:10px; color:#999">如国家/省级</font>
+        <div class="field">
+          <label>任务来源类型：</label><b style="font-size:10px; color:#999">如省局/市局</b>
+          <br>
+          <%= f.text_field :rwlylx, :class => "form-control input-sm" %>
+        </div>
         <br>
-        <%= f.text_field :rwlylx, :class => "form-control input-sm" %>
-      </div>
-      <div class="field">
-        <label>省份</label>
+        <div class="field">
+          <label>市/区</label>
+          <br>
+          <%= f.select :prov, options_for_select(SysProvince.level1.map { |p| [p.name, p.name] }.unshift(['不限制', nil]), @baosong_a.prov), {}, :class => 'form-control input-sm' %>
+        </div>
         <br>
-        <%= f.select :prov, options_for_select(SysProvince.level1.map{|p| [p.name, p.name]}.unshift(["不限制", nil]), @baosong_a.prov), {}, :class => "form-control input-sm"%>
-      </div>
-      <br>
-      <div class="actions">
-        <%= f.submit "保存", :class => "btn-sm btn-primary btn" %>
-      </div>
+        <div class="actions">
+          <%= f.submit "保存", :class => "btn-sm btn-primary btn" %>
+        </div>
     <% end %>
   </div>
 </div>

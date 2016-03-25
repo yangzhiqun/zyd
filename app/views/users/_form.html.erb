@@ -77,15 +77,15 @@
               <%= @user.user_s_province %>
               <%= f.select :user_s_province, '', {}, :class => 'hidden', :id => 'province' %>
               <% if current_user.is_prov_manager? %>
-                  <%= @user.user_s_province %>
-                  <%= f.select :user_s_city, '', {}, :class => 'hidden', :id => 'city' %>
+                  <%= @user.prov_city %>
+                  <%= f.select :prov_city, '', {}, :class => 'hidden', :id => 'city' %>
               <% else %>
-                  <%= f.select :user_s_city, '', {}, :class => 'form-control input-sm', :id => 'city' %>
+                  <%= f.select :prov_city, '', {}, :class => 'form-control input-sm', :id => 'city' %>
               <% end %>
-              <%= f.select :user_s_lcity, '', {}, :class => 'form-control input-sm', :id => 'lcity' %>
+              <%= f.select :prov_country, '', {}, :class => 'form-control input-sm', :id => 'lcity' %>
             </div>
         <% else %>
-            <%= "#{@user.user_s_province}/#{@user.user_s_city}/#{@user.user_s_lcity}" %>
+            <%= "#{@user.user_s_province}/#{@user.prov_city}/#{@user.prov_country}" %>
         <% end %>
 
         <br>

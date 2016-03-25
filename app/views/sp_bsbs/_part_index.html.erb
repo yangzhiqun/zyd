@@ -159,7 +159,7 @@
 					<% else %>
           <%= link_to '已完全提交', "/sp_bsbs/#{sp_bsb.id}", :class => 'btn btn-info btn-xs center-block' %>
 					<% end %>
-          <a href="/sp_bsbs/<%= sp_bsb.id%>/print.pdf" class="print-sp-bsb btn btn-xs btn-link center-block" target="_blank">打印</a>
+          <a href="/sp_bsbs/<%= sp_bsb.id%>/print" class="print-sp-bsb btn btn-xs btn-link center-block" target="_blank">打印</a>
         <% elsif sp_bsb.sp_i_state == 10 %>
           <%= link_to '批量导入待入库', "/sp_bsbs/#{sp_bsb.id}/edit", :class => 'btn btn-info btn-xs center-block' %>
         <% end %>

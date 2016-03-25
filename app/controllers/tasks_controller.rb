@@ -80,7 +80,7 @@ class TasksController < ApplicationController
         end
       else
         # 省局任务部署
-        @province = SysProvince.level1.find_by_name(current_user.user_s_province)
+        @province = SysProvince.level1.find_by_name(current_user.prov_city)
         tasks = @province.task_provinces
 
         unless params[:baosong_a].blank?
@@ -111,7 +111,8 @@ class TasksController < ApplicationController
         @count = @delegates.count
 
         # TODO: 如何精准筛选剩余部分
-        @jcjgs = JgBsb.where(:jg_sampling => 1, status: 0)
+        @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0)
+        @jyjgs = JgBsb.where(:jg_detection => 1, status: 0)
       end
     end
   end
@@ -218,7 +219,7 @@ class TasksController < ApplicationController
     if params[:jg_id].blank? or params[:dl].blank? or params[:quota].blank?
       render json: {status: 'ERR', msg: '请提供必要参数'}
     else
-      @province = SysProvince.level1.find_by_name(current_user.user_s_province)
+      @province = SysProvince.level1.find_by_name(current_user.prov_city)
       @plan = TaskJgBsb.new(identifier: params[:identifier], sys_province_id: @province.id, jg_bsb_id: params[:jg_id], :a_category_id => params[:dl], :quota => params[:quota])
 
       destroy_category_level = 'a_category_id'
