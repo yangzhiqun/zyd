@@ -36,7 +36,7 @@ $(function(){
               </div>
               <div class="form-group">
                 <label for="">省份<%= show_error(@config.errors, :prov) %></label>
-                <%= f.select :prov, options_for_select(SysProvince.level1.map { |prov| [prov.name, prov.name] }, @config.prov), {}, {class: 'form-control input-sm'} %>
+                <%= f.select :prov, options_for_select(SysProvince.where("level like '_' or level like '__'").map { |prov| [prov.name, prov.name] }, @config.prov), {}, {class: 'form-control input-sm'} %>
               </div>
               <div class="form-group">
                 <label for="">站点LOGO<%= show_error(@config.errors, :logo_file) %></label>
