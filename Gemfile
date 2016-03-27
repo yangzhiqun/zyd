@@ -76,6 +76,6 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
 gem 'react-rails'
 gem 'select2-rails'
 gem 'virtus'
-
 gem 'unirest', '~>1.1.2'
 gem 'sinatra', :require => nil
+gem "paranoia", "~> 2.0"
