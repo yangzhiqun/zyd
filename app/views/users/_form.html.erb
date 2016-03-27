@@ -76,12 +76,7 @@
             <div class="region form-inline">
               <%= @user.user_s_province %>
               <%= f.select :user_s_province, '', {}, :class => 'hidden', :id => 'province' %>
-              <% if current_user.is_prov_manager? %>
-                  <%= @user.prov_city %>
-                  <%= f.select :prov_city, '', {}, :class => 'hidden', :id => 'city' %>
-              <% else %>
-                  <%= f.select :prov_city, '', {}, :class => 'form-control input-sm', :id => 'city' %>
-              <% end %>
+							<%= f.select :prov_city, '', {}, :class => 'form-control input-sm', :id => 'city' %>
               <%= f.select :prov_country, '', {}, :class => 'form-control input-sm', :id => 'lcity' %>
             </div>
         <% else %>

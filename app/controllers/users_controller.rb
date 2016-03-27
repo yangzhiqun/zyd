@@ -133,7 +133,7 @@ class UsersController < ApplicationController
   # GET /users/new.xml
   def new
     if current_user.name == 'superadmin'
-      @user = User.new
+      @user = User.new(user_s_province: SysConfig.get(SysConfig::Key::PROV))
       respond_to do |format|
         format.html # new.html.erb
         format.xml { render :xml => @user }
