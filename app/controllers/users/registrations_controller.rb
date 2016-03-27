@@ -5,7 +5,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
 # GET /resource/sign_up
   def new
-    @province = SysProvince.level1.where(name: SysConfig.get(SysConfig::Key::PROV)).last
+    @province = SysProvince.where("level like '_' or level like '__'").where(name: SysConfig.get(SysConfig::Key::PROV)).last
     build_resource({})
     set_minimum_password_length
     yield resource if block_given?
