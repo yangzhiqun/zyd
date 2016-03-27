@@ -541,14 +541,14 @@ class User < ActiveRecord::Base
         return false
       end
       self.uid = "#{self.uid}#{'%.2i' % available_ids.first.to_i }"
-      Rails.logger.error "message send result: #{send_sms_msg({uid: self.uid}, TMPL_CODE[:SFYZ])}"
+      Rails.logger.error "message send result: #{send_sms_msg({platform: "#{SysConfig.get(SysConfig::Key::PROV)}食品抽检报送平台",uid: self.uid}, TMPL_CODE[:SFYZ])}"
     end
     return true
   end
 
   API_URL = 'http://gw.api.taobao.com/router/rest?%s'
   TMPL_CODE = {
-      SFYZ: 'SMS_4025594',
+      SFYZ: 'SMS_6700288',
   }
 
   def send_sms_msg(params, template_code)
