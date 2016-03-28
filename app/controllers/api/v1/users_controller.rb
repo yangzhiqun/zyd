@@ -31,9 +31,9 @@ class Api::V1::UsersController < ApplicationController
 
   def auth
     respond_to do |format|
-      if params[:device_uuid].blank?
-        format.json { render :json => {:status => 'ERR', :msg => '设备非法'} }
-      else
+      #if params[:device_uuid].blank?
+      #  format.json { render :json => {:status => 'ERR', :msg => '设备非法'} }
+      #else
         if @user.device_uuid.blank?
           @user.device_uuid = params[:device_uuid]
           if @user.save
@@ -48,7 +48,7 @@ class Api::V1::UsersController < ApplicationController
           #	format.json { render :json => {:status => 'ERR', :msg => '登录失败，当前用户无法使用该设备'}}
           #end
         end
-      end
+      #end
     end
   end
 

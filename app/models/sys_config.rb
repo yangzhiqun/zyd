@@ -4,6 +4,8 @@ class SysConfig < ActiveRecord::Base
     PROV = 'province'
     SITE_NAME = 'sitename'
     IS_EJZ = 'IS-EJZ'
+    CLIENT_ID = 'client_id'
+    CLIENT_SECRET = 'client_secret'
     CA_LOGIN = 'CA-LOGIN'
     CA_AUTH_SERVER = 'CA-AUTH-SERVER'
     CA_PDF_SERVER = 'CA-PDF-SERVER'

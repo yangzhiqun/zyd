@@ -48,7 +48,7 @@ class PadSpBsbsController < ApplicationController
 
     @xkz_options=[['请选择', ''], ['经营许可证', '经营许可证'], ['生产许可证', '生产许可证']]
 
-    @jg_bsbs = JgBsb.where('status = 0 and jg_sp_permission = 1 and jg_detection = 1', current_user.user_s_province).order('jg_province')
+    @jg_bsbs = JgBsb.where('status = 0 and jg_detection = 1').order('jg_province')
   end
 
   #2014-01-12

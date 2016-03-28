@@ -35,6 +35,7 @@ module DemoyjsRuby2X
 	:api_base        => "http://qzj.cfda.pub"
 	    }
 
+
     config.fail_report_path = File.expand_path('../fail_reports', Rails.root).to_s
     config.attachment_path = File.expand_path('../attachments', Rails.root).to_s
 

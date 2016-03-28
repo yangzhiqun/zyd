@@ -4,7 +4,7 @@ development:
   #host: mysql_database
   encoding: utf8
   reconnect: false
-  database: depot_demo_production
+  database: depot_demo_development
   pool: 25
   username: root
   password: 123456
@@ -15,6 +15,6 @@ production:
   reconnect: false
   database: depot_demo_production
   pool: 25
-  #host: '10.0.39.208'
-  username: root
-  password: 123456
+  host: '10.0.39.208'
+  username: lb
+  password: Just1234
