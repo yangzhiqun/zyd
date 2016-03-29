@@ -5,31 +5,44 @@
 </style>
 <script type="text/javascript" charset="utf-8">
   $(function () {
-    $('#jg-province').select2({theme: 'bootstrap', placeholder: '请选择省份'});
+    $('#jg-province, #jg-city').select2({placeholder: '请选择省份'});
+    $('#jg-province').change(function () {
+      var o = $(this);
+      if (o.val() == '') return false;
+      $('#jg-city').empty();
+
+      $.get('/prov.json', {prov: o.find('option:selected').attr('data-id')}, function (data) {
+        $('<option value="">-请选择-</option>').appendTo($('#jg-city'));
+        $.each(data.msg, function (i, item) {
+          $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#jg-city'));
+        });
+        $('#jg-city').select2({placeholder: '请选择市/区'});
+      }, 'json');
+    }).trigger('change');
   });
 </script>
 <h1 align="center">机构列表</h1>
 <form action="/jg_bsbs" method="GET">
   <table class="table table-bordered">
     <tr>
-      <td>机构名称</td>
-      <td><input class="form-control input-sm" name="name" type="text" value="<%= params[:name] %>"></td>
-      <td>联系人</td>
-      <td><input class="form-control input-sm" name="contact" type="text" value="<%= params[:contact] %>"></td>
-      <td>省份</td>
+      <td width="80">机构名称</td>
+      <td width="200"><input class="form-control input-sm" name="name" type="text" value="<%= params[:name] %>"></td>
+      <td width="80">联系人</td>
+      <td width="200"><input class="form-control input-sm" name="contact" type="text" value="<%= params[:contact] %>"></td>
+      <td width="80">省份</td>
       <td>
         <select name="province" id="jg-province">
           <option value="">--请选择--</option>
-          <% SysProvince.level1.each do |prov| %>
-              <option value="<%= prov.name %>"><%= prov.name %></option>
+          <% SysProvince.where("level LIKE '_' OR level LIKE '__'").each do |prov| %>
+              <option data-id="<%= prov.id %>" value="<%= prov.name %>"><%= prov.name %></option>
           <% end %>
         </select>
-      </td>
-      <td>
-        <input type="submit" value="搜索" class="btn btn-sm btn-primary">
+        <select name="jg_city" id="jg-city"></select>
       </td>
     </tr>
   </table>
+  <input type="submit" value="搜索" class="btn btn-sm btn-primary">
+  <hr>
 </form>
 <br>
 <table class="table table-bordered">

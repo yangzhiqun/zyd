@@ -172,7 +172,7 @@ class PadSpBsb < ActiveRecord::Base
         if self.sys_province_id == -1
           @id_parts.push("00")
         else
-          @id_parts.push(SysProvince.level1.find(self.sys_province_id.to_i).code)
+          @id_parts.push(SysProvince.where('level like "__" or level like "_"').find(self.sys_province_id.to_i).code)
         end
         @id_parts.push(JgBsb.find(self.jg_bsb_id).code)
         count = 3000 + PadSpBsb.where(:sys_province_id => self.sys_province_id.to_i, :jg_bsb_id => self.jg_bsb_id).count + i
