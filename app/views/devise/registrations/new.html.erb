@@ -1,20 +1,21 @@
 <script type="text/javascript" charset="utf-8">
   $(function () {
-    $('#user_user_s_province').change(function () {
-      var o = $(this);
-      if (o.val() == '') return false;
-      reload_jg_data();
+//    $('#user_user_s_province').change(function () {
+//      var o = $(this);
+//      if (o.val() == '') return false;
+//      reload_jg_data();
+//
+//      $('#user_prov_city').empty();
+//      $('#user_prov_country').empty();
 
-      $('#user_prov_city').empty();
-      $('#user_prov_country').empty();
-
-      $.get('/prov.json', {prov: o.find('option:selected').attr('data-id')}, function (data) {
-        $('<option>-请选择-</option>').appendTo($('#user_prov_city'));
-        $.each(data.msg, function (i, item) {
-          $('<option>').attr('value', item.id).text(item.name).appendTo($('#user_prov_city'));
-        });
-      }, 'json');
-    });
+    $.get('/prov.json', {prov: <%= @province.id %>}, function (data) {
+      $('<option>-请选择-</option>').appendTo($('#user_prov_city'));
+      $.each(data.msg, function (i, item) {
+        $('<option>').attr('value', item.id).text(item.name).appendTo($('#user_prov_city'));
+      });
+    }, 'json');
+    reload_jg_data();
+//    });
 
     $('#user_prov_city').change(function () {
       var o = $(this);
@@ -71,7 +72,7 @@
 
   function reload_jg_data() {
     $.get('/jg_bsbs/by_province.json', {
-      prov: $('#user_user_s_province').find('option:selected').text(),
+      //prov: $('#user_prov_city').find('option:selected').text(),
       jg_type: $('#user_jg_type').val()
     }, function (data) {
       if (data.status == 'OK') {
@@ -99,7 +100,8 @@
               <div class="form-group">
                 <label>省份：<span class="text-danger">*</span><%= show_error(@user.errors, :user_s_province) %></label>
                 <div class="form-inline">
-                  <%= f.select :user_s_province, options_for_select(SysProvince.level1.pluck(:name, :id).map { |p| [p[0], p[0], {'data-id' => p[1]}] }.unshift(['-请选择-', nil])), {}, :class => 'form-control input-sm' %>
+                  <%= resource.user_s_province %>
+                  <%= f.hidden_field :user_s_province %>
                   <%= f.select :prov_city, [], {}, :class => 'form-control input-sm' %>
                   <%= f.select :prov_country, [], {}, :class => 'form-control input-sm' %>
                 </div>

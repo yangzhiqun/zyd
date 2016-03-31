@@ -26,10 +26,15 @@ module DemoyjsRuby2X
     config.autoload_paths << Rails.root.join('lib')
 
     config.site = {
-        enable_ca_login: true,
-        ca_pdf_address: "10.0.39.223",
-        ca_auth_address: "10.0.39.222"
-    }
+        :enable_ca_login => true, 
+	:is_ejz          => true,
+	:is_qzj          => false,
+	:province        => "河北",
+	:client_id       => "c8a47ee3aa4540dd3168f5151f3c1b754febe9dadf848895ef937eb04468302b",
+	:client_secret   => "3999b84e37789216440f39882437a89499aded574f18c721a666eb1d08a6c1b0",
+	:api_base        => "http://qzj.cfda.pub"
+	    }
+
 
     config.fail_report_path = File.expand_path('../fail_reports', Rails.root).to_s
     config.attachment_path = File.expand_path('../attachments', Rails.root).to_s

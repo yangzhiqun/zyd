@@ -168,7 +168,7 @@
         <th colspan="6">所属地<%= show_error(@jg_bsb.errors, :jg_province) %></th>
         <td colspan="34">
           <div class="form-inline">
-            <%= f.select :jg_province, options_for_select(SysProvince.level1.pluck(:name, :id).map { |p| [p[0], p[0], {'data-id' => p[1]}] }.unshift(['-请选择-', nil]), @jg_bsb.jg_province), {}, :class => 'form-control input-sm' %>
+            <%= f.select :jg_province, options_for_select(SysProvince.where("level LIKE '__' OR level LIKE '_'").pluck(:name, :id).map { |p| [p[0], p[0], {'data-id' => p[1]}] }.unshift(['-请选择-', nil]), @jg_bsb.jg_province), {}, :class => 'form-control input-sm' %>
             <%= f.select :city, [], {}, :class => 'form-control input-sm' %>
             <%= f.select :country, [], {}, :class => 'form-control input-sm' %>
           </div>

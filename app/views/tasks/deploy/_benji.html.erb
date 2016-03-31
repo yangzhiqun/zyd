@@ -1,11 +1,11 @@
 <div class="tab-pane active">
   <br>
   <div class="panel panel-default">
-    <div class="panel-heading">添加牵头机构计划</div>
+    <div class="panel-heading">部署抽样机构任务</div>
     <div class="panel-body">
       <div class="form-inline">
         <label for="">报送分类：</label>
-        <%= select_tag "baosong_a", options_for_select(BaosongA.where(rwlylx: '国家').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+        <%= select_tag "baosong_a", options_for_select(BaosongA.where(rwlylx: '省局').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
         <%= select_tag "baosong_b", options_for_select(@baosong_bs.map { |b| [b.name, b.name, {"data-identifier" => b.identifier}] }.unshift(["请选择", ""]), params[:baosong_b]), {:class => "form-control input-sm", id: "baosong_b", style: "width: 150px;"} %>
         <br>
         <br>
