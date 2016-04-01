@@ -244,7 +244,7 @@ class Api::V1::SpBsbsController < ApplicationController
     @provinces = SysProvince.select("name, level")
 
     if @user.jg_bsb.attachment_path_file.blank?
-      render json: {status: 'OK', msg: '机构未设置签章，无法下发配置信息'}
+      render json: {status: 'ERR', msg: '机构未设置签章，无法下发配置信息'}
     else
 			if File.exists?(@user.jg_bsb.attachment_path_file)
 				stamp = Base64.encode64(open(@user.jg_bsb.attachment_path_file).to_a.join)

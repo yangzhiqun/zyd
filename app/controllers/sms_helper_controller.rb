@@ -10,7 +10,7 @@ class SmsHelperController < ApplicationController
     case params[:type]
       when 'signup'
         code = '%.4i' % rand(9999)
-        if send_sms_msg({code: code, product: '国抽食品检验数据报送平台'}, 'SMS_4060612', params[:mobile])
+        if send_sms_msg({code: code, product: "#{SysConfig.get(SysConfig::Key::PROV)}食品检验数据报送平台"}, 'SMS_4060612', params[:mobile])
           SmsLog.create(sms_template_code: 'SMS_4060612', mobile: params[:mobile], sms_type: params[:type], msg: code)
         else
           render json: {status: 'ERR', msg: '发送失败'}

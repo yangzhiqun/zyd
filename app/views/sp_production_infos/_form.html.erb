@@ -1,203 +1,216 @@
+<%= javascript_include_tag 'spdata1' %>
+<%= javascript_include_tag 'spdata2' %>
+<%= javascript_include_tag 'spdata3' %>
+<%= javascript_include_tag 'spdata4' %>
+<%= javascript_include_tag 'spdata5' %>
+<%= javascript_include_tag 'spdata6' %>
+<%= javascript_include_tag 'spdata7' %>
+<%= javascript_include_tag 'spdata8' %>
+<%= javascript_include_tag 'spdata10' %>
+
 <style type="text/css">
-    
-	.style1 {
-		border-collapse: collapse;
-		font-size: 9pt;
-		font-family: Calibri, sans-serif;
-		border-style: none;
-		border-color: inherit;
-		border-width: medium;
-		table-layout:fixed;
-	}
-	.style1 td{
-		border: solid windowtext 1.0px;
-		padding: 0cm 5.4pt 0cm 5.4pt;
-		height: 30px;		
-	}
-	.style1 th{
-		border: solid windowtext 1.0px;
-		padding: 0cm 5.4pt 0cm 5.4pt;
-		height: 30px;
-	}
-	.inputText {
-		font-size: 12px;
-		border-right-width: 0px;
-		border-left-width: 0px;
-		border-top-width: 0px;
-		border-bottom: 1px solid;
-		background-color : transparent; 
-		
-	}
-    .height600 {
-        height: 600px;
-        width:3000px;
-        overflow-y: auto;
-        overflow-x: auto;
-    }
-}
-    
+
+  .style1 {
+    border-collapse: collapse;
+    font-size: 9pt;
+    font-family: Calibri, sans-serif;
+    border-style: none;
+    border-color: inherit;
+    border-width: medium;
+    table-layout: fixed;
+  }
+
+  .style1 td {
+    border: solid windowtext 1.0px;
+    padding: 0cm 5.4pt 0cm 5.4pt;
+    height: 30px;
+  }
+
+  .style1 th {
+    border: solid windowtext 1.0px;
+    padding: 0cm 5.4pt 0cm 5.4pt;
+    height: 30px;
+  }
+
+  .inputText {
+    font-size: 12px;
+    border-right-width: 0px;
+    border-left-width: 0px;
+    border-top-width: 0px;
+    border-bottom: 1px solid;
+    background-color: transparent;
+
+  }
+
+  .height600 {
+    height: 600px;
+    width: 3000px;
+    overflow-y: auto;
+    overflow-x: auto;
+  }
 </style>
 
 <script type="text/javascript">
-$(function(){
-$("#region").ProvinceCity({});
-  $('#province, #city, #lcity').change(function(){
-    $('#sp_production_info_sp_s_3').val($('#province').val()); 
-    $('#sp_production_info_sp_s_4').val($('#city').val()); 
-    $('#sp_production_info_sp_s_5').val($('#lcity').val());           
-  }); 
+  $(function () {
+    $("#region").ProvinceCity({});
+    $('#province, #city, #lcity').change(function () {
+      $('#sp_production_info_sp_s_3').val($('#province').val());
+      $('#sp_production_info_sp_s_4').val($('#city').val());
+      $('#sp_production_info_sp_s_5').val($('#lcity').val());
+    });
 
-  $.each(SPDL1, function(index, data){
-      $("#sp_production_info_spdl").append("<option value='"+data+"'>"+data+"</option>");
-  });
+    $.each(SPDL1, function (index, data) {
+      $("#sp_production_info_spdl").append("<option value='" + data + "'>" + data + "</option>");
+    });
 
-  <% unless @sp_production_info.spdl.blank? %>
+    <% unless @sp_production_info.spdl.blank? %>
     $("#sp_production_info_spdl").val('<%=@sp_production_info.spdl%>');
     index0 = $('#sp_production_info_spdl option').index($('#sp_production_info_spdl option:selected'));
-    $.each(SPYL1[index0], function(index,data){
-        $("#sp_production_info_spyl").append("<option value='"+data+"'>"+data+"</option>");
+    $.each(SPYL1[index0], function (index, data) {
+      $("#sp_production_info_spyl").append("<option value='" + data + "'>" + data + "</option>");
     });
     $("#sp_production_info_spyl").val('<%=@sp_production_info.spyl%>');
 
     index1 = $('#sp_production_info_spyl option').index($('#sp_production_info_spyl option:selected'));
-    $.each(SPCYL1[index0][index1], function(index,data){
-        $("#sp_production_info_spcyl").append("<option value='"+data+"'>"+data+"</option>");
+    $.each(SPCYL1[index0][index1], function (index, data) {
+      $("#sp_production_info_spcyl").append("<option value='" + data + "'>" + data + "</option>");
     });
     $("#sp_production_info_spcyl").val('<%=@sp_production_info.spcyl%>');
     index2 = $('#sp_production_info_spcyl option').index($('#sp_production_info_spcyl option:selected'));
 
-    $.each(SPXL1[index0][index1][index2], function(index,data){
-        $("#sp_production_info_spxl").append("<option value='"+data+"'>"+data+"</option>");
+    $.each(SPXL1[index0][index1][index2], function (index, data) {
+      $("#sp_production_info_spxl").append("<option value='" + data + "'>" + data + "</option>");
     });
     $("#sp_production_info_spxl").val('<%=@sp_production_info.spxl%>');
-  <% else %>
-    $.each(SPYL1[0], function(index,data){
-        $("#sp_production_info_spyl").append("<option value='"+data+"'>"+data+"</option>");
+    <% else %>
+    $.each(SPYL1[0], function (index, data) {
+      $("#sp_production_info_spyl").append("<option value='" + data + "'>" + data + "</option>");
     });
-    $.each(SPCYL1[0][0], function(index,data){
-        $("#sp_production_info_spcyl").append("<option value='"+data+"'>"+data+"</option>");
+    $.each(SPCYL1[0][0], function (index, data) {
+      $("#sp_production_info_spcyl").append("<option value='" + data + "'>" + data + "</option>");
     });
-    $.each(SPXL1[0][0][0], function(index,data){
-        $("#sp_production_info_spxl").append("<option value='"+data+"'>"+data+"</option>");
+    $.each(SPXL1[0][0][0], function (index, data) {
+      $("#sp_production_info_spxl").append("<option value='" + data + "'>" + data + "</option>");
     });
     index0 = index1 = index2 = index3 = 0;
-  <% end%>
+    <% end%>
 
-  
-  index0 = index1 = index2 = index3 = 0;
-  index0 = $('#sp_production_info_spdl option').index($('#sp_production_info_spdl option:selected'));
-  index1 = $('#sp_production_info_spyl option').index($('#sp_production_info_spyl option:selected'));
-  index2 = $('#sp_production_info_spcyl option').index($('#sp_production_info_spcyl option:selected'));
-  index3 = $('#sp_production_info_spxl option').index($('#sp_production_info_spxl option:selected'));
-  
-  $("#sp_production_info_spdl").change(function(){
-    $("#sp_production_info_spyl").get(0).options.length=0;
-    index0=this.selectedIndex;
-    index1=0;
-    index2=0;
-    index3=0;
 
-    $.each(SPYL1[index0], function(index,data){
-        $("#sp_production_info_spyl").append("<option value='"+data+"'>"+data+"</option>");
-    });
-    $("#sp_production_info_spcyl").get(0).options.length=0;
-    $.each(SPCYL1[index0][0], function(index,data){
-        $("#sp_production_info_spcyl").append("<option value='"+data+"'>"+data+"</option>");
-    });
-    $("#sp_production_info_spxl").get(0).options.length=0;
-    $.each(SPXL1[index0][0][0], function(index,data){
-        $("#sp_production_info_spxl").append("<option value='"+data+"'>"+data+"</option>");
-    });
-
-    return;
-  });
-  
-  $("#sp_production_info_spyl").change(function(){
-    $("#sp_production_info_spcyl").get(0).options.length=0;
-    
-    index2=0;
-    index3=0;
-    index1 = this.selectedIndex;
-    $.each(SPCYL1[index0][index1], function(index,data){
-        $("#sp_production_info_spcyl").append("<option value='"+data+"'>"+data+"</option>");
-    });
-    $("#sp_production_info_spxl").get(0).options.length=0;
-    $.each(SPXL1[index0][index1][0], function(index,data){
-        $("#sp_production_info_spxl").append("<option value='"+data+"'>"+data+"</option>");
-    });
-  });
-
-  $("#sp_production_info_spcyl").change(function(){
-    $("#sp_production_info_spxl").get(0).options.length=0;
-    index3=0;
-    index2 = this.selectedIndex;
-    $.each(SPXL1[index0][index1][index2], function(index,data){
-        $("#sp_production_info_spxl").append("<option value='"+data+"'>"+data+"</option>");
-    });
-  });
-  $("#sp_production_info_spxl").change(function(){
+    index0 = index1 = index2 = index3 = 0;
+    index0 = $('#sp_production_info_spdl option').index($('#sp_production_info_spdl option:selected'));
+    index1 = $('#sp_production_info_spyl option').index($('#sp_production_info_spyl option:selected'));
+    index2 = $('#sp_production_info_spcyl option').index($('#sp_production_info_spcyl option:selected'));
     index3 = $('#sp_production_info_spxl option').index($('#sp_production_info_spxl option:selected'));
+
+    $("#sp_production_info_spdl").change(function () {
+      $("#sp_production_info_spyl").get(0).options.length = 0;
+      index0 = this.selectedIndex;
+      index1 = 0;
+      index2 = 0;
+      index3 = 0;
+
+      $.each(SPYL1[index0], function (index, data) {
+        $("#sp_production_info_spyl").append("<option value='" + data + "'>" + data + "</option>");
+      });
+      $("#sp_production_info_spcyl").get(0).options.length = 0;
+      $.each(SPCYL1[index0][0], function (index, data) {
+        $("#sp_production_info_spcyl").append("<option value='" + data + "'>" + data + "</option>");
+      });
+      $("#sp_production_info_spxl").get(0).options.length = 0;
+      $.each(SPXL1[index0][0][0], function (index, data) {
+        $("#sp_production_info_spxl").append("<option value='" + data + "'>" + data + "</option>");
+      });
+
+      return;
+    });
+
+    $("#sp_production_info_spyl").change(function () {
+      $("#sp_production_info_spcyl").get(0).options.length = 0;
+
+      index2 = 0;
+      index3 = 0;
+      index1 = this.selectedIndex;
+      $.each(SPCYL1[index0][index1], function (index, data) {
+        $("#sp_production_info_spcyl").append("<option value='" + data + "'>" + data + "</option>");
+      });
+      $("#sp_production_info_spxl").get(0).options.length = 0;
+      $.each(SPXL1[index0][index1][0], function (index, data) {
+        $("#sp_production_info_spxl").append("<option value='" + data + "'>" + data + "</option>");
+      });
+    });
+
+    $("#sp_production_info_spcyl").change(function () {
+      $("#sp_production_info_spxl").get(0).options.length = 0;
+      index3 = 0;
+      index2 = this.selectedIndex;
+      $.each(SPXL1[index0][index1][index2], function (index, data) {
+        $("#sp_production_info_spxl").append("<option value='" + data + "'>" + data + "</option>");
+      });
+    });
+    $("#sp_production_info_spxl").change(function () {
+      index3 = $('#sp_production_info_spxl option').index($('#sp_production_info_spxl option:selected'));
+    });
+    $('#sp_production_info_spxl').trigger('change');
   });
-  $('#sp_production_info_spxl').trigger('change');
- });
 </script>
 <%= form_for(@sp_production_info) do |f| %>
-  <% if @sp_production_info.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@sp_production_info.errors.count, "error") %> prohibited this sp_production_info from being saved:</h2>
-      <ul>
-        <% @sp_production_info.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+    <% if @sp_production_info.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@sp_production_info.errors.count, "error") %> prohibited this sp_production_info from being
+            saved:</h2>
+          <ul>
+            <% @sp_production_info.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+    <% end %>
 
-  <table border="1" cellspacing="0" cellpadding="0" width="820px" class="style1">
-    <tr>
-			<td colspan="4"><p>生产许可证编号</p></td>
-			<td colspan="8"><%= f.text_field:scbh, :class=>"inputText",:style=>"width: 180px; height: 19px" %></td>
-			<td colspan="4"><p>产品名称</p></td>
-			<td colspan="14"><%= f.text_field:cpmc, :class=>"inputText",:style=>"width: 350px; height: 19px" %></td>
-		</tr>
-		<tr>
-			<td colspan="4" style="width: 73px"><p>生产单位名称</p></td>
-			<td colspan="8"><%= f.text_field :qymc, :class=>"inputText",:style=>"width: 180px; height: 19px" %></td>
-            <td colspan="4"><p style="width:73px">生产单位地址</p></td>
-			<td colspan="14"><%= f.text_field:scdz, :class=>"inputText",:style=>"width: 350px; height: 19px" %></td>
-		</tr>
-    <tr>
-			<td colspan="4" style="width: 73px"><p>发证单位</p></td>
-			<td colspan="8"><%= f.text_field :fzdw, :class=>"inputText",:style=>"width: 180px; height: 19px" %></td>
-      <td colspan="4"><p style="width:73px">发证日期</p></td>
-			<td colspan="14"><%= f.text_field:fzrq, :class=>"inputText",:style=>"width: 350px; height: 19px" %></td>
-		</tr>
-	  <tr id="region">
-      <td colspan="3" style="width: 73px"><p>所在地区*</p></td>
-      <td colspan="27">
+    <table border="1" cellspacing="0" cellpadding="0" width="820px" class="style1">
+      <tr>
+        <td colspan="4"><p>生产许可证编号</p></td>
+        <td colspan="8"><%= f.text_field :scbh, :class=>"inputText",:style=>"width: 180px; height: 19px" %></td>
+        <td colspan="4"><p>产品名称</p></td>
+        <td colspan="14"><%= f.text_field :cpmc, :class=>"inputText",:style=>"width: 350px; height: 19px" %></td>
+      </tr>
+      <tr>
+        <td colspan="4" style="width: 73px"><p>生产单位名称</p></td>
+        <td colspan="8"><%= f.text_field :qymc, :class => "inputText", :style => "width: 180px; height: 19px" %></td>
+        <td colspan="4"><p style="width:73px">生产单位地址</p></td>
+        <td colspan="14"><%= f.text_field :scdz, :class=>"inputText",:style=>"width: 350px; height: 19px" %></td>
+      </tr>
+      <tr>
+        <td colspan="4" style="width: 73px"><p>发证单位</p></td>
+        <td colspan="8"><%= f.text_field :fzdw, :class => "inputText", :style => "width: 180px; height: 19px" %></td>
+        <td colspan="4"><p style="width:73px">发证日期</p></td>
+        <td colspan="14"><%= f.text_field :fzrq, :class=>"inputText",:style=>"width: 350px; height: 19px" %></td>
+      </tr>
+      <tr id="region">
+        <td colspan="3" style="width: 73px"><p>所在地区*</p></td>
+        <td colspan="27">
         <span>
           <select id='province' name='province' class="NoPrint"></select>
-          <%= f.text_field :sp_s_3, :class=>"inputText",:style=>"width: 60px; height: 19px" %>省(市、自治区)
+          <%= f.text_field :sp_s_3, :class => "inputText", :style => "width: 60px; height: 19px" %>省(市、自治区)
           <select id='city' name='city'></select>
-          <%= f.text_field :sp_s_4, :class=>"inputText",:style=>"width: 60px; height: 19px" %>地区(市、州、盟)
+          <%= f.text_field :sp_s_4, :class => "inputText", :style => "width: 60px; height: 19px" %>地区(市、州、盟)
           <select id='lcity' name='lcity'></select>
-          <%= f.text_field :sp_s_5, :class=>"inputText",:style=>"width: 60px; height: 19px" %>县(市、区)
+          <%= f.text_field :sp_s_5, :class => "inputText", :style => "width: 60px; height: 19px" %>县(市、区)
         </span>
-      </td>            
-      </tr>	
-    <tr>
-      <td colspan="3" style="width: 73px"><p>样品分类*</p></td>
-      <td colspan="27">
-        食品大类<%=f.select :spdl,'',{},{:style=>"width: 120px;"}%>
-        食品亚类<%= f.select :spyl,'',{},{:style=>"width: 120px;"}%>
-        食品次亚类<%= f.select :spcyl,'',{},{:style=>"width: 120px;"}%>
-        食品细类<%= f.select :spxl,'',{},{:style=>"width: 120px;"}%>
-      </td>
-        </tr>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" style="width: 73px"><p>样品分类*</p></td>
+        <td colspan="27">
+          食品大类<%= f.select :spdl, '', {}, {:style => "width: 120px;"} %>
+          食品亚类<%= f.select :spyl, '', {}, {:style => "width: 120px;"} %>
+          食品次亚类<%= f.select :spcyl, '', {}, {:style => "width: 120px;"} %>
+          食品细类<%= f.select :spxl, '', {}, {:style => "width: 120px;"} %>
+        </td>
+      </tr>
     </table>
     <br/>
-  <div class="actions">
-    <%= f.submit("保存", :class => 'btn btn-sm btn-success') %>
-		<%= link_to '返回', sp_production_infos_path, :class => 'btn btn-info btn-sm' %>
-  </div>
+    <div class="actions">
+      <%= f.submit("保存", :class => 'btn btn-sm btn-success') %>
+      <%= link_to '返回', sp_production_infos_path, :class => 'btn btn-info btn-sm' %>
+    </div>
 <% end %>

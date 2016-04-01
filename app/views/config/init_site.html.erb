@@ -1,3 +1,15 @@
+<script type="text/javascript" charset="utf-8">
+$(function(){
+  $('#config_controller_site_config_is_ejz').change(function(){
+    var o = $(this);
+    if(o.is(':checked')) {
+      $('.oauth-info').removeClass('hidden');
+    } else {
+      $('.oauth-info').addClass('hidden');
+    }
+  }).trigger('change');
+});
+</script>
 <br>
 <div class="container">
   <h3>站点配置</h3>
@@ -6,19 +18,25 @@
       <div class="panel panel-default">
         <div class="panel-body">
           <%= form_for @config, {url: '', method: 'post'} do |f| %>
+              <div class="form-group">
+                <label for="">站点名称<%= show_error(@config.errors, :site_name) %></label>
+                <%= f.text_field :site_name, class: 'form-control input-sm' %>
+              </div>
               <div class="checkbox">
                 <label>
                   <%= f.check_box :is_ejz %>是否为二级站
                   <%= show_error(@config.errors, :is_ejz) %>
                 </label>
               </div>
-              <div class="form-group">
-                <label for="">站点名称<%= show_error(@config.errors, :site_name) %></label>
-                <%= f.text_field :site_name, class: 'form-control input-sm' %>
+              <div class="form-group well well-sm oauth-info hidden">
+                <label for="">client_id</label>
+                <%= f.text_field :client_id, class: 'form-control input-sm'%>
+                <label for="">client_secret</label>
+                <%= f.text_field :client_secret, class: 'form-control input-sm'%>
               </div>
               <div class="form-group">
                 <label for="">省份<%= show_error(@config.errors, :prov) %></label>
-                <%= f.select :prov, options_for_select(SysProvince.level1.map { |prov| [prov.name, prov.name] }, @config.prov), {}, {class: 'form-control input-sm'} %>
+                <%= f.select :prov, options_for_select(SysProvince.where("level like '_' or level like '__'").map { |prov| [prov.name, prov.name] }, @config.prov), {}, {class: 'form-control input-sm'} %>
               </div>
               <div class="form-group">
                 <label for="">站点LOGO<%= show_error(@config.errors, :logo_file) %></label>

@@ -74,17 +74,13 @@
 
         <% if current_user.is_super? or current_user.is_prov_manager? %>
             <div class="region form-inline">
-              <% if current_user.is_prov_manager? %>
-                  <%= @user.user_s_province %>
-                  <%= f.select :user_s_province, '', {}, :class => "hidden", :id => "province" %>
-              <% else %>
-                  <%= f.select :user_s_province, '', {}, :class => "form-control input-sm", :id => "province" %>
-              <% end %>
-              <%= f.select :user_s_city, '', {}, :class => "form-control input-sm", :id => "city" %>
-              <%= f.select :user_s_lcity, '', {}, :class => "form-control input-sm", :id => "lcity" %>
+              <%= @user.user_s_province %>
+              <%= f.select :user_s_province, '', {}, :class => 'hidden', :id => 'province' %>
+							<%= f.select :prov_city, '', {}, :class => 'form-control input-sm', :id => 'city' %>
+              <%= f.select :prov_country, '', {}, :class => 'form-control input-sm', :id => 'lcity' %>
             </div>
         <% else %>
-            <%= "#{@user.user_s_province}/#{@user.user_s_city}/#{@user.user_s_lcity}" %>
+            <%= "#{@user.user_s_province}/#{@user.prov_city}/#{@user.prov_country}" %>
         <% end %>
 
         <br>
@@ -105,15 +101,6 @@
 
         <% if current_user.is_account_manager? or current_user.name == 'superadmin' %>
             <% if current_user.is_super? %>
-                <div class="checkbox">
-                  <label>
-                    <%= f.check_box :user_i_switch, options = {}, checked_value = "1", unchecked_value = "0" %>
-                    是否为工作组
-                  </label>
-                </div>
-                <%= f.select :user_s_dl, options_for_select(ACategory::Category24.map { |c| [c, c] }.unshift(['请选择', '']), @user.user_s_dl), {}, :class => "form-control input-sm" %>
-                <br>
-
                 <div class="form-inline">
                   <div class="checkbox">
                     <label>
@@ -121,7 +108,7 @@
                       是否为地方药监局
                     </label>
                   </div>
-                  <div class="checkbox">
+                  <!--div class="checkbox">
                     <label>
                       <%= f.check_box :user_i_spys, options = {}, checked_value = "1", unchecked_value = "0" %>
                       是否为食品一司
@@ -132,7 +119,7 @@
                       <%= f.check_box :user_i_spss, options = {}, checked_value = "1", unchecked_value = "0" %>
                       是否为食品三司
                     </label>
-                  </div>
+                  </div-->
                 </div>
                 <br>
             <% end %>

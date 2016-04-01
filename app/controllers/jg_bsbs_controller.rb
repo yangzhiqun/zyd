@@ -10,15 +10,19 @@ class JgBsbsController < ApplicationController
     @jg_bsbs = JgBsb.where(status: 0).order('created_at desc')
 
     unless params[:name].blank?
-      @jg_bsbs = @jg_bsbs.where(id: JgBsbName.where("name LIKE ?", "%#{params[:name]}%").pluck('jg_bsb_id'))
+      @jg_bsbs = @jg_bsbs.where(id: JgBsbName.where('name LIKE ?', "%#{params[:name]}%").pluck('jg_bsb_id'))
     end
 
     unless params[:contact].blank?
-      @jg_bsbs = @jg_bsbs.where("jg_contacts LIKE ?", "%#{params[:contact]}%")
+      @jg_bsbs = @jg_bsbs.where('jg_contacts LIKE ?', "%#{params[:contact]}%")
     end
 
     unless params[:province].blank?
-      @jg_bsbs = @jg_bsbs.where("jg_province LIKE ?", "%#{params[:province]}%")
+      @jg_bsbs = @jg_bsbs.where('jg_province LIKE ?', "%#{params[:province]}%")
+    end
+
+    unless params[:jg_city].blank?
+      @jg_bsbs = @jg_bsbs.where('city LIKE ?', "%#{params[:jg_city]}%")
     end
 
     @jg_bsbs = @jg_bsbs.order('jg_province').paginate(:page => params[:page], :per_page => 10)
@@ -225,7 +229,8 @@ class JgBsbsController < ApplicationController
   end
 
   def by_province
-    @jg_bsbs = JgBsb.where(jg_province: params[:prov])
+    #@jg_bsbs = JgBsb.where(jg_province: params[:prov])
+    @jg_bsbs = JgBsb.where(jg_province: SysConfig.get(SysConfig::Key::PROV))
 
     if params[:jg_type].to_i != 0
       @jg_bsbs = @jg_bsbs.where(jg_type: params[:jg_type].to_i)

@@ -8,4 +8,4 @@ Rails.application.config.assets.version = '1.0'
 
 # Precompile additional assets.
 # application.js, application.css, and all non-JS/CSS in app/assets folder are already added.
-Rails.application.config.assets.precompile += %w(deploy.js XTXSuite.js login.css tasks.css print.css)
+Rails.application.config.assets.precompile += %w(spdata1.js spdata2.js spdata3.js spdata4.js spdata5.js spdata6.js spdata7.js spdata8.js spdata10.js deploy.js XTXSuite.js login.css tasks.css print.css)

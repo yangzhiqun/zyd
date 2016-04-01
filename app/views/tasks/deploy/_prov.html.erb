@@ -6,7 +6,7 @@
       if (confirm('确定部署该任务吗？')) {
         $.post('/tasks/create_delegate_plan.json', {
           quota: $('#quota').val(),
-          jg_id: $('#jcjg').val(),
+          jg_id: $('#cyjg').val(),
           dl: $('#dl').val(),
           yl: $('#yl').val(),
           cyl: $('#cyl').val(),
@@ -21,6 +21,8 @@
         }, 'json');
       }
     });
+
+    $('#cyjg, #jyjg').select2();
   });
 </script>
 <h3 class="text-center"><%= current_user.user_s_province %>采样任务部署</h3>
@@ -44,25 +46,26 @@
     <br>
     <br>
     <label for="">采样机构：</label>
-    <select id="jcjg" style="width: 400px;" class="form-control input-sm">
+    <select id="cyjg" style="width: 400px;" class="form-control input-sm">
       <option value="">请选择采样机构</option>
-      <% @jcjgs.each do |jcjg| %>
-          <% if jcjg.code.blank? %>
-              <option value="<%= jcjg.id %>" disabled="disabled"><%= jcjg.jg_name %>(未设编号,无法安排)</option>
+      <% @cyjgs.each do |cyjg| %>
+          <% if cyjg.code.blank? %>
+              <option value="<%= cyjg.id %>" disabled="disabled"><%= cyjg.jg_name %>(未设编号,无法安排)</option>
           <% else %>
-              <option value="<%= jcjg.id %>"><%= jcjg.jg_name %></option>
+              <option value="<%= cyjg.id %>"><%= cyjg.jg_name %></option>
           <% end %>
       <% end %>
     </select>
     <br>
+    <br>
     <label for="">检验机构：</label>
-    <select id="jcjg" style="width: 400px;" class="form-control input-sm">
+    <select id="jyjg" style="width: 400px;" class="form-control input-sm">
       <option value="">请选择检验机构</option>
-      <% @jcjgs.each do |jcjg| %>
-          <% if jcjg.code.blank? %>
-              <option value="<%= jcjg.id %>" disabled="disabled"><%= jcjg.jg_name %>(未设编号,无法安排)</option>
+      <% @jyjgs.each do |jyjg| %>
+          <% if jyjg.code.blank? %>
+              <option value="<%= jyjg.id %>" disabled="disabled"><%= jyjg.jg_name %>(未设编号,无法安排)</option>
           <% else %>
-              <option value="<%= jcjg.id %>"><%= jcjg.jg_name %></option>
+              <option value="<%= jyjg.id %>"><%= jyjg.jg_name %></option>
           <% end %>
       <% end %>
     </select>
@@ -110,7 +113,7 @@
           <!-- 细类名称 -->
           <td><%= d.name %></td>
 
-          <%= grid3(SysProvince.level1.find_by_name(current_user.user_s_province), d) %>
+          <%= grid3(SysProvince.level1.find_by_name(current_user.prov_city), d) %>
           <!-- 交叉点 -->
           <% @delegates.each do |del| %>
               <%= grid5(del, d) %>
