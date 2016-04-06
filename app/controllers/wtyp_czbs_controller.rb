@@ -26,7 +26,7 @@ class WtypCzbsController < ApplicationController
 
     # 如果不是管理员则进行省份区分 和 安排
     if current_user.hcz_admin != 1
-      @wtyp_czbs = @wtyp_czbs.where("((wtyp_czb_type = #{::WtypCzbPart::Type::LT} OR wtyp_czb_type = #{::WtypCzbPart::Type::CY}) AND bcydw_sheng = ?) OR (wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND bsscqy_sheng = ?)", current_user.user_s_province, current_user.user_s_province)
+      @wtyp_czbs = @wtyp_czbs.where("((wtyp_czb_type = #{::WtypCzbPart::Type::LT} OR wtyp_czb_type = #{::WtypCzbPart::Type::CY}) AND sp_s_4 = ?) OR (wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND sp_s_220 = ?)", current_user.prov_city, current_user.prov_city)
       if params[:state].to_i == 1
         @wtyp_czbs = @wtyp_czbs.where("czfzr = ?", current_user.id)
       end
@@ -45,8 +45,8 @@ class WtypCzbsController < ApplicationController
     end
 
     # 被抽样单位名称
-    unless params[:bcydw_sheng].blank?
-      @wtyp_czbs = @wtyp_czbs.where(bcydw_sheng: params[:bcydw_sheng])
+    unless params[:sp_s_4].blank?
+      @wtyp_czbs = @wtyp_czbs.where(sp_s_4: params[:sp_s_4])
     end
 
     # 表示生产企业名称
@@ -54,9 +54,9 @@ class WtypCzbsController < ApplicationController
       @wtyp_czbs = @wtyp_czbs.where("bsscqymc like ?", "%#{params[:bsscqymc]}%")
     end
 
-    # 表示生产企业省份
-    unless params[:bsscqy_sheng].blank?
-      @wtyp_czbs = @wtyp_czbs.where(bsscqy_sheng: params[:bsscqy_sheng])
+    # 表示生产企业市/区
+    unless params[:sp_s_220].blank?
+      @wtyp_czbs = @wtyp_czbs.where(sp_s_220: params[:sp_s_220])
     end
 
     unless params[:cjbh].blank?
@@ -87,7 +87,7 @@ class WtypCzbsController < ApplicationController
 
           if current_user.hcz_admin != 1
             #@sp_bsbs = @sp_bsbs.where("id NOT IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND bcydw_sheng = ?) OR (wtyp_czb_type = 1 AND bsscqy_sheng = ?))) AND (((sp_s_3 = ? OR sp_s_202 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_202 = ? AND sp_s_68 = '生产'))", current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province)
-            @sp_bsbs = @sp_bsbs.where("id IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NULL OR current_state = 0 OR current_state IS NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND bcydw_sheng = ?) OR (wtyp_czb_type = 1 AND bsscqy_sheng = ?))) AND (((sp_s_3 = ? OR sp_s_202 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_202 = ? AND sp_s_68 = '生产'))", current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province)
+            @sp_bsbs = @sp_bsbs.where("id IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NULL OR current_state = 0 OR current_state IS NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND sp_s_4 = ?) OR (wtyp_czb_type = 1 AND sp_s_220 = ?))) AND (((sp_s_4 = ? OR sp_s_220 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_220 = ? AND sp_s_68 = '生产'))", current_user.prov_city, current_user.prov_city, current_user.prov_city, current_user.prov_city, current_user.prov_city)
           else
             # @sp_bsbs = @sp_bsbs.where('id NOT IN (SELECT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL))').group('sp_bsb_id').having('count(1) = 2')
             @sp_bsbs = @sp_bsbs.where('id NOT IN (SELECT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL) group by sp_bsb_id having(count(1))=2)') #.group('sp_bsb_id').having('count(1) = 2')
@@ -104,8 +104,8 @@ class WtypCzbsController < ApplicationController
           end
 
           # 被抽样单位省
-          unless params[:bcydw_sheng].blank?
-            @sp_bsbs = @sp_bsbs.where(sp_s_3: params[:bcydw_sheng])
+          unless params[:sp_s_4].blank?
+            @sp_bsbs = @sp_bsbs.where(sp_s_4: params[:sp_s_4])
           end
 
           # 表示生产企业名称
@@ -114,8 +114,8 @@ class WtypCzbsController < ApplicationController
           end
 
           # 表示生产企业省份
-          unless params[:bsscqy_sheng].blank?
-            @sp_bsbs = @sp_bsbs.where(sp_s_202: params[:bsscqy_sheng])
+          unless params[:sp_s_220].blank?
+            @sp_bsbs = @sp_bsbs.where(sp_s_202: params[:sp_s_220])
           end
 
           unless params[:cjbh].blank?
@@ -144,7 +144,7 @@ class WtypCzbsController < ApplicationController
           @wtyp_czbs = WtypCzbPart.select('*, count(1) as count ').group('cjbh').where("current_state = ?", ::WtypCzb::State::PASSED).order("id, updated_at desc")
 
           if current_user.hcz_admin != 1
-            @wtyp_czbs = @wtyp_czbs.where("((wtyp_czb_type = #{::WtypCzbPart::Type::LT} OR wtyp_czb_type = #{::WtypCzbPart::Type::CY}) AND bcydw_sheng = ?) OR (wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND bsscqy_sheng = ?)", current_user.user_s_province, current_user.user_s_province)
+            @wtyp_czbs = @wtyp_czbs.where("((wtyp_czb_type = #{::WtypCzbPart::Type::LT} OR wtyp_czb_type = #{::WtypCzbPart::Type::CY}) AND sp_s_4 = ?) OR (wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND sp_s_220 = ?)", current_user.prov_city, current_user.prov_city)
           end
 
           # 样品名称
@@ -158,8 +158,8 @@ class WtypCzbsController < ApplicationController
           end
 
           # 被抽样单位名称
-          unless params[:bcydw_sheng].blank?
-            @wtyp_czbs = @wtyp_czbs.where(bcydw_sheng: params[:bcydw_sheng])
+          unless params[:sp_s_4].blank?
+            @wtyp_czbs = @wtyp_czbs.where(sp_s_4: params[:sp_s_4])
           end
 
           # 表示生产企业名称
@@ -168,8 +168,8 @@ class WtypCzbsController < ApplicationController
           end
 
           # 表示生产企业省份
-          unless params[:bsscqy_sheng].blank?
-            @wtyp_czbs = @wtyp_czbs.where(bsscqy_sheng: params[:bsscqy_sheng])
+          unless params[:sp_s_220].blank?
+            @wtyp_czbs = @wtyp_czbs.where(sp_s_220: params[:sp_s_220])
           end
 
           unless params[:cjbh].blank?
@@ -193,11 +193,11 @@ class WtypCzbsController < ApplicationController
           #   @sp_bsbs = @sp_bsbs.where("((w.wtyp_czb_type = #{::WtypCzbPart::Type::LT} OR w.wtyp_czb_type = #{::WtypCzbPart::Type::CY}) AND w.bcydw_sheng = ?) OR (w.wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND w.bsscqy_sheng = ?) OR w.wtyp_czb_type IS NULL", session[:user_province], session[:user_province])
           # end
 
-          @sp_bsbs = SpBsb.select('sp_s_14, sp_s_16, sp_s_64, sp_s_68, sp_s_71, sp_s_202, sp_s_3, id, updated_at').where("sp_i_state = 9 AND czb_reverted_flag = 0 AND sp_s_71 LIKE '%不合格%'").order('updated_at DESC')
+          @sp_bsbs = SpBsb.select('sp_s_14, sp_s_16, sp_s_64, sp_s_68, sp_s_71, sp_s_220, sp_s_4, id, updated_at').where("sp_i_state = 9 AND czb_reverted_flag = 0 AND sp_s_71 LIKE '%不合格%'").order('updated_at DESC')
 
           if current_user.hcz_admin != 1
             #@sp_bsbs = @sp_bsbs.where("id NOT IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND bcydw_sheng = ?) OR (wtyp_czb_type = 1 AND bsscqy_sheng = ?))) AND (((sp_s_3 = ? OR sp_s_202 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_202 = ? AND sp_s_68 = '生产'))", current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province)
-            @sp_bsbs = @sp_bsbs.where("id IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NULL OR current_state = 0 OR current_state IS NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND bcydw_sheng = ?) OR (wtyp_czb_type = 1 AND bsscqy_sheng = ?))) AND (((sp_s_3 = ? OR sp_s_202 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_202 = ? AND sp_s_68 = '生产'))", current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province)
+            @sp_bsbs = @sp_bsbs.where("id IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NULL OR current_state = 0 OR current_state IS NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND sp_s_4 = ?) OR (wtyp_czb_type = 1 AND sp_s_220 = ?))) AND (((sp_s_4 = ? OR sp_s_220 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_220 = ? AND sp_s_68 = '生产'))", current_user.prov_city, current_user.prov_city, current_user.prov_city, current_user.prov_city, current_user.prov_city)
           else
             @sp_bsbs = @sp_bsbs.where('id NOT IN (SELECT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL) group by sp_bsb_id having(count(1))=2)') #.group('sp_bsb_id').having('count(1) = 2')
           end
@@ -213,8 +213,8 @@ class WtypCzbsController < ApplicationController
           end
 
           # 被抽样单位省
-          unless params[:bcydw_sheng].blank?
-            @sp_bsbs = @sp_bsbs.where("sp_s_3 = ?", params[:bcydw_sheng])
+          unless params[:sp_s_4].blank?
+            @sp_bsbs = @sp_bsbs.where("sp_s_4 = ?", params[:sp_s_4])
           end
 
           # 表示生产企业名称
@@ -223,8 +223,8 @@ class WtypCzbsController < ApplicationController
           end
 
           # 表示生产企业省份
-          unless params[:bsscqy_sheng].blank?
-            @sp_bsbs = @sp_bsbs.where("sp_s_202 = ?", params[:bsscqy_sheng])
+          unless params[:sp_s_220].blank?
+            @sp_bsbs = @sp_bsbs.where("sp_s_202 = ?", params[:sp_s_220])
           end
 
           unless params[:cjbh].blank?
@@ -265,7 +265,7 @@ class WtypCzbsController < ApplicationController
         @wtyp_czbs = @wtyp_czbs.select("*, count(1) as count")
 
         if current_user.hcz_admin != 1
-          @wtyp_czbs = @wtyp_czbs.where("((wtyp_czb_type = #{::WtypCzbPart::Type::LT} OR wtyp_czb_type = #{::WtypCzbPart::Type::CY}) AND bcydw_sheng = ?) OR (wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND bsscqy_sheng = ?)", current_user.user_s_province, current_user.user_s_province)
+          @wtyp_czbs = @wtyp_czbs.where("((wtyp_czb_type = #{::WtypCzbPart::Type::LT} OR wtyp_czb_type = #{::WtypCzbPart::Type::CY}) AND sp_s_4 = ?) OR (wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND sp_s_220 = ?)", current_user.prov_city, current_user.prov_city)
 
           if params[:state].to_i == 1
             @wtyp_czbs = @wtyp_czbs.where("czfzr = ?", current_user.id)
@@ -283,8 +283,8 @@ class WtypCzbsController < ApplicationController
         end
 
         # 被抽样单位名称
-        unless params[:bcydw_sheng].blank?
-          @wtyp_czbs = @wtyp_czbs.where(bcydw_sheng: params[:bcydw_sheng])
+        unless params[:sp_s_4].blank?
+          @wtyp_czbs = @wtyp_czbs.where(sp_s_4: params[:sp_s_4])
         end
 
         # 表示生产企业名称
@@ -293,8 +293,8 @@ class WtypCzbsController < ApplicationController
         end
 
         # 表示生产企业省份
-        unless params[:bsscqy_sheng].blank?
-          @wtyp_czbs = @wtyp_czbs.where(bsscqy_sheng: params[:bsscqy_sheng])
+        unless params[:sp_s_220].blank?
+          @wtyp_czbs = @wtyp_czbs.where(sp_s_220: params[:sp_s_220])
         end
 
         unless params[:cjbh].blank?
@@ -320,11 +320,11 @@ class WtypCzbsController < ApplicationController
           #   @sp_bsbs = @sp_bsbs.where("((w.wtyp_czb_type = #{::WtypCzbPart::Type::LT} OR w.wtyp_czb_type = #{::WtypCzbPart::Type::CY}) AND w.bcydw_sheng = ?) OR (w.wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND w.bsscqy_sheng = ?) OR w.wtyp_czb_type IS NULL", session[:user_province], session[:user_province])
           # end
 
-          @sp_bsbs = SpBsb.select('sp_s_14, sp_s_16, sp_s_64, sp_s_68, sp_s_71, sp_s_202, sp_s_3, id, updated_at').where("sp_i_state = 9 AND czb_reverted_flag = 0 AND sp_s_71 LIKE '%问题%'").order('updated_at DESC')
+          @sp_bsbs = SpBsb.select('sp_s_14, sp_s_16, sp_s_64, sp_s_68, sp_s_71, sp_s_220, sp_s_4, id, updated_at').where("sp_i_state = 9 AND czb_reverted_flag = 0 AND sp_s_71 LIKE '%问题%'").order('updated_at DESC')
 
           if current_user.hcz_admin != 1
             #@sp_bsbs = @sp_bsbs.where("id NOT IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND bcydw_sheng = ?) OR (wtyp_czb_type = 1 AND bsscqy_sheng = ?))) AND (((sp_s_3 = ? OR sp_s_202 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_202 = ? AND sp_s_68 = '生产'))", current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province)
-            @sp_bsbs = @sp_bsbs.where("id IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NULL OR current_state = 0 OR current_state IS NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND bcydw_sheng = ?) OR (wtyp_czb_type = 1 AND bsscqy_sheng = ?))) AND (((sp_s_3 = ? OR sp_s_202 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_202 = ? AND sp_s_68 = '生产'))", current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province, current_user.user_s_province)
+            @sp_bsbs = @sp_bsbs.where("id IN (SELECT DISTINCT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NULL OR current_state = 0 OR current_state IS NULL) AND (((wtyp_czb_type = 2 OR wtyp_czb_type = 3) AND sp_s_4 = ?) OR (wtyp_czb_type = 1 AND sp_s_220 = ?))) AND (((sp_s_4 = ? OR sp_s_220 = ?) AND (sp_s_68 = '流通' OR sp_s_68 = '餐饮')) OR (sp_s_220 = ? AND sp_s_68 = '生产'))", current_user.prov_city, current_user.prov_city, current_user.prov_city, current_user.prov_city, current_user.prov_city)
           else
             # @sp_bsbs = @sp_bsbs.where('id NOT IN (SELECT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL))').group('sp_bsb_id').having('count(1) = 2')
             @sp_bsbs = @sp_bsbs.where('id NOT IN (SELECT sp_bsb_id FROM wtyp_czb_parts WHERE (sp_bsb_id IS NOT NULL AND current_state <> 0 AND current_state IS NOT NULL) group by sp_bsb_id having(count(1))=2)') #.group('sp_bsb_id').having('count(1) = 2')
@@ -341,8 +341,8 @@ class WtypCzbsController < ApplicationController
           end
 
           # 被抽样单位省
-          unless params[:bcydw_sheng].blank?
-            @sp_bsbs = @sp_bsbs.where(sp_s_3: params[:bcydw_sheng])
+          unless params[:sp_s_4].blank?
+            @sp_bsbs = @sp_bsbs.where(sp_s_4: params[:sp_s_4])
           end
 
           # 表示生产企业名称
@@ -351,8 +351,8 @@ class WtypCzbsController < ApplicationController
           end
 
           # 表示生产企业省份
-          unless params[:bsscqy_sheng].blank?
-            @sp_bsbs = @sp_bsbs.where(sp_s_202: params[:bsscqy_sheng])
+          unless params[:sp_s_220].blank?
+            @sp_bsbs = @sp_bsbs.where(sp_s_202: params[:sp_s_220])
           end
 
           unless params[:cjbh].blank?
@@ -381,7 +381,7 @@ class WtypCzbsController < ApplicationController
         @wtyp_czbs = WtypCzbPart.select("*, count(1) as count").group('cjbh').where("current_state = ?", ::WtypCzb::State::PASSED).order("id, updated_at desc")
 
         if current_user.hcz_admin != 1
-          @wtyp_czbs = @wtyp_czbs.where("((wtyp_czb_type = #{::WtypCzbPart::Type::LT} OR wtyp_czb_type = #{::WtypCzbPart::Type::CY}) AND bcydw_sheng = ?) OR (wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND bsscqy_sheng = ?)", current_user.user_s_province, current_user.user_s_province)
+          @wtyp_czbs = @wtyp_czbs.where("((wtyp_czb_type = #{::WtypCzbPart::Type::LT} OR wtyp_czb_type = #{::WtypCzbPart::Type::CY}) AND sp_s_4 = ?) OR (wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND sp_s_220 = ?)", current_user.prov_city, current_user.prov_city)
         end
 
         # 样品名称
@@ -395,8 +395,8 @@ class WtypCzbsController < ApplicationController
         end
 
         # 被抽样单位名称
-        unless params[:bcydw_sheng].blank?
-          @wtyp_czbs = @wtyp_czbs.where(bcydw_sheng: params[:bcydw_sheng])
+        unless params[:sp_s_4].blank?
+          @wtyp_czbs = @wtyp_czbs.where(sp_s_4: params[:sp_s_4])
         end
 
         # 表示生产企业名称
@@ -404,9 +404,9 @@ class WtypCzbsController < ApplicationController
           @wtyp_czbs = @wtyp_czbs.where("bsscqymc like ?", "%#{params[:bsscqymc]}%")
         end
 
-        # 表示生产企业省份
-        unless params[:bsscqy_sheng].blank?
-          @wtyp_czbs = @wtyp_czbs.where(bsscqy_sheng: params[:bsscqy_sheng])
+        # 表示生产企业市
+        unless params[:sp_s_220].blank?
+          @wtyp_czbs = @wtyp_czbs.where(sp_s_220: params[:sp_s_220])
         end
 
         unless params[:cjbh].blank?
@@ -461,10 +461,14 @@ class WtypCzbsController < ApplicationController
       @wtyp_czb.ypph = @sp_bsb.sp_s_27
       @wtyp_czb.bcydwmc = @sp_bsb.sp_s_1
       @wtyp_czb.bcydw_sheng = @sp_bsb.sp_s_3
+      @wtyp_czb.sp_s_4 = @sp_bsb.sp_s_4
+      @wtyp_czb.sp_s_5 = @sp_bsb.sp_s_5
       @wtyp_czb.cydwmc = @sp_bsb.sp_s_35
       @wtyp_czb.cydwsf = @sp_bsb.sp_s_52
       @wtyp_czb.bsscqymc = @sp_bsb.sp_s_64
       @wtyp_czb.bsscqy_sheng = @sp_bsb.sp_s_202
+      @wtyp_czb.sp_s_220 = @sp_bsb.sp_s_220
+      @wtyp_czb.sp_s_221 = @sp_bsb.sp_s_221
       @wtyp_czb.scrq = @sp_bsb.sp_d_28
       @wtyp_czb.bgfl = @sp_bsb.bgfl
       @wtyp_czb.jyjl = @sp_bsb.sp_s_71
@@ -519,10 +523,14 @@ class WtypCzbsController < ApplicationController
         @part_sc.ypph = @sp_bsb.sp_s_27
         @part_sc.bcydwmc = @sp_bsb.sp_s_1
         @part_sc.bcydw_sheng = @sp_bsb.sp_s_3
+        @part_sc.sp_s_4 = @sp_bsb.sp_s_4
+        @part_sc.sp_s_5 = @sp_bsb.sp_s_5
         @part_sc.cydwmc = @sp_bsb.sp_s_35
         @part_sc.cydwsf = @sp_bsb.sp_s_52
         @part_sc.bsscqymc = @sp_bsb.sp_s_64
         @part_sc.bsscqy_sheng = @sp_bsb.sp_s_202
+        @part_sc.sp_s_220 = @sp_bsb.sp_s_220
+        @part_sc.sp_s_221 = @sp_bsb.sp_s_221
         @part_sc.scrq = @sp_bsb.sp_d_28
         @part_sc.bgfl = @sp_bsb.bgfl
         @part_sc.jyjl = @sp_bsb.sp_s_71
@@ -556,10 +564,14 @@ class WtypCzbsController < ApplicationController
       @part_lt_cy.ypph = @sp_bsb.sp_s_27
       @part_lt_cy.bcydwmc = @sp_bsb.sp_s_1
       @part_lt_cy.bcydw_sheng = @sp_bsb.sp_s_3
+      @part_lt_cy.sp_s_4 = @sp_bsb.sp_s_4
+      @part_lt_cy.sp_s_5 = @sp_bsb.sp_s_5
       @part_lt_cy.cydwmc = @sp_bsb.sp_s_35
       @part_lt_cy.cydwsf = @sp_bsb.sp_s_52
       @part_lt_cy.bsscqymc = @sp_bsb.sp_s_64
       @part_lt_cy.bsscqy_sheng = @sp_bsb.sp_s_202
+      @part_lt_cy.sp_s_220 = @sp_bsb.sp_s_220
+      @part_lt_cy.sp_s_221 = @sp_bsb.sp_s_221
       @part_lt_cy.scrq = @sp_bsb.sp_d_28
       @part_lt_cy.bgfl = @sp_bsb.bgfl
       @part_lt_cy.jyjl = @sp_bsb.sp_s_71
@@ -574,7 +586,7 @@ class WtypCzbsController < ApplicationController
       @part_lt_cy.save
     end
 
-    @is_editing = WtypCzbPart.where("bcydw_sheng = ? OR bsscqy_sheng = ? AND wtyp_czb_id = ?", current_user.user_s_province, current_user.user_s_province, @wtyp_czb.id).where("current_state = ?", ::WtypCzb::State::ASSIGNED).count > 0
+    @is_editing = WtypCzbPart.where("sp_s_4 = ? OR sp_s_220 = ? AND wtyp_czb_id = ?", current_user.prov_city, current_user.prov_city, @wtyp_czb.id).where("current_state = ?", ::WtypCzb::State::ASSIGNED).count > 0
 
     @yydjb = SpYydjb.where("cjbh = ? AND current_state IN (1, 2, 3)", @sp_bsb.sp_s_16).last
 
