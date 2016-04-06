@@ -663,6 +663,7 @@
       //抽检检测总局本级一司/三司抽样编号需以GC1500开头
       if ($('#sp_bsb_sp_s_16').val().length != 12 && $('#sp_bsb_sp_s_16').val().length != 16) {
         alert('抽样编号应为12位或者16位');
+        $('#sp_bsb_sp_s_16').focus();
         return false;
       }
       var bsfla = $('#sp_bsb_sp_s_70').val();
@@ -675,7 +676,90 @@
       <%@check=[1,2,3,4,5,6,7,8,11,12,14,16,21,24,30,33,35,36,37,39,40,41,42,61,62,63,65,70]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
-        alert("该项为必填项");
+        var info = "";
+        info = "<%=i%>";
+        if(info==70){
+          info = "报送分类";
+        }
+        if(info==1){
+          info = "被抽样单位名称";
+        }
+        if(info==2){
+          info = "抽样地点";
+        }
+        if(info==3){
+          info = "单位地址,省份";
+        }
+        if(info==4){
+          info = "单位地址,市级";
+        }
+        if(info==5){
+          info = "单位地址,县级";
+        }
+        if(info==7) {
+          info = "单位地址，详细地址";
+        }
+        if(info==8){
+          info = "被抽样单位法人（负责人）";
+        }
+        if(info==11){
+          info = "被抽样单位负责（联系）人";
+        }
+        if(info==12){
+          info = "电话";
+        }
+        if(info==14){
+          info = "样品名称";
+        }
+        if(info==6){
+          info = "单位";
+        }
+        if(info==16){
+          info = "抽样编号";
+        }
+        if(info==21){
+          info = "样品来源";
+        }
+        if(info==24){
+          info = "抽样方式";
+        }
+        if(info==30){
+          info = "抽样时样品存储状态";
+        }
+        if(info==33){
+          info = "抽样样品包装";
+        }
+        if(info==35){
+          info = "抽样单位名称";
+        }
+        if(info==36){
+          info = "单位级别";
+        }
+        if(info==37){
+          info = "抽样人员";
+        }
+        if(info==39){
+          info = "电话";
+        }
+        if(info==40){
+          info = "抽样单位负责（联系）人";
+        }
+        if(info==41){
+          info = "抽样单位电话";
+        }
+        if(info==42){
+          info = "电子邮箱";
+        }
+        if(info==61){
+          info = "样品形态";
+        }
+        if(info==62){
+          info = "样品类型";
+        }
+        if(info==63){
+          info = "包装分类";
+        }
+        alert(info + " ,该项为必填项");
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
       }
@@ -712,7 +796,30 @@
       <%@check.each do |i|%>
       var o = $.trim($("#sp_bsb_sp_s_" +<%=i%>).val());
       if (o == '请选择' || o == '') {
-        alert("该项为必选项");
+        var info = "";
+        info = "<%=i%>";
+        if(info==68){
+          info = "抽样地点";
+        }
+        if(info==17){
+          info = "食品大类";
+        }
+        if(info==18){
+          info = "食品亚类";
+        }
+        if(info==19){
+          info = "食品次亚类";
+        }
+        if(info==20){
+          info = "食品细类";
+        }
+        if(info==62){
+          info = "样品类型";
+        }
+        if(info==202){
+          info = "标识生产企业地址，省份";
+        }
+        alert(info+"，该项为必选项");
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
       }
@@ -790,7 +897,87 @@
       <%@check=[1,2,3,4,5,6,7,11,12,14,16,21,24,30,33,35,36,37,39,40,41,42,61,62,63,70]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
-        alert("该项为必填项" + <%= i %>);
+        var info = "";
+        info = "<%=i%>";
+        if(info==70){
+          info = "报送分类";
+        }
+        if(info==1){
+          info = "被抽样单位名称";
+        }
+        if(info==2){
+          info = "抽样地点";
+        }
+        if(info==3){
+          info = "单位地址,省份";
+        }
+        if(info==4){
+          info = "单位地址,市级";
+        }
+        if(info==5){
+          info = "单位地址,县级";
+        }
+        if(info==7) {
+          info = "单位地址，详细地址";
+        }
+        if(info==11){
+          info = "被抽样单位负责（联系）人";
+        }
+        if(info==12){
+          info = "电话";
+        }
+        if(info==14){
+          info = "样品名称";
+        }
+        if(info==6){
+          info = "单位";
+        }
+        if(info==16){
+          info = "抽样编号";
+        }
+        if(info==21){
+          info = "样品来源";
+        }
+        if(info==24){
+          info = "抽样方式";
+        }
+        if(info==30){
+          info = "抽样时样品存储状态";
+        }
+        if(info==33){
+          info = "抽样样品包装";
+        }
+        if(info==35){
+          info = "抽样单位名称";
+        }
+        if(info==36){
+          info = "单位级别";
+        }
+        if(info==37){
+          info = "抽样人员";
+        }
+        if(info==39){
+          info = "电话";
+        }
+        if(info==40){
+          info = "抽样单位负责（联系）人";
+        }
+        if(info==41){
+          info = "抽样单位电话";
+        }
+        if(info==42){
+          info = "电子邮箱";
+        }
+        if(info==61){
+          info = "样品形态";
+        }
+        if(info==62){
+          info = "样品类型";
+        }
+        if(info==63){
+          info = "包装分类";
+        }
+        alert(info + " ,该项为必填项");
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
       }
@@ -807,7 +994,7 @@
       <%@check=[15]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_n_" +<%=i%>).val()).length == 0) {
-        alert("该数据项为必填项");
+        alert("抽样数量，为必填项");
         $("#sp_bsb_sp_n_" +<%=i%>).focus();
         return false;
       }
@@ -816,7 +1003,21 @@
       <%@check=[68,17,62,202]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()) == '请选择') {
-        alert("该项为必填项" + <%= i %>);
+        var info = "";
+        info = "<%=i%>";
+        if(info==68){
+          info = "抽样地点";
+        }
+        if(info==17){
+          info = "食品大类";
+        }
+        if(info==62){
+          info = "样品类型";
+        }
+        if(info==202){
+          info = "标识生产企业地址，省份";
+        }
+        alert(info+"，该项为必选项");
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
       }
@@ -826,7 +1027,37 @@
       <%@check=[43,44,45,49,50,51,85,87,88]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
-        alert("该项为必填项" + <%= i %>);
+        var info = "";
+        info = "<%=i%>";
+        if(info==43){
+          info = "检验机构名称";
+        }
+        if(info==44){
+          info = "检验目的/任务类别";
+        }
+        if(info==45){
+          info = "报告书编号";
+        }
+        if(info==49){
+          info = "联系人";
+        }
+        if(info==50){
+          info = "联系人电话";
+        }
+        if(info==51){
+          info = "联系人电子邮箱";
+        }
+        if(info==85){
+          info = "填报人";
+        }
+        if(info==87){
+          info = "电话";
+        }
+        if(info==88){
+          info = "填报人电子邮箱";
+        }
+
+        alert(info+"，该项为必选项");
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
       }
