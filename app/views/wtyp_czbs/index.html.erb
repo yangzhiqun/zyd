@@ -152,7 +152,7 @@
       <td colspan="4">被抽样单位名称</td>
       <td colspan="6"><input class="form-control input-sm" type="text" value="<%= params[:bcydwmc] %>" name="bcydwmc">
       </td>
-      <td colspan="4">被抽样单位省份</td>
+      <td colspan="4">被抽样单位市/区</td>
       <td colspan="6">
         <select name="bcydw_sheng" class="form-control input-sm">
           <option value="">请选择</option>
@@ -163,16 +163,16 @@
       </td>
       <td colspan="4">任务来源</td>
       <td colspan="6">
-        <%= select_tag :rwly, options_for_select([["请选择", ""], ["局本级", 1], ["中央转移地方", 2]], params[:rwly].to_i), :class => "form-control" %>
+        <%= select_tag :rwly, options_for_select([["请选择", ""], ["局本级", 1], ["中央转移地方", 2]], params[:rwly].to_i), :class => "form-control input-sm" %>
       </td>
     </tr>
     <tr>
       <td colspan="4">标识生产企业名称</td>
       <td colspan="6"><input class="form-control input-sm" type="text" value="<%= params[:bsscqymc] %>" name="bsscqymc">
       </td>
-      <td colspan="4">标示生产企业省份</td>
+      <td colspan="4">标示生产企业市/区</td>
       <td colspan="6">
-        <select name="bsscqy_sheng" class="form-control input-sm">
+        <select name="sp_s_220" class="form-control input-sm">
           <option value="">请选择</option>
           <% SysProvince.level1.each do |prov| %>
               <option value="<%= prov.name %>"><%= prov.name %></option>
@@ -244,6 +244,7 @@
     </ul>
 <% end %>
 <div class="tab-content">
+  <br>
   <% if @wtyp_czbs.nil? %>
       <p>暂无未安排数据</p>
   <% else %>
@@ -268,8 +269,8 @@
           <th>采样编号</th>
           <th>抽样环节</th>
           <th>样品名称</th>
-          <th>标示生产企业省份</th>
-          <th>被抽样单位省份</th>
+          <th>标示生产企业市/区</th>
+          <th>被抽样单位市/区</th>
           <th>标示生产企业名称</th>
           <th>检验结论</th>
           <th>检验结果状态</th>
@@ -302,8 +303,8 @@
                   </td>
                   <td><%= bsb.sp_s_68 %></td>
                   <td><%= bsb.sp_s_14 %></td>
-                  <td><%= bsb.sp_s_202 %></td>
-                  <td><%= bsb.sp_s_3 %></td>
+                  <td><%= bsb.sp_s_220 %></td>
+                  <td><%= bsb.sp_s_4 %></td>
                   <td><%= bsb.sp_s_64 %></td>
                   <td><%= bsb.sp_s_71 %></td>
                   <td><%= bsb.yydjb.blank? ? "初检结论" : bsb.yydjb.fjzt %></td>
