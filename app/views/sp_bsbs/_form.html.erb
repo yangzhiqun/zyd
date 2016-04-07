@@ -759,6 +759,9 @@
         if(info==63){
           info = "包装分类";
         }
+        if(info==65){
+          info = "标识生产企业地址，详细地址";
+        }
         alert(info + " ,该项为必填项");
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
@@ -768,7 +771,15 @@
       <%@check=["xkz","xkz_id"]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_" + "<%=i%>").val()).length == 0) {
-        alert("该项为必填项");
+        var info = "";
+        info = "<%=i%>";
+        if(info=="xkz"){
+          info = "许可证";
+        }
+        if(info=="xkz_id"){
+          info = "许可证号";
+        }
+        alert(info + " ,该项为必填项");
         $("#sp_bsb_sp_" + "<%=i%>").focus();
         return false;
       }
