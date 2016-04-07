@@ -15,6 +15,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
 # POST /resource
   def create
+    @province = SysProvince.where("level like '_' or level like '__'").where(name: SysConfig.get(SysConfig::Key::PROV)).last
     build_resource(sign_up_params)
     if resource.is_signup_sms_code_available?
       super
