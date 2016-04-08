@@ -282,7 +282,6 @@ DEPENDENCIES
   browser
   byebug
   coffee-rails (~> 4.1.0)
-  concurrent-ruby (= 1.0.1)
   devise
   devise-i18n
   hairtrigger
