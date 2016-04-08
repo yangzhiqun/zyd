@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160325110125) do
+ActiveRecord::Schema.define(version: 20160406143030) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -1182,7 +1182,7 @@ ActiveRecord::Schema.define(version: 20160325110125) do
     t.integer  "jg_group",          limit: 4
     t.string   "jg_group_category", limit: 255
     t.integer  "jg_administrion",   limit: 4
-    t.integer  "jg_sp_permission",  limit: 4
+    t.integer  "jg_sp_permission",  limit: 4,     default: 1
     t.integer  "jg_bjp_permission", limit: 4
     t.integer  "jg_hzp_permission", limit: 4
     t.integer  "jg_enable",         limit: 4
@@ -1223,6 +1223,48 @@ ActiveRecord::Schema.define(version: 20160325110125) do
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
   end
+
+  create_table "oauth_access_grants", force: :cascade do |t|
+    t.integer  "resource_owner_id", limit: 4,     null: false
+    t.integer  "application_id",    limit: 4,     null: false
+    t.string   "token",             limit: 255,   null: false
+    t.integer  "expires_in",        limit: 4,     null: false
+    t.text     "redirect_uri",      limit: 65535, null: false
+    t.datetime "created_at",                      null: false
+    t.datetime "revoked_at"
+    t.string   "scopes",            limit: 255
+  end
+
+  add_index "oauth_access_grants", ["application_id"], name: "fk_rails_b4b53e07b8", using: :btree
+  add_index "oauth_access_grants", ["token"], name: "index_oauth_access_grants_on_token", unique: true, using: :btree
+
+  create_table "oauth_access_tokens", force: :cascade do |t|
+    t.integer  "resource_owner_id", limit: 4
+    t.integer  "application_id",    limit: 4,   null: false
+    t.string   "token",             limit: 255, null: false
+    t.string   "refresh_token",     limit: 255
+    t.integer  "expires_in",        limit: 4
+    t.datetime "revoked_at"
+    t.datetime "created_at",                    null: false
+    t.string   "scopes",            limit: 255
+  end
+
+  add_index "oauth_access_tokens", ["application_id"], name: "fk_rails_732cb83ab7", using: :btree
+  add_index "oauth_access_tokens", ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true, using: :btree
+  add_index "oauth_access_tokens", ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id", using: :btree
+  add_index "oauth_access_tokens", ["token"], name: "index_oauth_access_tokens_on_token", unique: true, using: :btree
+
+  create_table "oauth_applications", force: :cascade do |t|
+    t.string   "name",         limit: 255,                null: false
+    t.string   "uid",          limit: 255,                null: false
+    t.string   "secret",       limit: 255,                null: false
+    t.text     "redirect_uri", limit: 65535,              null: false
+    t.string   "scopes",       limit: 255,   default: "", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true, using: :btree
 
   create_table "orders", force: :cascade do |t|
     t.string   "name",       limit: 255
@@ -1386,8 +1428,10 @@ ActiveRecord::Schema.define(version: 20160325110125) do
     t.string   "sp_s_222",          limit: 20
     t.string   "jyxx_tbr",          limit: 255,                  default: ""
     t.date     "jyxx_tbsj"
+    t.datetime "deleted_at"
   end
 
+  add_index "pad_sp_bsbs", ["deleted_at"], name: "index_pad_sp_bsbs_on_deleted_at", using: :btree
   add_index "pad_sp_bsbs", ["sp_s_1"], name: "index_pad_sp_bsbs_on_sp_s_1", using: :btree
 
   create_table "pad_sp_logs", force: :cascade do |t|
@@ -1805,6 +1849,10 @@ ActiveRecord::Schema.define(version: 20160325110125) do
     t.date     "jyxx_tbsj"
     t.text     "refuse_reason",            limit: 65535
     t.datetime "deleted_at"
+    t.string   "jyxx_jyr",                 limit: 255,                  default: ""
+    t.string   "jyxx_shhr",                limit: 255,                  default: ""
+    t.string   "jyxx_pzr",                 limit: 255,                  default: ""
+    t.boolean  "from_excel",                                            default: false
   end
 
   add_index "sp_bsbs", ["application_id"], name: "index_sp_bsbs_on_application_id", using: :btree
@@ -2108,8 +2156,8 @@ ActiveRecord::Schema.define(version: 20160325110125) do
     t.string   "spdata_8",   limit: 255
     t.string   "spdata_9",   limit: 255
     t.integer  "sp_bsb_id",  limit: 4
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
     t.string   "spdata_10",  limit: 255
     t.string   "spdata_11",  limit: 255
     t.string   "spdata_12",  limit: 255
@@ -2120,6 +2168,7 @@ ActiveRecord::Schema.define(version: 20160325110125) do
     t.string   "spdata_17",  limit: 255
     t.string   "spdata_18",  limit: 255
     t.datetime "deleted_at"
+    t.boolean  "from_excel",             default: false
   end
 
   add_index "spdata", ["deleted_at"], name: "index_spdata_on_deleted_at", using: :btree
@@ -2270,6 +2319,7 @@ ActiveRecord::Schema.define(version: 20160325110125) do
     t.datetime "updated_at",             null: false
     t.string   "code",       limit: 255
     t.string   "level",      limit: 20
+    t.string   "fullname",   limit: 50
   end
 
   create_table "task_jg_bsbs", force: :cascade do |t|
@@ -2342,6 +2392,8 @@ ActiveRecord::Schema.define(version: 20160325110125) do
     t.text     "sp_s_reason",       limit: 65535
     t.string   "sp_s_4",            limit: 255
     t.string   "sp_s_5",            limit: 255
+    t.string   "sp_s_2",            limit: 255
+    t.datetime "deleted_at"
   end
 
   add_index "tmp_sp_bsbs", ["sp_i_state"], name: "index_tmp_sp_bsbs_on_sp_i_state", using: :btree
@@ -2648,13 +2700,15 @@ ActiveRecord::Schema.define(version: 20160325110125) do
     t.integer  "shr_user_id",         limit: 4
     t.string   "sp_s_220",            limit: 20
     t.string   "sp_s_221",            limit: 20
-    t.string   "SPDL",                limit: 20
-    t.string   "SPYL",                limit: 20
-    t.string   "SPCYL",               limit: 20
-    t.string   "SPXL",                limit: 20
+    t.string   "SPDL",                limit: 255
+    t.string   "SPYL",                limit: 255
+    t.string   "SPCYL",               limit: 255
+    t.string   "SPXL",                limit: 255
     t.string   "xc_attachment_path",  limit: 100
     t.string   "pc_attachment_path",  limit: 100
     t.string   "xz_attachment_path",  limit: 100
+    t.string   "sp_s_4",              limit: 20
+    t.string   "sp_s_5",              limit: 20
   end
 
   add_index "wtyp_czb_parts", ["cjbh"], name: "index_wtyp_czb_parts_on_cjbh", using: :btree
@@ -2767,10 +2821,12 @@ ActiveRecord::Schema.define(version: 20160325110125) do
     t.datetime "scrq"
     t.string   "sp_s_220",               limit: 20
     t.string   "sp_s_221",               limit: 20
-    t.string   "SPDL",                   limit: 20
-    t.string   "SPYL",                   limit: 20
-    t.string   "SPCYL",                  limit: 20
-    t.string   "SPXL",                   limit: 20
+    t.string   "SPDL",                   limit: 255
+    t.string   "SPYL",                   limit: 255
+    t.string   "SPCYL",                  limit: 255
+    t.string   "SPXL",                   limit: 255
+    t.string   "sp_s_4",                 limit: 20
+    t.string   "sp_s_5",                 limit: 20
   end
 
   add_index "wtyp_czbs", ["bsscqymc"], name: "index_wtyp_czbs_on_bsscqymc", using: :btree
@@ -2812,31 +2868,27 @@ ActiveRecord::Schema.define(version: 20160325110125) do
     t.datetime "updated_at",             null: false
   end
 
+  add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
+  add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   # WARNING: generating adapter-specific definition for sp_bsbs_after_insert_row_tr due to a mismatch.
   # either there's a bug in hairtrigger or you've messed up your migrations and/or db :-/
   execute(<<-TRIGGERSQL)
 CREATE TRIGGER sp_bsbs_after_insert_row_tr AFTER INSERT ON `sp_bsbs`
 FOR EACH ROW
 BEGIN
-    INSERT INTO tmp_sp_bsbs(id, sp_i_state, sp_s_16, sp_s_3, sp_s_4,sp_s_5,sp_s_202, sp_s_14, sp_s_43, sp_s_2_1, sp_s_35, sp_s_64, sp_s_1, sp_s_17, sp_s_20, sp_s_85, created_at, updated_at, sp_s_214, sp_s_71, fail_report_path, tname, sp_s_18, sp_s_70) values(NEW.id, NEW.sp_i_state, NEW.sp_s_16, NEW.sp_s_3,NEW.sp_s_4,NEW.sp_s_5, NEW.sp_s_202, NEW.sp_s_14, NEW.sp_s_43, NEW.sp_s_2_1, NEW.sp_s_35, NEW.sp_s_64, NEW.sp_s_1, NEW.sp_s_17, NEW.sp_s_20, NEW.sp_s_85, NEW.created_at, NEW.updated_at, NEW.sp_s_214, NEW.sp_s_71, NEW.fail_report_path, NEW.tname, NEW.sp_s_18, NEW.sp_s_70);
+    INSERT INTO tmp_sp_bsbs(sp_s_reason, id, sp_i_state, sp_s_16, sp_s_3, deleted_at, sp_s_2, sp_s_202, sp_s_14, sp_s_43, sp_s_2_1, sp_s_35, sp_s_64, sp_s_1, sp_s_17, sp_s_20, sp_s_85, created_at, updated_at, sp_s_214, sp_s_71, fail_report_path, tname, user_id, uid, sp_s_18, sp_s_70, sp_s_215, sp_s_68, sp_s_13, sp_s_27, czb_reverted_flag) values(NEW.sp_s_reason, NEW.id, NEW.sp_i_state, NEW.sp_s_16, NEW.sp_s_3, NEW.deleted_at,NEW.sp_s_2, NEW.sp_s_202, NEW.sp_s_14, NEW.sp_s_43, NEW.sp_s_2_1, NEW.sp_s_35, NEW.sp_s_64, NEW.sp_s_1, NEW.sp_s_17, NEW.sp_s_20, NEW.sp_s_85, NEW.created_at, NEW.updated_at, NEW.sp_s_214, NEW.sp_s_71, NEW.fail_report_path, NEW.tname, NEW.user_id, NEW.uid, NEW.sp_s_18, NEW.sp_s_70, NEW.sp_s_215, NEW.sp_s_68, NEW.sp_s_13, NEW.sp_s_27, NEW.czb_reverted_flag);
 END
   TRIGGERSQL
 
   # no candidate create_trigger statement could be found, creating an adapter-specific one
   execute(<<-TRIGGERSQL)
-CREATE TRIGGER sp_bsbs_after_update_of_updated_at_row_tr AFTER UPDATE ON `sp_bsbs`
+CREATE TRIGGER sp_bsbs_after_update_of_deleted_at_updated_at_sp_i_state_row_tr AFTER UPDATE ON `sp_bsbs`
 FOR EACH ROW
 BEGIN
-    IF NEW.updated_at <> OLD.updated_at OR (NEW.updated_at IS NULL) <> (OLD.updated_at IS NULL) THEN
-        UPDATE tmp_sp_bsbs SET sp_i_state=NEW.sp_i_state, sp_s_16=NEW.sp_s_16, sp_s_3=NEW.sp_s_3,sp_s_4=NEW.sp_s_4,sp_s_5=NEW.sp_s_5,sp_s_202=NEW.sp_s_202, sp_s_14=NEW.sp_s_14, sp_s_43=NEW.sp_s_43, sp_s_2_1=NEW.sp_s_2_1, sp_s_35=NEW.sp_s_35, sp_s_64=NEW.sp_s_64, sp_s_1=NEW.sp_s_1, sp_s_17=NEW.sp_s_17, sp_s_20=NEW.sp_s_20, sp_s_85=NEW.sp_s_85, created_at=NEW.created_at, updated_at=NEW.updated_at, sp_s_214=NEW.sp_s_214, sp_s_71=NEW.sp_s_71, fail_report_path=NEW.fail_report_path, tname=NEW.tname, sp_s_18=NEW.sp_s_18, sp_s_70=NEW.sp_s_70 where id=NEW.id;
+    IF NEW.deleted_at <> OLD.deleted_at OR (NEW.deleted_at IS NULL) <> (OLD.deleted_at IS NULL) OR NEW.updated_at <> OLD.updated_at OR (NEW.updated_at IS NULL) <> (OLD.updated_at IS NULL) OR NEW.sp_i_state <> OLD.sp_i_state OR (NEW.sp_i_state IS NULL) <> (OLD.sp_i_state IS NULL) THEN
+        UPDATE tmp_sp_bsbs SET sp_s_reason=NEW.sp_s_reason, sp_i_state=NEW.sp_i_state, sp_s_16=NEW.sp_s_16, sp_s_3=NEW.sp_s_3, deleted_at=NEW.deleted_at, sp_s_2=NEW.sp_s_2, sp_s_202=NEW.sp_s_202, sp_s_14=NEW.sp_s_14, sp_s_43=NEW.sp_s_43, sp_s_2_1=NEW.sp_s_2_1, sp_s_35=NEW.sp_s_35, sp_s_64=NEW.sp_s_64, sp_s_1=NEW.sp_s_1, sp_s_17=NEW.sp_s_17, sp_s_20=NEW.sp_s_20, sp_s_85=NEW.sp_s_85, created_at=NEW.created_at, updated_at=NEW.updated_at, sp_s_214=NEW.sp_s_214, sp_s_71=NEW.sp_s_71, fail_report_path=NEW.fail_report_path, tname=NEW.tname, user_id=NEW.user_id, uid=NEW.uid, sp_s_18=NEW.sp_s_18, sp_s_70=NEW.sp_s_70, sp_s_215=NEW.sp_s_215, sp_s_68=NEW.sp_s_68, sp_s_13=NEW.sp_s_13, sp_s_27=NEW.sp_s_27, czb_reverted_flag=NEW.czb_reverted_flag where id=NEW.id;
     END IF;
 END
   TRIGGERSQL
-
-  create_trigger("sp_bsbs_after_delete_row_tr", :generated => true, :compatibility => 1).
-      on("sp_bsbs").
-      after(:delete) do
-    "DELETE FROM tmp_sp_bsbs where id=OLD.id;"
-  end
 
 end

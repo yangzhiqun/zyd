@@ -172,7 +172,7 @@
           <a class="btn btn-link btn-xs center-block" href="/sp_bsbs/<%= sp_bsb.id%>/fail_pdf_report" target="_blank">查看检验报告</a>
         <% end %>
 
-        <% unless [3, 4, 6, 8, 9].include? sp_bsb.sp_i_state%>
+        <% if [1, 0].include? sp_bsb.sp_i_state %>
         <%= link_to '删除', "/sp_bsbs/#{sp_bsb.id}",method: :delete, data: { confirm: '是否删除?' }, :class => 'btn btn-link btn-xs center-block' %>
         <% end %>
       </td>
