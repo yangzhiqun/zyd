@@ -2,6 +2,7 @@ class CategoryHelperController < ApplicationController
   include ApplicationHelper
 
   def batch_delete
+    params.permit!
     model = params[:category].constantize
 
     model.where(id: params[:ids].split(',')).update_all(enable: false)
@@ -30,6 +31,7 @@ class CategoryHelperController < ApplicationController
   end
 
   def create
+    params.permit!
     model = params[:category].constantize
 
     if model == ACategory
@@ -54,6 +56,7 @@ class CategoryHelperController < ApplicationController
   end
 
   def update
+    params.permit!
     model = params[:category].constantize
 
     @category = model.find(params[:id])
