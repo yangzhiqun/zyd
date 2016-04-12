@@ -28,7 +28,7 @@ class SpCompanyInfosController < ApplicationController
     @sp_company_info = SpCompanyInfo.new
     @options = []
     @options[68]=Flexcontent.where(flex_field: 'sp_bsb_sp_s_68').order('flex_sortid ASC')
-    @options[68]=@options[68].map{|option|[option[:flex_name],option[:flex_id]]}
+    @options[68]=@options[68].map{|option|[option[:flex_name],option[:flex_id]]}.unshift(['请选择', nil])
 
     respond_to do |format|
       format.html # new.html.erb
@@ -41,7 +41,7 @@ class SpCompanyInfosController < ApplicationController
     @sp_company_info = SpCompanyInfo.find(params[:id])
     @options = []
     @options[68] = Flexcontent.where(flex_field: "sp_bsb_sp_s_68").order("flex_sortid ASC")
-    @options[68]=@options[68].map{|option|[option[:flex_name],option[:flex_id]]}
+    @options[68]=@options[68].map{|option|[option[:flex_name],option[:flex_id]]}.unshift(['请选择', nil])
   end
 
   # POST /sp_company_infos
