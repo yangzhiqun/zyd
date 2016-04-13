@@ -130,7 +130,7 @@ class SpBsbsController < ApplicationController
 
   # 食品标准
   def checkout_standard
-    result = RestClient.get("http://221.194.147.38:8081/spaqk/webservice/getInfo?name=%s&flag=#{params[:flag]}" % [URI.escape(params[:name])])
+    result = RestClient.get("http://shianbao.net:8081/spaqk/webservice/getInfo?name=%s&flag=#{params[:flag]}" % [URI.escape(params[:name])])
     result = result.gsub("[", "{").gsub("]", "}").gsub("'", '"')
     result = JSON.parse(result)
     if result.blank?
