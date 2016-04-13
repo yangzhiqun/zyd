@@ -4,23 +4,23 @@ class CategoryHelperController < ApplicationController
   def batch_delete
     model = params[:category].constantize
 
-    model.where(id: params[:ids].split(',')).update_all(enable: false)
+    model.where(id: params[:ids].split(',')).destroy_all
 
     case model.class
       when ACategory.class
-        BCategory.where(a_category_id: params[:ids].split(',')).update_all(enable: false)
-        CCategory.where(a_category_id: params[:ids].split(',')).update_all(enable: false)
-        DCategory.where(a_category_id: params[:ids].split(',')).update_all(enable: false)
-        CheckItem.where(a_category_id: params[:ids].split(',')).update_all(enable: false)
+        BCategory.where(a_category_id: params[:ids].split(',')).destroy_all
+        CCategory.where(a_category_id: params[:ids].split(',')).destroy_all
+        DCategory.where(a_category_id: params[:ids].split(',')).destroy_all
+        CheckItem.where(a_category_id: params[:ids].split(',')).destroy_all
       when BCategory.class
-        CCategory.where(b_category_id: params[:ids].split(',')).update_all(enable: false)
-        DCategory.where(b_category_id: params[:ids].split(',')).update_all(enable: false)
-        CheckItem.where(b_category_id: params[:ids].split(',')).update_all(enable: false)
+        CCategory.where(b_category_id: params[:ids].split(',')).destroy_all
+        DCategory.where(b_category_id: params[:ids].split(',')).destroy_all
+        CheckItem.where(b_category_id: params[:ids].split(',')).destroy_all
       when CCategory.class
-        DCategory.where(c_category_id: params[:ids].split(',')).update_all(enable: false)
-        CheckItem.where(c_category_id: params[:ids].split(',')).update_all(enable: false)
+        DCategory.where(c_category_id: params[:ids].split(',')).destroy_all
+        CheckItem.where(c_category_id: params[:ids].split(',')).destroy_all
       when DCategory.class
-        CheckItem.where(d_category_id: params[:ids].split(',')).update_all(enable: false)
+        CheckItem.where(d_category_id: params[:ids].split(',')).destroy_all
       else
     end
 
