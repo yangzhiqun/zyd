@@ -80,7 +80,7 @@
         <tr>
           <td colspan="4">任务来源</td>
           <td colspan="6">
-            <%= select_tag 'rwly', options_for_select(SysProvince.level1.map { |s| [s.name, s.id] }.unshift(['国家局', -1])), class: 'form-control input-sm' %>
+            <%= select_tag 'rwly', options_for_select(SysProvince.level1.map { |s| [s.name, s.id] }.unshift(['省局', -1])), class: 'form-control input-sm' %>
           </td>
           <td colspan="4">抽样单位名称</td>
           <td colspan="6">

@@ -272,7 +272,7 @@ class TasksController < ApplicationController
     @rwly = []
     @tasks.joins('LEFT JOIN sys_provinces on sys_provinces.id=task_jg_bsbs.sys_province_id').select('distinct(task_jg_bsbs.sys_province_id), sys_provinces.name').each do |task|
       if task.sys_province_id == -1
-        @rwly.unshift(['国家食品药品监督管理总局', -1])
+        @rwly.unshift(["#{SysConfig.get(SysConfig::Key::PROV)}食品药品监督管理局", -1])
       else
         @rwly.push(["#{task.name}食品药品监督管理局", task.sys_province_id])
       end
