@@ -112,7 +112,7 @@
           <td colspan="6">
             <input type="text" id="sp_s_20" value="<%= params[:sp_s_20] %>" class="form-control input-sm" name="sp_s_20">
           </td>
-          <td colspan="4">被抽样单位省份</td>
+          <td colspan="4">被抽样单位市/区</td>
           <% if current_user.is_admin?||session[:change_js]==8||session[:change_js]==9||session[:change_js]==10 %>
               <td colspan="6">
                 <%= select_tag 'sp_s_3', options_for_select(SysProvince.level1.map { |prov| [prov.name, prov.name] }.unshift(['请选择', '']), params[:sp_s_3]), :class => 'form-control input-sm' %>
