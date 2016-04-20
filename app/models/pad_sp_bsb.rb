@@ -167,7 +167,7 @@ class PadSpBsb < ActiveRecord::Base
       i = 0
       loop do
         i = i + 1
-        @id_parts = ["GC"]
+        @id_parts = ['SC']
         @id_parts.push(Time.now.year.to_s[2..3])
         if self.sys_province_id == -1
           @id_parts.push("00")
