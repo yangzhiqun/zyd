@@ -11,7 +11,7 @@
     $.get('/prov.json', {prov: <%= @province.id %>}, function (data) {
       $('<option>-请选择-</option>').appendTo($('#user_prov_city'));
       $.each(data.msg, function (i, item) {
-        $('<option>').attr('value', item.id).text(item.name).appendTo($('#user_prov_city'));
+        $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#user_prov_city'));
       });
     }, 'json');
     reload_jg_data();
@@ -23,9 +23,9 @@
       $('#user_prov_country').empty();
       $('<option>-请选择-</option>').appendTo($('#user_prov_country'));
 
-      $.get('/prov.json', {city: o.val()}, function (data) {
+      $.get('/prov.json', {city: o.find('option:selected').attr('data-id')}, function (data) {
         $.each(data.msg, function (i, item) {
-          $('<option>').attr('value', item.id).text(item.name).appendTo($('#user_prov_country'));
+          $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#user_prov_country'));
         });
       }, 'json');
     });
