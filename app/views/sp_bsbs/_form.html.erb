@@ -396,6 +396,11 @@
           $('#sp_bsb_sp_s_11').val(data.msg.sp_s_11);
           $('#sp_bsb_sp_s_12').val(data.msg.sp_s_12);
 
+          $(".region").ProvinceCity({
+            dprovince: data.msg.sp_s_3,
+            dcity: data.msg.sp_s_4,
+            lcity: data.msg.sp_s_5
+          });
         }
       }, 'json')
     });
