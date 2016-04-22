@@ -1390,6 +1390,10 @@
 
     $('#jg_jg_id').change(function () {
       index_jg = this.selectedIndex;
+      if(index_jg==-1&&jg_data.length>=1){
+        index_jg = 0;
+        $("#jg_jg_id").val(jg_data[index_jg].jg_name);
+      }
       if (index_jg != -1) {
         $("#sp_bsb_sp_s_43").val($("#jg_jg_id").val());
         $("#sp_bsb_sp_s_49").val(jg_data[index_jg].jg_contacts);
