@@ -1,7 +1,7 @@
 #encoding: utf-8
 class ACategoriesController < ApplicationController
   # GET /a_categories
-  # GET /a_categories.json
+  # GET /a_categories.json   a
   def index
     @a_categories = ACategory.where(enable: true)
 
