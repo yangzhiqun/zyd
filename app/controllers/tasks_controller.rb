@@ -331,9 +331,8 @@ class TasksController < ApplicationController
     else
       @end_time = Time.now.end_of_day
     end
-
     unless params[:rwly].blank?
-      # @pad_sp_bsbs = @pad_sp_bsbs.where('sp_s_2_1 LIKE ?', "%#{params[:s13]}%")
+        # @pad_sp_bsbs = @pad_sp_bsbs.where('sys_province_id LIKE ?', "%#{params[:rwly]}%")
       # TODO: 完善取数据逻辑
     end
 

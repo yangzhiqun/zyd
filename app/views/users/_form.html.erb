@@ -86,7 +86,7 @@
         <br>
         <% if current_user.is_super? or current_user.is_prov_manager? %>
             <label>机构名称：</label>
-            <%= f.select :jg_bsb_id, options_for_select(JgBsb.where(status: 0).map { |jg| [jg.jg_name, jg.id] }, @user.jg_bsb_id), {}, :class => "form-control input-sm" %>
+            <%= f.select :jg_bsb_id, options_for_select(JgBsb.list_jgbsb(SysConfig.get(SysConfig::Key::PROV)).map { |jg| [jg.jg_name, jg.id] }.unshift(["请选择", nil]), @user.jg_bsb_id), {}, :class => "form-control input-sm" %>
 
             <% if current_user.is_admin? or current_user.is_account_manager %>
                 <div class="form-inline">

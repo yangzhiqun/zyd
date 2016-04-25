@@ -28,6 +28,7 @@
           $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#user_prov_country'));
         });
       }, 'json');
+      reload_jg_data();
     });
 
     $('.request-signup-code').click(function () {
@@ -73,7 +74,8 @@
   function reload_jg_data() {
     $.get('/jg_bsbs/by_province.json', {
       //prov: $('#user_prov_city').find('option:selected').text(),
-      jg_type: $('#user_jg_type').val()
+      jg_type: $('#user_jg_type').val(),
+      prov_city: $('#user_prov_city').val()
     }, function (data) {
       if (data.status == 'OK') {
         $('#user_jg_bsb_id').empty();

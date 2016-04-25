@@ -3,7 +3,8 @@ class JgBsb < ActiveRecord::Base
   #validates_presence_of :jg_address, message: '请填写机构地址'
   validates_presence_of :jg_province, message: '请填写机构省份'
   # validates_uniqueness_of :jg_address, message: '机构地址重复'
-  validates_uniqueness_of :code, message: '该编号已存在', scope: [:jg_province], allow_blank: true
+  validates_uniqueness_of :code, message: '该编号已存在', scope: [:jg_province],if: :city_code_uniqueness?
+  validates_uniqueness_of :code, message: '该编号已存在', scope: [:city]
   validates_length_of :code, is: 2, message: '编号为2位', allow_blank: true
   require 'RMagick'
 
@@ -161,5 +162,12 @@ class JgBsb < ActiveRecord::Base
     if self.code.to_i == 0 or self.code.blank?
       self.code = '%.2i' % [((1..99).to_a - JgBsb.where(jg_province: self.jg_province).map { |j| j.code.to_i })[0]]
     end
+  end
+  def city_code_uniqueness?
+      self.city == "-请选择-"
+  end
+
+  def self.list_jgbsb(name)
+    JgBsb.where(jg_province: name)
   end
 end
