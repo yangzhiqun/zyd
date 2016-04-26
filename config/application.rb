@@ -32,7 +32,7 @@ module DemoyjsRuby2X
 	:province        => "河北",
 	:client_id       => "c8a47ee3aa4540dd3168f5151f3c1b754febe9dadf848895ef937eb04468302b",
 	:client_secret   => "3999b84e37789216440f39882437a89499aded574f18c721a666eb1d08a6c1b0",
-	:api_base        => "http://qzj.cfda.pub"
+	:api_base        => "http://qzj.cfda.pub:8800/"
 	    }
 
 
