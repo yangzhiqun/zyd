@@ -3,8 +3,8 @@ class JgBsb < ActiveRecord::Base
   #validates_presence_of :jg_address, message: '请填写机构地址'
   validates_presence_of :jg_province, message: '请填写机构省份'
   # validates_uniqueness_of :jg_address, message: '机构地址重复'
-  validates_uniqueness_of :code, message: '该编号已存在', scope: [:jg_province],if: :city_code_uniqueness?
-  validates_uniqueness_of :code, message: '该编号已存在', scope: [:city]
+  validates_uniqueness_of :code, message: '该省编号已存在',conditions: -> { select(:jg_province).where("jg_bsbs.city is null or jg_bsbs.city = '-请选择-'  ") } ,if: :city_code_uniqueness?
+  validates_uniqueness_of :code, message: '该市编号已存在', scope: [:city]
   validates_length_of :code, is: 2, message: '编号为2位', allow_blank: true
   require 'RMagick'
 

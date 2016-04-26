@@ -112,6 +112,7 @@
               <div class="form-group form-inline">
                 <label>机构：<span class="text-danger">*</span><%= show_error(@user.errors, :user_s_province) %></label>
                 <br>
+                <%= show_error(@user.errors, :jg_type) %>
                 <%= f.select :jg_type, options_for_select([['请选择', 0], ['监管部门', 1], ['检验机构', 3]]), {}, class: 'form-control input-sm', style: 'width: 120px; margin-right: 10px;' %><%= f.select :jg_bsb_id, [], {}, :class => 'form-control input-sm', style: 'width: 300px;' %>
               </div>
 

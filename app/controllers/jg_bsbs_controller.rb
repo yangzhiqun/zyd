@@ -234,6 +234,7 @@ class JgBsbsController < ApplicationController
     if params[:jg_type].to_i != 0
       @jg_bsbs = @jg_bsbs.where(jg_type: params[:jg_type].to_i,city: params[:prov_city])
     end
+    @jg_bsbs = @jg_bsbs.where("jg_name   is not null")
     render json: {status: 'OK', msg: @jg_bsbs.map { |j| [j.jg_name, j.id] }}
   end
 
