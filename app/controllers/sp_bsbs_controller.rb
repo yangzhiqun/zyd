@@ -744,7 +744,7 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:sp_sf]!='请选择' and !params[:sp_sf].blank?
-      @sp_bsbs = @sp_bsbs.where("sp_s_3 LIKE ?", "%#{params[:sp_sf]}%")
+      @sp_bsbs = @sp_bsbs.where("sp_s_3 LIKE ? ",  "%#{SysConfig.get(SysConfig::Key::PROV)}%")
     end
 
     if current_user.is_admin? || session[:change_js]==10

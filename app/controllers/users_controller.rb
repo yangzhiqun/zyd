@@ -64,7 +64,7 @@ class UsersController < ApplicationController
       end
 
       if @search_form.prov.present? and !@search_form.prov.eql?('/')
-        @users = @users.where('user_s_province = ?', "#{@search_form.prov}")
+         @users = @users.where('user_s_province = ? or user_s_city = ?', SysConfig.get(SysConfig::Key::PROV),"#{@search_form.prov}")
       end
 
       if @search_form.jg_id.present? and !@search_form.jg_id.eql?('/')
