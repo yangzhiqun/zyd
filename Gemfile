@@ -30,7 +30,7 @@ group :development do
   gem 'byebug'
 end
 
-gem 'mysql2', '0.3.18'
+gem 'mysql2', '0.3.20'
 
 gem 'rmagick', '~> 2.15.4'
 gem 'jquery-ui-rails', '~>5.0.0'
@@ -53,7 +53,7 @@ gem 'browser'
 gem 'sidekiq'
 #gem 'unicorn'
 #gem 'unicorn-worker-killer'
-gem 'puma'
+gem 'puma','2.15.3'
 
 gem 'angularjs-rails'
 gem 'underscore-rails'
