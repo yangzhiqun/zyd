@@ -138,6 +138,7 @@ Rails.application.routes.draw do
     collection do
       match 'merge_request', via: [:get, :post]
       get 'by_province'
+      get 'by_jg_name'
     end
   end
 

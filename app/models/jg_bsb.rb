@@ -12,7 +12,7 @@ class JgBsb < ActiveRecord::Base
   has_many :jg_bsb_stamps
   has_many :users
   has_many :jg_bsb_supers, foreign_key: :super_jg_bsb_id
-
+  has_many  :jg_name, class_name: "JgBsbName", foreign_key: "jg_bsb_id"
   attr_accessor :super_jg_bsbs
 
   JG_TYPE = [{
