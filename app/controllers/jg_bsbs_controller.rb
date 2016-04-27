@@ -1,8 +1,8 @@
 #encoding=UTF-8
 class JgBsbsController < ApplicationController
 
-  before_filter :check_user_role, except: [:by_province]
-  skip_before_action :authenticate_user!, only: [:by_province]
+  before_filter :check_user_role, except: [:by_province,:by_jg_name]
+  skip_before_action :authenticate_user!, only: [:by_province,:by_jg_name]
 
   # GET /jg_bsbs
   # GET /jg_bsbs.json
@@ -33,6 +33,12 @@ class JgBsbsController < ApplicationController
     end
   end
 
+  def by_jg_name
+    @jg_bsbs =JgBsb.where(jg_province: SysConfig.get(SysConfig::Key::PROV))
+    @jg_bsbs = @jg_bsbs.where(city: params[:city])
+    @jg_bsbs = @jg_bsbs.joins(:jg_name).where(" jg_bsb_names.name is not null ")
+    render json: {status: 'OK', msg: @jg_bsbs.map { |j| [j.jg_name, j.id] }}
+  end
   # GET /jg_bsbs/1
   # GET /jg_bsbs/1.json
   def show
@@ -234,10 +240,9 @@ class JgBsbsController < ApplicationController
     if params[:jg_type].to_i != 0
       @jg_bsbs = @jg_bsbs.where(jg_type: params[:jg_type].to_i,city: params[:prov_city])
     end
-    @jg_bsbs = @jg_bsbs.where("jg_name   is not null")
+    @jg_bsbs = @jg_bsbs.joins(:jg_name).where(" jg_bsb_names.name is not null ")
     render json: {status: 'OK', msg: @jg_bsbs.map { |j| [j.jg_name, j.id] }}
   end
-
   private
   def check_user_role
     return not_found if current_user.nil? or !current_user.is_admin?
