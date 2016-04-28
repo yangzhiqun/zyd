@@ -238,7 +238,10 @@ class JgBsbsController < ApplicationController
     #@jg_bsbs = JgBsb.where(jg_province: params[:prov])
     @jg_bsbs = JgBsb.where(jg_province: SysConfig.get(SysConfig::Key::PROV))
     if params[:jg_type].to_i != 0
-      @jg_bsbs = @jg_bsbs.where(jg_type: params[:jg_type].to_i,city: params[:prov_city])
+      @jg_bsbs = @jg_bsbs.where(jg_type: params[:jg_type].to_i)
+    end
+    if  !params[:prov_city].blank?
+      @jg_bsbs = @jg_bsbs.where(city: params[:prov_city])
     end
     @jg_bsbs = @jg_bsbs.joins(:jg_name).where(" jg_bsb_names.name is not null ")
     render json: {status: 'OK', msg: @jg_bsbs.map { |j| [j.jg_name, j.id] }}

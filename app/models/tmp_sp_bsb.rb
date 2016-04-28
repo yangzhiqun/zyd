@@ -1,4 +1,5 @@
 class TmpSpBsb < ActiveRecord::Base
+  belongs_to :sp_bsbs, class_name: "SpBsb", foreign_key: "id"
 	def is_bad_report?
   	result = sp_s_71 || ''
   	result.include?('问题样品') or result.include?('不合格样品')

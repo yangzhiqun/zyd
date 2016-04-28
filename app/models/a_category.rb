@@ -17,7 +17,7 @@ class ACategory < ActiveRecord::Base
     肉及肉制品
     蛋及蛋制品
     蔬菜及其制品
-    水果及其制品
+    水果及水果制品
     水产及水产制品
     饮料
     调味品
