@@ -185,7 +185,7 @@
               <input type="text" class="form-control input-sm" id="s6" value="<%= params[:s6] %>" name="s6"></td>
             <td colspan="4">被抽样单位市/区</td>
             <% if current_user.is_admin?||session[:change_js]==8||session[:change_js]==9||session[:change_js]==10 %>
-                <td colspan="6"><%= select_tag "sp_sf", options_for_select(SysProvince.level1.map { |prov| [prov.name, prov.name] }.unshift(['全部', '']), params[:sp_sf]), :class => "form-control" %></td>
+                <td colspan="6"><%= select_tag "sp_sf", options_for_select(SysProvince.level1.map { |prov| [prov.name, prov.name] }.unshift(['全部', '全部']), params[:sp_sf]), :class => "form-control" %></td>
             <% else %>
                 <td colspan="6"><%= current_user.user_s_province %></td>
                 <td style="display:none">
