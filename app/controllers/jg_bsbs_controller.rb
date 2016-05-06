@@ -35,7 +35,10 @@ class JgBsbsController < ApplicationController
 
   def by_jg_name
     @jg_bsbs =JgBsb.where(jg_province: SysConfig.get(SysConfig::Key::PROV))
-    @jg_bsbs = @jg_bsbs.where(city: params[:city])
+    # @jg_bsbs = @jg_bsbs.where(city: params[:city])
+    if  !params[:city].blank? and params[:city] != "-请选择-"
+      @jg_bsbs = @jg_bsbs.where(city: params[:city])
+    end
     @jg_bsbs = @jg_bsbs.select("jg_bsb_names.name,jg_bsb_names.jg_bsb_id").joins(:jg_names).where(" jg_bsb_names.name is not null ")
     render json: {status: 'OK', msg: @jg_bsbs.map { |j| [j.name, j.jg_bsb_id] }}
   end
@@ -240,7 +243,7 @@ class JgBsbsController < ApplicationController
     if params[:jg_type].to_i != 0
       @jg_bsbs = @jg_bsbs.where(jg_type: params[:jg_type].to_i)
     end
-    if  !params[:prov_city].blank?
+    if  !params[:prov_city].blank? and params[:prov_city] != "-请选择-"
       @jg_bsbs = @jg_bsbs.where(city: params[:prov_city])
     end
     @jg_bsbs = @jg_bsbs.select("jg_bsb_names.name,jg_bsb_names.jg_bsb_id").joins(:jg_names).where(" jg_bsb_names.name is not null ")
