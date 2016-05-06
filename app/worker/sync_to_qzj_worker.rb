@@ -6,7 +6,7 @@ class SyncToQzjWorker
   include Food
 
   def perform(sp_bsb_id=nil)
-    Unirest.timeout(5)
+    Unirest.timeout(500)
 
     @token_manager = TokenManager.new
 
@@ -14,7 +14,7 @@ class SyncToQzjWorker
       @cjbhs = []
       @form_data = []
 
-      SpBsb.where('(synced_at IS NULL OR synced_at < updated_at) AND sp_i_state IN (?)', [6, 8, 9]).each do |bsb|
+      SpBsb.where('(synced_at IS NULL OR synced_at < updated_at) AND sp_i_state IN (?)', [6, 8, 9]).limit(1000).each do |bsb|
         @form_data.push(bsb.to_api_json)
         @cjbhs.push(bsb.sp_s_16)
       end

@@ -272,7 +272,7 @@ class TasksController < ApplicationController
     @rwly = []
     @tasks.joins('LEFT JOIN sys_provinces on sys_provinces.id=task_jg_bsbs.sys_province_id').select('distinct(task_jg_bsbs.sys_province_id), sys_provinces.name').each do |task|
       if task.sys_province_id == -1
-        @rwly.unshift(['国家食品药品监督管理总局', -1])
+        @rwly.unshift(["#{SysConfig.get(SysConfig::Key::PROV)}食品药品监督管理局", -1])
       else
         @rwly.push(["#{task.name}食品药品监督管理局", task.sys_province_id])
       end
@@ -331,9 +331,11 @@ class TasksController < ApplicationController
     else
       @end_time = Time.now.end_of_day
     end
-
     unless params[:rwly].blank?
-      # @pad_sp_bsbs = @pad_sp_bsbs.where('sp_s_2_1 LIKE ?', "%#{params[:s13]}%")
+        if params[:rwly].to_i != -1
+          @sysProvince  =   SysProvince.find(params[:rwly].to_i)
+          @pad_sp_bsbs = @pad_sp_bsbs.where('sp_s_4 LIKE ?',"%#{@sysProvince.name}%" )
+        end
       # TODO: 完善取数据逻辑
     end
 

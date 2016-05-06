@@ -151,9 +151,9 @@ class PadSpBsbsController < ApplicationController
 
     if params[:rwly].to_i != 0
       if params[:rwly].to_i == -1
-        @sp_bsb.sp_s_2_1 = "国家食品药品监督管理总局"
+        @sp_bsb.sp_s_2_1 = "#{SysConfig.get(SysConfig::Key::PROV)}食品药品监督管理局"
       else
-        @sp_bsb.sp_s_2_1 = SysProvince.level1.find(params[:rwly].to_i).name + "食品药品监督管理局"
+        @sp_bsb.sp_s_2_1 = SysProvince.level1.find(params[:rwly].to_i).name + '食品药品监督管理局'
       end
       @sp_bsb.sys_province_id = params[:rwly].to_i
     end
@@ -283,7 +283,7 @@ class PadSpBsbsController < ApplicationController
     @rwly = []
     @tasks.joins('LEFT JOIN sys_provinces on sys_provinces.id=task_jg_bsbs.sys_province_id').select('distinct(task_jg_bsbs.sys_province_id), sys_provinces.name').each do |task|
       if task.sys_province_id == -1
-        @rwly.unshift(['国家食品药品监督管理总局', task.sys_province_id])
+        @rwly.unshift(["#{SysConfig.get(SysConfig::Key::PROV)}食品药品监督管理局", task.sys_province_id])
       else
         @rwly.push(["#{task.name}食品药品监督管理局", task.sys_province_id])
       end

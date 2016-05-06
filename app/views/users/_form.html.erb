@@ -1,5 +1,6 @@
 <script type="text/javascript">
   $(function () {
+//    reload_jg_data();
     $('a.unbind').click(function () {
       $('#user_id_card, .id-card, #user_user_sign').val('');
       $('img#ca-sign').attr('src', '');
@@ -20,7 +21,25 @@
       dcity: "<%= @user.prov_city %>",
       lcity: "<%= @user.prov_country %>"
     });
+    $('#city').change(function () {
+      reload_jg_data();
+
+    });
   });
+
+  function reload_jg_data() {
+    $.get('/jg_bsbs/by_jg_name.json', {
+     city:  $('#city').val()
+    }, function (data) {
+      if (data.status == 'OK') {
+        $('#user_jg_bsb_id').empty();
+        $.each(data.msg, function (index, item) {
+          $("<option>").attr({'value': item[1]}).text(item[0]).appendTo($('#user_jg_bsb_id'));
+        });
+        $('#user_jg_bsb_id').select2({theme: 'bootstrap', placeholder: '请选择所在机构'});
+      }
+    }, 'json');
+  }
 </script>
 <div class="row" style="margin: 0;">
   <div class="col-sm-6 col-sm-offset-3">
@@ -86,8 +105,9 @@
         <br>
         <% if current_user.is_super? or current_user.is_prov_manager? %>
             <label>机构名称：</label>
+            <!--%= f.select :jg_bsb_id, options_for_select(JgBsb.list_jgbsb(SysConfig.get(SysConfig::Key::PROV)).map { |jg| [jg.jg_name, jg.id] }.unshift(["请选择", nil]), @user.jg_bsb_id), {}, :class => "form-control input-sm" %>-->
             <%= f.select :jg_bsb_id, options_for_select(JgBsb.where(status: 0).map { |jg| [jg.jg_name, jg.id] }, @user.jg_bsb_id), {}, :class => "form-control input-sm" %>
-
+            <!--%= f.select :jg_bsb_id, [], {},:class => "form-control input-sm" %>-->
             <% if current_user.is_admin? or current_user.is_account_manager %>
                 <div class="form-inline">
                   <div class="checkbox">
