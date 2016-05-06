@@ -167,13 +167,14 @@ class PadSpBsb < ActiveRecord::Base
       i = 0
       loop do
         i = i + 1
-        @id_parts = ["GC"]
+        @id_parts = ['SC']
         @id_parts.push(Time.now.year.to_s[2..3])
-        if self.sys_province_id == -1
-          @id_parts.push("00")
-        else
-          @id_parts.push(SysProvince.find(self.sys_province_id.to_i).code)
-        end
+        # if self.sys_province_id == -1
+        #   @id_parts.push("00")
+        # else
+        #   @id_parts.push(SysProvince.find(self.sys_province_id.to_i).code)
+        # end
+        @id_parts.push(SysProvince.find_by(:name => SysConfig.get(SysConfig::Key::PROV)).code)
         @id_parts.push(JgBsb.find(self.jg_bsb_id).code)
         count = 3000 + PadSpBsb.where(:sys_province_id => self.sys_province_id.to_i, :jg_bsb_id => self.jg_bsb_id).count + i
         @id_parts.push("%.4i" % count)

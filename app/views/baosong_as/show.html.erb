@@ -26,7 +26,7 @@
         <tr>
           <th width="150">名称</th>
           <th>备注</th>
-          <th width="80">省份</th>
+          <th width="80">市/区</th>
           <th>创建时间</th>
           <th>标识符</th>
           <th width="150"></th>
@@ -61,7 +61,7 @@
           <%= f.text_field :note, :class => "form-control input-sm" %>
         </div>
         <div class="field">
-          <label>省份</label>
+          <label>市/区</label>
           <br>
           <%= f.select :prov, options_for_select(SysProvince.level1.map{|p| [p.name, p.name]}.unshift(["不限制", nil])), {}, :class => "form-control input-sm"%>
         </div>

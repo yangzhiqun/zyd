@@ -29,10 +29,10 @@ module DemoyjsRuby2X
         :enable_ca_login => true, 
 	:is_ejz          => true,
 	:is_qzj          => false,
-	:province        => "河北",
-	:client_id       => "c8a47ee3aa4540dd3168f5151f3c1b754febe9dadf848895ef937eb04468302b",
-	:client_secret   => "3999b84e37789216440f39882437a89499aded574f18c721a666eb1d08a6c1b0",
-	:api_base        => "http://qzj.cfda.pub"
+	:province        => "兵团",
+	:client_id       => "839f5fcd9df18beb07c4870ed39bb914fbe3961503d981beeaefcf3480d4201b",
+	:client_secret   => "e04e6c1a56a0d0153f20cbe3d07960d8582654050ec09e8840d84af94c086e55",
+	:api_base        => "http://qzj.cfda.pub:8800/"
 	    }
 
 

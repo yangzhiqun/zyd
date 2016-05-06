@@ -11,7 +11,7 @@
     $.get('/prov.json', {prov: <%= @province.id %>}, function (data) {
       $('<option>-请选择-</option>').appendTo($('#user_prov_city'));
       $.each(data.msg, function (i, item) {
-        $('<option>').attr('value', item.id).text(item.name).appendTo($('#user_prov_city'));
+        $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#user_prov_city'));
       });
     }, 'json');
     reload_jg_data();
@@ -23,11 +23,12 @@
       $('#user_prov_country').empty();
       $('<option>-请选择-</option>').appendTo($('#user_prov_country'));
 
-      $.get('/prov.json', {city: o.val()}, function (data) {
+      $.get('/prov.json', {city: o.find('option:selected').attr('data-id')}, function (data) {
         $.each(data.msg, function (i, item) {
-          $('<option>').attr('value', item.id).text(item.name).appendTo($('#user_prov_country'));
+          $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#user_prov_country'));
         });
       }, 'json');
+      reload_jg_data();
     });
 
     $('.request-signup-code').click(function () {
@@ -73,7 +74,8 @@
   function reload_jg_data() {
     $.get('/jg_bsbs/by_province.json', {
       //prov: $('#user_prov_city').find('option:selected').text(),
-      jg_type: $('#user_jg_type').val()
+      jg_type: $('#user_jg_type').val(),
+      prov_city: $('#user_prov_city').val()
     }, function (data) {
       if (data.status == 'OK') {
         $('#user_jg_bsb_id').empty();
@@ -110,6 +112,7 @@
               <div class="form-group form-inline">
                 <label>机构：<span class="text-danger">*</span><%= show_error(@user.errors, :user_s_province) %></label>
                 <br>
+                <%= show_error(@user.errors, :jg_type) %>
                 <%= f.select :jg_type, options_for_select([['请选择', 0], ['监管部门', 1], ['检验机构', 3]]), {}, class: 'form-control input-sm', style: 'width: 120px; margin-right: 10px;' %><%= f.select :jg_bsb_id, [], {}, :class => 'form-control input-sm', style: 'width: 300px;' %>
               </div>
 

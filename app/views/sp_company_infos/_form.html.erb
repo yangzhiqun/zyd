@@ -48,20 +48,23 @@ $(function(){
   }); 
 
   index68 = $('#sp_company_info_sp_s_68 option').index($('#sp_company_info_sp_s_68 option:selected'));
-  $.each(CYDD[index68], function(index,data){
-    $("#sp_company_info_sp_s_2").append("<option value='"+data+"'>"+data+"</option>");
-  });
-  $("#sp_company_info_sp_s_2").val('<%=@sp_company_info.sp_s_2%>');
+   if (index68 != -1) {
+	  $.each(CYDD[index68], function (index,data){
+	    $("#sp_company_info_sp_s_2").append("<option value='"+data+"'>"+data+"</option>");
+	  });
+	}
+  $("#sp_company_info_sp_s_2").val('<%=@sp_company_info["sp_s_2"]%>');
     
   $("#sp_company_info_sp_s_68").change(function(){
     $("#sp_company_info_sp_s_2").get(0).options.length=0;
     index68=this.selectedIndex;
-      $.each(CYDD[index68], function(index,data){
+      $.each(CYDD[index68], function (index,data){
       $("#sp_company_info_sp_s_2").append("<option value='"+data+"'>"+data+"</option>");
     });
     $("#sp_company_info_sp_s_2").val(CYDD[index68][0]);
     return;
   });
+
  });
 </script>
 
