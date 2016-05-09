@@ -239,14 +239,14 @@ class YyczController < ApplicationController
         @djb.blr_user_id = current_user.id
         @djb.blbm = current_user.jg_bsb.jg_name
         @djb.blsj = Time.now
-
       when SpYydjb::State::ASSIGNED
         @djb.current_state = SpYydjb::State::FILLED
         @djb.tbr = current_user.tname
         @djb.tbr_user_id = current_user.id
         @djb.tbbm = current_user.jg_bsb.jg_name
         @djb.tbsj = Time.now
-
+        @djb.yyczbm = current_user.jg_bsb.jg_name
+        @djb.yyczfzr = current_user.tname
       when SpYydjb::State::FILLED
         @djb.current_state = SpYydjb::State::PASSED
         @djb.shr = current_user.tname
