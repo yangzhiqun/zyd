@@ -16,11 +16,32 @@
       }
     });
     $('#user_jg_bsb_id').select2();
-    $(".region").ProvinceCity({
-      dprovince: "<%= is_ejz? ? SysConfig.get(SysConfig::Key::PROV) : @user.user_s_province %>",
-      dcity: "<%= @user.prov_city %>",
-      lcity: "<%= @user.prov_country %>"
-    });
+//    $(".region").ProvinceCity({
+//      dprovince: "%= is_ejz? ? SysConfig.get(SysConfig::Key::PROV) : @user.user_s_province %>",
+//      dcity: "%= @user.prov_city %>",
+//      lcity: "%= @user.prov_country %>"
+//    });
+
+    $.get('/prov.json', {prov: <%= @province.id %>}, function (data) {
+      $('<option>-请选择-</option>').appendTo($('#city'));
+      $.each(data.msg, function (i, item) {
+        $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#city'));
+      });
+    }, 'json');
+
+
+    $('#city').change(function () {
+      var o = $(this);
+
+      $('#lcity').empty();
+      $('<option>-请选择-</option>').appendTo($('#lcity'));
+
+      $.get('/prov.json', {city: o.find('option:selected').attr('data-id')}, function (data) {
+        $.each(data.msg, function (i, item) {
+          $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#lcity'));
+        });
+      }, 'json');
+   });
     $('#city').change(function () {
       reload_jg_data();
 
