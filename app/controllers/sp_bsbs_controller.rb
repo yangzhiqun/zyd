@@ -640,7 +640,7 @@ class SpBsbsController < ApplicationController
       end
     end
 
-    @sp_bsbs = TmpSpBsb.joins(:sp_bsbs).select("tmp_sp_bsbs.id, tmp_sp_bsbs.updated_at, tmp_sp_bsbs.sp_s_3, tmp_sp_bsbs.sp_s_14, tmp_sp_bsbs.sp_s_16, tmp_sp_bsbs.sp_s_43, tmp_sp_bsbs.sp_s_214, tmp_sp_bsbs.sp_s_35, tmp_sp_bsbs.sp_s_71, tmp_sp_bsbs.sp_s_202, tmp_sp_bsbs.sp_i_state, tmp_sp_bsbs.fail_report_path, tmp_sp_bsbs.czb_reverted_flag")
+    @sp_bsbs = SpBsb.joins(:sp_bsbs).select("tmp_sp_bsbs.id, tmp_sp_bsbs.updated_at, tmp_sp_bsbs.sp_s_3, tmp_sp_bsbs.sp_s_14, tmp_sp_bsbs.sp_s_16, tmp_sp_bsbs.sp_s_43, tmp_sp_bsbs.sp_s_214, tmp_sp_bsbs.sp_s_35, tmp_sp_bsbs.sp_s_71, tmp_sp_bsbs.sp_s_202, tmp_sp_bsbs.sp_i_state, tmp_sp_bsbs.fail_report_path, tmp_sp_bsbs.czb_reverted_flag")
 
     if params[:r1]
       session[:change_js]=params[:r1].to_i
