@@ -347,49 +347,67 @@ class SpBsb < ActiveRecord::Base
   end
 
   # 1. 同一被抽样单位(sp_s_215: 营业执照号)，一个抽样周期内，流通环节，上传只能5个；
-  # 2. 同一生产企业(sp_s_13: 生产号)，无论环节，不同产品，最多上传5个任务；
+  # 2. DELETED. 同一生产企业(sp_s_13: 生产号)，无论环节，不同产品，最多上传5个任务；
   # 3. 同一生产企业，同一样品名称，同一生产批次，不能下达第二次；
+  # 4. 不看QS号,同一生产企业,一个季度(90天), 同一食品大类最多抽取3批
   def check_bsb_validity
     #return true #if self.sp_s_215.blank? or self.sp_s_13.blank? or %w{抽检监测（总局本级一司） 抽检监测（总局本级三司） 抽检监测（三司专项）}.include?(self.sp_s_70)
-    return true if self.sp_s_215.blank? or self.sp_s_13.blank? or self.sp_s_64.blank? or self.sp_i_state == 18 or self.sp_s_2 == '网购' or %w{GC1600333159 GC1600153105 GC1600153106 GC1600153103 GC1600153066 GC1600153070 GC1600333182 GC1600333183 GC1600333160 GC1600333179 GC1600333247 GC1600333202 GC1600333240 GC1600333249 GC1600333181 GC1600333034 GC1600333033 GC1600333180 GC1551022141 GC1500162095 GC1600153104 GC1600183151 GC1600183035 GC1600153104 GC1600153177 GC1600153037 GC1600153042 GC1600153044 GC1600153119 GC1600153118 GC1600183151 GC1600183035 GC1600333262 GC1600333261 GC1600333263 GC1600333239 GC1600333238 GC1600333237 GC1600333227 GC1600333270 GC1600333271 GC1600333272 GC160033145 GC1600333146 GC1600333147 GC1600333148 GC1600333151 GC1600333191 GC1600333195 GC1600333194 GC1600333193 GC1600333192 GC1600153045 GC1600153041 GC1600153075 GC1600183136 GC1600183137 GC1600183138 GC1600183139 GC1600183141 GC1600183142 GC1600183143 GC1600183144 GC1600183145 GC1600183146 GC1600183159 GC1600183160 GC1600183108 GC1600183109 GC1600183110 GC1600183111 GC1600183112 GC1600183113 GC1600183114 GC1600183116 GC1600183120 GC1600183121 GC1600181114 GC1600181115 GC1600153060 GC1600153059 GC1600153043 GC1600153041 GC1600153075 GC1600153151 GC1600153152 GC1600333040 GC1600333041 GC1600333043 GC1600333044 GC1600333049 GC1600333050 GC1600333051 GC1600333052 GC1600333053 GC1600333042 GC1600333080 GC1600333081 GC1600333082 GC1600333083 GC1600333084 GC1600333085 GC1600333086 GC1600333087 GC1600333088 GC1600333089 GC1642010066 GC1600333015 GC1600333016 GC1600333018 GC1600333019 GC1600333020 GC1600333024 GC1600333025 GC1600333026 GC1600333039 GC1600333017 GC1600333054 GC1600333055 GC1600333064 GC1600333065 GC1600333066 GC1600333067 GC1600333068 GC1600333069 GC1600333070 GC1600333071 GC1600333130 GC1600333131 GC1600333090 GC1600333091 GC1600333092 GC1600333093 GC1600333094 GC1600333095 GC1600333117 GC1600333128 GC1600333129 GC1600333184 GC1600333187 GC1600333210 GC1600333110}.include?(self.sp_s_16)
+    return true if self.sp_s_215.blank? or self.sp_s_13.blank? or %w{抽检监测（总局本级一司）}.include?(self.sp_s_70) or self.sp_s_64.blank? or self.sp_i_state == 18 or self.sp_s_2 == '网购' or %w{GC1600243697 GC1600243696}.include?(self.sp_s_16)
+    #return true if self.sp_s_215.blank? or self.sp_s_13.blank? or self.sp_s_64.blank? or self.sp_i_state == 18 or self.sp_s_2 == '网购' or %w{GC1600333159 GC1600153105 GC1600153106 GC1600153103 GC1600153066 GC1600153070 GC1600333182 GC1600333183 GC1600333160 GC1600333179 GC1600333247 GC1600333202 GC1600333240 GC1600333249 GC1600333181 GC1600333034 GC1600333033 GC1600333180 GC1551022141 GC1500162095 GC1600153104 GC1600183151 GC1600183035 GC1600153104 GC1600153177 GC1600153037 GC1600153042 GC1600153044 GC1600153119 GC1600153118 GC1600183151 GC1600183035 GC1600333262 GC1600333261 GC1600333263 GC1600333239 GC1600333238 GC1600333237 GC1600333227 GC1600333270 GC1600333271 GC1600333272 GC160033145 GC1600333146 GC1600333147 GC1600333148 GC1600333151 GC1600333191 GC1600333195 GC1600333194 GC1600333193 GC1600333192 GC1600153045 GC1600153041 GC1600153075 GC1600183136 GC1600183137 GC1600183138 GC1600183139 GC1600183141 GC1600183142 GC1600183143 GC1600183144 GC1600183145 GC1600183146 GC1600183159 GC1600183160 GC1600183108 GC1600183109 GC1600183110 GC1600183111 GC1600183112 GC1600183113 GC1600183114 GC1600183116 GC1600183120 GC1600183121 GC1600181114 GC1600181115 GC1600153060 GC1600153059 GC1600153043 GC1600153041 GC1600153075 GC1600153151 GC1600153152 GC1600333040 GC1600333041 GC1600333043 GC1600333044 GC1600333049 GC1600333050 GC1600333051 GC1600333052 GC1600333053 GC1600333042 GC1600333080 GC1600333081 GC1600333082 GC1600333083 GC1600333084 GC1600333085 GC1600333086 GC1600333087 GC1600333088 GC1600333089 GC1642010066 GC1600333015 GC1600333016 GC1600333018 GC1600333019 GC1600333020 GC1600333024 GC1600333025 GC1600333026 GC1600333039 GC1600333017 GC1600333054 GC1600333055 GC1600333064 GC1600333065 GC1600333066 GC1600333067 GC1600333068 GC1600333069 GC1600333070 GC1600333071 GC1600333130 GC1600333131 GC1600333090 GC1600333091 GC1600333092 GC1600333093 GC1600333094 GC1600333095 GC1600333117 GC1600333128 GC1600333129 GC1600333184 GC1600333187 GC1600333210 GC1600333110 GC1600433038 GC1600433035 GC1600433045 GC1600433046 GC1600433041 GC1600433040 GC1600433036 GC1600433037 GC1600433039 GC1600433044 GC1600433043 GC1600433042 GC1600363243 GC1600363244 GC1600363211 GC1600153034 GC1600153052 GC1600153208 GC1600153210 GC1600153243 GC1600153074 GC1600153028 GC1600153010 GC1600153032 GC1600153033 GC1600153046 GC1600153038 GC1600153051 GC1637088004 GC1600343052 GC1600343075 GC1600343073 GC1600343072 GC1600343043 GC1600343068 GC1600153261 GC1600153262 GC1600153260 GC1600153027 GC1622014039 GC1622014040 GC1622014041 GC1622014042 GC1622014043 GC1622014044 GC1622014005 GC1622014006 GC1622014012 GC1622013979 GC1622014023 GC1600153006 GC1600153083 GC1600153242 GC1600153239 GC1600153017 GC1600153211 GC1622014236 GC1622013985 GC1661033016 GC1661033025 GC1661033027 GC1661013020 GC1661013023 GC1661013019}.include?(self.sp_s_16)
     return true if self.sp_s_reason.present?
     if self.changes[:sp_i_state].present? and [0, 1].include?(self.changes['sp_i_state'][0]) and self.changes['sp_i_state'][1] == 2
       now = Time.now
 
       # 条件: 1
-      if !%w{餐饮 生产}.include?(self.sp_s_68.strip) or !%w{/ 、 - \ 无}.include?(self.sp_s_215.strip)
-        pad_sp_bsbs = PadSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (1, 16, 18)", self.sp_s_215, (now - 60.days), now)
+      if !%w{餐饮 生产}.include?(self.sp_s_68.strip) and !%w{/ 、 - \ 无}.include?(self.sp_s_215.strip)
+        pad_sp_bsbs = PadSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND sp_i_state NOT IN (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_215).where(created_at: now.all_quarter)
 
-        sp_bsb_count = TmpSpBsb.where("sp_s_16 NOT IN (?) AND sp_s_215 = ? AND sp_s_68 = '流通' AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_215, (now - 60.days), now).count
-        if sp_bsb_count + pad_sp_bsbs.count >= 10
-          errors.add(:base, '同一被抽样单位，同一个抽样周期内，流通环节，只能下达10批')
+        sp_bsb_count = TmpSpBsb.where("sp_s_16 NOT IN (?) AND sp_s_215 = ? AND sp_s_68 = '流通' AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_215).where(created_at: now.all_quarter).count
+        if sp_bsb_count + pad_sp_bsbs.count > 10 and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
+          errors.add(:base, '同一被抽样单位，当前季度内，流通环节，最多抽取10批')
           return false
         end
       end
 
       # 条件: 2
+=begin
       unless %w{/ 、 - \ 无}.include?(self.sp_s_13)
-        pad_sp_bsbs = PadSpBsb.where('sp_s_13 = ? AND sp_s_64 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (1, 16, 18)', self.sp_s_13, self.sp_s_64, (now - 60.days), now)
+        pad_sp_bsbs = PadSpBsb.where("sp_s_13 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_13, self.sp_s_64).where(created_at: now.all_quarter)
 
-        sp_bsb_count = TmpSpBsb.where('sp_s_16 NOT IN (?) AND sp_s_13 = ? AND sp_s_64 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_13, self.sp_s_64, (now - 60.days), now).count
-        if sp_bsb_count + pad_sp_bsbs.count >= 5
-          errors.add(:base, '同一生产企业，同一个抽样周期内, 无论环节，不同产品，最多下达5批')
+        sp_bsb_count = TmpSpBsb.where("sp_s_16 NOT IN (?) AND sp_s_13 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_13, self.sp_s_64).where(created_at: now.all_quarter).count
+        if sp_bsb_count + pad_sp_bsbs.count > 5 and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
+          errors.add(:base, '同一生产企业，同一个抽样周期内, 无论环节，不同产品，最多抽取5批')
           return false
         end
       end
+=end
 
       # 条件: 3
       unless %w{/ 、 - \ 无}.include?(self.sp_s_13)
-        pad_sp_bsbs = PadSpBsb.where('sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_s_27 = ? AND created_at BETWEEN ? AND ? AND sp_i_state not in (1, 16, 18)', self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_s_27, (now - 60.days), now)
-        sp_bsb_count = TmpSpBsb.where('sp_s_16 NOT IN (?) AND sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_s_27 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_s_27, (now - 60.days), now).count
+        pad_sp_bsbs = PadSpBsb.where("sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_d_28 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_d_28).where(created_at: now.all_quarter)
+        sp_bsb_count = TmpSpBsb.where("sp_s_16 NOT IN (?) AND sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_d_28 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_d_28).where(created_at: now.all_quarter).count
 
-        if sp_bsb_count + pad_sp_bsbs.count >= 2
-          errors.add(:base, '同一生产企业，同一个抽样周期内, 同一样品名称，同一生产批次，不能下达第2批')
+        if (sp_bsb_count + pad_sp_bsbs.count > 0) and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
+          errors.add(:base, '同一生产企业，当前季度内, 同一样品名称，同一生产日期，最多抽取1批')
           return false
         end
       end
+
+      # --> 条件: 4
+      unless %w{/ 、 - \ 无}.include?(self.sp_s_64)
+        pad_sp_bsbs = PadSpBsb.where("sp_s_17 = ? AND sp_s_64 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_17, self.sp_s_64).where(created_at: now.all_quarter)
+        sp_bsb_count = TmpSpBsb.where("sp_s_16 NOT IN (?) AND sp_s_17 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_17, self.sp_s_64).where(created_at: now.all_quarter).count
+
+        if (sp_bsb_count + pad_sp_bsbs.count > 3) and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
+          errors.add(:base, '同一生产企业, 当前季度内, 同一食品大类最多抽取3批')
+          return false
+        end
+      end
+      # <-- 条件: 4
+
     end
   end
+
 
   def callback_when_updated
     if self.via_api
