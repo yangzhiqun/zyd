@@ -4,7 +4,7 @@ class BaosongB < ActiveRecord::Base
 
   validates_presence_of :baosong_a_id, :message => "报送分类A不可为空"
   validates_presence_of :name, :message => "名称不可为空"
-  validates_presence_of :file, :message => "Excel源文件不可为空"
+  # validates_presence_of :file, :message => "Excel源文件不可为空"
 
   belongs_to :baosong_a
 
