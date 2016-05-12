@@ -7,6 +7,15 @@
 //
 //      $('#user_prov_city').empty();
 //      $('#user_prov_country').empty();
+    $('#submit').click(function () {
+        var  user_jg_type = $('#user_jg_type').val();
+      if ($('#user_jg_type').val() =="0")
+          {
+            alert("请选择机构类型");
+            return false;
+          }
+        return true;
+    })
 
     $.get('/prov.json', {prov: <%= @province.id %>}, function (data) {
       $('<option>-请选择-</option>').appendTo($('#user_prov_city'));
@@ -165,7 +174,7 @@
               </div>
               <hr>
               <div class="actions">
-                <button class="btn btn-sm btn-success" style="width: 100%;">注册</button>
+                <button class="btn btn-sm btn-success" style="width: 100%;" id="submit">注册</button>
               </div>
           <% end %>
           <br>
