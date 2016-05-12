@@ -362,7 +362,7 @@ class SpBsb < ActiveRecord::Base
       if !%w{餐饮 生产}.include?(self.sp_s_68.strip) and !%w{/ 、 - \ 无}.include?(self.sp_s_215.strip)
         pad_sp_bsbs = PadSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND sp_i_state NOT IN (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_215).where(created_at: now.all_quarter)
 
-        sp_bsb_count = TmpSpBsb.where("sp_s_16 NOT IN (?) AND sp_s_215 = ? AND sp_s_68 = '流通' AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_215).where(created_at: now.all_quarter).count
+        sp_bsb_count = SpBsb.where("sp_s_16 NOT IN (?) AND sp_s_215 = ? AND sp_s_68 = '流通' AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_215).where(created_at: now.all_quarter).count
         if sp_bsb_count + pad_sp_bsbs.count > 10 and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
           errors.add(:base, '同一被抽样单位，当前季度内，流通环节，最多抽取10批')
           return false
@@ -374,7 +374,7 @@ class SpBsb < ActiveRecord::Base
       unless %w{/ 、 - \ 无}.include?(self.sp_s_13)
         pad_sp_bsbs = PadSpBsb.where("sp_s_13 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_13, self.sp_s_64).where(created_at: now.all_quarter)
 
-        sp_bsb_count = TmpSpBsb.where("sp_s_16 NOT IN (?) AND sp_s_13 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_13, self.sp_s_64).where(created_at: now.all_quarter).count
+        sp_bsb_count = SpBsb.where("sp_s_16 NOT IN (?) AND sp_s_13 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_13, self.sp_s_64).where(created_at: now.all_quarter).count
         if sp_bsb_count + pad_sp_bsbs.count > 5 and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
           errors.add(:base, '同一生产企业，同一个抽样周期内, 无论环节，不同产品，最多抽取5批')
           return false
@@ -385,7 +385,7 @@ class SpBsb < ActiveRecord::Base
       # 条件: 3
       unless %w{/ 、 - \ 无}.include?(self.sp_s_13)
         pad_sp_bsbs = PadSpBsb.where("sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_d_28 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_d_28).where(created_at: now.all_quarter)
-        sp_bsb_count = TmpSpBsb.where("sp_s_16 NOT IN (?) AND sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_d_28 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_d_28).where(created_at: now.all_quarter).count
+        sp_bsb_count = SpBsb.where("sp_s_16 NOT IN (?) AND sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_d_28 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_d_28).where(created_at: now.all_quarter).count
 
         if (sp_bsb_count + pad_sp_bsbs.count > 0) and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
           errors.add(:base, '同一生产企业，当前季度内, 同一样品名称，同一生产日期，最多抽取1批')
@@ -396,7 +396,7 @@ class SpBsb < ActiveRecord::Base
       # --> 条件: 4
       unless %w{/ 、 - \ 无}.include?(self.sp_s_64)
         pad_sp_bsbs = PadSpBsb.where("sp_s_17 = ? AND sp_s_64 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_17, self.sp_s_64).where(created_at: now.all_quarter)
-        sp_bsb_count = TmpSpBsb.where("sp_s_16 NOT IN (?) AND sp_s_17 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_17, self.sp_s_64).where(created_at: now.all_quarter).count
+        sp_bsb_count = SpBsb.where("sp_s_16 NOT IN (?) AND sp_s_17 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_17, self.sp_s_64).where(created_at: now.all_quarter).count
 
         if (sp_bsb_count + pad_sp_bsbs.count > 3) and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
           errors.add(:base, '同一生产企业, 当前季度内, 同一食品大类最多抽取3批')
