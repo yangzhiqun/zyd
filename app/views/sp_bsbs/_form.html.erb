@@ -666,11 +666,11 @@
      * */
     $('#submit1').click(function () {
       //抽检检测总局本级一司/三司抽样编号需以GC1500开头
-      if ($('#sp_bsb_sp_s_16').val().length != 12 && $('#sp_bsb_sp_s_16').val().length != 16) {
-        alert('抽样编号应为12位或者16位');
-        $('#sp_bsb_sp_s_16').focus();
-        return false;
-      }
+//      if ($('#sp_bsb_sp_s_16').val().length != 12 && $('#sp_bsb_sp_s_16').val().length != 16) {
+//        alert('抽样编号应为12位或者16位');
+//        $('#sp_bsb_sp_s_16').focus();
+//        return false;
+//      }
       var bsfla = $('#sp_bsb_sp_s_70').val();
       var cybh6 = $('#sp_bsb_sp_s_16').val().substring(0, 6);
       if ((bsfla == '抽检监测（总局本级一司）' || bsfla == '抽检监测（总局本级三司）') && cybh6 != 'GC1600') {
@@ -1390,6 +1390,10 @@
 
     $('#jg_jg_id').change(function () {
       index_jg = this.selectedIndex;
+      if(index_jg==-1&&jg_data.length>=1){
+        index_jg = 0;
+        $("#jg_jg_id").val(jg_data[index_jg].jg_name);
+      }
       if (index_jg != -1) {
         $("#sp_bsb_sp_s_43").val($("#jg_jg_id").val());
         $("#sp_bsb_sp_s_49").val(jg_data[index_jg].jg_contacts);

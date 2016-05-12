@@ -640,7 +640,7 @@ class SpBsbsController < ApplicationController
       end
     end
 
-    @sp_bsbs = TmpSpBsb.select("id, updated_at, sp_s_3, sp_s_14, sp_s_16, sp_s_43, sp_s_214, sp_s_35, sp_s_71, sp_s_202, sp_i_state, fail_report_path, czb_reverted_flag")
+    @sp_bsbs = TmpSpBsb.joins(:sp_bsbs).select("tmp_sp_bsbs.id, tmp_sp_bsbs.updated_at, tmp_sp_bsbs.sp_s_3, tmp_sp_bsbs.sp_s_14, tmp_sp_bsbs.sp_s_16, tmp_sp_bsbs.sp_s_43, tmp_sp_bsbs.sp_s_214, tmp_sp_bsbs.sp_s_35, tmp_sp_bsbs.sp_s_71, tmp_sp_bsbs.sp_s_202, tmp_sp_bsbs.sp_i_state, tmp_sp_bsbs.fail_report_path, tmp_sp_bsbs.czb_reverted_flag")
 
     if params[:r1]
       session[:change_js]=params[:r1].to_i
@@ -670,9 +670,9 @@ class SpBsbsController < ApplicationController
     if !params[:sp_order].blank?
       @sp_bsbs = @sp_bsbs.order("#{params[:sp_order]} #{params[:sp_order_seq] || 'DESC'}")
     elsif !params[:sp_order_seq].blank?
-      @sp_bsbs = @sp_bsbs.order("updated_at #{params[:sp_order_seq]}")
+      @sp_bsbs = @sp_bsbs.order("tmp_sp_bsbs.updated_at #{params[:sp_order_seq]}")
     else
-      @sp_bsbs = @sp_bsbs.order("updated_at DESC")
+      @sp_bsbs = @sp_bsbs.order("tmp_sp_bsbs.updated_at DESC")
     end
 
     @ending_time = Time.now
@@ -686,7 +686,7 @@ class SpBsbsController < ApplicationController
       @ending_time = DateTime.parse(params[:ending_time])
     end
 
-    @sp_bsbs = @sp_bsbs.where("updated_at BETWEEN ? AND ?", @begin_time.beginning_of_day, @ending_time.end_of_day)
+    @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.updated_at BETWEEN ? AND ?", @begin_time.beginning_of_day, @ending_time.end_of_day)
 
     if params[:flag]=="tabs_3"
       respond_to do |format|
@@ -697,126 +697,126 @@ class SpBsbsController < ApplicationController
     end
 
     unless params[:s1].blank?
-      @sp_bsbs = @sp_bsbs.where("sp_s_35 LIKE ?", "%#{params[:s1]}%")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_35 LIKE ?", "%#{params[:s1]}%")
     end
 
     unless params[:s2].blank?
-      @sp_bsbs = @sp_bsbs.where("sp_s_43 LIKE ?", "%#{params[:s2]}%")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_43 LIKE ?", "%#{params[:s2]}%")
     end
 
     unless params[:s3].blank?
-      @sp_bsbs = @sp_bsbs.where("sp_s_85 LIKE ?", "%#{params[:s3]}%")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_85 LIKE ?", "%#{params[:s3]}%")
     end
 
     unless params[:s4].blank?
-      @sp_bsbs = @sp_bsbs.where("sp_s_14 LIKE ?", "%#{params[:s4]}%")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_14 LIKE ?", "%#{params[:s4]}%")
     end
 
     unless params[:s5].blank?
-      @sp_bsbs = @sp_bsbs.where("sp_s_2 LIKE ?", "%#{params[:s5]}%")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_2 LIKE ?", "%#{params[:s5]}%")
     end
 
     unless params[:s6].blank?
-      @sp_bsbs = @sp_bsbs.where("sp_s_20 LIKE ?", "%#{params[:s6]}%")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_20 LIKE ?", "%#{params[:s6]}%")
     end
 
     unless params[:s7].blank?
-      @sp_bsbs = @sp_bsbs.where("sp_s_16 LIKE ?", "%#{params[:s7]}%")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_16 LIKE ?", "%#{params[:s7]}%")
     end
 
     # 被抽样单位名称
     unless params[:s11].blank?
-      @sp_bsbs = @sp_bsbs.where("sp_s_1 LIKE ?", "%#{params[:s11]}%")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_1 LIKE ?", "%#{params[:s11]}%")
     end
 
     # 标识生产企业名称
     unless params[:s12].blank?
-      @sp_bsbs = @sp_bsbs.where("sp_s_64 LIKE ?", "%#{params[:s12]}%")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_64 LIKE ?", "%#{params[:s12]}%")
     end
 
     # 任务来源
     unless params[:s13].blank?
-      @sp_bsbs = @sp_bsbs.where("sp_s_2_1 LIKE ?", "%#{params[:s13]}%")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_2_1 LIKE ?", "%#{params[:s13]}%")
     end
 
     if params[:sp_dl] != '请选择' && !params[:sp_dl].blank?
-      @sp_bsbs = @sp_bsbs.where("sp_s_17 LIKE ?", "%#{params[:sp_dl]}%")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_17 LIKE ?", "%#{params[:sp_dl]}%")
     end
 
-    if params[:sp_sf]!='请选择' and !params[:sp_sf].blank?
-      @sp_bsbs = @sp_bsbs.where("sp_s_3 LIKE ?", "%#{params[:sp_sf]}%")
+    if params[:sp_sf]!='全部' and !params[:sp_sf].blank?
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_4 LIKE ? ",  "%#{params[:sp_sf]}%")
     end
 
     if current_user.is_admin? || session[:change_js]==10
       case params[:s8].to_i
         when 1
-          @sp_bsbs = @sp_bsbs.where("sp_i_state between 0 and 10")
+          @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state between 0 and 10")
         when 2
-          @sp_bsbs = @sp_bsbs.where("sp_i_state = 10")
+          @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state = 10")
         when 3
-          @sp_bsbs = @sp_bsbs.where("sp_i_state IN (0, 1)")
+          @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state IN (0, 1)")
         when 4
-          @sp_bsbs = @sp_bsbs.where("sp_i_state IN (2, 3)")
+          @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state IN (2, 3)")
         when 5
-          @sp_bsbs = @sp_bsbs.where("sp_i_state IN (4, 5)")
+          @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state IN (4, 5)")
         when 6
-          @sp_bsbs = @sp_bsbs.where("sp_i_state IN (6, 7)")
+          @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state IN (6, 7)")
         when 7
-          @sp_bsbs = @sp_bsbs.where("sp_i_state = 8")
+          @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state = 8")
         when 8
-          @sp_bsbs = @sp_bsbs.where("sp_i_state = 9")
+          @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state = 9")
         when 9, 10, 11, 12, 13
-          @sp_bsbs = @sp_bsbs.where("sp_i_state between 0 and 10")
+          @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state between 0 and 10")
         when 15
-          @sp_bsbs = @sp_bsbs.where("sp_i_state = 5")
+          @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state = 5")
         else
-          @sp_bsbs = @sp_bsbs.where("sp_i_state between 0 and 10")
+          @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state between 0 and 10")
       end
     elsif (session[:change_js]==2||session[:change_js]==3||session[:change_js]==4) && ['tabs_1', 'tabs_5'].include?(params[:flag])
-      @sp_bsbs = @sp_bsbs.where("sp_i_state = 6")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state = 6")
     elsif (session[:change_js]==2||session[:change_js]==3||session[:change_js]==4)&&params[:flag]=="tabs_2"
-      @sp_bsbs = @sp_bsbs.where('sp_i_state IN (7, 8)')
+      @sp_bsbs = @sp_bsbs.where('tmp_sp_bsbs.sp_i_state IN (7, 8)')
     elsif (session[:change_js]==2||session[:change_js]==3||session[:change_js]==4)&&params[:flag]=="tabs_4"
-      @sp_bsbs = @sp_bsbs.where("sp_i_state = 9")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state = 9")
     elsif (session[:change_js]==1||session[:change_js]==5) && ['tabs_1', 'tabs_5'].include?(params[:flag])
-      @sp_bsbs = @sp_bsbs.where("sp_i_state IN (0, 1, 10)")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state IN (0, 1, 10)")
     elsif (session[:change_js]==1||session[:change_js]==5)&&params[:flag]=="tabs_2"
-      @sp_bsbs = @sp_bsbs.where("sp_i_state between 2 and 8")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state between 2 and 8")
     elsif (session[:change_js]==1||session[:change_js]==5)&&params[:flag]=="tabs_4"
-      @sp_bsbs = @sp_bsbs.where("sp_i_state = 9")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state = 9")
     elsif session[:change_js]==6 && ['tabs_1', 'tabs_5'].include?(params[:flag])
-      @sp_bsbs = @sp_bsbs.where("sp_i_state IN (2, 3)")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state IN (2, 3)")
     elsif session[:change_js]==6&&params[:flag]=="tabs_2"
-      @sp_bsbs = @sp_bsbs.where("sp_i_state between 4 and 8")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state between 4 and 8")
     elsif session[:change_js]==6&&params[:flag]=="tabs_4"
-      @sp_bsbs = @sp_bsbs.where("sp_i_state = 9")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state = 9")
     elsif session[:change_js]==7 && ['tabs_1', 'tabs_5'].include?(params[:flag])
-      @sp_bsbs = @sp_bsbs.where("sp_i_state = 4")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state = 4")
     elsif session[:change_js]==7&&params[:flag]=="tabs_2"
-      @sp_bsbs = @sp_bsbs.where("sp_i_state between 5 and 8")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state between 5 and 8")
     elsif session[:change_js]==7&&params[:flag]=="tabs_4"
-      @sp_bsbs = @sp_bsbs.where("sp_i_state = 9")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state = 9")
     elsif session[:change_js]==11 && ['tabs_1', 'tabs_5'].include?(params[:flag])
-      @sp_bsbs = @sp_bsbs.where("sp_i_state = 5")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state = 5")
     elsif session[:change_js]==11&&params[:flag]=="tabs_2"
-      @sp_bsbs = @sp_bsbs.where("sp_i_state between 6 and 8")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state between 6 and 8")
     elsif session[:change_js]==11&&params[:flag]=="tabs_4"
-      @sp_bsbs = @sp_bsbs.where("sp_i_state = 9")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state = 9")
     elsif session[:change_js]==8 && ['tabs_1', 'tabs_5'].include?(params[:flag])
-      @sp_bsbs = @sp_bsbs.where("sp_i_state = 8")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state = 8")
     elsif session[:change_js]==8&&params[:flag]=="tabs_4"
-      @sp_bsbs = @sp_bsbs.where("sp_i_state = 9")
+      @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state = 9")
     end
     if params[:flag]=="tabs_5"
-      @sp_bsbs =@sp_bsbs.where("sp_s_reason IS NOT NULL")
+      @sp_bsbs =@sp_bsbs.where("tmp_sp_bsbs.sp_s_reason IS NOT NULL")
     end
     if params[:flag]=="tabs_6"
-      @sp_bsbs =@sp_bsbs.where("czb_reverted_flag = 1")
+      @sp_bsbs =@sp_bsbs.where("tmp_sp_bsbs.czb_reverted_flag = 1")
     end
 
     if params[:s8]=='10'
       if current_user.is_admin?||session[:change_js]==10
-        @sp_bsbs = @sp_bsbs.where("sp_s_70 = '抽检监测(总局本级)'").paginate(page: params[:page], per_page: 10)
+        @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_70 = '抽检监测(总局本级)'").paginate(page: params[:page], per_page: 10)
 
         respond_to do |format|
           format.html { render action: "index" }
@@ -828,7 +828,7 @@ class SpBsbsController < ApplicationController
 
     if params[:s8]=='11'
       if current_user.is_admin?||session[:change_js]==10
-        @sp_bsbs = @sp_bsbs.where("sp_s_70 = '抽检监测（地方）'").paginate(page: params[:page], per_page: 10)
+        @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_70 = '抽检监测（地方）'").paginate(page: params[:page], per_page: 10)
 
         respond_to do |format|
           format.html { render action: "index" }
@@ -840,7 +840,7 @@ class SpBsbsController < ApplicationController
 
     if params[:s8]=='12'
       if current_user.is_admin?||session[:change_js]==10
-        @sp_bsbs = @sp_bsbs.where("sp_s_70 = '三司专项检验'").paginate(page: params[:page], per_page: 10)
+        @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_70 = '三司专项检验'").paginate(page: params[:page], per_page: 10)
         respond_to do |format|
           format.html { render action: "index" }
           format.json { render json: @sp_bsbs }
@@ -851,7 +851,7 @@ class SpBsbsController < ApplicationController
 
     if params[:s8]=='13'
       if current_user.is_admin?||session[:change_js]==10
-        @sp_bsbs = @sp_bsbs.where("sp_s_70 = '网络专项检验'").paginate(page: params[:page], per_page: 10)
+        @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_70 = '网络专项检验'").paginate(page: params[:page], per_page: 10)
         respond_to do |format|
           format.html { render action: "index" }
           format.json { render json: @sp_bsbs }
@@ -862,7 +862,7 @@ class SpBsbsController < ApplicationController
 
     if params[:s8]=='14'
       if current_user.is_admin? || session[:change_js] == 10
-        @sp_bsbs = @sp_bsbs.where("synced = false and sp_i_state = 2").paginate(page: params[:page], per_page: 10)
+        @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.synced = false and tmp_sp_bsbs.sp_i_state = 2").paginate(page: params[:page], per_page: 10)
 
         respond_to do |format|
           format.html { render action: "index" }
@@ -874,51 +874,51 @@ class SpBsbsController < ApplicationController
 
     if params[:s8]=='9'
       if current_user.is_admin? || session[:change_js]==10
-        @sp_bsbs = @sp_bsbs.where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+        @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_71 like '%不合格样品%' or tmp_sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
       else
         if session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
-          @sp_bsbs = @sp_bsbs.where("sp_s_3 = ? or sp_s_202 = ?", current_user.user_s_province, current_user.user_s_province).where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+          @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_3 = ? or tmp_sp_bsbs.sp_s_202 = ?", current_user.user_s_province, current_user.user_s_province).where("tmp_sp_bsbs.sp_s_71 like '%不合格样品%' or tmp_sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==7 #数据审核
-          @sp_bsbs = @sp_bsbs.where("sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+          @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("tmp_sp_bsbs.sp_s_71 like '%不合格样品%' or tmp_sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==6 #数据填报
-          @sp_bsbs = @sp_bsbs.where("sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+          @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("tmp_sp_bsbs.sp_s_71 like '%不合格样品%' or tmp_sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==1||session[:change_js]==5 #填报
-          @sp_bsbs = @sp_bsbs.where('user_id = ?', current_user.id).where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+          @sp_bsbs = @sp_bsbs.where('tmp_sp_bsbs.user_id = ?', current_user.id).where("tmp_sp_bsbs.sp_s_71 like '%不合格样品%' or tmp_sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==8 #牵头
           if session[:user_dl]=='乳制品'&& current_user.jg_bsb_id == JgBsb.find_by_history_name('上海市质量监督检验技术研究院').id
-            @sp_bsbs = @sp_bsbs.where("sp_s_17 = ? or (sp_s_18='婴幼儿配方食品' and sp_s_70 LIKE '%一司%')", session[:user_dl]).where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+            @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_17 = ? or (tmp_sp_bsbs.sp_s_18='婴幼儿配方食品' and tmp_sp_bsbs.sp_s_70 LIKE '%一司%')", session[:user_dl]).where("tmp_sp_bsbs.sp_s_71 like '%不合格样品%' or tmp_sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
           else
-            @sp_bsbs = @sp_bsbs.where("sp_s_17 = ?", session[:user_dl]).where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+            @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_17 = ?", session[:user_dl]).where("tmp_sp_bsbs.sp_s_71 like '%不合格样品%' or tmp_sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
           end
         elsif session[:change_js]==9
-          @sp_bsbs = @sp_bsbs.where("sp_i_state = 9 AND sp_s_70 LIKE '%一司%' AND sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+          @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state = 9 AND tmp_sp_bsbs.sp_s_70 LIKE '%一司%' AND tmp_sp_bsbs.sp_s_71 like '%不合格样品%' or tmp_sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==10
-          @sp_bsbs = @sp_bsbs.where("sp_i_state = 9 AND sp_s_70 NOT LIKE '%一司%' AND sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+          @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state = 9 AND tmp_sp_bsbs.sp_s_70 NOT LIKE '%一司%' AND tmp_sp_bsbs.sp_s_71 like '%不合格样品%' or tmp_sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         end
       end
     elsif current_user.is_admin?||session[:change_js]==10
       @sp_bsbs = @sp_bsbs.paginate(page: params[:page], per_page: 10)
     else
       if session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
-        @sp_bsbs = @sp_bsbs.where("sp_s_3=? or (sp_s_202=? and (sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'))", current_user.user_s_province, current_user.user_s_province).paginate(page: params[:page], per_page: 10)
+        @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_3=? or (tmp_sp_bsbs.sp_s_202=? and (tmp_sp_bsbs.sp_s_71 like '%不合格样品%' or tmp_sp_bsbs.sp_s_71 like '%问题样品%'))", current_user.user_s_province, current_user.user_s_province).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==7 #数据审核
-        @sp_bsbs = @sp_bsbs.where("sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
+        @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==11 #数据批准
-        @sp_bsbs = @sp_bsbs.where("sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
+        @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==6 #数据填报
-        @sp_bsbs = @sp_bsbs.where("sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
+        @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==1||session[:change_js]==5 #填报
-        @sp_bsbs = @sp_bsbs.where('user_id = ?', current_user.id).paginate(page: params[:page], per_page: 10)
+        @sp_bsbs = @sp_bsbs.where('tmp_sp_bsbs.user_id = ?', current_user.id).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==8 #牵头
         if session[:user_dl]=='乳制品'&&current_user.jg_bsb_id == JgBsb.find_by_history_name('上海市质量监督检验技术研究院').id
-          @sp_bsbs = @sp_bsbs.where("sp_s_17=? or (sp_s_18='婴幼儿配方食品' and sp_s_70 LIKE '%一司%')", session[:user_dl]).paginate(page: params[:page], per_page: 10)
+          @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_17=? or (tmp_sp_bsbs.sp_s_18='婴幼儿配方食品' and tmp_sp_bsbs.sp_s_70 LIKE '%一司%')", session[:user_dl]).paginate(page: params[:page], per_page: 10)
         else
-          @sp_bsbs = @sp_bsbs.where("sp_s_17=?", session[:user_dl]).paginate(page: params[:page], per_page: 10)
+          @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_s_17=?", session[:user_dl]).paginate(page: params[:page], per_page: 10)
         end
       elsif session[:change_js]==9
-        @sp_bsbs = @sp_bsbs.where("sp_i_state = 9 and sp_s_70 LIKE '%一司%'").paginate(page: params[:page], per_page: 10)
+        @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state = 9 and tmp_sp_bsbs.sp_s_70 LIKE '%一司%'").paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==10
-        @sp_bsbs = @sp_bsbs.where("sp_i_state = 9 and sp_s_70 NOT LIKE '%一司%'").paginate(page: params[:page], per_page: 10)
+        @sp_bsbs = @sp_bsbs.where("tmp_sp_bsbs.sp_i_state = 9 and tmp_sp_bsbs.sp_s_70 NOT LIKE '%一司%'").paginate(page: params[:page], per_page: 10)
       end
     end
 
