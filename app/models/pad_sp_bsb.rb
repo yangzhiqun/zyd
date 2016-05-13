@@ -128,7 +128,7 @@ class PadSpBsb < ActiveRecord::Base
       if !%w{餐饮 生产}.include?(self.sp_s_68) and !%w{/ 、 - \ 无}.include?(self.sp_s_215)
         pad_sp_bsbs = PadSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND sp_i_state NOT IN (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_215).where(created_at: now.all_quarter)
 
-        sp_bsbs = TmpSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", self.sp_s_215).where(created_at: now.all_quarter)
+        sp_bsbs = SpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", self.sp_s_215).where(created_at: now.all_quarter)
         if pad_sp_bsbs.count != 0
           sp_bsbs = sp_bsbs.where('sp_s_16 NOT IN (?)', pad_sp_bsbs.pluck(:sp_s_16))
         end
@@ -146,7 +146,7 @@ class PadSpBsb < ActiveRecord::Base
       unless %w{/ 、 - \ 无}.include?(self.sp_s_13)
         pad_sp_bsbs = PadSpBsb.where("sp_s_13 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_13, self.sp_s_64).where(created_at: now.all_quarter)
 
-        sp_bsbs = TmpSpBsb.where("sp_s_13 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", self.sp_s_13, self.sp_s_64).where(created_at: now.all_quarter)
+        sp_bsbs = SpBsb.where("sp_s_13 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", self.sp_s_13, self.sp_s_64).where(created_at: now.all_quarter)
 
         if pad_sp_bsbs.count != 0
           sp_bsbs = sp_bsbs.where('sp_s_16 NOT IN (?)', pad_sp_bsbs.pluck(:sp_s_16))
@@ -165,7 +165,7 @@ class PadSpBsb < ActiveRecord::Base
       # 条件: 3
       unless %w{/ 、 - \ 无}.include?(self.sp_s_13)
         pad_sp_bsbs = PadSpBsb.where("sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_d_28 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_d_28).where(created_at: now.all_quarter)
-        sp_bsbs = TmpSpBsb.where("sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_d_28 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_d_28).where(created_at: now.all_quarter)
+        sp_bsbs = SpBsb.where("sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_d_28 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_d_28).where(created_at: now.all_quarter)
 
         if pad_sp_bsbs.count != 0
           sp_bsbs = sp_bsbs.where('sp_s_16 NOT IN (?)', pad_sp_bsbs.pluck(:sp_s_16))
@@ -184,7 +184,7 @@ class PadSpBsb < ActiveRecord::Base
       # --> 条件: 4
       unless %w{/ 、 - \ 无}.include?(self.sp_s_64)
       pad_sp_bsbs = PadSpBsb.where("sp_s_17 = ? AND sp_s_64 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_17, self.sp_s_64).where(created_at: now.all_quarter)
-      sp_bsbs = TmpSpBsb.where("sp_s_17 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", self.sp_s_17, self.sp_s_64).where(created_at: now.all_quarter)
+      sp_bsbs = SpBsb.where("sp_s_17 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", self.sp_s_17, self.sp_s_64).where(created_at: now.all_quarter)
 
       if pad_sp_bsbs.count != 0
         sp_bsbs = sp_bsbs.where('sp_s_16 NOT IN (?)', pad_sp_bsbs.pluck(:sp_s_16))
@@ -202,7 +202,7 @@ class PadSpBsb < ActiveRecord::Base
 
       # --> 额外信息
       pad_sp_bsbs = PadSpBsb.where('sp_s_64 = ? AND created_at BETWEEN ? AND ? AND sp_i_state not in (1,14,16,18)', self.sp_s_64, now.beginning_of_year, now)
-      sp_bsbs = TmpSpBsb.where('sp_s_64 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', self.sp_s_64, now.beginning_of_year, now)
+      sp_bsbs = SpBsb.where('sp_s_64 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', self.sp_s_64, now.beginning_of_year, now)
 
       if pad_sp_bsbs.count != 0
         sp_bsbs = sp_bsbs.where('sp_s_16 NOT IN (?)', pad_sp_bsbs.pluck(:sp_s_16))

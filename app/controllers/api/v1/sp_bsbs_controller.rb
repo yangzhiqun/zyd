@@ -251,7 +251,11 @@ class Api::V1::SpBsbsController < ApplicationController
 			else
 				stamp = nil
 			end
-      render json: {status: 'OK', msg: @provinces, jg_stamp: stamp}
+
+      super_jgs = JgBsb.where(id: JgBsbSuper.where(jg_bsb_id: @user.jg_bsb.id).pluck(:super_jg_bsb_id)).map{|jg| jg.jg_name}
+      render json: {status: 'OK', msg: @provinces, jg_stamp: stamp, prov: @user.user_s_province, super_jgs: super_jgs.join('&&')}
+
+      #render json: {status: 'OK', msg: @provinces, jg_stamp: stamp}
     end
   end
 
