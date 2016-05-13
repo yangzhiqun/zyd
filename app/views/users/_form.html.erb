@@ -21,10 +21,17 @@
 //     dcity: "%= @user.prov_city %>",
 //      lcity: "%= @user.prov_country %>"
 //    });
+   var c = "<%= @user.prov_city %>";
     $('#province').append("<option value='<%=@user.user_s_province %>'><%=@user.user_s_province %></option>");
     $.get('/prov.json', {prov: <%= @province.id %>}, function (data) {
 
-     $('<option>-请选择-</option>').appendTo($('#city'));
+      if (c !="-请选择-" && c != "")
+      {
+        $('<option value="<%= @user.prov_city %>"><%= @user.prov_city %></option>').appendTo($('#city'));
+      }else
+      {
+        $('<option>-请选择-</option>').appendTo($('#city'));
+      };
       $.each(data.msg, function (i, item) {
         $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#city'));
       });
