@@ -175,7 +175,7 @@ $(function(){
               <td align="center">
                 <input class="checkbox" type="checkbox" data-id="<%= yycz.id %>" <%= 'checked' if index == 0%>>
               </td>
-              <td><a href="/yycz/<%= yycz.id%>.html"><%= yycz.cjbh%></a></td>
+              <td style="TABLE-LAYOUT:fixed;WORD-BREAK:break-all"><a href="/yycz/<%= yycz.id%>.html"><%= yycz.cjbh%></a></td>
               <td><%= yycz.ypmc%></td>
               <td><%= (yycz.scrq + 8.hours).strftime("%Y-%m-%d") if !yycz.scrq.blank?%></td>
               <td><%= yycz.bsscqy %></td>
@@ -227,7 +227,7 @@ $(function(){
       <tbody>
       <% @yyczs.each_with_index do |yycz, index|%>   
         <tr data-id="<%= yycz.id %>">
-          <td align="center">
+          <td align="center" style="TABLE-LAYOUT:fixed;WORD-BREAK:break-all">
             <input class="checkbox" type="checkbox" data-id="<%= yycz.id %>" <%= 'checked' if index == 0%>>
           </td>
           <td>

@@ -17,13 +17,14 @@
     });
     $('#user_jg_bsb_id').select2();
 //    $(".region").ProvinceCity({
-//      dprovince: "%= is_ejz? ? SysConfig.get(SysConfig::Key::PROV) : @user.user_s_province %>",
-//      dcity: "%= @user.prov_city %>",
+//      dprovince: "%= is_ejz? ? SysConfig.get(SysConfig::Key::PROV) : @user.user_s_province %>"
+//     dcity: "%= @user.prov_city %>",
 //      lcity: "%= @user.prov_country %>"
 //    });
-
+    $('#province').append("<option value='<%=@user.user_s_province %>'><%=@user.user_s_province %></option>");
     $.get('/prov.json', {prov: <%= @province.id %>}, function (data) {
-      $('<option>-请选择-</option>').appendTo($('#city'));
+
+     $('<option>-请选择-</option>').appendTo($('#city'));
       $.each(data.msg, function (i, item) {
         $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#city'));
       });
