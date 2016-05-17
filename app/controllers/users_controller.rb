@@ -64,7 +64,7 @@ class UsersController < ApplicationController
       end
 
       if @search_form.prov.present? and !@search_form.prov.eql?('/')
-         @users = @users.where('user_s_province = ? or user_s_city = ?', SysConfig.get(SysConfig::Key::PROV),"#{@search_form.prov}")
+         @users = @users.where('prov_city = ?', "#{@search_form.prov}")
       end
 
       if @search_form.jg_id.present? and !@search_form.jg_id.eql?('/')
@@ -84,17 +84,17 @@ class UsersController < ApplicationController
       end
 
       @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::GL) if @search_form.yy_gly.to_i == 1
-      @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYSL) if @search_form.yy_yysl.to_i == 1
+      @users = @users.where('yycz_permission & ? > 0', ::User::YyczPermission::YYSL) if @search_form.yy_yysl.to_i == 1
       @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::ZHXT) if @search_form.yy_zhxt.to_i == 1
       @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYBL) if @search_form.yy_yybl.to_i == 1
       @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYSH) if @search_form.yy_yysh.to_i == 1
 
       @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::GL) if @search_form.hcl_gly.to_i == 1
-      @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZAP) if @search_form.hcl_czap.to_i == 1
+      @users = @users.where('hcz_permission & ? > 0', ::User::HczPermission::CZAP) if @search_form.hcl_czap.to_i == 1
       @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZBL) if @search_form.hcl_czbl.to_i == 1
       @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZSH) if @search_form.hcl_czsh.to_i == 1
 
-      @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::RWBS) if @search_form.pad_rwbs.to_i == 1
+      @users = @users.where('pad_permission & ? > 0', ::User::PadPermission::RWBS) if @search_form.pad_rwbs.to_i == 1
       @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::ZXCY) if @search_form.pad_zxcy.to_i == 1
       @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::RWXD) if @search_form.pad_rwxd.to_i == 1
       @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::JSYP) if @search_form.pad_jsyp.to_i == 1
