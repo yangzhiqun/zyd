@@ -17,45 +17,55 @@
     });
     $('#user_jg_bsb_id').select2();
 //    $(".region").ProvinceCity({
-//      dprovince: "%= is_ejz? ? SysConfig.get(SysConfig::Key::PROV) : @user.user_s_province %>"
-//     dcity: "%= @user.prov_city %>",
-//      lcity: "%= @user.prov_country %>"
+//      dprovince: "%= @user.user_s_province %>",
+//      dcity: "%= @user.user_s_city %>",
+//      lcity: "%= @user.user_s_lcity %>"
 //    });
-   var c = "<%= @user.prov_city %>";
-    $('#province').append("<option value='<%=@user.user_s_province %>'><%=@user.user_s_province %></option>");
+//    $.get('/prov.json', {prov: %= @province.id %>}, function (data) {
+//      $('<option>-请选择-</option>').appendTo($('#city'));
+//      $.each(data.msg, function (i, item) {
+//        $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#city'));
+//      });
+//    }, 'json' );
+  var c = "<%= @user.prov_city %>";
+  var lc = "<%= @user.prov_country %>";
     $.get('/prov.json', {prov: <%= @province.id %>}, function (data) {
-
-      if (c !="-请选择-" && c != "")
-      {
-        $('<option value="<%= @user.prov_city %>"><%= @user.prov_city %></option>').appendTo($('#city'));
-      }else
-      {
-        $('<option>-请选择-</option>').appendTo($('#city'));
-      };
+      $('<option>-请选择-</option>').appendTo($('#city'));
       $.each(data.msg, function (i, item) {
-        $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#city'));
+        if (c == item.name){
+           $('<option>').attr({'value': item.name, 'data-id': item.id,"selected":"selected"}).text(item.name).appendTo($('#city'));
+
+            if (lc != "" && lc !="-请选择-" ){
+              $('<option>').attr({'value': lc, 'data-id': item.id,"selected":"selected"}).text(lc).appendTo($('#lcity'));
+            }else {
+              $('<option value="">-请选择-</option>').appendTo($('#lcity'));
+              $.get('/prov.json', {city: item.id}, function (data) {
+                $.each(data.msg, function (i, item) {
+                  $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#lcity'));
+                });
+              }, 'json');
+            }
+        }else
+        {
+          $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#city'));
+        }
       });
+
     }, 'json');
-
-
+//
+//
     $('#city').change(function () {
       var o = $(this);
-
       $('#lcity').empty();
       $('<option>-请选择-</option>').appendTo($('#lcity'));
-
       $.get('/prov.json', {city: o.find('option:selected').attr('data-id')}, function (data) {
         $.each(data.msg, function (i, item) {
           $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#lcity'));
         });
       }, 'json');
-   });
-    $('#city').change(function () {
       reload_jg_data();
-
-    });
+   });
   });
-
   function reload_jg_data() {
     $.get('/jg_bsbs/by_jg_name.json', {
      city:  $('#city').val()
@@ -124,7 +134,8 @@
             <div class="region form-inline">
               <%= @user.user_s_province %>
               <%= f.select :user_s_province, '', {}, :class => 'hidden', :id => 'province' %>
-							<%= f.select :prov_city, '', {}, :class => 'form-control input-sm', :id => 'city' %>
+              <!--%= f.select :user_s_province, options_for_select(SysProvince.where("level LIKE '__' OR level LIKE '_'").pluck(:name, :id).map { |p| [p[0], p[0], {'data-id' => p[1]}] }.unshift(['-请选择-', nil]), @user.user_s_province), {}, :class => 'hidden',:id => 'province' %>-->
+              <%= f.select :prov_city, '', {}, :class => 'form-control input-sm', :id => 'city' %>
               <%= f.select :prov_country, '', {}, :class => 'form-control input-sm', :id => 'lcity' %>
             </div>
         <% else %>

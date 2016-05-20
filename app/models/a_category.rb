@@ -30,8 +30,7 @@ class ACategory < ActiveRecord::Base
       蔬菜制品
       水果制品
       炒货食品及坚果制品
-      蛋
-      制品
+      蛋制品
       可可及焙烤咖啡产品
       食糖
       水产制品
