@@ -134,7 +134,6 @@
             <div class="region form-inline">
               <%= @user.user_s_province %>
               <%= f.select :user_s_province, '', {}, :class => 'hidden', :id => 'province' %>
-              <!--%= f.select :user_s_province, options_for_select(SysProvince.where("level LIKE '__' OR level LIKE '_'").pluck(:name, :id).map { |p| [p[0], p[0], {'data-id' => p[1]}] }.unshift(['-请选择-', nil]), @user.user_s_province), {}, :class => 'hidden',:id => 'province' %>-->
               <%= f.select :prov_city, '', {}, :class => 'form-control input-sm', :id => 'city' %>
               <%= f.select :prov_country, '', {}, :class => 'form-control input-sm', :id => 'lcity' %>
             </div>

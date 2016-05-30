@@ -183,6 +183,7 @@ class UsersController < ApplicationController
   def create
     if current_user.is_account_manager or current_user.is_super?
       @user = User.new(user_params)
+      @user.user_s_province = current_user.user_s_province
       @user.state = User::State::InUse
 
       respond_to do |format|
