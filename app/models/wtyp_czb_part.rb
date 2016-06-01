@@ -65,15 +65,19 @@ class WtypCzbPart < ActiveRecord::Base
   end
 
   def visible_for_user?(user, type)
-		return true
+    tmp = false
     return true if user.hcz_admin == 1
     case type
-    when ::WtypCzbPart::Type::SC
-      return false if self.bsscqy_sheng.blank?
-      return self.bsscqy_sheng.eql?(user.user_s_province)
-    when ::WtypCzbPart::Type::LT
-      return false if self.bcydw_sheng.blank?
-      return self.bcydw_sheng.eql?(user.user_s_province)
+      when ::WtypCzbPart::Type::SC
+        if  !self.bsscqy_sheng.blank? and self.bsscqy_sheng.eql?(user.user_s_province) and self.sp_s_220.eql?(user.prov_city)
+          tmp =true
+        end
+        return tmp
+      when ::WtypCzbPart::Type::LT
+        if  !self.bcydw_sheng.blank? and self.bcydw_sheng.eql?(user.user_s_province) and self.sp_s_4.eql?(user.prov_city)
+          tmp =true
+        end
+        return tmp
     else
       false
     end
