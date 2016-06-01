@@ -133,12 +133,12 @@ class PadSpBsb < ActiveRecord::Base
           sp_bsbs = sp_bsbs.where('sp_s_16 NOT IN (?)', pad_sp_bsbs.pluck(:sp_s_16))
         end
         sp_bsb_checked_count = sp_bsbs.count + pad_sp_bsbs.count
-        info = "同一被抽样单位，当前季度内，流通环节，最多抽取10批, 已经抽取#{sp_bsb_checked_count}批次"
-        self.sp_bsb_checked_count_info = info + "\n\n"
         if sp_bsb_checked_count > 10
           errors.add(:base, info)
           result = false
         end
+        info = "同一被抽样单位，当前季度内，流通环节，最多抽取10批, 已经抽取#{sp_bsb_checked_count}批次"
+        self.sp_bsb_checked_count_info = info + "\n\n"
       end
 
       # 条件: 2
@@ -191,12 +191,12 @@ class PadSpBsb < ActiveRecord::Base
       end
 
       sp_bsb_checked_count = sp_bsbs.count + pad_sp_bsbs.count
-      info = "同一生产企业, 当前季度内, 同一食品大类最多抽取3批, 已抽取#{sp_bsb_checked_count}批次"
-      self.sp_bsb_checked_count_info += (info + "\n\n")
       if sp_bsb_checked_count > 3
         errors.add(:base, info)
         result = false
       end
+      info = "同一生产企业, 当前季度内, 同一食品大类最多抽取3批, 已抽取#{sp_bsb_checked_count}批次"
+      self.sp_bsb_checked_count_info += (info + "\n\n")
       end
       # <-- 条件: 4
 
