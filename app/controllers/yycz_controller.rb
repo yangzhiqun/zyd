@@ -272,7 +272,9 @@ class YyczController < ApplicationController
       spdata = SpYydjbSpdata.find(data["id"])
       spdata.fjjg = data["fjjg"]
       spdata.jgdw = data["jgdw"]
-      spdata.fjjl = data["fjjl"]
+      if !data["fjjl"].blank?
+        spdata.fjjl = data["fjjl"]
+      end
       spdata.save
     end unless params[:data].blank?
 
