@@ -5,7 +5,8 @@
 </style>
 <script type="text/javascript" charset="utf-8">
   $(function () {
-    $('#jg-province, #jg-city').select2({placeholder: '请选择省份'});
+    $('#jg-province').select2({placeholder: '请选择省份'});
+    $('#jg-city').select2({placeholder: '请选择市/区'});
     $('#jg-province').change(function () {
       var o = $(this);
       if (o.val() == '') return false;
