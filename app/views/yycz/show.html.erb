@@ -336,7 +336,7 @@
         <tr>
           <th>填报部门</th>
           <td>
-            <% if current_user.zhxt == 1 and @djb.current_state == ::SpYydjb::State::LOGGED %>
+          <% if current_user.zhxt == 1 and @djb.current_state == ::SpYydjb::State::LOGGED %>
               <%= f.select :yyczbm, options_for_select(User.select("distinct jg_bsb_id").where("yycz_permission & 0x0000000000100 > 0").map{|u| [u.jg_bsb.jg_name, u.jg_bsb.jg_name]}), :id => 'yyczbm', :style => "width: 180px;"%>
             <% else %>
               <%= @djb.yyczbm %>
@@ -347,7 +347,8 @@
             <% if current_user.zhxt == 1 and @djb.current_state == ::SpYydjb::State::LOGGED %>
               <%= f.select :yyczfzr, [], {} %>
             <% else %>
-            <%= @djb.yyczfzr_desc %>
+            <!--%= @djb.yyczfzr_desc %>-->
+                <%= @djb.yyczfzr %>
             <% end %>
           </td>
         </tr>

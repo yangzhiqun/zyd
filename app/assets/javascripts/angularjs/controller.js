@@ -119,6 +119,16 @@ app.controller('PlanMakerCtrl', ['$scope', '$http', 'BaosongB', '$q', function (
         return defer.promise;
     };
 
+    // 更新报送分类B
+    $scope.updateBaosongB = function(field, value) {
+        var params = { baosong_b: {}};
+        params.baosong_b[field] = value;
+
+        $http.put('/baosong_bs/' + $scope.baosong_b.id + '.json', params).then(function(res){
+            console.log(res);
+        }, function(){});
+    };
+
     $scope.addCategory = {
         addACategory: function (identifier) {
             var name = prompt("请输入分类名称");

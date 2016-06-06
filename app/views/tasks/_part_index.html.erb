@@ -65,7 +65,7 @@
           <%= link_to '无法完成抽检', edit_pad_sp_bsb_path(sp_bsb), :class => 'btn btn-danger btn-xs center-block', "data-toggle" => "tooltip", "data-placement" => "top", "title" => "#{sp_bsb.failed_message}"%>
         <% end %>
 
-        <% if [::PadSpBsb::Step::TMP_SAVE].include? sp_bsb.sp_i_state and current_user.rwxd == 1 %>
+        <% if [::PadSpBsb::Step::TMP_SAVE,::PadSpBsb::Step::DEPLOYED,::PadSpBsb::Step::ACCEPTED,::PadSpBsb::Step::ARRIVED,::PadSpBsb::Step::FINISHED].include? sp_bsb.sp_i_state and current_user.rwxd == 1 %>
         <%= link_to '删除', sp_bsb,method: :delete, data: { confirm: '是否删除?' }, :class => 'btn btn-link btn-xs center-block' %>
         <% end %>
       </td>
