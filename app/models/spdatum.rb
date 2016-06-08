@@ -20,6 +20,7 @@ class Spdatum < ActiveRecord::Base
       :spdata_13 => "标准最大允许限",
       :spdata_14 => "标准最大允许限单位",
       :spdata_15 => "最大允许限",
-      :spdata_16 => "最大允许限单位"
+      :spdata_16 => "最大允许限单位",
+      :spdata_17 => "说明"
   }
 end
