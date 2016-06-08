@@ -247,6 +247,7 @@ class YyczController < ApplicationController
         @djb.tbsj = Time.now
         @djb.yyczbm = current_user.jg_bsb.jg_name
         @djb.yyczfzr = current_user.tname
+        @djb.fjwcsj = Time.now
       when SpYydjb::State::FILLED
         @djb.current_state = SpYydjb::State::PASSED
         @djb.shr = current_user.tname
