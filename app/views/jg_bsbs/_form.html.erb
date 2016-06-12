@@ -306,9 +306,11 @@
         <td colspan="34">
           <ul class="list-group">
             <% JgBsbSuper.where(super_jg_bsb_id: @jg_bsb.id).group("jg_bsb_id").each_with_index do |s, i| %>
+                <% if !s.jg_bsb.blank? %>
                 <li class="list-group-item"><%= i + 1 %>.
                   <a href="/jg_bsbs/<%= s.jg_bsb.id %>"><%= s.jg_bsb.jg_name %></a>
                 </li>
+                <% end %>
             <% end %>
           </ul>
         </td>
