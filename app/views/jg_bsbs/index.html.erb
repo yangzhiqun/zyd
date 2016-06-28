@@ -5,7 +5,8 @@
 </style>
 <script type="text/javascript" charset="utf-8">
   $(function () {
-    $('#jg-province, #jg-city').select2({placeholder: '请选择省份'});
+    $('#jg-province').select2({placeholder: '请选择省份'});
+    $('#jg-city').select2({placeholder: '请选择市/区'});
     $('#jg-province').change(function () {
       var o = $(this);
       if (o.val() == '') return false;
@@ -31,13 +32,13 @@
       <td width="200"><input class="form-control input-sm" name="contact" type="text" value="<%= params[:contact] %>"></td>
       <td width="80">省份</td>
       <td>
-        <select name="province" id="jg-province">
+        <select name="province" id="jg-province" style="width: 100px;">
           <option value="">--请选择--</option>
           <% SysProvince.where("level LIKE '_' OR level LIKE '__'").each do |prov| %>
               <option data-id="<%= prov.id %>" value="<%= prov.name %>"><%= prov.name %></option>
           <% end %>
         </select>
-        <select name="jg_city" id="jg-city"></select>
+        <select name="jg_city" id="jg-city" style="width: 100px;" ></select>
       </td>
     </tr>
   </table>

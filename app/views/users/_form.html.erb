@@ -1,5 +1,6 @@
 <script type="text/javascript">
   $(function () {
+//    reload_jg_data();
     $('a.unbind').click(function () {
       $('#user_id_card, .id-card, #user_user_sign').val('');
       $('img#ca-sign').attr('src', '');
@@ -15,12 +16,69 @@
       }
     });
     $('#user_jg_bsb_id').select2();
-    $(".region").ProvinceCity({
-      dprovince: "<%= is_ejz? ? SysConfig.get(SysConfig::Key::PROV) : @user.user_s_province %>",
-      dcity: "<%= @user.prov_city %>",
-      lcity: "<%= @user.prov_country %>"
-    });
+//    $(".region").ProvinceCity({
+//      dprovince: "%= @user.user_s_province %>",
+//      dcity: "%= @user.user_s_city %>",
+//      lcity: "%= @user.user_s_lcity %>"
+//    });
+//    $.get('/prov.json', {prov: %= @province.id %>}, function (data) {
+//      $('<option>-请选择-</option>').appendTo($('#city'));
+//      $.each(data.msg, function (i, item) {
+//        $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#city'));
+//      });
+//    }, 'json' );
+  var c = "<%= @user.prov_city %>";
+  var lc = "<%= @user.prov_country %>";
+    $.get('/prov.json', {prov: <%= @province.id %>}, function (data) {
+      $('<option>-请选择-</option>').appendTo($('#city'));
+      $.each(data.msg, function (i, item) {
+        if (c == item.name){
+           $('<option>').attr({'value': item.name, 'data-id': item.id,"selected":"selected"}).text(item.name).appendTo($('#city'));
+
+            if (lc != "" && lc !="-请选择-" ){
+              $('<option>').attr({'value': lc, 'data-id': item.id,"selected":"selected"}).text(lc).appendTo($('#lcity'));
+            }else {
+              $('<option value="">-请选择-</option>').appendTo($('#lcity'));
+              $.get('/prov.json', {city: item.id}, function (data) {
+                $.each(data.msg, function (i, item) {
+                  $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#lcity'));
+                });
+              }, 'json');
+            }
+        }else
+        {
+          $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#city'));
+        }
+      });
+
+    }, 'json');
+//
+//
+    $('#city').change(function () {
+      var o = $(this);
+      $('#lcity').empty();
+      $('<option>-请选择-</option>').appendTo($('#lcity'));
+      $.get('/prov.json', {city: o.find('option:selected').attr('data-id')}, function (data) {
+        $.each(data.msg, function (i, item) {
+          $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#lcity'));
+        });
+      }, 'json');
+      reload_jg_data();
+   });
   });
+  function reload_jg_data() {
+    $.get('/jg_bsbs/by_jg_name.json', {
+     city:  $('#city').val()
+    }, function (data) {
+      if (data.status == 'OK') {
+        $('#user_jg_bsb_id').empty();
+        $.each(data.msg, function (index, item) {
+          $("<option>").attr({'value': item[1]}).text(item[0]).appendTo($('#user_jg_bsb_id'));
+        });
+        $('#user_jg_bsb_id').select2({theme: 'bootstrap', placeholder: '请选择所在机构'});
+      }
+    }, 'json');
+  }
 </script>
 <div class="row" style="margin: 0;">
   <div class="col-sm-6 col-sm-offset-3">
@@ -76,7 +134,7 @@
             <div class="region form-inline">
               <%= @user.user_s_province %>
               <%= f.select :user_s_province, '', {}, :class => 'hidden', :id => 'province' %>
-							<%= f.select :prov_city, '', {}, :class => 'form-control input-sm', :id => 'city' %>
+              <%= f.select :prov_city, '', {}, :class => 'form-control input-sm', :id => 'city' %>
               <%= f.select :prov_country, '', {}, :class => 'form-control input-sm', :id => 'lcity' %>
             </div>
         <% else %>
@@ -86,8 +144,9 @@
         <br>
         <% if current_user.is_super? or current_user.is_prov_manager? %>
             <label>机构名称：</label>
-            <%= f.select :jg_bsb_id, options_for_select(JgBsb.list_jgbsb(SysConfig.get(SysConfig::Key::PROV)).map { |jg| [jg.jg_name, jg.id] }.unshift(["请选择", nil]), @user.jg_bsb_id), {}, :class => "form-control input-sm" %>
-
+            <!--%= f.select :jg_bsb_id, options_for_select(JgBsb.list_jgbsb(SysConfig.get(SysConfig::Key::PROV)).map { |jg| [jg.jg_name, jg.id] }.unshift(["请选择", nil]), @user.jg_bsb_id), {}, :class => "form-control input-sm" %>-->
+            <%= f.select :jg_bsb_id, options_for_select(JgBsb.where(status: 0).map { |jg| [jg.jg_name, jg.id] }, @user.jg_bsb_id), {}, :class => "form-control input-sm" %>
+            <!--%= f.select :jg_bsb_id, [], {},:class => "form-control input-sm" %>-->
             <% if current_user.is_admin? or current_user.is_account_manager %>
                 <div class="form-inline">
                   <div class="checkbox">

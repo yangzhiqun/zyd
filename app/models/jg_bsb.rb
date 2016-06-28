@@ -11,8 +11,8 @@ class JgBsb < ActiveRecord::Base
   has_many :jg_bsb_names, dependent: :delete_all
   has_many :jg_bsb_stamps
   has_many :users
-  has_many :jg_bsb_supers, foreign_key: :super_jg_bsb_id
-
+  has_many :jg_bsb_supers
+  has_many  :jg_names, class_name: "JgBsbName", foreign_key: "jg_bsb_id"
   attr_accessor :super_jg_bsbs
 
   JG_TYPE = [{
@@ -145,15 +145,14 @@ class JgBsb < ActiveRecord::Base
 
   def update_super_jg_bsbs_info
     ids = self.super_jg_bsbs
-    if ids.present? {
+    if ids.present?
       ids.delete('')
       ids = ids.map { |j| j.to_i }
-      self.jg_bsb_supers.where('id not in (?)', ids).destroy_all
+      self.jg_bsb_supers.where('super_jg_bsb_id not in (?)', ids).destroy_all
       self.jg_bsb_supers.reload
       (ids - self.jg_bsb_supers.pluck(:id)).each do |i|
         JgBsbSuper.create(jg_bsb_id: self.id, super_jg_bsb_id: i)
       end
-    }
     end
   end
 

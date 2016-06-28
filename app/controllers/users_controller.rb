@@ -3,7 +3,7 @@ class UsersController < ApplicationController
   include ApplicationHelper
   skip_before_filter :check_user_info, only: [:update_account, :update, :in_review, :edit]
   skip_before_filter :authenticate_user!, only: [:update]
-
+  before_action :find_province, only: [:new,:create,:edit,:show,:update,:index,:users_by_jcjg]
   # GET /users
   # GET /users.xml
   before_filter :init
@@ -64,7 +64,7 @@ class UsersController < ApplicationController
       end
 
       if @search_form.prov.present? and !@search_form.prov.eql?('/')
-         @users = @users.where('user_s_province = ? or user_s_city = ?', SysConfig.get(SysConfig::Key::PROV),"#{@search_form.prov}")
+         @users = @users.where('prov_city = ?', "#{@search_form.prov}")
       end
 
       if @search_form.jg_id.present? and !@search_form.jg_id.eql?('/')
@@ -84,17 +84,17 @@ class UsersController < ApplicationController
       end
 
       @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::GL) if @search_form.yy_gly.to_i == 1
-      @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYSL) if @search_form.yy_yysl.to_i == 1
+      @users = @users.where('yycz_permission & ? > 0', ::User::YyczPermission::YYSL) if @search_form.yy_yysl.to_i == 1
       @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::ZHXT) if @search_form.yy_zhxt.to_i == 1
       @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYBL) if @search_form.yy_yybl.to_i == 1
       @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYSH) if @search_form.yy_yysh.to_i == 1
 
       @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::GL) if @search_form.hcl_gly.to_i == 1
-      @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZAP) if @search_form.hcl_czap.to_i == 1
+      @users = @users.where('hcz_permission & ? > 0', ::User::HczPermission::CZAP) if @search_form.hcl_czap.to_i == 1
       @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZBL) if @search_form.hcl_czbl.to_i == 1
       @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZSH) if @search_form.hcl_czsh.to_i == 1
 
-      @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::RWBS) if @search_form.pad_rwbs.to_i == 1
+      @users = @users.where('pad_permission & ? > 0', ::User::PadPermission::RWBS) if @search_form.pad_rwbs.to_i == 1
       @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::ZXCY) if @search_form.pad_zxcy.to_i == 1
       @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::RWXD) if @search_form.pad_rwxd.to_i == 1
       @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::JSYP) if @search_form.pad_jsyp.to_i == 1
@@ -183,6 +183,7 @@ class UsersController < ApplicationController
   def create
     if current_user.is_account_manager or current_user.is_super?
       @user = User.new(user_params)
+      @user.user_s_province = current_user.user_s_province
       @user.state = User::State::InUse
 
       respond_to do |format|
@@ -448,5 +449,8 @@ class UsersController < ApplicationController
   private
   def user_params
     params.require(:user).permit(:is_account_manager, :mobile, :jg_bsb_id, :id_card, :user_sign, :pub_xxfb, :pub_xxfb_sh, :prov_city, :prov_country, :yyadmin, :jsyp, :hcz_admin, :car_sys_id, :zxcy, :rwbs, :rwxd, :enable_api, :hcz_sc, :hcz_lt, :hcz_czap, :hcz_czbl, :hcz_czsh, :yysl, :zhxt, :yybl, :yysh, :yycz_permission, :name, :password, :password_confirmation, :tname, :user_id, :uid, :tel, :eaddress, :company, :user_s_province, :user_d_authority, :user_d_authority_1, :user_jcjg, :user_jcjg_lxr, :user_jcjg_tel, :user_jcjg_mail, :user_cyjg, :user_cyjg_lxr, :user_cyjg_tel, :user_cyjg_mail, :user_d_authority_2, :user_d_authority_3, :user_d_authority_4, :user_d_authority_5, :user_i_js, :user_i_switch, :user_i_sp, :user_i_hzp, :user_i_bjp, :user_s_dl, :user_i_spys, :user_i_spss, :function_type, :prov_city, :prov_country)
+  end
+  def find_province
+        @province = SysProvince.where("level like '_' or level like '__'").where(name: SysConfig.get(SysConfig::Key::PROV)).last
   end
 end
