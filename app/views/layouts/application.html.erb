@@ -620,7 +620,19 @@
             </ul>
           </dd>
       <% end %>
-      <% if current_user.is_admin? %>
+      <% if !current_user.is_admin? and current_user.is_jg_manager?  %>
+          <dd>
+            <div class="title">
+              <span><img src="<%= asset_path('leftico06.png') %>"/></span>机构信息维护
+            </div>
+            <ul class="menuson" style="<%= "display: block;" if controller?("jg_bsbs") %>">
+              <li class="<%= "active" if controller?("jg_bsbs") and action?("index") %>">
+                <cite></cite><a href="/jg_bsbs">机构信息录入</a><i></i>
+              </li>
+            </ul>
+          </dd>
+      <% end%>
+      <% if current_user.is_admin?  %>
           <% if current_user.is_super? %>
               <dd>
                 <div class="title">
