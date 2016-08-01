@@ -1,10 +1,13 @@
 class SysProvincesController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:prov]
+  skip_before_action :authenticate_user!, only: [:prov, :prov_data]
+
   # GET /sys_provinces
   # GET /sys_provinces.json
   def index
-    @sys_provinces = SysProvince.all
-
+    @sys_provinces = SysProvince.level1_old.order('code ASC')
+    unless current_user.is_super?
+      @sys_provinces = @sys_provinces.where('name = ?',current_user.user_s_province)
+    end
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @sys_provinces }
@@ -71,21 +74,77 @@ class SysProvincesController < ApplicationController
   end
 
   def prov
-		begin
-			if params[:prov].present?
-				prov = SysProvince.find(params[:prov])
-				@provinces = SysProvince.where('level LIKE ? OR level LIKE ?', "#{prov.level}._", "#{prov.level}.__")
-			end
+    begin
+      if params[:prov].present?
+        prov = SysProvince.find(params[:prov])
+        @provinces = SysProvince.where('level LIKE ? OR level LIKE ?', "#{prov.level}._", "#{prov.level}.__")
+      end
 
-			if params[:city].present?
-				prov = SysProvince.find_by_id(params[:city])
-				@provinces = SysProvince.where('level LIKE ? OR level LIKE ?', "#{prov.level}._", "#{prov.level}.__")
-			end
+      if params[:city].present?
+        prov = SysProvince.find_by_id(params[:city])
+        @provinces = SysProvince.where('level LIKE ? OR level LIKE ?', "#{prov.level}._", "#{prov.level}.__")
+      end
 
-			render json: {status: 'OK', msg: (@provinces.select('name, id') if @provinces)}
-		rescue
-			render json: {status: 'OK', msg: []}
-		end
+      render json: {status: 'OK', msg: (@provinces.select('name, id') if @provinces)}
+    rescue
+      render json: {status: 'OK', msg: []}
+    end
+  end
+
+  def update_prov
+    if params[:level].blank?
+      render json: {status: 'ERR', msg: '请提供level'}
+    else
+      prov = SysProvince.find_by_level(params[:level])
+      prov.name = params[:name]
+      prov.fullname = params[:fullname]
+      if prov.save
+        render json: {status: 'OK', msg: '更新成功'}
+      else
+        render json: {status: 'ERR', msg: prov.errors.first.last}
+      end
+    end
+  end
+
+  def create_prov
+    prov = SysProvince.new(name: params[:name], fullname: params[:fullname])
+    prov.generate_level(params[:parent_level])
+
+    if prov.save
+      render json: {status: 'OK', msg: '创建成功'}
+    else
+      render json: {status: 'ERR', msg: prov.errors.first.last}
+    end
+  end
+
+  def sub_provs
+    if params[:level].blank?
+      render json: {stauts: 'ERR', msg: 'level不可为空'}
+    else
+      provs = SysProvince.where('level like ? or level like ?', "#{params[:level]}._", "#{params[:level]}.__")
+      render json: {status: 'OK', msg: '', provs: provs.select('fullname, name, id, level')}
+    end
+  end
+
+  # 获取省份信息
+  def prov_data
+    @prov_data = Rails.cache.fetch('prov_data', expires_in: 12.hours) do
+      level1 = SysProvince.level1_old.order('code asc').map { |lvl1| [lvl1.name, lvl1.level] }
+      level2 = []
+      level1.each do |lvl1|
+        level2.push SysProvince.order('code asc').where('level LIKE ? OR level LIKE ?', "#{lvl1[1]}._", "#{lvl1[1]}.__").map { |lvl2| [lvl2.name, lvl2.level] }
+      end
+      level3 = []
+      level2.each do |lvl2s|
+        lvl = []
+        lvl2s.each do |lvl2|
+          lvl.push SysProvince.order('code asc').where('level LIKE ? OR level LIKE ?', "#{lvl2[1]}._", "#{lvl2[1]}.__").map { |lvl3| [lvl3.name, lvl3.level] }
+        end
+        level3.push(lvl)
+      end
+      {lvl1: level1, lvl2: level2, lvl3: level3}
+    end
+    render json: {status: 'OK', msg: 'OK', prov_data: @prov_data}
   end
 
   # DELETE /sys_provinces/1

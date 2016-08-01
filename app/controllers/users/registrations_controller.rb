@@ -57,12 +57,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
 # If you have extra params to permit, append them to the sanitizer.
   def configure_sign_up_params
-    devise_parameter_sanitizer.for(:sign_up) << [:jg_type, :prov_city, :prov_country, :jg_bsb_id, :user_s_province, :id_card, :sms_code, :mobile, :tname, :password, :password_confirmation, function: []]
+    devise_parameter_sanitizer.for(:sign_up) << [:jg_type, :prov_city, :prov_country, :jg_bsb_id, :user_s_province, :id_card, :sms_code, :mobile, :tname, :password, :password_confirmation,:hccz_level, function: []]
   end
 
 # If you have extra params to permit, append them to the sanitizer.
   def configure_account_update_params
-    devise_parameter_sanitizer.for(:account_update) << [:jg_type, :prov_city, :prov_country, :user_s_province, :id_card, :sms_code, :mobile, :tname, :function_type, :password, :password_confirmation, function: []]
+    devise_parameter_sanitizer.for(:account_update) << [:jg_type, :prov_city, :prov_country, :user_s_province, :id_card, :sms_code, :mobile, :tname, :function_type, :password, :password_confirmation,:hccz_level, function: []]
   end
 
 # The path used after sign up.

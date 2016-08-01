@@ -1,27 +1,177 @@
-<div class="container">
-<h3>省份列表</h3>
+<script type="text/javascript" charset="utf-8">
+  $(function () {
+    var provsel = 0;
+    var citysel = 0;
+    $('.list').delegate('a', 'click', function () {
+      var o = $(this);
 
-<table class="table table-bordered">
-  <tr>
-    <th>名称</th>
-    <th>省份代码</th>
-    <th>备注</th>
-    <th></th>
-  </tr>
+      o.parents('ul').prev().find('.prov-edit-form input:eq(0)').val(o.attr('data-name'));
+      o.parents('ul').prev().find('.prov-edit-form input:eq(1)').val(o.attr('data-fullname'));
+      o.parents('ul').prev().find('.prov-edit-form input:eq(2)').val(o.attr('data-level'));
+      o.parents('ul').prev().find('.prov-edit-form button:eq(0)').text('更新');
 
-<% @sys_provinces.each do |sys_province| %>
-  <tr>
-    <td><%= sys_province.name %></td>
-    <td><%= sys_province.code %></td>
-    <td><%= sys_province.note %></td>
-    <td>
-      <%= link_to '查看', sys_province, :class => "btn btn-xs btn-default"%>
-      <%= link_to '编辑', edit_sys_province_path(sys_province), :class => "btn btn-xs btn-default" %>
-      <%= link_to '删除', sys_province, method: :delete, data: { confirm: 'Are you sure?' }, :class => "btn btn-xs btn-danger" %>
-    </td>
-  </tr>
-<% end %>
-</table>
+      o.parents('ul').find('li').removeClass('active');
+      o.parents('li').addClass('active');
+      if(o.parents('ul').attr('class') == 'provs') provsel = 1;
+      if(o.parents('ul').attr('class') == 'city') citysel = 1;
+      $.get('/sub_provs.json', {level: o.attr('data-level')}, function (data) {
+        if (data.status == 'OK') {
+          var next = o.parents('.col-md-4').next('.col-md-4');
+          next.find('li:not(.heading)').remove();
+          $.each(data.provs, function (i, item) {
+            next.find('ul').append($('<li><a data-fullname="' + item.fullname + '" data-name="' + item.name + '" data-level="' + item.level + '" href="javascript:void(0);">' + item.name + '</a></li>'));
+          });
+        }
+      }, 'json');
 
-<%= link_to 'New Sys province', new_sys_province_path %>
+      o.parents('.col-md-4').nextAll('.col-md-4').find('form').trigger('reset').find('button[type=reset]').prev().text('添加');
+    });
+
+    $('button[type=reset]').click(function () {
+      var o = $(this);
+      o.prev().text('添加');
+    });
+
+    $('.prov-edit-form button.submit').click(function () {
+      var o = $(this);
+      if (((o.attr("id") == 'b1') && (provsel == 0)) || ((o.attr("id") == 'c1') && (citysel == 0))){
+        alert('请先选择上级单位');
+        return false;
+      }else{
+        var params = {};
+
+        params.name = o.parents('form').find('input:eq(0)').val();
+        params.fullname = o.parents('form').find('input:eq(1)').val();
+
+        if (o.text() == '添加') {
+          params.parent_level = o.parents('.col-md-4').prev().find('input:eq(2)').val();
+          params.type = 'add';
+
+          $.post('/create_prov.json', params, function (data) {
+            if (data.status == 'OK') {
+              alert('创建成功!');
+              location.reload();
+            } else {
+              alert(data.msg);
+            }
+          }, 'json');
+        } else if (o.text() == '更新') {
+          params.level = o.parents('form').find('input:eq(2)').val();
+          params.type = 'update';
+          $.post('/update_prov.json', params, function (data) {
+            if (data.status == 'OK') {
+              alert('更新成功!');
+              location.reload();
+            } else {
+              alert(data.msg);
+            }
+
+          }, 'json');
+        }
+    }
+    });
+  });
+</script>
+<style type="text/css">
+  .row li {
+    margin: 5px 0;
+    font-size: 13pt;
+  }
+
+  .row li.active a {
+    color: green;
+    text-decoration: underline;
+    font-size: 18pt;
+  }
+
+  .heading {
+    font-size: 16pt;
+    color: black;
+  }
+
+  .country, .provs, .city {
+    border: 1px solid #cecece;
+    padding: 5px;
+    height: 300px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+  }
+
+  label {
+    font-size: 10pt;
+  }
+</style>
+<div class="panel panel-default">
+  <div class="panel-heading">省份列表</div>
+  <div class="panel-body">
+    <div class="row list">
+      <div class="col-md-4" id="sheng">
+        <div class="heading">省/直辖市/自治区
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <form class="prov-edit-form">
+                <label for="">名称:</label>
+                <input style="margin-bottom: 10px;" type="text" class="form-control input-sm" placeholder="名称">
+                <label for="">别名:</label>
+                <input style="margin-bottom: 10px;" type="text" class="form-control input-sm" placeholder="别名">
+                <input type="hidden" class="form-control input-sm" placeholder="编号">
+                <input type="hidden" name="type" value="0">
+                <% if current_user.is_super? %>
+                  <button class="submit btn btn-xs btn-primary" id="a1">添加</button>
+                  <button class="btn btn-xs btn-default" type="reset" id="a2">重置</button>
+                <% else %>
+                <br>
+                <% end %>
+              </form>
+            </div>
+          </div>
+        </div>
+        <ul class="provs">
+          <% @sys_provinces.each do |sys_province| %>
+              <li>
+                <a data-fullname="<%= sys_province.fullname %>" data-name="<%= sys_province.name %>" data-level="<%= sys_province.level %>" href="javascript:void(0);"><%= sys_province.name %></a>
+              </li>
+          <% end %>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <div class="heading">市/区
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <form class="prov-edit-form">
+                <label for="">名称:</label>
+                <input style="margin-bottom: 10px;" type="text" class="form-control input-sm" placeholder="名称">
+                <label for="">别名:</label>
+                <input style="margin-bottom: 10px;" type="text" class="form-control input-sm" placeholder="别名">
+                <input type="hidden" class="form-control input-sm" placeholder="编号">
+                <input type="hidden" name="type" value="1">
+                <button class="submit btn btn-xs btn-primary" id="b1">添加</button>
+                <button class="btn btn-xs btn-default" type="reset" id="b2">重置</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <ul class="city"></ul>
+      </div>
+      <div class="col-md-4">
+        <div class="heading">县
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <form class="prov-edit-form">
+                <label for="">名称:</label>
+                <input style="margin-bottom: 10px;" type="text" class="form-control input-sm" placeholder="名称">
+                <label for="">别名:</label>
+                <input style="margin-bottom: 10px;" type="text" class="form-control input-sm" placeholder="别名">
+                <input type="hidden" class="form-control input-sm" placeholder="编号">
+                <input type="hidden" name="type" value="2">
+                <button class="submit btn btn-xs btn-primary" id="c1">添加</button>
+                <button class="btn btn-xs btn-default" type="reset">重置</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <ul class="country"></ul>
+      </div>
+    </div>
+  </div>
 </div>
