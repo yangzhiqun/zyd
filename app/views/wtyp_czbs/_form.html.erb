@@ -41,38 +41,40 @@
       parent_ctner.find('.tmp-save-tag').val('0');
       parent_ctner.find('.save-me').val('1');
 
-      var empty_ele = false;
-      $.each(parent_ctner.find('.czbm, .czfzr'), function () {
-        var o = $(this);
-        if (o.val() == '') {
-          empty_ele = o;
-          return false;
-        }
-      });
-
-      if (empty_ele) {
-        alert("请填写处置信息");
-        empty_ele.focus();
+      if (!confirm("确定领取吗？")) {
         return false;
       }
-
-      if (!confirm("确定执行次安排吗？")) {
-        return false;
-      }
-
     });
 
     // 提交按钮
     $(".save").click(function () {
-
       var parent_ctner = $(this).parents('.part-ctner');
+			var current_state = parseInt($(this).parents('.part-ctner').attr('data-current-state'));
+
+			// FIXME: @星云，看一些这里逻辑是否正确
+			if(current_state == 2) {
+				var empty_shenhe = null;
+				$.each(parent_ctner.find('.shenhe'), function(i, item){
+					if($(item).val() == '') {
+						empty_shenhe = $(item);
+						return false;
+					}
+				});
+
+				if(empty_shenhe) {
+					alert('请填写审核内容');
+					empty_shenhe.focus();
+					empty_shenhe = null;
+					return false;
+				};
+			}
+
       parent_ctner.find('.tmp-save-tag').val('0');
       parent_ctner.find('.save-me').val('1');
 
       if (parent_ctner.find('div.submit').length > 0) {
         alert("尚有待确认的内容，请填写完整后提交！");
         parent_ctner.find('div.submit:first').focus();
-        console.log(parent_ctner.find('div.submit:first'));
         return false;
       } else {
         if (!confirm("确定要提交吗？")) {
@@ -81,27 +83,178 @@
       }
     });
 
+    // 督办
+    $('.part-duban').click(function () {
+      if (confirm('确定执行该操作吗?')) {
+        var czb_id = $(this).attr('data-id');
+        $.post('/wtyp_czbs/' + czb_id + '/duban.json', function (res) {
+          if (res.status == 'OK') {
+            alert('操作成功!');
+            location.reload();
+          }
+        }, 'json');
+      }
+      return false;
+    });
+
     // 部分提交
+    var part_ok = true;
+    /*
+     $("button[name='submitcpkz']").click(function () {
+     var o = $(this);
+     var xc_nil = o.parents('.form-ctner').find("input[name='parts[][xc_nil]']").val();
+     if (($.trim($("input[name='parts[][xc_attachment_file]']").val()).length == 0) && (xc_nil == 'true')) {
+     $("input[name='parts[][xc_attachment_file]']").focus();
+     alert("请上传电子附件后提交");
+     part_ok = false;
+     return false;
+     }
+    <%@check=[1,2,3,5,9,21,13]%>
+
+    <%@check.each do |i|%>
+     if ($.trim($("#parts__cpkzqk_" +
+    <%=i%>).val()).length == 0) {
+     $("#parts__cpkzqk_" +
+    <%=i%>).focus();
+     alert("请完整填写处理信息后提交");
+     part_ok = false;
+     return false;
+     }
+    <%end%>
+
+    <%@check=["cpkzqk_4","cpkzqk_6","cpkzqk_7","cpkzqk_8","cpkzqk_10","cpkzqk_11","cpkzqk_20","cpkzqk_22","cpkzqk_23","cpkzqk_12","cpkzqk_14","cpkzqk_15"]%>
+
+    <%@check.each do |i|%>
+     if ($.trim($("input[name='parts[][" + "
+    <%=i%>"+"]']").val()).length == 0) {
+     $("input[name='parts[][" + "
+    <%=i%>"+"]']").focus();
+     alert("请完整填写处理信息后提交");
+     part_ok = false;
+     return false;
+     }
+    <%end%>
+     part_ok = true;
+     })
+     $("button[name='submitpczg']").click(function () {
+     var o = $(this);
+     var pc_nil = o.parents('.form-ctner').find("input[name='parts[][pc_nil]']").val();
+     if (($.trim($("input[name='parts[][pc_attachment_file]']").val()).length == 0) && (pc_nil == 'true')) {
+     $("input[name='parts[][pc_attachment_file]']").focus();
+     alert("请上传电子附件后提交");
+     part_ok = false;
+     return false;
+     }
+     var flag1 = $("#parts__pczgfc_2").attr("checked");
+     var flag2 = $("#parts__pczgfc_11").attr("checked");
+     var flag3 = $("#parts__pczgfc_12").attr("checked");
+     var flag4 = $("#parts__pczgfc_13").attr("checked");
+     var flag5 = $("#parts__pczgfc_14").attr("checked");
+     var flag6 = $("#parts__pczgfc_15").attr("checked");
+     var flag7 = $("#parts__pczgfc_16").attr("checked");
+     var flag8 = $("#parts__pczgfc_17").attr("checked");
+     if (!flag1 && !flag2 && !flag3 && !flag4 && !flag5 && !flag6 && !flag7 && !flag8){
+     alert("请勾选问题原因");
+     part_ok = false;
+     return false;
+     }
+     if (flag8 && ($.trim($("input[name='parts[][pczgfc_9]").val()).length == 0)){
+     alert("勾选其他时请填写具体描述");
+     $("input[name='parts[][pczgfc_9]").focus();
+     part_ok = false;
+     return false;
+     }
+     if ($.trim($("#parts__cpkzqk_17").val()).length == 0) {
+     alert("请完整填写处理信息后提交");
+     $("#parts__cpkzqk_17").focus();
+     part_ok = false;
+     return false;
+     }
+    <%@check=[1,3,7,8]%>
+
+    <%@check.each do |i|%>
+     if ($.trim($("#parts__pczgfc_" +
+    <%=i%>).val()).length == 0) {
+     $("#parts__pczgfc_" +
+    <%=i%>).focus();
+     alert("请完整填写处理信息后提交");
+     part_ok = false;
+     return false;
+     }
+    <%end%>
+
+    <%@check=["cpkzqk_16","cpkzqk_18","cpkzqk_19","pczgfc_4","pczgfc_5","pczgfc_6"]%>
+
+    <%@check.each do |i|%>
+     if ($.trim($("input[name='parts[][" + "
+    <%=i%>"+"]']").val()).length == 0) {
+     $("input[name='parts[][" + "
+    <%=i%>"+"]']").focus();
+     alert("请完整填写处理信息后提交");
+     part_ok = false;
+     return false;
+     }
+    <%end%>
+     part_ok = true;
+     })
+     $("button[name='submitxzcf']").click(function () {
+     var o = $(this);
+     var xz_nil = o.parents('.form-ctner').find("input[name='parts[][xz_nil]']").val();
+     if (($.trim($("input[name='parts[][xz_attachment_file]']").val()).length == 0) && (xz_nil == 'true')) {
+     $("input[name='parts[][xz_attachment_file]']").focus();
+     alert("请上传电子附件后提交");
+     part_ok = false;
+     return false;
+     }
+    <%@check=[1,2,3,4,5,9,11,13,16,18,19,20]%>
+
+    <%@check.each do |i|%>
+     if ($.trim($("#parts__xzcfqk_" +
+    <%=i%>).val()).length == 0) {
+     $("#parts__xzcfqk_" +
+    <%=i%>).focus();
+     alert("请完整填写处理信息后提交");
+     part_ok = false;
+     return false;
+     }
+    <%end%>
+
+    <%@check=["xzcfqk_6","xzcfqk_7","xzcfqk_8","xzcfqk_10","xzcfqk_12","xzcfqk_14","xzcfqk_15","xzcfqk_17","xzcfqk_21"]%>
+
+    <%@check.each do |i|%>
+     if ($.trim($("input[name='parts[][" + "
+    <%=i%>"+"]']").val()).length == 0) {
+     $("input[name='parts[][" + "
+    <%=i%>"+"]']").focus();
+     alert("请完整填写处理信息后提交");
+     part_ok = false;
+     return false;
+     }
+    <%end%>
+     part_ok = true;
+     })
+     */
     $('.submit .btn').click(function () {
       var form_controls = $(this).parents('td').find('select, input[type=text]');
       var form_result = "";
       $.each(form_controls, function () {
         form_result += $(this).val();
       });
-
-      if ($.trim(form_result) == '') {
-        alert("请填写处理信息后提交");
-        return false;
-      }
-
-      if (confirm("确定提交吗？")) {
-        $(this).parents('.part-ctner').find('.save-me').val('1');
-        $(this).parents('.part-ctner').find('.flag' + $(this).attr('data-part')).attr('type', 'text').val('true');
-        $(this).parents('.part-ctner').find('.part-submit').val('1');
-      } else {
-        return false;
+      if (part_ok) {
+        if ($.trim(form_result) == '') {
+          alert("请填写处理信息后提交。");
+          return false;
+        }
+        if (confirm("确定提交吗？")) {
+          $(this).parents('.part-ctner').find('.save-me').val('1');
+          $(this).parents('.part-ctner').find('.flag' + $(this).attr('data-part')).attr('type', 'text').val('true');
+          $(this).parents('.part-ctner').find('.part-submit').val('1');
+        } else {
+          return false;
+        }
       }
     });
+
 
     // 根据处置部门列出可用人员
     $(".czbm").change(function () {
@@ -138,7 +291,11 @@
       <tr>
         <th colspan="4">报告书编号</th>
         <td colspan="26">
-          <a target="_blank" href="/sp_bsbs/<%= @wtyp_czb.wtyp_sp_bsbs_id %>/print"><%= @wtyp_czb.bgsbh %></a></td>
+          <a target="_blank" href="/sp_bsbs/<%= @wtyp_czb.wtyp_sp_bsbs_id %>/print.pdf"><%= @wtyp_czb.bgsbh %></a>
+          <% if @sp_bsb.xsbg_file_path.present? %>
+              &emsp;&emsp;<a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @sp_bsb.id %>/xsbg_24h"><i class="glyphicon glyphicon-download-alt"></i>24小时限时报告</a>
+          <% end %>
+        </td>
       </tr>
       <tr>
         <th colspan="4">样品名称</th>
@@ -170,7 +327,7 @@
       </tr>
       <tr>
         <th colspan="4">异议状态</th>
-        <td colspan="7"><%= @yydjb.blank? ? "逾期未提出异议" : @yydjb.yyczjg %></td>
+        <td colspan="7"><%= @yydjb.blank? ? "未提出异议" : @yydjb.yyczjg %></td>
         <th colspan="3">检验结果状态</th>
         <td colspan="8"><%= @yydjb.blank? ? "初检结论" : @yydjb.fjzt %></td>
         <th colspan="4">是否为限时报告</th>
@@ -246,7 +403,7 @@
   </div>
 </div>
 <br>
-<%= form_tag "/update_wtyp_czbs/#{@wtyp_czb.id}" do %>
+<%= form_tag "/update_wtyp_czbs/#{@wtyp_czb.id}", :multipart => true do %>
     <input type="hidden" id="part-submit" name="part_submit">
 
     <!-- 生产 -->

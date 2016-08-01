@@ -585,16 +585,16 @@
                   <%# end %>
 
                   <% if current_user.hcz_czap == 1 or current_user.hcz_admin == 1 %>
-                      <li class="<%= "active" if controller?("wtyp_czbs") and action?("index") and params[:state].to_i == 0 %>">
-                        <cite></cite><a href="/wtyp_czbs?current_tab=1">核查处置安排</a><i></i></li>
+                      <li class="<%= 'active' if controller?('wtyp_czbs') and action?('index') and params[:state].to_i == 0 %>">
+                        <cite></cite><a href="/wtyp_czbs?current_tab=DBL">核查处置领取</a><i></i></li>
                   <% end %>
                   <% if current_user.hcz_czbl == 1 or current_user.hcz_admin == 1 %>
-                      <li class="<%= "active" if controller?("wtyp_czbs") and action?("index") and params[:state].to_i == 1 %>">
-                        <cite></cite><a href="/wtyp_czbs_by_state/1?current_tab=1">核查处置办理</a><i></i></li>
+                      <li class="<%= 'active' if controller?('wtyp_czbs') and action?('index') and params[:state].to_i == 1 %>">
+                        <cite></cite><a href="/wtyp_czbs_by_state/1?current_tab=DBL">核查处置办理</a><i></i></li>
                   <% end %>
                   <% if current_user.hcz_czsh == 1 or current_user.hcz_admin == 1 %>
-                      <li class="<%= "active" if controller?("wtyp_czbs") and action?("index") and params[:state].to_i == 2 %>">
-                        <cite></cite><a href="/wtyp_czbs_by_state/2">核查处置审核</a><i></i></li>
+                      <li class="<%= 'active' if controller?('wtyp_czbs') and action?('index') and params[:state].to_i == 2 %>">
+                        <cite></cite><a href="/wtyp_czbs_by_state/2?current_tab=DSH">核查处置审核</a><i></i></li>
                   <% end %>
                 </ul>
               </dd>
@@ -606,17 +606,43 @@
         </div>
       </dd>
       <% if current_user.pub_xxfb_sh == 1 or current_user.pub_xxfb == 1 %>
+          <!--<dd>
+            <div class="title">
+              <span><img src="<%#= asset_path('leftico05.png') %>"/></span>抽检结果发布
+            </div>
+            <ul class="menuson" style="<%#= "display: block;" if controller?("sp_bsb_publications") %>">
+              <li class="<%#= "active" if action?("check_duplicate") %>">
+                <cite></cite><a href="/sp_bsb_publications/check_duplicate">筛选发布数据</a><i></i></li>-->
+              <!--<li><cite></cite><a href="/sp_bsb_publications">筛选发布数据</a></li>-->
+              <!--<li><cite></cite><a href="">核校发布数据</a><i></i></li>
+              <li><cite></cite><a href="">审核发布数据</a><i></i></li>
+              <li><cite></cite><a href="">发布数据查询</a><i></i></li>
+            </ul>
+          </dd>-->
           <dd>
             <div class="title">
               <span><img src="<%= asset_path('leftico05.png') %>"/></span>抽检结果发布
             </div>
             <ul class="menuson" style="<%= "display: block;" if controller?("sp_bsb_publications") %>">
-              <li class="<%= "active" if action?("check_duplicate") %>">
-                <cite></cite><a href="/sp_bsb_publications/check_duplicate">筛选发布数据</a><i></i></li>
-              <!--<li><cite></cite><a href="/sp_bsb_publications">筛选发布数据</a></li>-->
+              <li class="<%= 'active' if action?('check_duplicate') %>">
+                <cite></cite><a href="/sp_bsb_publications/check_duplicate">筛选发布数据</a><i></i>
+              </li>
               <li><cite></cite><a href="">核校发布数据</a><i></i></li>
               <li><cite></cite><a href="">审核发布数据</a><i></i></li>
               <li><cite></cite><a href="">发布数据查询</a><i></i></li>
+            </ul>
+          </dd>
+          <dd>
+            <div class="title">
+              <span><img src="<%= asset_path('leftico05.png') %>"/></span>抽检信息公示
+            </div>
+            <ul class="menuson" style="<%= "display: block;" if controller?("sp_bsb_publications") %>">
+              <li class="<%= 'active' if action?('unpublished') %>">
+                <cite></cite><a href="/sp_bsb_publications/unpublished">未发布信息</a><i></i>
+              </li>
+              <li class="<%= 'active' if action?('published') %>">
+                <cite></cite><a href="/sp_bsb_publications/published">已发布信息</a><i></i>
+              </li>
             </ul>
           </dd>
       <% end %>
@@ -656,6 +682,13 @@
           <span><img src="<%= asset_path('leftico12.png') %>"/></span><a href="/users">登录用户管理</a>
         </div>
       </dd>
+      <% if current_user.is_super? or ((current_user.user_i_js == 1) and (current_user.is_account_manager)) %>
+      <dd>
+        <div class="title not-expand">
+          <span><img src="<%= asset_path('leftico10.png') %>"/></span><a href="/sys_provinces">区域维护</a>
+        </div>
+      </dd>
+      <% end %>
       <% if current_user.is_account_manager %>
           <dd>
             <div class="title not-expand">

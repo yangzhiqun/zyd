@@ -40,7 +40,11 @@
 
 <script type="text/javascript">
 $(function(){
-  $("#region").ProvinceCity({});
+  $(".region").CfdaProvince({
+    level1: "<%= @sp_company_info.sp_s_3 %>",
+    level2: "<%= @sp_company_info.sp_s_4 %>",
+    level3: "<%= @sp_company_info.sp_s_5 %>"
+  });
   $('#province, #city, #lcity').change(function(){
     $('#sp_company_info_sp_s_3').val($('#province').val()); 
     $('#sp_company_info_sp_s_4').val($('#city').val()); 
@@ -100,17 +104,20 @@ $(function(){
       <td colspan="3"><p>区域类型*</p></td>
 			<td colspan="3"><%= f.text_field:sp_s_201, :class=>"inputText",:style=>"width: 60px; height: 19px" %></td>
 		</tr>
-      <tr id="region">
+      <tr >
 			<td colspan="3" style="width: 73px"><p>所在地区*</p></td>
-			<td colspan="27">
-        <span>
+			<td colspan="27" class="region">
+      <!--  <span>
           <select id='province' name='province' class="NoPrint"></select>
-          <%= f.text_field :sp_s_3, :class=>"inputText",:style=>"width: 60px; height: 19px" %>省(市、自治区)
+          <%#= f.text_field :sp_s_3, :class=>"inputText",:style=>"width: 60px; height: 19px" %>省(市、自治区)
           <select id='city' name='city'></select>
-          <%= f.text_field :sp_s_4, :class=>"inputText",:style=>"width: 60px; height: 19px" %>地区(市、州、盟)
+          <%#= f.text_field :sp_s_4, :class=>"inputText",:style=>"width: 60px; height: 19px" %>地区(市、州、盟)
           <select id='lcity' name='lcity'></select>
-			    <%= f.text_field :sp_s_5, :class=>"inputText",:style=>"width: 60px; height: 19px" %>县(市、区)
-        </span>
+			    <%#= f.text_field :sp_s_5, :class=>"inputText",:style=>"width: 60px; height: 19px" %>县(市、区)
+        </span>-->
+        <%= f.select :sp_s_3, {}, class: 'form-control input-sm' %>
+        <%= f.select :sp_s_4, {}, class: 'form-control input-sm' %>
+        <%= f.select :sp_s_5, {}, class: 'form-control input-sm' %>
       </td>            
       </tr>
 		<tr>

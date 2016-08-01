@@ -65,6 +65,13 @@
       }, 'json');
       reload_jg_data();
    });
+    $('#submit').click(function () {
+      if (($("#user_hccz_level").find("option:selected").val() == 0)&&($("#user_hcz_czbl").attr("checked"))) {
+        alert("请选择核查处置领取级别");
+        $("#user_hccz_level").focus();
+        return false;
+      }
+    });
   });
   function reload_jg_data() {
     $.get('/jg_bsbs/by_jg_name.json', {
@@ -242,18 +249,21 @@
                     <label><%= f.check_box :hcz_admin, options = {}, checked_value = "1", unchecked_value = "0" %>
                       管理员</label>
                   </div>
-                  <div class="checkbox">
-                    <label> <%= f.check_box :hcz_czap, options = {}, checked_value = "1", unchecked_value = "0" %>
+                 <!-- <div class="checkbox">
+                    <label> <%#= f.check_box :hcz_czap, options = {}, checked_value = "1", unchecked_value = "0" %>
                       处置安排 </label>
-                  </div>
+                  </div>-->
                   <div class="checkbox">
                     <label><%= f.check_box :hcz_czbl, options = {}, checked_value = "1", unchecked_value = "0" %>
-                      处置办理</label>
+                      处置领取</label>
                   </div>
                   <div class="checkbox">
                     <label><%= f.check_box :hcz_czsh, options = {}, checked_value = "1", unchecked_value = "0" %>
                       处置审核</label>
                   </div>
+                  <br>
+                  <%= f.select :hccz_level, options_for_select([['请选择级别', 0], ['省', 1], ['市', 2], ['县', 3]], @user.hccz_level), {}, class: 'form-control input-sm'%>
+                  <% f.select :hccz_type, options_for_select([['请选择业务', 0], ['生产', 1], ['经营', 2]], @user.hccz_type), {}, class: 'form-control input-sm'%>
                 </div>
               </div>
             </div>

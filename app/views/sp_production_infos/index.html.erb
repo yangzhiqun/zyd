@@ -6,6 +6,9 @@
     <th>产品名</th>
     <th>发证单位</th>
     <th>企业名称</th>
+    <th>所在省</th>
+    <th>所在市</th>
+    <th>所在县</th>
     <th></th>
     <th></th>
   </tr>
@@ -16,6 +19,9 @@
     <td><%= sp_production_info.cpmc %></td>
     <td><%= sp_production_info.fzdw %></td>
     <td><%= sp_production_info.qymc %></td>
+    <td><%= sp_production_info.sp_s_3 %></td>
+    <td><%= sp_production_info.sp_s_4 %></td>
+    <td><%= sp_production_info.sp_s_5 %></td>
     <td><%= link_to '编辑', edit_sp_production_info_path(sp_production_info), :class => 'btn btn-info btn-xs' %></td>
     <td><%= link_to '删除', sp_production_info, class: 'btn btn-danger btn-xs', method: :delete, data: { confirm: 'Are you sure?' } %></td>
   </tr>

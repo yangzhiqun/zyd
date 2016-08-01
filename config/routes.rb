@@ -34,6 +34,15 @@ Rails.application.routes.draw do
     collection do
       get 'check_duplicate'
       post 'check_duplicate'
+
+      get 'unpublished'
+      get 'published'
+
+      post 'publish_bsbs'
+      post 'publish_bsbs_from_xls'
+    end
+    member do
+      get 'show_publication'
     end
   end
   post "sp_bsb_publications_filtered" => "sp_bsb_publications#index"
@@ -85,7 +94,11 @@ Rails.application.routes.draw do
   post 'd_categories/:id/update_check_items' => 'd_categories#update_check_items'
 
   resources :sys_provinces
+  get 'prov_data' => 'sys_provinces#prov_data'
   get 'prov' => 'sys_provinces#prov'
+  get 'sub_provs' => 'sys_provinces#sub_provs'
+  post 'create_prov' => 'sys_provinces#create_prov'
+  post 'update_prov' => 'sys_provinces#update_prov'
 
   match "tasks/deploy", via: [:get, :post]
   # 省局任务部署
@@ -126,9 +139,14 @@ Rails.application.routes.draw do
   resources :spkj_bsbs
 
   resources :wtyp_czbs
-  post "wtyp_assign_task" => "wtyp_czbs#assign_task"
-  get "wtyp_czbs_by_state/:state" => "wtyp_czbs#index"
-  post "update_wtyp_czbs/:id" => "wtyp_czbs#update"
+  post 'wtyp_assign_task' => 'wtyp_czbs#assign_task'
+  get 'wtyp_czbs_by_state/:state' => 'wtyp_czbs#index'
+  post 'update_wtyp_czbs/:id' => 'wtyp_czbs#update'
+  post 'wtyp_czbs/:part_id/duban' => 'wtyp_czbs#duban'
+  get 'wtyp_xc_attachment/:id' => 'wtyp_czbs#xc_attachment'
+  get 'wtyp_pc_attachment/:id' => 'wtyp_czbs#pc_attachment'
+  get 'wtyp_xz_attachment/:id' => 'wtyp_czbs#xz_attachment'
+  get 'wtyp_qd_attachment/:id' => 'wtyp_czbs#qd_attachment'
 
   resources :jg_bsbs do
     member do
