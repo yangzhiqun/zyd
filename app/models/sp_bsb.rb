@@ -61,7 +61,14 @@ class SpBsb < ActiveRecord::Base
   CA_FIELDS = [
       'sp_s_2_1', 'sp_s_70', 'sp_s_67', 'sp_s_1', 'sp_s_68', 'sp_s_2', 'sp_s_23', 'sp_s_215', 'sp_s_bsfl', 'sp_s_201', 'sp_s_3', 'sp_s_4', 'sp_s_5', 'sp_s_7', 'sp_s_10', 'sp_s_8', 'sp_s_9', 'sp_s_11', 'sp_s_12', 'sp_xkz', 'sp_xkz_id', 'sp_s_14', 'sp_s_203', 'sp_n_15', 'sp_s_6', 'sp_s_16', 'sp_s_17', 'sp_s_18', 'sp_s_19', 'sp_s_20', 'sp_s_61', 'sp_s_62', 'sp_s_63', 'sp_s_21', 'sp_d_22', 'sp_s_24', 'sp_s_25', 'sp_s_26', 'sp_s_27', 'sp_d_28', 'sp_n_29', 'sp_s_13', 'sp_s_72', 'sp_s_73', 'sp_s_74', 'sp_s_204', 'sp_s_205', 'sp_s_206', 'sp_s_207', 'sp_s_208', 'sp_s_64', 'sp_s_65', 'sp_s_202', 'sp_s_75', 'sp_s_76', 'sp_s_30', 'sp_n_31', 'sp_s_33', 'sp_n_32', 'sp_s_209', 'sp_s_210', 'sp_s_34', 'sp_s_35', 'sp_s_36', 'sp_s_52', 'sp_s_37', 'sp_d_38', 'sp_s_39', 'sp_s_40', 'sp_s_41', 'sp_s_42', 'sp_s_211', 'sp_s_212', 'sp_s_213', 'sp_s_43', 'sp_s_44', 'sp_s_45', 'sp_d_46', 'sp_d_47', 'sp_s_48', 'sp_s_49', 'sp_s_50', 'sp_s_51', 'sp_s_71', 'sp_s_214', 'sp_s_84', 'sp_s_85', 'sp_d_86', 'sp_s_87', 'sp_s_88'
   ]
-
+  def publication_status
+    p = self.published_sp_bsb
+    if p.nil?
+      return '<i style="color: red;">未发布</i>'
+    else
+      return '<i style="color: green;">已发布</i>'
+    end
+  end
   API_FIELDS = {
       :sp_s_2_1 => "任务来源",
       :sp_s_70 => "报送分类1",
@@ -340,6 +347,13 @@ class SpBsb < ActiveRecord::Base
 
   has_many :spdata, :dependent => :delete_all
   has_many :api_exchange_pools, :dependent => :delete_all
+  has_many :sp_logs
+  has_many :wtyp_czb_parts
+  has_one :published_sp_bsb, foreign_key: 'cjbh', primary_key: 'sp_s_16'
+
+  def wtyp_czbs
+    WtypCzb.where(wtyp_sp_bsbs_id: self.id)
+  end
 
   def is_bad_report?
     result = sp_s_71 || ''
@@ -417,6 +431,161 @@ class SpBsb < ActiveRecord::Base
         pool.save
       else
         ApiExchangePool.create(sp_s_16: self.sp_s_16, application_id: self.application_id, sp_bsb_id: self.id, attributes_changed: self.changed_attributes.keys.join(','))
+      end
+    end
+
+    if self.changes.include?('sp_i_state') and self.sp_i_state == 3
+      self.sp_logs.destroy_all
+      self.wtyp_czbs.destroy_all
+      self.wtyp_czb_parts.destroy_all
+    end
+
+    # 生成核查处置信息
+    if self.changes.include?('sp_i_state') and ((self.sp_i_state == 9 and self.is_bad_report?) or (self.sp_i_state == 4 and self.bgfl.eql?('24小时限时报告')))
+      wtyp_czb = WtypCzb.find_by_wtyp_sp_bsbs_id(self.id)
+      if wtyp_czb.nil?
+        wtyp_czb = WtypCzb.new
+        wtyp_czb.wtyp_sp_bsbs_id = self.id
+        wtyp_czb.cjbh = self.sp_s_16
+        wtyp_czb.ypmc = self.sp_s_14
+        wtyp_czb.ypgg = self.sp_s_26
+        wtyp_czb.ypph = self.sp_s_27
+        wtyp_czb.bcydwmc = self.sp_s_1
+        wtyp_czb.bcydw_sheng = self.sp_s_3
+        wtyp_czb.bcydw_shi = self.sp_s_4
+        wtyp_czb.bcydw_xian = self.sp_s_5
+        wtyp_czb.cydwmc = self.sp_s_35
+        wtyp_czb.cydwsf = self.sp_s_52
+        wtyp_czb.bsscqymc = self.sp_s_64
+        wtyp_czb.bsscqy_sheng = self.sp_s_202
+        wtyp_czb.sp_s_220 = self.sp_s_220
+        wtyp_czb.sp_s_221 = self.sp_s_221
+        wtyp_czb.scrq = self.sp_d_28
+        wtyp_czb.bgfl = self.bgfl
+        wtyp_czb.jyjl = self.sp_s_71
+        wtyp_czb.bgsbh = self.sp_s_45
+        wtyp_czb.cydd = self.sp_s_68
+        wtyp_czb.bcydwdz = self.sp_s_7
+        wtyp_czb.bsscqydz = self.sp_s_65
+        wtyp_czb.cyjs = self.sp_s_206
+        wtyp_czb.jymd = self.sp_s_44
+        wtyp_czb.SPDL = self.sp_s_17
+        wtyp_czb.SPYL = self.sp_s_18
+        wtyp_czb.SPCYL = self.sp_s_19
+        wtyp_czb.SPXL = self.sp_s_20
+        # TODO: 要做好事务处理 2015-04-25
+        if wtyp_czb.save
+          @spdata = []
+          self.spdata.each do |data|
+            if data.spdata_2.include? "问题" or data.spdata_2.include? "不合格"
+              hczdata = SpHczSpdata.new
+              hczdata.spdata_0 = data.spdata_0
+              hczdata.spdata_1 = data.spdata_1
+              hczdata.spdata_2 = data.spdata_2
+              hczdata.spdata_3 = data.spdata_3
+              hczdata.spdata_4 = data.spdata_4
+              hczdata.spdata_5 = data.spdata_5
+              hczdata.spdata_6 = data.spdata_6
+              hczdata.spdata_7 = data.spdata_7
+              hczdata.spdata_8 = data.spdata_8
+              hczdata.spdata_9 = data.spdata_9
+              hczdata.spdata_10 = data.spdata_10
+              hczdata.spdata_11 = data.spdata_11
+              hczdata.spdata_12 = data.spdata_12
+              hczdata.spdata_13 = data.spdata_13
+              hczdata.spdata_14 = data.spdata_14
+              hczdata.spdata_15 = data.spdata_15
+              hczdata.spdata_16 = data.spdata_16
+              hczdata.spdata_17 = data.spdata_17
+              hczdata.spdata_18 = data.spdata_18
+              hczdata.wtyp_czb_id = wtyp_czb.id
+              hczdata.save
+            end
+          end
+        end
+      end
+
+      # 生产部分
+      # 生产部分核查处置仅包含：生产 & 流通
+      if !self.sp_s_68.eql?('餐饮')
+        @part_sc = WtypCzbPart.where(wtyp_czb_type: WtypCzbPart::Type::SC, wtyp_czb_id: wtyp_czb.id).first
+        if @part_sc.nil?
+          @part_sc = WtypCzbPart.new(wtyp_czb_type: WtypCzbPart::Type::SC, wtyp_czb_id: wtyp_czb.id)
+          @part_sc.sp_bsb_id = self.id
+          @part_sc.cjbh = self.sp_s_16
+          @part_sc.ypmc = self.sp_s_14
+          @part_sc.ypgg = self.sp_s_26
+          @part_sc.ypph = self.sp_s_27
+          @part_sc.bcydwmc = self.sp_s_1
+          @part_sc.bcydw_sheng = self.sp_s_3
+          @part_sc.bcydw_shi = self.sp_s_4
+          @part_sc.bcydw_xian = self.sp_s_5
+          @part_sc.cydwmc = self.sp_s_35
+          @part_sc.cydwsf = self.sp_s_52
+          @part_sc.bsscqymc = self.sp_s_64
+          @part_sc.bsscqy_sheng = self.sp_s_202
+          @part_sc.sp_s_220 = self.sp_s_220
+          @part_sc.sp_s_221 = self.sp_s_221
+          @part_sc.scrq = self.sp_d_28
+          @part_sc.bgfl = self.bgfl
+          @part_sc.jyjl = self.sp_s_71
+          @part_sc.bgsbh = self.sp_s_45
+          @part_sc.cydd = self.sp_s_68
+          @part_sc.bcydwdz = self.sp_s_7
+          @part_sc.bsscqydz = self.sp_s_65
+          @part_sc.current_state = 0
+          @part_sc.cyjs = self.sp_s_206
+          @part_sc.jymd = self.sp_s_44
+          @part_sc.jymd = self.sp_s_44
+          @part_sc.SPDL = self.sp_s_17
+          @part_sc.SPYL = self.sp_s_18
+          @part_sc.SPCYL = self.sp_s_19
+          @part_sc.SPXL = self.sp_s_20
+          @part_sc.save
+        end
+      end
+
+      # [流通/餐饮]部分
+      if self.sp_s_68.eql?('流通')
+        @lt_cy_type = WtypCzbPart::Type::LT
+      elsif self.sp_s_68.eql?('餐饮')
+        @lt_cy_type = WtypCzbPart::Type::CY
+      end
+
+      @part_lt_cy = WtypCzbPart.where(wtyp_czb_type: @lt_cy_type, wtyp_czb_id: wtyp_czb.id).first
+      # #47 第10条，如果抽样环节是生产，则只处理生产，不处理流通
+      if @part_lt_cy.nil? and !self.sp_s_68.eql?('生产')
+        @part_lt_cy = WtypCzbPart.new(wtyp_czb_type: @lt_cy_type, wtyp_czb_id: wtyp_czb.id)
+        @part_lt_cy.sp_bsb_id = self.id
+        @part_lt_cy.cjbh = self.sp_s_16
+        @part_lt_cy.ypmc = self.sp_s_14
+        @part_lt_cy.ypgg = self.sp_s_26
+        @part_lt_cy.ypph = self.sp_s_27
+        @part_lt_cy.bcydwmc = self.sp_s_1
+        @part_lt_cy.bcydw_sheng = self.sp_s_3
+        @part_lt_cy.bcydw_shi = self.sp_s_4
+        @part_lt_cy.bcydw_xian = self.sp_s_5
+        @part_lt_cy.cydwmc = self.sp_s_35
+        @part_lt_cy.cydwsf = self.sp_s_52
+        @part_lt_cy.bsscqymc = self.sp_s_64
+        @part_lt_cy.bsscqy_sheng = self.sp_s_202
+        @part_lt_cy.sp_s_220 = self.sp_s_220
+        @part_lt_cy.sp_s_221 = self.sp_s_221
+        @part_lt_cy.scrq = self.sp_d_28
+        @part_lt_cy.bgfl = self.bgfl
+        @part_lt_cy.jyjl = self.sp_s_71
+        @part_lt_cy.bgsbh = self.sp_s_45
+        @part_lt_cy.cydd = self.sp_s_68
+        @part_lt_cy.bcydwdz = self.sp_s_7
+        @part_lt_cy.bsscqydz = self.sp_s_65
+        @part_lt_cy.cyjs = self.sp_s_206
+        @part_lt_cy.jymd = self.sp_s_44
+        @part_lt_cy.current_state = 0
+        @part_lt_cy.SPDL = self.sp_s_17
+        @part_lt_cy.SPYL = self.sp_s_18
+        @part_lt_cy.SPCYL = self.sp_s_19
+        @part_lt_cy.SPXL = self.sp_s_20
+        @part_lt_cy.save
       end
     end
   end

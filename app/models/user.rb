@@ -134,8 +134,8 @@ class User < ActiveRecord::Base
       '机构批准人' => 7,
       '省局审核人' => 8,
       # '牵头机构审核人' => 9,
-      '核查处置安排人' => 10,
-      '核查处置办理人' => 11,
+     # '核查处置安排人' => 10,
+      '核查处置领取人' => 11,
       '核查处置审核人' => 12,
       '异议登记' => 13,
       '异议办理' => 14,
@@ -176,6 +176,16 @@ class User < ActiveRecord::Base
     XXFBSH = 0x0000000000010
   end
 
+  module HcczType
+    SC = 1
+    CY = 2
+  end
+
+  module HcczLevel
+    Sheng = 1
+    Shi = 2
+    Xian = 3
+  end
   # 信息发布审核人员
   def pub_xxfb_sh
     ((self.publication_permission || 0) & PublicationPermission::XXFBSH > 0) ? 1 : 0
@@ -352,8 +362,10 @@ class User < ActiveRecord::Base
   # 后处理 处置办理
   def hcz_czbl=(v)
     if v.to_i == 1
+      self.hcz_permission |= HczPermission::CZAP
       self.hcz_permission |= HczPermission::CZBL
     else
+      self.hcz_permission &= ~HczPermission::CZAP
       self.hcz_permission &= ~HczPermission::CZBL
     end
   end

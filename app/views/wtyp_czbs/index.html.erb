@@ -23,6 +23,10 @@
     border-bottom: 1px solid #FFFFFF;
   }
 
+  .tab-content {
+    padding: 10px 5px;
+  }
+
   .cjbh .label {
     margin: 5px auto;
     display: block;
@@ -64,7 +68,6 @@
     $("#czbm").change(function () {
       var v = $(this).val();
       $.get("/users_by_jcjg.json", {jcjg: v, model: "wtyp_czb"}, function (data) {
-        console.log(data);
         if (data.status == 'OK') {
           $('#czfzr').empty();
           $.each(data.msg, function (i, user) {
@@ -93,18 +96,20 @@
       if (thyy == '') {
         alert('请填写退回原因');
       } else {
-        $.post("/wtyp_czb_revert.json", {
-          ids: yycz_ids.join(','),
-          thyy: thyy,
-          is_ap: <%= params[:state].to_i == 0 %>
-        }, function (data) {
-          if (data.status == 'OK') {
-            alert("退回成功!");
-            location.reload();
-          } else {
-            alert("退回失败！ERR: " + data.msg);
-          }
-        }, 'json');
+        if (confirm('确定要退回吗?')) {
+          $.post("/wtyp_czb_revert.json", {
+            ids: yycz_ids.join(','),
+            thyy: thyy,
+            is_ap: <%= params[:state].to_i == 0 %>
+          }, function (data) {
+            if (data.status == 'OK') {
+              alert("退回成功!");
+              location.reload();
+            } else {
+              alert("退回失败！ERR: " + data.msg);
+            }
+          }, 'json');
+        }
       }
     });
 
@@ -122,19 +127,12 @@
 </script>
 
 <% if params[:state].to_i == 0 %>
-    <h2>
-      <center>核查处置工作安排</center>
-    </h2>
+    <h2>核查处置工作安排</h2>
 <% elsif params[:state].to_i == 1 %>
-    <h2>
-      <center>核查处置工作填报</center>
-    </h2>
+    <h2>核查处置工作填报</h2>
 <% elsif params[:state].to_i == 2 %>
-    <h2>
-      <center>核查处置工作审核</center>
-    </h2>
+    <h2>核查处置工作审核</h2>
 <% end %>
-<br>
 <form action="/wtyp_czbs_by_state/<%= params[:state].to_i %>" method="GET">
   <table class="table table-bordered table-condensed table-sm">
     <tr>
@@ -154,7 +152,7 @@
       </td>
       <td colspan="4">被抽样单位市/区</td>
       <td colspan="6">
-        <select name="bcydw_sheng" class="form-control input-sm">
+        <select name="bcydw_shi" class="form-control input-sm">
           <option value="">请选择</option>
           <% SysProvince.level1.each do |prov| %>
               <option value="<%= prov.name %>"><%= prov.name %></option>
@@ -163,7 +161,7 @@
       </td>
       <td colspan="4">任务来源</td>
       <td colspan="6">
-        <%= select_tag :rwly, options_for_select([["请选择", ""], ["局本级", 1], ["中央转移地方", 2]], params[:rwly].to_i), :class => "form-control input-sm" %>
+        <%= select_tag :rwly, options_for_select([['请选择', ''], ['省本级', 1], ['转移地方', 2]], params[:rwly].to_i), :class => 'form-control' %>
       </td>
     </tr>
     <tr>
@@ -172,7 +170,7 @@
       </td>
       <td colspan="4">标示生产企业市/区</td>
       <td colspan="6">
-        <select name="sp_s_220" class="form-control input-sm">
+        <select name="bsscqy_shi" class="form-control input-sm">
           <option value="">请选择</option>
           <% SysProvince.level1.each do |prov| %>
               <option value="<%= prov.name %>"><%= prov.name %></option>
@@ -183,94 +181,84 @@
       <td colspan="6"><input class="form-control input-sm" type="text" value="<%= params[:cjbh] %>" name="cjbh">
       </td>
     </tr>
+    <tr>
+      <td colspan="4">报告分类</td>
+      <td colspan="6"><%= select_tag 'bgfl', options_for_select([%w{全部 QB}, %w{一般不合格报告 YBBHG}, %w{24小时限时报告 24H}, %w{一般问题报告 YBWTBG}], params[:bgfl]), {class: 'form-control input-sm'} %></td>
+      <td colspan="4">环节</td>
+      <td colspan="6"><%= select_tag :hccz_type, options_for_select([%w{生产 SC}, %w{经营 JY}], params[:hccz_type]), class: 'form-control input-sm' %></td>
+      <td colspan="4"></td>
+      <td colspan="6"></td>
+    </tr>
   </table>
   <input type="hidden" value="<%= params[:current_tab] %>" name="current_tab">
   <button type="submit" class="btn btn-primary btn-sm">搜索</button>
 </form>
-<!--<iframe id="preview" src="" height="0" width="100%" frameborder="0"></iframe>-->
-<% if params[:state].to_i == 0 %>
-    <table class="task-info table table-bordered">
-      <tbody>
-      <!--<tr>
-      <th class="col-md-2">处置部门</th>
-      <td>
-        <%= select_tag :czbm, options_for_select(JgBsb.where("status = 0 and jg_province = ?", current_user.user_s_province).map { |u| [u.jg_name, u.jg_name] }), :id => 'czbm', :style => "width: 180px;", :class => "form-control input-sm" if false %>
-      </td>
-      <th>处置责任人</th>
-      <td><select name="czfzr" id="czfzr" class="form-control input-sm"></select></td>
-    </tr>-->
-      </tbody>
-    </table>
-<% end %>
-<% if [::WtypCzb::State::LOGGED, ::WtypCzb::State::ASSIGNED].include? params[:state].to_i %>
-    <br>
-    <ul class="data-tabs">
-      <li>
-        <a href="?<%= generate_tab_params(0) %>" class="<%= "active" if params[:current_tab].to_i == 0 %>">24小时限时报告</a>
-      </li>
-      <li><a href="?<%= generate_tab_params(1) %>" class="<%= "active" if params[:current_tab].to_i == 1 %>">一般不合格报告</a>
-      </li>
-      <li><a href="?<%= generate_tab_params(4) %>" class="<%= "active" if params[:current_tab].to_i == 4 %>">一般问题报告</a>
-      </li>
+<br>
+<ul class="data-tabs">
+  <% if params[:state].to_i == ::WtypCzb::State::LOGGED %>
+      <li><a href="?<%= generate_tab_params('DBL') %>" class="<%= 'active' if params[:current_tab].eql?('DBL') %>">待领取</a></li>
+  <% end %>
 
-      <% if params[:state].to_i == 1 %>
-          <li><a href="?<%= generate_tab_params(6) %>" class="<%= "active" if params[:current_tab].to_i == 6 %>">办理中</a>
-          </li>
-      <% end %>
+  <% if params[:state].to_i == ::WtypCzb::State::ASSIGNED %>
+      <li><a href="?<%= generate_tab_params('DBL') %>" class="<%= 'active' if params[:current_tab].eql?('DBL') %>">待办理</a></li>
+  <% end %>
 
-      <% if [::WtypCzb::State::LOGGED].include? params[:state].to_i %>
-          <li><a href="?<%= generate_tab_params(3) %>" class="<%= "active" if params[:current_tab].to_i == 3 %>">已安排</a>
-          </li>
-      <% else %>
-          <li><a href="?<%= generate_tab_params(3) %>" class="<%= "active" if params[:current_tab].to_i == 3 %>">已办结</a>
-          </li>
-      <% end %>
+  <% if params[:state].to_i == ::WtypCzb::State::FILLED %>
+      <li><a href="?<%= generate_tab_params('DSH') %>" class="<%= 'active' if params[:current_tab].eql?('DSH') %>">待审核</a></li>
+  <% end %>
 
-      <% if [::WtypCzb::State::LOGGED].include? params[:state].to_i %>
-          <li>
-            <a href="?<%= generate_tab_params(5) %>" class="<%= "active" if params[:current_tab].to_i == 5 %>">处置完毕</a>
-          </li>
-      <% end %>
+  <li><a href="?<%= generate_tab_params('ZDDB') %>" class="<%= 'active' if params[:current_tab].eql?('ZDDB') %>">重点督办</a></li>
+  <li><a href="?<%= generate_tab_params('DB') %>" class="<%= 'active' if params[:current_tab].eql?('DB') %>">督办</a></li>
 
-    </ul>
-<% else
-     params[:state].to_i == ::WtypCzb::State::FILLED %>
-    <br>
-    <ul class="data-tabs">
-      <li><a href="?<%= generate_tab_params(0) %>" class="<%= "active" if params[:current_tab].to_i == 0 %>">未审核</a>
-      </li>
-      <li><a href="?<%= generate_tab_params(1) %>" class="<%= "active" if params[:current_tab].to_i == 1 %>">审核完毕</a>
-      </li>
-    </ul>
-<% end %>
+  <% if params[:state].to_i == ::WtypCzb::State::LOGGED %>
+      <li><a href="?<%= generate_tab_params('YBL') %>" class="<%= 'active' if params[:current_tab].eql?('YBL') %>">已领取</a></li>
+  <% end %>
+
+  <% if params[:state].to_i == ::WtypCzb::State::ASSIGNED %>
+      <li><a href="?<%= generate_tab_params('BLZ') %>" class="<%= 'active' if params[:current_tab].eql?('BLZ') %>">办理中</a></li>
+      <li><a href="?<%= generate_tab_params('BLZ.QT') %>" class="<%= 'active' if params[:current_tab].eql?('BLZ.QT') %>">办理中(他人领取)</a></li>
+      <li><a href="?<%= generate_tab_params('YBJ') %>" class="<%= 'active' if params[:current_tab].eql?('YBJ') %>">已办结</a></li>
+  <% end %>
+
+
+  <% if params[:state].to_i == ::WtypCzb::State::FILLED %>
+      <li><a href="?<%= generate_tab_params('YSH') %>" class="<%= 'active' if params[:current_tab].eql?('YSH') %>">已审核</a></li>
+  <% end %>
+
+  <% if [::WtypCzb::State::LOGGED, ::WtypCzb::State::ASSIGNED, ::WtypCzb::State::FILLED].include?(params[:state].to_i) %>
+      <li><a href="?<%= generate_tab_params('CZWB') %>" class="<%= 'active' if params[:current_tab].eql?('CZWB') %>">处置完毕</a></li>
+  <% end %>
+
+</ul>
 <div class="tab-content">
-  <br>
   <% if @wtyp_czbs.nil? %>
       <p>暂无未安排数据</p>
   <% else %>
-      <% if WtypCzbPart.revert_enabled?(params[:current_tab].to_i, params[:state].to_i, current_user) %>
+      <% if WtypCzbPart.revert_enabled?(params[:current_tab], params[:state].to_i, current_user) %>
           <div class="well well-sm">
             <div class="input-group">
               <input type="text" class="form-control" name="thyy" width="300px;" id="thyy" placeholder="请填写退回原因">
-				<span class="input-group-btn">
-					<button class="btn btn-danger" id="revert" type="button">退回</button>
-				</span>
+              <span class="input-group-btn">
+                <button class="btn btn-danger" id="revert" type="button">退回</button>
+              </span>
             </div>
           </div>
       <% end %>
-      <table
-      data-toggle="table"
-      data-reorderable-columns="true"
-      class="yycz-list ">
+      <br>
+      <table data-toggle="table" data-reorderable-columns="true" class="yycz-list ">
         <thead>
         <tr>
           <th width="30" align="center"><input type="checkbox" id="select-all"></th>
-          <!-- <th width="50">#</th> -->
           <th>采样编号</th>
+          <th>预警信息&emsp;&emsp;&emsp;&emsp;&emsp;</th>
           <th>抽样环节</th>
           <th>样品名称</th>
+          <th>标示生产企业省份</th>
           <th>标示生产企业市/区</th>
+          <th>标示生产企业县</th>
+          <th>被抽样单位省份</th>
           <th>被抽样单位市/区</th>
+          <th>被抽样单位市县</th>
           <th>标示生产企业名称</th>
           <th>检验结论</th>
           <th>检验结果状态</th>
@@ -280,105 +268,59 @@
         </tr>
         </thead>
         <tbody>
-        <% if params[:state].to_i == 0 and ![3, 5].include? params[:current_tab].to_i %>
-            <% @sp_bsbs.each_with_index do |bsb, index| %>
-                <tr>
+        <% @wtyp_czbs.each_with_index do |wtyp_czb, index| %>
+            <% if wtyp_czb.sp_bsb.nil? %>
+                <tr class="warning">
+                  <td></td>
+                  <td colspan="11"><span class="text-danger"><%= wtyp_czb.cjbh %></span><br>无法找到对应的抽样信息</td>
+                </tr>
+            <% else %>
+                <tr class="<%= wtyp_czb.deadline_warning %>">
                   <td align="center">
-                    <input class="checkbox" type="checkbox" data-id="<%= bsb.id %>">
+                    <% unless WtypCzbPart.revert_enabled?(params[:current_tab], params[:state].to_i, current_user) %>
+                        -
+                    <% else %>
+                        <input class="checkbox" type="checkbox" data-id="<%= wtyp_czb.id %>">
+                    <% end %>
                   </td>
-                  <td class="cjbh">
-                    <a title="<%= bsb.sp_s_16 %>" href="/wtyp_czbs/<%= bsb.id %>/edit"><%= bsb.sp_s_16 %></a>
-
-                    <% if Time.now - bsb.updated_at > 5.days %>
+                  <td width="200" class="cjbh">
+                    <a title="<%= wtyp_czb.cjbh %>" class="text-<%= wtyp_czb.deadline_warning %>" href="/wtyp_czbs/<%= wtyp_czb.sp_bsb_id %>/edit"><%= wtyp_czb.cjbh %></a>
+                    <% if Time.now - SpBsb.find(wtyp_czb.sp_bsb_id).updated_at > 5.days and !wtyp_czb.part_submit_flag1 %>
                         <span class="label label-info">未产品控制</span>
                     <% end %>
 
-                    <% if Time.now - bsb.updated_at > 30.days %>
+                    <% if Time.now - SpBsb.find(wtyp_czb.sp_bsb_id).updated_at > 30.days and !wtyp_czb.part_submit_flag2 %>
                         <span class="label label-warning">未排查整改</span>
                     <% end %>
 
-                    <% if Time.now - bsb.updated_at > 90.days %>
+                    <% if Time.now - SpBsb.find(wtyp_czb.sp_bsb_id).updated_at > 90.days and !wtyp_czb.part_submit_flag3 %>
                         <span class="label label-danger">未行政处罚</span>
                     <% end %>
                   </td>
-                  <td><%= bsb.sp_s_68 %></td>
-                  <td><%= bsb.sp_s_14 %></td>
-                  <td><%= bsb.sp_s_220 %></td>
-                  <td><%= bsb.sp_s_4 %></td>
-                  <td><%= bsb.sp_s_64 %></td>
-                  <td><%= bsb.sp_s_71 %></td>
-                  <td><%= bsb.yydjb.blank? ? "初检结论" : bsb.yydjb.fjzt %></td>
-                  <td><%= bsb.yydjb.blank? ? "逾期未提出异议" : bsb.yydjb.yyczjg %></td>
-                  <td>-</td>
-                  <td>-</td>
+                  <td><%= wtyp_czb.scqy_info %><br><%= wtyp_czb.bhg_item_info %><br><%= wtyp_czb.spxl_info %></td>
+                  <td><%= wtyp_czb.cydd %></td>
+                  <td><%= wtyp_czb.ypmc %></td>
+                  <td><%= wtyp_czb.bsscqy_sheng %></td>
+                  <td><%= wtyp_czb.sp_s_220 or wtyp_czb.bsscqy_shi %></td>
+                  <td><%= wtyp_czb.sp_s_221 or wtyp_czb.bsscqy_xian %></td>
+                  <td><%= wtyp_czb.bcydw_sheng %></td>
+                  <td><%= wtyp_czb.bcydw_shi or wtyp_czb.sp_s_4 %></td>
+                  <td><%= wtyp_czb.bcydw_xian or wtyp_czb.sp_s_5 %></td>
+                  <td><%= wtyp_czb.bsscqymc %></td>
+                  <td><%= wtyp_czb.jyjl %></td>
+                  <td><%= wtyp_czb.yydjb.yyczzt unless wtyp_czb.yydjb.nil? %></td>
+                  <td><%= wtyp_czb.yydjb.blank? ? "未提出异议" : wtyp_czb.yydjb.yyczjg %></td>
+                  <td><%= wtyp_czb.wtyp_date %></td>
+                  <td><%= wtyp_czb.qdhcczrq %></td>
                 </tr>
-            <% end %>
-        <% else %>
-            <% @wtyp_czbs.each_with_index do |wtyp_czb, index| %>
-                <% if wtyp_czb.sp_bsb.nil? %>
-                    <tr class="warning">
-                      <td></td>
-                      <td colspan="11"><span class="text-danger"><%= wtyp_czb.cjbh %></span><br>无法找到对应的抽样信息</td>
-                    </tr>
-                <% else %>
-                    <tr class="<%= wtyp_czb.deadline_warning %>">
-                      <td align="center">
-                        <% if wtyp_czb.count == 1 %>
-                            <% if wtyp_czb.wtyp_czb_type == ::WtypCzbPart::Type::SC %>
-                                <input class="checkbox" <%= "disabled" if current_user.hcz_admin == 0 and !current_user.user_s_province.eql?(wtyp_czb.bsscqy_sheng) %> type="checkbox" data-id="<%= wtyp_czb.id %>">
-                            <% else %>
-                                <input class="checkbox" <%= "disabled" if current_user.hcz_admin == 0 and !current_user.user_s_province.eql?(wtyp_czb.bcydw_sheng) %> type="checkbox" data-id="<%= wtyp_czb.id %>">
-                            <% end %>
-                        <% else %>
-                            <% WtypCzbPart.where(sp_bsb_id: wtyp_czb.sp_bsb_id).select('id, wtyp_czb_type, bsscqy_sheng, bcydw_sheng').each do |c| %>
-                                <% if c.wtyp_czb_type == ::WtypCzbPart::Type::SC %>
-                                    <input class="checkbox" <%= "disabled" if current_user.hcz_admin == 0 and !current_user.user_s_province.eql?(c.bsscqy_sheng) %> type="checkbox" data-id="<%= c.id %>">生产
-                                <% else %>
-                                    <input class="checkbox" <%= "disabled" if current_user.hcz_admin == 0 and !current_user.user_s_province.eql?(c.bcydw_sheng) %> type="checkbox" data-id="<%= c.id %>">消费
-                                <% end %>
-                            <% end %>
-                        <% end %>
-                      </td>
-                      <!-- <td><a data-id="<%= wtyp_czb.sp_bsb_id %>" href="javascript:void(0);" class="dopreview btn btn-link btn-xs center-block">预览</a></td> -->
-                      <td width="200" class="cjbh">
-                        <a title="<%= wtyp_czb.cjbh %>" class="text-<%= wtyp_czb.deadline_warning %>" href="/wtyp_czbs/<%= wtyp_czb.sp_bsb_id %>/edit"><%= wtyp_czb.cjbh %></a>
-
-                        <% if Time.now - SpBsb.find(wtyp_czb.sp_bsb_id).updated_at > 5.days and !wtyp_czb.part_submit_flag1 %>
-                            <span class="label label-info">未产品控制</span>
-                        <% end %>
-
-                        <% if Time.now - SpBsb.find(wtyp_czb.sp_bsb_id).updated_at > 30.days and !wtyp_czb.part_submit_flag2 %>
-                            <span class="label label-warning">未排查整改</span>
-                        <% end %>
-
-                        <% if Time.now - SpBsb.find(wtyp_czb.sp_bsb_id).updated_at > 90.days and !wtyp_czb.part_submit_flag3 %>
-                            <span class="label label-danger">未行政处罚</span>
-                        <% end %>
-                      </td>
-                      <td><%= wtyp_czb.cydd %></td>
-                      <td><%= wtyp_czb.ypmc %></td>
-                      <td><%= wtyp_czb.sp_s_220 %></td>
-                      <td><%= wtyp_czb.sp_s_4 %></td>
-                      <td><%= wtyp_czb.bsscqymc %></td>
-                      <td><%= wtyp_czb.jyjl %></td>
-                      <td><%= wtyp_czb.yydjb.yyczzt unless wtyp_czb.yydjb.nil? %></td>
-                      <td><%= wtyp_czb.yydjb.blank? ? "逾期未提出异议" : wtyp_czb.yydjb.yyczjg %></td>
-                      <td><%= wtyp_czb.wtyp_date %></td>
-                      <td><%= wtyp_czb.qdhcczrq %></td>
-                    </tr>
-                <% end %>
             <% end %>
         <% end %>
         </tbody>
       </table>
       <% if params[:state].to_i == 0 and ![3, 5].include? params[:current_tab].to_i %>
-          <p><%= will_paginate @sp_bsbs, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
+          <p><%= will_paginate @wtyp_czb_parts, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
       <% else %>
           <p><%= will_paginate @wtyp_czbs, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
-      <% end %>
-      <br>
-      <% if params[:state].to_i == 0 and ![3, 5].include? params[:current_tab].to_i %>
-          <!--<button class="btn btn-primary" id="assign-task">确认处置安排</button>-->
       <% end %>
   <% end %>
 </div>

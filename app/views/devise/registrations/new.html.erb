@@ -7,6 +7,9 @@
 //
 //      $('#user_prov_city').empty();
 //      $('#user_prov_country').empty();
+    if (!$('.function[value=11]').attr("checked")){
+      $('#hccz_level_div').hide();
+    }
     $('#submit').click(function () {
         var  user_jg_type = $('#user_jg_type').val();
       if ($('#user_jg_type').val() =="0")
@@ -14,6 +17,11 @@
             alert("请选择机构类型");
             return false;
           }
+      if ($('.function[value=11]').attr("checked") && ($("#user_hccz_level").get(0).selectedIndex == 0)){
+        alert('请选择核查处置领取级别');
+        $("#user_hccz_level").focus();
+        return false;
+      }
         return true;
     })
 
@@ -71,6 +79,12 @@
     $('.function').change(function () {
       if ($('.function:checked').length > 3) {
         $(this).removeAttr('checked');
+      }
+      if($('.function[value=11]').attr("checked")){
+        $('#hccz_level_div').show();
+      }else{
+        $('#hccz_level_div').hide();
+        $("#user_hccz_level").get(0).selectedIndex=0;
       }
     });
 
@@ -136,7 +150,11 @@
                     </div>
                 <% end %>
               </div>
-
+              <div class="form-group" id="hccz_level_div">
+                <label>核查处置领取级别 （当且仅当注册核查处置领取人时需要勾选）：
+                  <%= f.select :hccz_level, options_for_select([['-请选择-', nil],['省', 1],['市', 2],['县', 3]],@user.hccz_level), {}, :class => 'form-control input-sm' %>
+                </label>
+              </div>
               <div class="form-group">
                 <label>姓名：<span class="text-danger">*</span><%= show_error(@user.errors, :tname) %></label>
                 <%= f.text_field :tname, :class => "form-control input-sm" %>
