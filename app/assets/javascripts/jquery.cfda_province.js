@@ -1,8 +1,7 @@
 $.fn.CfdaProvince = function (config) {
     var self = this;
     if (!config) {
-        config = {
-        };
+        config = {};
     }
 
     var level1 = $(self.find('select')[0]);
@@ -36,38 +35,42 @@ $.fn.CfdaProvince = function (config) {
     }
 
     level1.change(function () {
-        selected1 = this.selectedIndex;
+        selected1 = this.selectedIndex - 1;
         selected2 = 0;
         selected3 = 0;
         level2.empty();
         level3.empty();
+        level3.append($('<option>请选择</option>'));
+        level2.append($('<option>请选择</option>'));
         $.each(prov_data.lvl2[selected1], function (i, prov) {
             level2.append($('<option>').attr({'value': prov[0]}).text(prov[0]));
         });
 
         if (config.level2) {
             level2.val(config.level2);
-            selected2 = level2[0].selectedIndex;
+            selected2 = level2[0].selectedIndex - 1;
         }
         level2.trigger('change');
     });
 
     level2.change(function () {
-        selected2 = this.selectedIndex;
+        selected2 = this.selectedIndex - 1;
         selected3 = 0;
         level3.empty();
+        level3.append($('<option>请选择</option>'));
         $.each(prov_data.lvl3[selected1][selected2], function (i, prov) {
             level3.append($('<option>').attr({'value': prov[0]}).text(prov[0]));
         });
         if (config.level3) {
             level3.val(config.level3);
-            selected3 = level3[0].selectedIndex;
+            selected3 = level3[0].selectedIndex - 1;
         }
     });
 
     // Render Selector
     function render_selector() {
         level1.empty();
+        level1.append($('<option>请选择</option>'));
         $.each(prov_data.lvl1, function (i, prov) {
             level1.append($('<option>').attr({'value': prov[0]}).text(prov[0]));
         });
