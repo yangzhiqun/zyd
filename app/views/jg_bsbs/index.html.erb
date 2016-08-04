@@ -42,7 +42,9 @@
       </td>
     </tr>
   </table>
+  <% if current_user.is_admin?  %>
   <input type="submit" value="搜索" class="btn btn-sm btn-primary">
+  <% end %>
   <hr>
 </form>
 <br>
@@ -71,7 +73,9 @@
       </tr>
   <% end %>
 </table>
+<% if current_user.is_admin?  %>
 <h2><%= link_to '新建机构', new_jg_bsb_path, :class => "btn btn-sm btn-primary" %></h2>
+<% end%>
 <p><%= will_paginate @sp_bsbs, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
 <% if false and current_user.is_admin? %>
     <fieldset style="padding: 5px 10px;">

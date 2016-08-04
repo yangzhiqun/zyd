@@ -8,6 +8,9 @@ class JgBsbsController < ApplicationController
   # GET /jg_bsbs.json
   def index
     @jg_bsbs = JgBsb.where(status: 0).order('created_at desc')
+    if current_user.is_jg_manager? and !current_user.is_admin? and !current_user.is_super?
+      @jg_bsbs = @jg_bsbs.where(id: current_user.jg_bsb_id)
+    end
 
     unless params[:name].blank?
       @jg_bsbs = @jg_bsbs.where(id: JgBsbName.where('name LIKE ?', "%#{params[:name]}%").pluck('jg_bsb_id'))
@@ -248,7 +251,7 @@ class JgBsbsController < ApplicationController
   end
   private
   def check_user_role
-    return not_found if current_user.nil? or !current_user.is_admin?
+    # return not_found if current_user.nil? or !current_user.is_admin?
   end
 
   def jg_bsb_params
