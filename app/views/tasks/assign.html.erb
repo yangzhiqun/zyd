@@ -1,4 +1,4 @@
-<script type="text/javascript">
+<script type="text/javascript" xmlns="http://www.w3.org/1999/html">
     $(document).ready(function () {
         $('#assign_act').click(function () {
             if (($('#baosong_a').val() == "") || ($('#baosong_a').val() == "请选择")) {
@@ -132,7 +132,7 @@
                 $('.BCYDW .condition').each(function () {
                     var o = $(this);
                     if (!!o.val() && o.val() != '请选择') {
-                        params[o.attr('data-field')] = o.val();
+                        params[o.attr('field')] = o.val();
                     }
                 });
                 $.get('/sp_company_infos_list.json', {condition: params}, function (data) {
@@ -149,12 +149,20 @@
             }, 400);
         });
 
-        $(".region1").ProvinceCity({});
+        $(".region1").CfdaProvince({
+          level1: "<%= params[:province] %>",
+          level2: "<%= params[:city] %>",
+          level3: "<%= params[:lcity] %>"
+        });
 
         // $(".region2").data("province", ["吉林", "吉林"]);
         // $(".region2").data("city1", ["吉林", "吉林"]);
         // $(".region2").data("city2", ["吉林市", "吉林市"]);
-        $(".region2").ProvinceCity({});
+        $(".region2").CfdaProvince({
+          level1: "<%= params[:province] %>",
+          level2: "<%= params[:city] %>",
+          level3: "<%= params[:lcity] %>"
+        });
 
         // 查看结果
         $('.check-graph').click(function () {
@@ -245,10 +253,16 @@
         <label class="control-label">被抽样单位信息：</label><br>
 
         <div class="form-group BCYDW region2">
-          <select class="form-control input-sm condition" name="qy[sp_s_3]" data-field="sp_s_3" name="province"></select>
+          <!--<select class="form-control input-sm condition" name="qy[sp_s_3]" data-field="sp_s_3" name="province"></select>
           <select class="form-control input-sm condition" name="qy[sp_s_4]" data-field="sp_s_4" name="city"></select>
-          <select class="form-control input-sm condition" name="qy[sp_s_5]" data-field="sp_s_5" name="lcity"></select>
-          <select class="form-control input-sm condition" id="sp_s_68" name="qy[sp_s_68]" data-field="sp_s_68">
+          <select class="form-control input-sm condition" name="qy[sp_s_5]" data-field="sp_s_5" name="lcity"></select>-->
+          <%= select_tag :province, {}, class: 'form-control input-sm condition' ,name: "qy[sp_s_3]",name:"province",field:"sp_s_3"%>
+          <%= select_tag :city, {}, class: 'form-control input-sm condition' ,name: "qy[sp_s_4]" ,name:"city",field:"sp_s_4"%>
+          <%= select_tag :lcity, {}, class: 'form-control input-sm condition' ,name: "qy[sp_s_5]",name:"lcity" ,field:"sp_s_5"%>
+
+        </div>
+        <div class="form-group BCYDW">
+          <select class="form-control input-sm condition" id="sp_s_68" name="qy[sp_s_68]" field="sp_s_68">
             <!-- sp_s_68 -->
             <option value="">请选择</option>
             <option value="流通">流通</option>
@@ -256,15 +270,18 @@
             <option value="餐饮">餐饮</option>
           </select>
           <select class="form-control input-sm" name="qy[company_id]" id="company-id"></select>
-        </div>
+          </div>
         <br>
 
         <div class="CP">
           <label class="control-label">标识生产企业信息：</label><br>
           <span class="region1">
-            <select class="form-control input-sm condition" name="cp[sp_s_3]" data-field="sp_s_3" name="province"></select>
+           <!-- <select class="form-control input-sm condition" name="cp[sp_s_3]" data-field="sp_s_3" name="province"></select>
             <select class="form-control input-sm condition" name="cp[sp_s_4]" data-field="sp_s_4" name="city"></select>
-            <select class="form-control input-sm condition" name="cp[sp_s_5]" data-field="sp_s_5" name="lcity"></select>
+            <select class="form-control input-sm condition" name="cp[sp_s_5]" data-field="sp_s_5" name="lcity"></select>-->
+            <%= select_tag :province, {}, class: 'form-control input-sm condition' ,name: "cp[sp_s_3]",name:"province" ,field:"sp_s_3"%>
+            <%= select_tag :city, {}, class: 'form-control input-sm condition' ,name: "cp[sp_s_4]",name:"city" ,field:"sp_s_3" %>
+            <%= select_tag :lcity, {}, class: 'form-control input-sm condition' ,name: "cp[sp_s_5]" ,name:"lcity" ,field:"sp_s_3"%>
           </span>
         </div>
 

@@ -2,21 +2,79 @@
 <script type="text/javascript">
     ///////////////////
     var spdata = <%=@sp_data.to_json.html_safe%>;
-    <% cache @jg_bsbs do %>
-    var jg_data = <%= @jg_bsbs.select('id, jg_name, jg_contacts, jg_tel, jg_email').to_json.html_safe%>;
-    <% end %>
+   // <%# cache @jg_bsbs do %>
+    //var jg_data = <%#= @jg_bsbs.select('id, jg_name, jg_contacts, jg_tel, jg_email').to_json.html_safe%>;
+    //<#% end %>
+    var jg_data = <%= @jg_bsbs.to_json.html_safe%>;
     ///////////////////
 
     $(function () {
-        $(".region").ProvinceCity({
-          dprovince: "<%= escape_javascript(@sp_bsb.sp_s_3) %>",
-          dcity: "<%= escape_javascript(@sp_bsb.sp_s_4) %>",
-          lcity: "<%= escape_javascript(@sp_bsb.sp_s_5) %>"
+      $("#pad_sp_bsb_sp_s_16").val('<%= @id_partssum%>')
+      //包装分类选为散装时若干项自动置为/
+      if ($("#pad_sp_bsb_sp_s_63").val() == "散装") {
+        <%@check=[26,27,13,72,73,74]%>
+        <%@check.each do |i|%>
+        if ($.trim($("#pad_sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
+          $("#pad_sp_bsb_sp_s_" +<%=i%>).val('/');
+        }
+        <%end%>
+      }
+      $("#pad_sp_bsb_sp_s_63").change(function () {
+        var checkText = $("#pad_sp_bsb_sp_s_63").find("option:selected").text();
+        if (checkText == "散装") {
+          <%@check=[26,27,13,72,73,74]%>
+          <%@check.each do |i|%>
+          if ($.trim($("#pad_sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
+            $("#pad_sp_bsb_sp_s_" +<%=i%>).val('/');
+          }
+          <%end%>
+        } else if (checkText == "预包装") {
+          <%@check=[26,27,13,72,73,74]%>
+          <%@check.each do |i|%>
+          if ($.trim($("#pad_sp_bsb_sp_s_" +<%=i%>).val()) == '/') {
+            $("#pad_sp_bsb_sp_s_" +<%=i%>).val('');
+          }
+          <%end%>
+        }
+      });
+      //流通方式为网购时若干选项置为/
+      $("#pad_sp_bsb_sp_s_2").change(function () {
+        var checkText = $("#pad_sp_bsb_sp_s_2").find("option:selected").text();
+        if (checkText == "网购") {
+          <%@check=[23,'bsfl',10,8,9,11,12]%>
+          <%@check.each do |i|%>
+          if ($.trim($("#pad_sp_bsb_sp_s_" + "<%=i%>").val()).length == 0) {
+            $("#pad_sp_bsb_sp_s_" + "<%=i%>").val('/');
+          }
+          <%end%>
+        } else if (checkText != "网购") {
+          <%@check=[23,'bsfl',10,8,9,11,12]%>
+          <%@check.each do |i|%>
+          if ($.trim($("#pad_sp_bsb_sp_s_" + "<%=i%>").val()) == '/') {
+            $("#pad_sp_bsb_sp_s_" + "<%=i%>").val('');
+          }
+          <%end%>
+        }
+      });
+      //$(".region").ProvinceCity({
+      //  dprovince: "<%= escape_javascript(@sp_bsb.sp_s_3) %>",
+      //  dcity: "<%= escape_javascript(@sp_bsb.sp_s_4) %>",
+      //  lcity: "<%= escape_javascript(@sp_bsb.sp_s_5) %>"
+      //});
+      //$(".region2").ProvinceCity({
+      //  dprovince: "<%= escape_javascript(@sp_bsb.sp_s_202) unless ['', '请选择'].include? @sp_bsb.sp_s_202 %>",
+      //  dcity: "<%= escape_javascript(@sp_bsb.sp_s_220) %>",
+      //  lcity: "<%= @sp_bsb.sp_s_221 %>"
+      //});
+        $(".region").CfdaProvince({
+          level1: "<%= @sp_bsb.sp_s_3 %>",
+          level2: "<%= @sp_bsb.sp_s_4 %>",
+          level3: "<%= @sp_bsb.sp_s_5 %>"
         });
-        $(".region2").ProvinceCity({
-          dprovince: "<%= escape_javascript(@sp_bsb.sp_s_202) unless ['', '请选择'].include? @sp_bsb.sp_s_202 %>",
-          dcity: "<%= escape_javascript(@sp_bsb.sp_s_220) %>",
-          lcity: "<%= @sp_bsb.sp_s_221 %>"
+        $(".region2").CfdaProvince({
+          level1: "<%= @sp_bsb.sp_s_202 %>",
+          level2: "<%= @sp_bsb.sp_s_220 %>",
+          level3: "<%= @sp_bsb.sp_s_221 %>"
         });
         $("#pad_sp_bsb_sp_d_22").datepicker({
             dateFormat: "yy-mm-dd",
@@ -338,6 +396,10 @@
 
         $('#jg_jg_id').change(function () {
             index_jg = this.selectedIndex;
+          if(index_jg==-1&&jg_data.length>=1){
+            index_jg = 0;
+            $("#jg_jg_id").val(jg_data[index_jg].jg_name);
+          }
             if (index_jg != -1) {
                 $("#pad_sp_bsb_sp_s_43").val($("#jg_jg_id").val());
                 $("#pad_sp_bsb_sp_s_49").val(jg_data[index_jg].jg_contacts);
@@ -442,19 +504,14 @@
           <td colspan="3">区域类型*</td>
           <td colspan="5"><%= f.select :sp_s_201, @options[201], {}, {:style => "width: 100%;"} %></td>
         </tr>
-        <tr class="region">
+        <tr>
           <td colspan="3" style="width: 73px">单位地址*</td>
-          <td colspan="5" style="border-right:none;">
-            省：<%= f.select :sp_s_3, {}, {name: 'province'} %>
+          <td colspan="13" style="border-right:none;" class="region">
+            <%= f.select :sp_s_3, {}, {name: 'province'} %>
+            <%= f.select :sp_s_4, {}, {name: 'city'} %>
+            <%= f.select :sp_s_5, {}, {name: 'lcity'} %>
           </td>
-          <td colspan="5" style="border-right:none; border-left:none">
-            市：<%= f.select :sp_s_4, {}, {name: 'city'} %>
-          </td>
-          <td colspan="5" style="border-left:none;">
-            县：<%= f.select :sp_s_5, {}, {name: 'lcity'} %>
-            </span>
-          </td>
-          <td colspan="12"><%= f.text_field :sp_s_7, :class => "inputText", placeholder: '请填写详细地址', :style => "width: 100%; height: 19px" %></td>
+          <td colspan="14"><%= f.text_field :sp_s_7, :class => "inputText", placeholder: '请填写详细地址', :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
           <td colspan="3">邮编</td>
@@ -565,17 +622,12 @@
           <td colspan="4">备样数量*</td>
           <td colspan="5"><%= f.text_field :sp_s_208, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
-        <tr class="region2">
+        <tr>
           <td colspan="5">标识生产企业地址*</td>
-          <td colspan="5" style="border-right:none;">
-            省：<%= f.select :sp_s_202, {}, {name: 'province'} %>
-          </td>
-          <td colspan="5" style="border-right:none; border-left:none">
-            市：<%= f.select :sp_s_220, {}, {name: 'city'} %>
-          </td>
-          <td colspan="5" style="border-left:none;">
-            县：<%= f.select :sp_s_221, {}, {name: 'lcity'} %>
-            </span>
+          <td colspan="15" style="border-right:none;" class="region2">
+            <%= f.select :sp_s_202, {} %>
+            <%= f.select :sp_s_220, {} %>
+            <%= f.select :sp_s_221, {} %>
           </td>
           <td colspan="7"><%= f.text_field :sp_s_65, :class => "inputText", placeholder: '请填写详细地址', :style => "width: 100%; height: 19px" %></td>
         </tr>
