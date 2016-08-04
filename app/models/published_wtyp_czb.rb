@@ -7,5 +7,5 @@ class PublishedWtypCzb < ActiveRecord::Base
     end
   end
 
-	has_one :wtyp_czb_part, primary_key: :cjbh, foreign_key: :cjbh
+	has_one :wtyp_czb_part, primary_key: :wtyp_czb_part_id, foreign_key: :id
 end

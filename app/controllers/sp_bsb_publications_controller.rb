@@ -150,7 +150,7 @@ class SpBsbPublicationsController < ApplicationController
 
     if params[:JYJL].present?
       if params[:JYJL].eql?('合格')
-        @sp_bsbs = @sp_bsbs.where('sp_s_71 LIKE ?', '%合格%')
+        @sp_bsbs = @sp_bsbs.where('sp_s_71 LIKE ?', '%纯抽检合格样品%')
       elsif params[:JYJL].eql?('不合格')
         @sp_bsbs = @sp_bsbs.where('sp_s_71 LIKE ?', '%不合格%')
       end
@@ -206,7 +206,7 @@ class SpBsbPublicationsController < ApplicationController
 
     if params[:JYJL].present?
       if params[:JYJL].eql?('合格')
-        @sp_bsbs = @sp_bsbs.where('sp_s_71 LIKE ?', '%合格%')
+        @sp_bsbs = @sp_bsbs.where('sp_s_71 LIKE ?', '%纯抽检合格样品%')
       elsif params[:JYJL].eql?('不合格')
         @sp_bsbs = @sp_bsbs.where('sp_s_71 LIKE ?', '%不合格%')
       end
