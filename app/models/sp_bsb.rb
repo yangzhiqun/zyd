@@ -19,6 +19,7 @@ class SpBsb < ActiveRecord::Base
   validates_uniqueness_of :sp_s_16, message: '该单号已存在', allow_nil: true
 
   before_save :check_bsb_validity
+  before_save :check_benji_company
   after_update :callback_when_updated
 
   # 核查处置完成情况
@@ -402,9 +403,20 @@ class SpBsb < ActiveRecord::Base
 =end
 
       # 条件: 3
+     # unless %w{/ 、 - \ 无}.include?(self.sp_s_13)
+      #  pad_sp_bsbs = PadSpBsb.where("sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_d_28 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_d_28).where(created_at: now.all_quarter)
+       # sp_bsb_count = SpBsb.where("sp_s_16 NOT IN (?) AND sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_d_28 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_d_28).where(created_at: now.all_quarter).count
+
+#        if (sp_bsb_count + pad_sp_bsbs.count > 0) and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
+ #         errors.add(:base, '同一生产企业，当前季度内, 同一样品名称，同一生产日期，最多抽取1批')
+  #        return false
+   #     end
+    #  end
+
+      # 条件: 3
       unless %w{/ 、 - \ 无}.include?(self.sp_s_13)
-        pad_sp_bsbs = PadSpBsb.where("sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_d_28 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_d_28).where(created_at: now.all_quarter)
-        sp_bsb_count = SpBsb.where("sp_s_16 NOT IN (?) AND sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_d_28 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_d_28).where(created_at: now.all_quarter).count
+        pad_sp_bsbs = PadSpBsb.where("sp_s_14 = ? AND sp_s_13 = ? AND sp_d_28 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_14, self.sp_s_13, self.sp_d_28).where(created_at: now.all_quarter)
+        sp_bsb_count = SpBsb.where("sp_s_16 NOT IN (?) AND sp_s_14 = ? AND sp_s_13 = ? AND sp_d_28 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_14, self.sp_s_13, self.sp_d_28).where(created_at: now.all_quarter).count
 
         if (sp_bsb_count + pad_sp_bsbs.count > 0) and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
           errors.add(:base, '同一生产企业，当前季度内, 同一样品名称，同一生产日期，最多抽取1批')
@@ -413,9 +425,21 @@ class SpBsb < ActiveRecord::Base
       end
 
       # --> 条件: 4
-      unless %w{/ 、 - \ 无}.include?(self.sp_s_64)
-        pad_sp_bsbs = PadSpBsb.where("sp_s_17 = ? AND sp_s_64 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_17, self.sp_s_64).where(created_at: now.all_quarter)
-        sp_bsb_count = SpBsb.where("sp_s_16 NOT IN (?) AND sp_s_17 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_17, self.sp_s_64).where(created_at: now.all_quarter).count
+     # unless %w{/ 、 - \ 无}.include?(self.sp_s_64)
+      #  pad_sp_bsbs = PadSpBsb.where("sp_s_17 = ? AND sp_s_64 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_17, self.sp_s_64).where(created_at: now.all_quarter)
+       # sp_bsb_count = SpBsb.where("sp_s_16 NOT IN (?) AND sp_s_17 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_17, self.sp_s_64).where(created_at: now.all_quarter).count
+
+        #if (sp_bsb_count + pad_sp_bsbs.count > 3) and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
+         # errors.add(:base, '同一生产企业, 当前季度内, 同一食品大类最多抽取3批')
+         # return false
+        #end
+      #end
+      # <-- 条件: 4
+
+      # --> 条件: 4
+      unless %w{/ 、 - \ 无}.include?(self.sp_s_13)
+        pad_sp_bsbs = PadSpBsb.where("sp_s_17 = ? AND sp_s_13 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_17, self.sp_s_13).where(created_at: now.all_quarter)
+        sp_bsb_count = SpBsb.where("sp_s_16 NOT IN (?) AND sp_s_17 = ? AND sp_s_13 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_17, self.sp_s_13).where(created_at: now.all_quarter).count
 
         if (sp_bsb_count + pad_sp_bsbs.count > 3) and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
           errors.add(:base, '同一生产企业, 当前季度内, 同一食品大类最多抽取3批')
@@ -423,10 +447,19 @@ class SpBsb < ActiveRecord::Base
         end
       end
       # <-- 条件: 4
-
     end
   end
 
+  def check_benji_company
+    if self.sp_s_70.eql?('抽检监测（地方）') and SpProductionInfo.where('benji_only = 1').pluck(:qymc).include?(self.sp_s_64)
+      if self.sp_s_reason.blank? and (self.changes[:sp_i_state].present? and [2, 15].include?(self.changes[:sp_i_state][1]))
+        self.errors.add(:base, '该大型企业仅限局本级抽检')
+        return false
+      else
+        return true
+      end
+    end
+  end
 
   def callback_when_updated
     if self.via_api

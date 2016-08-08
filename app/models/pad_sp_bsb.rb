@@ -48,6 +48,7 @@ class PadSpBsb < ActiveRecord::Base
   after_save :generate_id_number
 
   before_save :check_bsb_validity
+  before_save :check_benji_company
   after_save :callback_when_updated
 
   module Step
@@ -111,7 +112,7 @@ class PadSpBsb < ActiveRecord::Base
   # 4. 不看QS号,同一生产企业,一个季度(90天), 同一食品大类最多抽取3批
   def check_bsb_validity
     #return true if self.sp_s_215.blank? or self.sp_s_13.blank? or %w{抽检监测（总局本级一司） 抽检监测（总局本级三司） 抽检监测（三司专项）}.include?(self.sp_s_70)
-    if self.sp_s_215.blank? or self.sp_s_13.blank? or self.sp_s_64.blank? or %w{抽检监测（总局本级一司）}.include?(self.sp_s_70) or self.sp_i_state == 18 or self.sp_s_2 == '网购' or %w{GC1600243697 GC1600243696}.include?(self.sp_s_16)
+    if self.sp_s_215.blank? or self.sp_s_13.blank? or self.sp_s_64.blank? or %w{抽检监测（总局本级一司） 抽检监测（三司专项）}.include?(self.sp_s_70) or self.sp_i_state == 18 or self.sp_s_2 == '网购' or %w{GC16000463016 GC16000463015 GC16000463014 GC16000463052 GC16000463051 GC16000463048 GC1600373049 GC1600373029 GC1600373030 GC1600373041 GC1600373039 GC1600373040 GC1600373031 GC1600373013 GC16000373013 GC16000373012 GC1600373014 GC1600373015 GC1600373017 GC1600373016 GC1600373010 GC1600373011 GC1600373035 GC1600373033 GC1600373021 GC16000373005 GC1600410160 GC1600133044 GC1600430012 GC1600430016 GC1600430116 GC1600430115 GC1600463386 GC1600463387 GC16000463011 GC1600463431 GC1600463329 GC1600463328 GC1600463327 GC1600463404 GC1600463403 GC1600463345 GC16000243033 GC16000243034 GC16000243035}.include?(self.sp_s_16)
       if self.sp_s_2.eql?('网购')
         self.sp_bsb_checked_count_info = '网购类无抽样限制'
       end
@@ -133,12 +134,12 @@ class PadSpBsb < ActiveRecord::Base
           sp_bsbs = sp_bsbs.where('sp_s_16 NOT IN (?)', pad_sp_bsbs.pluck(:sp_s_16))
         end
         sp_bsb_checked_count = sp_bsbs.count + pad_sp_bsbs.count
+        info = "同一被抽样单位，当前季度内，流通环节，最多抽取10批, 已经抽取#{sp_bsb_checked_count}批次"
+        self.sp_bsb_checked_count_info = info + "\n\n"
         if sp_bsb_checked_count > 10
           errors.add(:base, info)
           result = false
         end
-        info = "同一被抽样单位，当前季度内，流通环节，最多抽取10批, 已经抽取#{sp_bsb_checked_count}批次"
-        self.sp_bsb_checked_count_info = info + "\n\n"
       end
 
       # 条件: 2
@@ -164,8 +165,8 @@ class PadSpBsb < ActiveRecord::Base
 
       # 条件: 3
       unless %w{/ 、 - \ 无}.include?(self.sp_s_13)
-        pad_sp_bsbs = PadSpBsb.where("sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_d_28 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_d_28).where(created_at: now.all_quarter)
-        sp_bsbs = SpBsb.where("sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_d_28 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_d_28).where(created_at: now.all_quarter)
+        pad_sp_bsbs = PadSpBsb.where("sp_s_14 = ? AND sp_s_13 = ? AND sp_d_28 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_14, self.sp_s_13, self.sp_d_28).where(created_at: now.all_quarter)
+        sp_bsbs = SpBsb.where("sp_s_14 = ? AND sp_s_13 = ? AND sp_d_28 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", self.sp_s_14, self.sp_s_13, self.sp_d_28).where(created_at: now.all_quarter)
 
         if pad_sp_bsbs.count != 0
           sp_bsbs = sp_bsbs.where('sp_s_16 NOT IN (?)', pad_sp_bsbs.pluck(:sp_s_16))
@@ -182,27 +183,27 @@ class PadSpBsb < ActiveRecord::Base
       end
 
       # --> 条件: 4
-      unless %w{/ 、 - \ 无}.include?(self.sp_s_64)
-      pad_sp_bsbs = PadSpBsb.where("sp_s_17 = ? AND sp_s_64 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_17, self.sp_s_64).where(created_at: now.all_quarter)
-      sp_bsbs = SpBsb.where("sp_s_17 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", self.sp_s_17, self.sp_s_64).where(created_at: now.all_quarter)
+      unless %w{/ 、 - \ 无}.include?(self.sp_s_13)
+        pad_sp_bsbs = PadSpBsb.where("sp_s_17 = ? AND sp_s_13 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_17, self.sp_s_13).where(created_at: now.all_quarter)
+        sp_bsbs = SpBsb.where("sp_s_17 = ? AND sp_s_13 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", self.sp_s_17, self.sp_s_13).where(created_at: now.all_quarter)
 
-      if pad_sp_bsbs.count != 0
-        sp_bsbs = sp_bsbs.where('sp_s_16 NOT IN (?)', pad_sp_bsbs.pluck(:sp_s_16))
-      end
+        if pad_sp_bsbs.count != 0
+          sp_bsbs = sp_bsbs.where('sp_s_16 NOT IN (?)', pad_sp_bsbs.pluck(:sp_s_16))
+        end
 
-      sp_bsb_checked_count = sp_bsbs.count + pad_sp_bsbs.count
-      if sp_bsb_checked_count > 3
-        errors.add(:base, info)
-        result = false
-      end
-      info = "同一生产企业, 当前季度内, 同一食品大类最多抽取3批, 已抽取#{sp_bsb_checked_count}批次"
-      self.sp_bsb_checked_count_info += (info + "\n\n")
+        sp_bsb_checked_count = sp_bsbs.count + pad_sp_bsbs.count
+        info = "同一生产企业, 当前季度内, 同一食品大类最多抽取3批, 已抽取#{sp_bsb_checked_count}批次"
+        self.sp_bsb_checked_count_info += (info + "\n\n")
+        if sp_bsb_checked_count > 3
+          errors.add(:base, info)
+          result = false
+        end
       end
       # <-- 条件: 4
 
       # --> 额外信息
-      pad_sp_bsbs = PadSpBsb.where('sp_s_64 = ? AND created_at BETWEEN ? AND ? AND sp_i_state not in (1,14,16,18)', self.sp_s_64, now.beginning_of_year, now)
-      sp_bsbs = SpBsb.where('sp_s_64 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', self.sp_s_64, now.beginning_of_year, now)
+      pad_sp_bsbs = PadSpBsb.where('sp_s_13 = ? AND created_at BETWEEN ? AND ? AND sp_i_state not in (1,14,16,18)', self.sp_s_13, now.beginning_of_year, now)
+      sp_bsbs = SpBsb.where('sp_s_13 = ? AND created_at BETWEEN ? AND ? AND sp_i_state NOT IN (0, 1)', self.sp_s_13, now.beginning_of_year, now)
 
       if pad_sp_bsbs.count != 0
         sp_bsbs = sp_bsbs.where('sp_s_16 NOT IN (?)', pad_sp_bsbs.pluck(:sp_s_16))
@@ -224,7 +225,16 @@ class PadSpBsb < ActiveRecord::Base
     end
     result
   end
-
+  def check_benji_company
+    if self.sp_s_70.eql?('抽检监测（地方）') and SpProductionInfo.where('benji_only = 1').pluck(:qymc).include?(self.sp_s_64)
+      if self.sp_s_reason.blank? and (self.changes[:sp_i_state].present? and ([1, 14].include?(self.changes[:sp_i_state][0]) and [2, 15].include?(self.changes[:sp_i_state][1])))
+        self.errors.add(:base, '该大型企业仅限局本级抽检')
+        return false
+      else
+        return true
+      end
+    end
+  end
   # 生成规则
   def generate_id_number
     if self.sp_s_16.blank? and self.sp_i_state == ::PadSpBsb::Step::DEPLOYED
