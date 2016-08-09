@@ -216,12 +216,14 @@ class WtypCzbPart < ActiveRecord::Base
   end
 
   def type_prov_enabled?(user)
+    #logger.error self.sp_s_220
+    #logger.error self.sp_s_4
     if user.hccz_level == User::HcczLevel::Sheng
       ((self.wtyp_czb_type == ::WtypCzbPart::Type::SC && self.bsscqy_sheng.eql?(user.user_s_province)) or ([::WtypCzbPart::Type::LT, ::WtypCzbPart::Type::CY].include?(self.wtyp_czb_type) && self.bcydw_sheng.eql?(user.user_s_province)))
     elsif user.hccz_level == User::HcczLevel::Shi
-      ((self.wtyp_czb_type == ::WtypCzbPart::Type::SC && self.sp_s_220.eql?(user.prov_city)) or ([::WtypCzbPart::Type::LT, ::WtypCzbPart::Type::CY].include?(self.wtyp_czb_type) && self.bcydw_shi.eql?(user.prov_city)))
+      ((self.wtyp_czb_type == ::WtypCzbPart::Type::SC && (self.sp_s_220.eql?(user.prov_city) || self.bsscqy_shi.eql?(user.prov_city))) or ([::WtypCzbPart::Type::LT, ::WtypCzbPart::Type::CY].include?(self.wtyp_czb_type) && (self.bcydw_shi.eql?(user.prov_city) || self.sp_s_4.eql?(user.prov_city))))
     elsif user.hccz_level == User::HcczLevel::Xian
-      ((self.wtyp_czb_type == ::WtypCzbPart::Type::SC && self.sp_s_221.eql?(user.prov_country)) or ([::WtypCzbPart::Type::LT, ::WtypCzbPart::Type::CY].include?(self.wtyp_czb_type) && self.bcydw_xian.eql?(user.prov_country)))
+      ((self.wtyp_czb_type == ::WtypCzbPart::Type::SC && (self.sp_s_221.eql?(user.prov_country)||self.bsscqy_xian.eql?(user.prov_country))) or ([::WtypCzbPart::Type::LT, ::WtypCzbPart::Type::CY].include?(self.wtyp_czb_type) && (self.bcydw_xian.eql?(user.prov_country) || self.sp_s_5.eql?(user.prov_country))))
     else
       false
     end
