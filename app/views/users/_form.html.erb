@@ -65,6 +65,13 @@
       }, 'json');
       reload_jg_data();
    });
+    $('#submit').click(function () {
+      if (($("#user_hccz_level").find("option:selected").val() == 0)&&($("#user_hcz_czbl").attr("checked"))) {
+        alert("请选择核查处置领取级别");
+        $("#user_hccz_level").focus();
+        return false;
+      }
+    });
   });
   function reload_jg_data() {
     $.get('/jg_bsbs/by_jg_name.json', {
@@ -130,17 +137,12 @@
         <br>
         <label>所在省份：</label>
 
-        <% if current_user.is_super? or current_user.is_prov_manager? %>
             <div class="region form-inline">
               <%= @user.user_s_province %>
               <%= f.select :user_s_province, '', {}, :class => 'hidden', :id => 'province' %>
               <%= f.select :prov_city, '', {}, :class => 'form-control input-sm', :id => 'city' %>
               <%= f.select :prov_country, '', {}, :class => 'form-control input-sm', :id => 'lcity' %>
             </div>
-        <% else %>
-            <%= "#{@user.user_s_province}/#{@user.prov_city}/#{@user.prov_country}" %>
-        <% end %>
-
         <br>
         <% if current_user.is_super? or current_user.is_prov_manager? %>
             <label>机构名称：</label>
@@ -155,8 +157,10 @@
                 </div>
             <% end %>
         <% else %>
-            <label for="">机构名称：<%= @user.jg_bsb.jg_name %></label>
-        <% end %>
+            <label for="">机构名称：</label>
+            <%= f.select :jg_bsb_id, options_for_select(JgBsb.where(status: 0).map { |jg| [jg.jg_name, jg.id] }, @user.jg_bsb_id), {}, :class => "form-control input-sm" %>
+
+  <% end %>
 
         <% if current_user.is_account_manager? or current_user.name == 'superadmin' %>
             <% if current_user.is_super? %>
@@ -242,18 +246,21 @@
                     <label><%= f.check_box :hcz_admin, options = {}, checked_value = "1", unchecked_value = "0" %>
                       管理员</label>
                   </div>
-                  <div class="checkbox">
-                    <label> <%= f.check_box :hcz_czap, options = {}, checked_value = "1", unchecked_value = "0" %>
+                 <!-- <div class="checkbox">
+                    <label> <%#= f.check_box :hcz_czap, options = {}, checked_value = "1", unchecked_value = "0" %>
                       处置安排 </label>
-                  </div>
+                  </div>-->
                   <div class="checkbox">
                     <label><%= f.check_box :hcz_czbl, options = {}, checked_value = "1", unchecked_value = "0" %>
-                      处置办理</label>
+                      处置领取</label>
                   </div>
                   <div class="checkbox">
                     <label><%= f.check_box :hcz_czsh, options = {}, checked_value = "1", unchecked_value = "0" %>
                       处置审核</label>
                   </div>
+                  <br>
+                  <%= f.select :hccz_level, options_for_select([['请选择级别', 0], ['省', 1], ['市', 2], ['县', 3]], @user.hccz_level), {}, class: 'form-control input-sm'%>
+                  <% f.select :hccz_type, options_for_select([['请选择业务', 0], ['生产', 1], ['经营', 2]], @user.hccz_type), {}, class: 'form-control input-sm'%>
                 </div>
               </div>
             </div>

@@ -1,0 +1,242 @@
+<script type="text/javascript" charset="utf-8">
+  $(function () {
+    $('.check-all').change(function () {
+      var o = $(this);
+      if (o.is(':checked')) {
+        $('.check-me').attr('checked', 'checked');
+      } else {
+        $('.check-me').removeAttr('checked')
+      }
+      $('.check-me').trigger('change');
+    });
+
+    // ...
+
+    $('.check-me').change(function () {
+      var o = $(this);
+      if (!o.is(':checked') && $('.check-all').is(':checked')) {
+        $('.check-all').removeAttr('checked');
+      }
+
+      if ($('.check-me:checked').length > 0) {
+        $('.operator-ctner').removeClass('hidden');
+      } else {
+        $('.operator-ctner').addClass('hidden');
+      }
+    }).trigger('change');
+
+    $('.publish-selected').click(function () {
+      var form = {published_at: $('.GBSJ').val(), document_number: $('.WH').val(), url: $('.WZ').val(), ids: []};
+      $.each($('.check-me:checked'), function (i, item) {
+        form.ids.push($(item).attr('data-id'));
+      });
+
+      form.ids = form.ids.join(',');
+
+      if (!form.published_at) {
+        alert('请填写公布时间!');
+        $('.GBSJ').focus();
+        return false;
+      }
+
+      if (!form.document_number) {
+        alert('请填写文号!');
+        $('.WH').focus();
+        return false;
+      }
+
+      if (!form.url) {
+        alert('请填写网址!');
+        $('.WZ').focus();
+        return false;
+      }
+
+      form.type = <%= params[:tab].to_i %>;
+
+      $.post('/sp_bsb_publications/publish_bsbs.json', form, function (res) {
+        if (res.status == 'OK') {
+          alert('发布成功!');
+          location.reload();
+        }
+      }, 'json');
+    });
+  });
+</script>
+<style type="text/css">
+  .operators {
+    margin: 5px 0;
+  }
+</style>
+<div class="panel panel-default">
+  <div class="panel-heading">数据筛选</div>
+  <div class="panel-body">
+    <%= form_tag '', {method: :get} do %>
+        <div class="row">
+          <div class="form-group col-md-3">
+            <label>开始时间:</label>
+            <input type="text" name="KSSJ" value="<%= params[:KSSJ] %>" class="datepicker form-control input-sm">
+          </div>
+          <div class="form-group col-md-3">
+            <label>结束时间:</label>
+            <input type="text" name="JSSJ" value="<%= params[:JSSJ] %>" class="datepicker form-control input-sm">
+          </div>
+          <div class="form-group col-md-3">
+            <label>检验结论:</label>
+            <%= select_tag 'JYJL', options_for_select([['请选择', nil], '合格', '不合格'], params[:JYJL]), class: 'form-control input-sm' %>
+          </div>
+          <div class="form-group col-md-3">
+            <label>抽样单位名称:</label>
+            <input type="text" name="CYDWMC" value="<%= params[:CYDWMC] %>" class="form-control input-sm">
+          </div>
+          <div class="form-group col-md-3">
+            <label>检验机构名称:</label>
+            <input type="text" name="JYJGMC" value="<%= params[:JYJGMC] %>" class="form-control input-sm">
+          </div>
+          <div class="form-group col-md-3">
+            <label>被抽样单位名称:</label>
+            <input type="text" name="BCYDWMC" value="<%= params[:BCYDWMC] %>" class="form-control input-sm">
+          </div>
+          <div class="form-group col-md-3">
+            <label>样品名称:</label>
+            <input type="text" name="YPMC" value="<%= params[:YPMC] %>" class="form-control input-sm">
+          </div>
+          <div class="form-group col-md-3">
+            <label>食品大类:</label>
+            <input type="text" name="SPDL" value="<%= params[:SPDL] %>" class="form-control input-sm">
+          </div>
+          <div class="form-group col-md-3">
+            <label>采样编号:</label>
+            <input type="text" name="BH" value="<%= params[:BH] %>" class="form-control input-sm">
+          </div>
+          <input type="hidden" name="tab" value="<%= params[:tab].to_i %>">
+        </div>
+        <button class="btn btn-primary btn-sm">搜索</button>
+        <input type="reset" class="btn btn-default btn-sm" value="清除">
+    <% end %>
+    <hr>
+
+    <div>
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li class="<%= 'active' if params[:tab].to_i == 0 %>"><a class="<%= 'active' if params[:tab].to_i == 0 %>" href="?tab=0">基本信息发布</a></li>
+        <li class="<%= 'active' if params[:tab].to_i == 1 %>"><a class="<%= 'active' if params[:tab].to_i == 1 %>" href="?tab=1">核查处置信息发布</a></li>
+      </ul>
+
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <br>
+        <div class="operator-ctner well well-sm hidden">
+          <div class="operators btn-group">
+            <a href="javascript:void(0);" class="publish-selected btn btn-success btn-xs">发布已选</a>
+          </div>
+
+          <div class="row publish-info">
+            <div class="form-group col-md-2">
+              <label>公布时间</label>
+              <input type="text" class="GBSJ datepicker form-control input-sm">
+            </div>
+            <div class="form-group col-md-3">
+              <label>文号</label>
+              <input type="text" class="WH form-control input-sm">
+            </div>
+            <div class="form-group col-md-4">
+              <label>网址</label>
+              <input placeholder="http://" type="text" class="WZ form-control input-sm">
+            </div>
+          </div>
+        </div>
+
+        <% if params[:tab].to_i == 0 %>
+            <table class="table table-bordered">
+              <thead>
+              <tr>
+                <th>
+                  <input type="checkbox" class="check-all">
+                </th>
+                <th>采样编号</th>
+                <th>更新时间</th>
+                <th>省份</th>
+                <th>样品名称</th>
+                <th>采样单位名称</th>
+                <th>检验机构名称</th>
+                <th>检验结论</th>
+                <th>状态</th>
+              </tr>
+              </thead>
+              <% @sp_bsbs.each do |bsb| %>
+                  <tr>
+                    <td>
+                      <% if checkbox_enable?(bsb, params[:tab].to_i) %>
+                          <input data-id="<%= bsb.id %>" type="checkbox" class="check-me">
+                      <% else %>
+                          -
+                      <% end %>
+                    </td>
+                    <td><a style="color: blue;" href="/sp_bsb_publications/<%= bsb.id %>/show_publication"><%= bsb.sp_s_16 %></a></td>
+                    <td><%= bsb.updated_at.strftime('%Y-%m-%d %H:%M:%S') %></td>
+                    <td><%= bsb.sp_s_3 %></td>
+                    <td><%= bsb.sp_s_14 %></td>
+                    <td><%= bsb.sp_s_35 %></td>
+                    <td><%= bsb.sp_s_43 %></td>
+                    <td><%= bsb.sp_s_71 %></td>
+                    <td><%= bsb.publication_status.html_safe %></td>
+                  </tr>
+              <% end %>
+            </table>
+            <p><%= will_paginate @sp_bsbs, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
+        <% else %>
+            <table class="table table-bordered">
+              <thead>
+              <tr>
+                <th>
+                  <input type="checkbox" class="check-all">
+                </th>
+                <th>采样编号</th>
+                <th>抽样环节</th>
+                <th>样品名称</th>
+                <th>标示生产企业省份</th>
+                <th>被抽样单位省份</th>
+                <th>标示生产企业名称</th>
+                <th>检验结论</th>
+                <th>状态</th>
+              </tr>
+              </thead>
+              <% @wtyp_czb_parts.each do |part| %>
+                  <tr>
+                    <td>
+                      <% if checkbox_enable?(part, params[:tab].to_i) %>
+                          <input data-id="<%= part.id %>" type="checkbox" class="check-me">
+                      <% else %>
+                          -
+                      <% end %>
+                    </td>
+                    <td><a style="color: blue;" href="/sp_bsb_publications/<%= part.sp_bsb_id %>/show_publication"><%= part.cjbh %></a></td>
+                    <td><%= part.wtyp_czb_type_desc %></td>
+                    <td><%= part.ypmc %></td>
+                    <td><%= part.bsscqy_sheng %></td>
+                    <td><%= part.bcydw_sheng %></td>
+                    <td><%= part.bsscqymc %></td>
+                    <td><%= part.jyjl %></td>
+                    <td><%= part.wtyp_czb_publication_status.html_safe %></td>
+                  </tr>
+              <% end %>
+            </table>
+            <p><%= will_paginate @wtyp_czb_parts, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
+        <% end %>
+      </div>
+    </div>
+    <!-- Tab Content结束 -->
+    <hr>
+    <div class="xls-publish-form well well-sm">
+      <h3>批量发布</h3>
+      <%= form_tag '/sp_bsb_publications/publish_bsbs_from_xls', method: :post, multipart: true do %>
+          <div class="form-group">
+            <label>上传待发布文件<a style="color: blue;" href="/publish_tmpl.xls">发布模板下载</a></label>
+            <%= file_field_tag 'published_xls', class: 'form-control input-sm' %>
+          </div>
+          <input type="submit" value="发布" class="btn btn-sm btn-primary">
+      <% end %>
+    </div>
+
+  </div>
+</div>

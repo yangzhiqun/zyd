@@ -8,7 +8,7 @@ class PadSpBsbsController < ApplicationController
   before_action :init, only: [:new, :edit, :update, :create, :show]
   # 食品标准
   def checkout_standard
-    result = RestClient.get("http://221.194.147.38:8081/spaqk/webservice/getInfo?name=%s&flag=#{params[:flag]}" % [URI.escape(params[:name])])
+    result = RestClient.get("http://shianbao.net:8081/spaqk/webservice/getInfo?name=%s&flag=#{params[:flag]}" % [URI.escape(params[:name])])
     result = result.gsub("[", "{").gsub("]", "}").gsub("'", '"')
     result = JSON.parse(result)
     if result.blank?
@@ -48,7 +48,7 @@ class PadSpBsbsController < ApplicationController
 
     @xkz_options=[['请选择', ''], ['经营许可证', '经营许可证'], ['生产许可证', '生产许可证']]
 
-    @jg_bsbs = JgBsb.where('status = 0 and jg_detection = 1').order('jg_province')
+   # @jg_bsbs = JgBsb.where('status = 0 and jg_detection = 1').order('jg_province')
   end
 
   #2014-01-12
@@ -160,7 +160,7 @@ class PadSpBsbsController < ApplicationController
 
 
     @jg_bsb = current_user.jg_bsb
-
+    @jg_bsbs = JgBsb.where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
     if !params[:cp].blank? # and params[:cp][:product_id].blank?
       @sp_bsb.sp_s_70 = params[:cp][:sp_s_70] unless params[:cp][:sp_s_70].blank?
       @sp_bsb.sp_s_67 = params[:cp][:sp_s_67] unless params[:cp][:sp_s_67].blank?
@@ -221,6 +221,18 @@ class PadSpBsbsController < ApplicationController
       # TODO: 增加这俩字段? 2015-04-18
       # @sp_bsb.sp_s_212=temp.jg_postcode
       # @sp_bsb.sp_s_213=temp.jg_fax
+
+      # 筛选 送检机构 下拉选项内容
+      if @jg_bsb.jg_type == 3
+        @jg_bsbs = Rails.cache.fetch("jg_bsbs.#{@jg_bsb.id}.type3", expires_in: 1.hours) do
+          @jg_bsbs.select('id, jg_name, jg_contacts, jg_tel, jg_email').where('id = ?', @jg_bsb.id).as_json
+        end
+      else
+        @jg_bsbs = Rails.cache.fetch("jg_bsbs.#{current_user.user_s_province}.type1") do
+          jg_type_1_ids = JgBsb.where(jg_province: current_user.user_s_province, jg_type: 1).pluck(:id)
+          @jg_bsbs.where(jg_type: 3, id: JgBsbSuper.where(super_jg_bsb_id: jg_type_1_ids).pluck(:jg_bsb_id)).select('id, jg_name, jg_contacts, jg_tel, jg_email').as_json
+        end
+      end
     end
     @sp_bsb.sp_i_state=0;
     @sp_bsb.sp_d_86=(Time.now).year.to_s+'-'+(Time.now).mon.to_s+'-'+(Time.now).day.to_s
@@ -344,6 +356,20 @@ class PadSpBsbsController < ApplicationController
     end
 
     @pictures = SpBsbPicture.where(:sp_bsb_id => @sp_bsb.id).order('sort_index ASC')
+    @jg_bsbs = JgBsb.where('status = 0  and jg_detection = 1',current_user.user_s_province).order('jg_province')
+    if @jg_bsb
+      # 筛选 送检机构 下拉选项内容
+      if @jg_bsb.jg_type == 3
+        @jg_bsbs = Rails.cache.fetch("jg_bsbs.#{@jg_bsb.id}.type3", expires_in: 1.hours) do
+          @jg_bsbs.select('id, jg_name, jg_contacts, jg_tel, jg_email').where('id = ?', @jg_bsb.id).as_json
+        end
+      else
+        @jg_bsbs = Rails.cache.fetch("jg_bsbs.#{current_user.user_s_province}.type1") do
+          jg_type_1_ids = JgBsb.where(jg_province: current_user.user_s_province, jg_type: 1).pluck(:id)
+          @jg_bsbs.where(jg_type: 3, id: JgBsbSuper.where(super_jg_bsb_id: jg_type_1_ids).pluck(:jg_bsb_id)).select('id, jg_name, jg_contacts, jg_tel, jg_email').as_json
+        end
+      end
+    end
   end
 
   # POST /pad_sp_bsbs

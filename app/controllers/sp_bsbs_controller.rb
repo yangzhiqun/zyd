@@ -150,7 +150,7 @@ class SpBsbsController < ApplicationController
 
     @xkz_options=[['请选择', ''], ['经营许可证', '经营许可证'], ['生产许可证', '生产许可证']]
 
-    @jg_bsbs = JgBsb.where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
+    #@jg_bsbs = JgBsb.where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
   end
 
   #2014-01-12
@@ -221,6 +221,9 @@ class SpBsbsController < ApplicationController
     @sp_bsb=sp_bsb
     @sp_jcxcount=@sp_bsb.sp_n_jcxcount
     @sp_data=Spdatum.where(sp_bsb_id: params[:id])
+    @jg_bsbs = Rails.cache.fetch('jg_bsb_detection_type', expires_in: 12.hours) do
+      JgBsb.where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
+    end
   end
 
   # 推送基本数据
@@ -262,6 +265,8 @@ class SpBsbsController < ApplicationController
     if current_user.user_s_province == "宁夏"
       @province_plus = ""
     end
+    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
+    # logger.error  @jg_bsbs.to_json
     flash[:import_result] =nil
     @sp_bsb = SpBsb.new
     @sp_bsb.user_id = current_user.id
@@ -277,6 +282,21 @@ class SpBsbsController < ApplicationController
       @sp_bsb.sp_s_41 = current_user.jg_bsb.jg_tel
       @sp_bsb.sp_s_42 = current_user.jg_bsb.jg_email
       @sp_bsb.sp_s_52 = current_user.jg_bsb.jg_province
+      @sp_bsb.sp_s_211 = current_user.jg_bsb.jg_address
+      @sp_bsb.sp_s_212 = current_user.jg_bsb.zipcode
+      @sp_bsb.sp_s_213 = current_user.jg_bsb.fax
+
+      # 筛选 送检机构 下拉选项内容
+      if current_user.jg_bsb.jg_type == 3
+        @jg_bsbs = Rails.cache.fetch("jg_bsbs_type3.id.#{current_user.jg_bsb.id}", expires_in: 10.hours) do
+          @jg_bsbs.where('id = ?', current_user.jg_bsb.id).as_json
+        end
+      else
+        @jg_bsbs = Rails.cache.fetch("jg_bsbs_type.others.prov.#{current_user.user_s_province}", expires_in: 10.hours) do
+          jg_type_1_ids = JgBsb.where(jg_province: current_user.user_s_province, jg_type: 1).pluck(:id)
+          @jg_bsbs.where(jg_type: 3, id: JgBsbSuper.where(super_jg_bsb_id: jg_type_1_ids).pluck(:jg_bsb_id)).as_json
+        end
+      end
     end
 
     @sp_bsb.sp_d_86=(Time.now).year.to_s+'-'+(Time.now).mon.to_s+'-'+(Time.now).day.to_s
@@ -294,6 +314,21 @@ class SpBsbsController < ApplicationController
 
   # GET /sp_bsbs/1/edit
   def edit
+    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email').where('status = 0  and jg_detection = 1',current_user.user_s_province).order('jg_province')
+
+    unless current_user.jg_bsb.nil?
+      # 筛选 送检机构 下拉选项内容
+      if current_user.jg_bsb.jg_type == 3
+        @jg_bsbs = Rails.cache.fetch("jg_bsbs_type3.id.#{current_user.jg_bsb.id}", expires_in: 10.hours) do
+          @jg_bsbs.where('id = ?', current_user.jg_bsb.id).as_json
+        end
+      else
+        @jg_bsbs = Rails.cache.fetch("jg_bsbs_type.others.prov.#{current_user.user_s_province}", expires_in: 10.hours) do
+          jg_type_1_ids = JgBsb.where(jg_province: current_user.user_s_province, jg_type: 1).pluck(:id)
+          @jg_bsbs.where(jg_type: 3, id: JgBsbSuper.where(super_jg_bsb_id: jg_type_1_ids).pluck(:jg_bsb_id)).as_json
+        end
+      end
+    end
     sp_bsb = SpBsb.find(params[:id])
     #2015-01-12
     if data_owner(sp_bsb)==0

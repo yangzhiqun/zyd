@@ -1,5 +1,5 @@
 <%= form_tag '', multipart: true, method: 'post' do %>
-    <label for="">请上传要验重的Excel列表，<a href="/查重模板.xls">验重模板</a></label>
+    <label for="">请上传要验重的Excel列表，<a href="/chachongmuban.xls">验重模板</a></label>
     <p class="text-danger"><%= flash[:error] %></p>
     <%= file_field_tag 'file' %>
     <br>

@@ -53,7 +53,7 @@ gem 'browser'
 gem 'sidekiq'
 #gem 'unicorn'
 #gem 'unicorn-worker-killer'
-gem 'puma'
+gem 'puma','2.15.3'
 
 gem 'angularjs-rails'
 gem 'underscore-rails'

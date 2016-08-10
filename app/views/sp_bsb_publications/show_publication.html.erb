@@ -1,0 +1,335 @@
+<h1>1. 抽检信息公示情况
+</h1>
+<% if @sp_bsb.published_sp_bsb.nil? %>
+    <h3 class="text-danger">未发布</h3>
+<% else %>
+    <h3 class="text-success">已发布</h3>
+<% end %>
+<style type="text/css">
+  .style1 td, .style1 th {
+    border: solid windowtext 1px;
+    padding: 0 5.4pt 0 5.4pt;
+    height: 30px;
+  }
+</style>
+<div id="my_show">
+  <table border="1" cellspacing="0" cellpadding="0" width="100%" class="style1">
+    <tr>
+      <td colspan="30" style="background: #FFFF99;"><span style="font-family:宋体">△――样品信息登记部分</span></td>
+    </tr>
+    <tr>
+      <td colspan="5">任务来源*</td>
+      <td colspan="8"><%= @sp_bsb.sp_s_2_1 %></td>
+      <td colspan="3">报送分类*</td>
+      <td colspan="14"><%= @sp_bsb.sp_s_70 %>、<%= @sp_bsb.sp_s_67 %></td>
+    </tr>
+    <tr>
+      <td colspan="5">被抽样单位名称*</td>
+      <td colspan="11"><%= @sp_bsb.sp_s_1 %></td>
+      <td colspan="3">抽样地点*</td>
+      <td colspan="11"><%= @sp_bsb.sp_s_68 %>、<%= @sp_bsb.sp_s_2 %></td>
+    </tr>
+    <tr>
+      <td colspan="3">年销售额</td>
+      <td colspan="4"><%= @sp_bsb.sp_s_23 %></td>
+      <td colspan="3">营业执照号</td>
+      <td colspan="6"><%= @sp_bsb.sp_s_215 %></td>
+      <td colspan="2">传真</td>
+      <td colspan="4"><%= @sp_bsb.sp_s_bsfl %></td>
+      <td colspan="3">区域类型*</td>
+      <td colspan="5"><%= @sp_bsb.sp_s_201 %></td>
+    </tr>
+    <tr id="region">
+      <td colspan="3" style="width: 73px">单位地址*</td>
+      <td colspan="5" style="border-right:none;">省：<%= @sp_bsb.sp_s_3 %></td>
+      <td colspan="5" style="border-right:none; border-left:none">市：<%= @sp_bsb.sp_s_4 %></td>
+      <td colspan="5" style="border-left:none;">区：<%= @sp_bsb.sp_s_5 %></td>
+      <td colspan="12"><%= @sp_bsb.sp_s_7 %></td>
+    </tr>
+    <tr>
+      <td colspan="3"><p style="width: 43px">邮编</p></td>
+      <td colspan="4"><%= @sp_bsb.sp_s_10 %></td>
+      <td colspan="7">被抽样单位法人（负责人）*</td>
+      <td colspan="4"><%= @sp_bsb.sp_s_8 %></td>
+      <td colspan="3">电话</td>
+      <td colspan="9"><%= @sp_bsb.sp_s_9 %></td>
+    </tr>
+    <tr>
+      <td colspan="7">被抽样单位负责（联系）人*</td>
+      <td colspan="3"><%= @sp_bsb.sp_s_11 %></td>
+      <td colspan="3">电话*</td>
+      <td colspan="5"><%= @sp_bsb.sp_s_12 %></td>
+      <td colspan="3">许可证</td>
+      <td colspan="4"><%= @sp_bsb.sp_xkz %></td>
+      <td colspan="5"><%= @sp_bsb.sp_xkz_id %></td>
+    </tr>
+    <tr>
+      <td colspan="3">样品名称*</td>
+      <td colspan="7"><%= @sp_bsb.sp_s_14 %></td>
+      <td colspan="3">样品属性</td>
+      <td colspan="5"><%= @sp_bsb.sp_s_203 %></td>
+      <td colspan="3">抽样数量*</td>
+      <td colspan="4"><%= @sp_bsb.sp_n_15 %></td>
+      <td colspan="2">单位*</td>
+      <td colspan="3"><%= @sp_bsb.sp_s_6 %></td>
+    </tr>
+    <tr>
+      <td colspan="3">抽样编号*</td>
+      <td colspan="27"><%= @sp_bsb.sp_s_16 %></td>
+    </tr>
+    <tr>
+      <td colspan="3" rowspan="2">样品分类*</td>
+      <td colspan="27">食品大类&emsp;&emsp;<%= @sp_bsb.sp_s_17 %><br>食品亚类&emsp;&emsp;<%= @sp_bsb.sp_s_18 %></td>
+    </tr>
+    <tr>
+      <td colspan="27">食品次亚类&emsp;<%= @sp_bsb.sp_s_19 %><br>食品细类&emsp;&emsp;<%= @sp_bsb.sp_s_20 %></td>
+    </tr>
+    <tr>
+      <td colspan="3">样品形态*</td>
+      <td colspan="4"><%= @sp_bsb.sp_s_61 %></td>
+      <td colspan="5">样品类型*</td>
+      <td colspan="7"><%= @sp_bsb.sp_s_62 %></td>
+      <td colspan="4">包装分类*</td>
+      <td colspan="7"><%= @sp_bsb.sp_s_63 %></td>
+    </tr>
+    <tr>
+      <td colspan="3">样品来源*</td>
+      <td colspan="4"><%= @sp_bsb.sp_s_21 %></td>
+      <!--<td colspan="5">生产/加工/购进日期</td>
+          <td colspan="4"><%= @sp_bsb.sp_d_22 %></td>-->
+      <td colspan="5">抽样方式*</td>
+      <td colspan="7"><%= @sp_bsb.sp_s_24 %></td>
+      <td colspan="4">抽样工具</td>
+      <td colspan="7"><%= @sp_bsb.sp_s_25 %></td>
+    </tr>
+    <tr>
+      <td rowspan="7" colspan="3">预包装<br>产品*</td>
+      <td colspan="5">样品规格*</td>
+      <td colspan="8"><%= @sp_bsb.sp_s_26 %></td>
+      <td colspan="5">样品批号*</td>
+      <td colspan="9"><%= @sp_bsb.sp_s_27 %></td>
+    </tr>
+    <tr>
+      <td colspan="5">生产日期*</td>
+      <td colspan="8"><%= @sp_bsb.sp_d_28 %></td>
+      <td colspan="5">保质期*</td>
+      <td colspan="9"><%= @sp_bsb.sp_n_29 %></td>
+    </tr>
+    <tr>
+      <td colspan="5">生产许可证号*</td>
+      <td colspan="8"><%= @sp_bsb.sp_s_13 %></td>
+      <td colspan="5">执行标准/技术文件*</td>
+      <td colspan="9"><%= @sp_bsb.sp_s_72 %></td>
+    </tr>
+    <td colspan="5">质量等级*</td>
+    <td colspan="2"><%= @sp_bsb.sp_s_73 %></td>
+    <td colspan="2">商标*</td>
+    <td colspan="4"><%= @sp_bsb.sp_s_74 %></td>
+    <td colspan="2">单价*</td>
+    <td colspan="3"><%= @sp_bsb.sp_s_204 %></td>
+    <td colspan="4">是否出口*</td>
+    <td colspan="5"><%= @sp_bsb.sp_s_205 %></td>
+    </tr>
+    <tr>
+      <td colspan="5">抽样基数/批量*</td>
+      <td colspan="4"><%= @sp_bsb.sp_s_206 %></td>
+      <td colspan="4">条形码</td>
+      <td colspan="5"><%= @sp_bsb.sp_s_222 %></td>
+      <td colspan="4">备样数量*</td>
+      <td colspan="5"><%= @sp_bsb.sp_s_208 %></td>
+    </tr>
+    <tr>
+      <td colspan="5">标识生产企业地址*</td>
+      <td colspan="5" style="border-right:none;">
+        省：<%= @sp_bsb.sp_s_202 %>
+      </td>
+      <td colspan="5" style="border-right:none; border-left:none">
+        市：<%= @sp_bsb.sp_s_220 %>
+      </td>
+      <td colspan="5" style="border-left:none;">
+        县：<%= @sp_bsb.sp_s_221 %>
+      </td>
+      <td colspan="7"><%= @sp_bsb.sp_s_65 %></td>
+    <tr>
+      <td colspan="5">标识生产企业名称*</td>
+      <td colspan="5"><%= @sp_bsb.sp_s_64 %></td>
+      <td colspan="4">生产企业联系人*</td>
+      <td colspan="4"><%= @sp_bsb.sp_s_75 %></td>
+      <td colspan="4">生产企业电话*</td>
+      <td colspan="5"><%= @sp_bsb.sp_s_76 %></td>
+    </tr>
+    <tr>
+      <td rowspan="2" colspan="5">抽样时样品<br>存储状态*</td>
+      <td rowspan="2" colspan="3"><%= @sp_bsb.sp_s_30 %></td>
+      <td rowspan="2" colspan="5">储存条件</td>
+      <td colspan="4">温度(℃)</td>
+      <td colspan="4"><%= @sp_bsb.sp_n_31 %></td>
+      <td rowspan="2" colspan="4">抽样样品包装*</td>
+      <td rowspan="2" colspan="5"><%= @sp_bsb.sp_s_33 %></td>
+    </tr>
+    <tr>
+      <td colspan="4">湿度(%)</td>
+      <td colspan="4"><%= @sp_bsb.sp_n_32 %></td>
+    </tr>
+    <tr>
+      <td colspan="5">备注</td>
+      <td colspan="25"><%= @sp_bsb.sp_s_34 %></td>
+    </tr>
+    <tr>
+      <td colspan="5">抽样单位名称*</td>
+      <td colspan="7"><%= @sp_bsb.sp_s_35 %></td>
+      <td colspan="3">单位级别*</td>
+      <td colspan="6"><%= @sp_bsb.sp_s_36 %></td>
+      <td colspan="3">所在省份*</td>
+      <td colspan="6"><%= @sp_bsb.sp_s_52 %></td>
+    </tr>
+    <tr>
+      <td colspan="5">抽样人员*</td>
+      <td colspan="7"><%= @sp_bsb.sp_s_37 %></td>
+      <td colspan="3">抽样时间*</td>
+      <td colspan="6"><%= @sp_bsb.sp_d_38 %></td>
+      <td colspan="3">电话*</td>
+      <td colspan="6"><%= @sp_bsb.sp_s_39 %></td>
+    </tr>
+    <tr>
+      <td colspan="6">抽样单位负责（联系）人*</td>
+      <td colspan="6"><%= @sp_bsb.sp_s_40 %></td>
+      <td colspan="3">电话*</td>
+      <td colspan="6"><%= @sp_bsb.sp_s_41 %></td>
+      <td colspan="3">电子邮箱*</td>
+      <td colspan="6"><%= @sp_bsb.sp_s_42 %></td>
+    </tr>
+    <tr>
+      <td colspan="3">单位地址</td>
+      <td colspan="9"><%= @sp_bsb.sp_s_211 %></td>
+      <td colspan="3">邮编</td>
+      <td colspan="6"><%= @sp_bsb.sp_s_212 %></td>
+      <td colspan="3">传真</td>
+      <td colspan="6"><%= @sp_bsb.sp_s_213 %></td>
+    </tr>
+    <tr>
+      <td colspan="30" style="background: #FFFF99;"><span style="font-family:宋体">△――检验信息部分</span></td>
+    </tr>
+    <tr>
+      <td colspan="4">检验机构名称*</td>
+      <td colspan="8"><%= @sp_bsb.sp_s_43 %></td>
+      <td colspan="5">检验目的/任务类别*</td>
+      <td colspan="3"><%= @sp_bsb.sp_s_44 %></td>
+      <td colspan="4">报告书编号*</td>
+      <td colspan="6"><%= @sp_bsb.sp_s_45 %></td>
+    </tr>
+    <tr>
+      <td colspan="3">收检日期*</td>
+      <% if [6, 8, 9].include? @sp_bsb.sp_i_state %>
+          <td colspan="6"><%= @sp_bsb.sp_d_46 %></td>
+          <td colspan="3">报告日期*</td>
+          <td colspan="8"><%= @sp_bsb.sp_d_47 %></td>
+          <td colspan="4">报告签发人*</td>
+          <td colspan="6"><%= @sp_bsb.sp_s_48 %></td>
+      <% else %>
+          <td colspan="27"><%= @sp_bsb.sp_d_46 %></td>
+      <% end %>
+    </tr>
+    <tr>
+      <td colspan="3">联系人*</td>
+      <td colspan="6"><%= @sp_bsb.sp_s_49 %></td>
+      <td colspan="3">电话*</td>
+      <td colspan="8"><%= @sp_bsb.sp_s_50 %></td>
+      <td colspan="4">电子邮箱*</td>
+      <td colspan="6"><%= @sp_bsb.sp_s_51 %></td>
+    </tr>
+    <tr>
+      <td colspan="3">结论*</td>
+      <td colspan="6"><%= @sp_bsb.sp_s_71 %></td>
+      <td colspan="3">确认情况</td>
+      <td colspan="8"><%= @sp_bsb.sp_s_214 %></td>
+      <td colspan="4">备注</td>
+      <td colspan="6"><%= @sp_bsb.sp_s_84 %></td>
+    </tr>
+    <tr>
+      <td colspan="3">填报人*</td>
+      <td colspan="3"><%= @sp_bsb.sp_s_85 %></td>
+      <td colspan="3">填报日期*</td>
+      <td colspan="3"><%= @sp_bsb.sp_d_86 %></td>
+      <td colspan="3">电话*</td>
+      <td colspan="5"><%= @sp_bsb.sp_s_87 %></td>
+      <td colspan="4">电子邮箱*</td>
+      <td colspan="6"><%= @sp_bsb.sp_s_88 %></td>
+    </tr>
+
+    <tr id="reason">
+      <% if @sp_bsb["sp_i_state"] == 2 or (@sp_bsb["sp_i_state"] >= 4 && @sp_bsb["sp_i_state"] <= 9) %>
+          <td colspan="4">历史退回原因</td>
+          <td colspan="26"><%= @sp_bsb.sp_s_reason %></td>
+      <% elsif @sp_bsb["sp_i_state"]==3 %>
+          <td colspan="3">退回原因</td>
+          <td colspan="27"><%= @sp_bsb.sp_s_reason %></td>
+      <% elsif @sp_bsb["sp_s_reason"]!=nil %>
+          <td colspan="3">退回原因</td>
+          <td colspan="27"><%= @sp_bsb.sp_s_reason %></td>
+      <% end %>
+    </tr>
+  </table>
+
+  <div class="height400">
+    <table id="tblGrid" style="width: 4000px; table-layout: fixed;" cellspacing="0" cellpadding="0" class="fancyTable">
+      <thead>
+      <tr>
+        <th width="40">#</th>
+        <th>检验项目*</th>
+        <th>检验结果*</th>
+        <th>结果单位*</th>
+        <th>结果判定*</th>
+        <th>检验依据*</th>
+        <th>判定依据*</th>
+        <th>标准方法检出限*</th>
+        <th>标准检出限单位*</th>
+        <th>方法检出限*</th>
+        <th>检出限单位*</th>
+        <th>标准最小允许限*</th>
+        <th>标准最小允许限单位*</th>
+        <th>最小允许限*</th>
+        <th>最小允许限单位*</th>
+        <th>标准最大允许限*</th>
+        <th>标准最大允许限单位*</th>
+        <th>最大允许限*</th>
+        <th>最大允许限单位*</th>
+        <th>说明</th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @sp_bsb.spdata.each_with_index do |spdata, index| %>
+          <tr>
+            <td align="center" width="80"><%= index + 1 %></td>
+            <td align="left"><%= spdata.spdata_0 %></td>
+            <td align="left"><%= spdata.spdata_1 %></td>
+            <td align="left"><%= spdata.spdata_18 %></td>
+            <td align="left"><%= spdata.spdata_2 %></td>
+            <td align="left"><%= spdata.spdata_3 %></td>
+            <td align="left"><%= spdata.spdata_4 %></td>
+            <td align="left"><%= spdata.spdata_5 %></td>
+            <td align="left"><%= spdata.spdata_6 %></td>
+            <td align="left"><%= spdata.spdata_7 %></td>
+            <td align="left"><%= spdata.spdata_8 %></td>
+            <td align="left"><%= spdata.spdata_9 %></td>
+            <td align="left"><%= spdata.spdata_10 %></td>
+            <td align="left"><%= spdata.spdata_11 %></td>
+            <td align="left"><%= spdata.spdata_12 %></td>
+            <td align="left"><%= spdata.spdata_13 %></td>
+            <td align="left"><%= spdata.spdata_14 %></td>
+            <td align="left"><%= spdata.spdata_15 %></td>
+            <td align="left"><%= spdata.spdata_16 %></td>
+            <td align="left"><%= spdata.spdata_17 %></td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+  <hr>
+  <h1>2. 核查处置发布情况</h1>
+  <% unless PublishedWtypCzb.exists?(cjbh: @sp_bsb.sp_s_16) %>
+      <h3 class="text-danger">未发布</h3>
+  <% else %>
+      <h3 class="text-success">已发布</h3>
+  <% end %>
+</div>
