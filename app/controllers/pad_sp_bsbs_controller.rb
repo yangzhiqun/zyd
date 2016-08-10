@@ -160,7 +160,7 @@ class PadSpBsbsController < ApplicationController
 
 
     @jg_bsb = current_user.jg_bsb
-    @jg_bsbs = JgBsb.where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
+    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
     if !params[:cp].blank? # and params[:cp][:product_id].blank?
       @sp_bsb.sp_s_70 = params[:cp][:sp_s_70] unless params[:cp][:sp_s_70].blank?
       @sp_bsb.sp_s_67 = params[:cp][:sp_s_67] unless params[:cp][:sp_s_67].blank?
@@ -223,6 +223,7 @@ class PadSpBsbsController < ApplicationController
       # @sp_bsb.sp_s_213=temp.jg_fax
 
       # 筛选 送检机构 下拉选项内容
+=begin
       if @jg_bsb.jg_type == 3
         @jg_bsbs = Rails.cache.fetch("jg_bsbs.#{@jg_bsb.id}.type3", expires_in: 1.hours) do
           @jg_bsbs.select('id, jg_name, jg_contacts, jg_tel, jg_email').where('id = ?', @jg_bsb.id).as_json
@@ -233,6 +234,7 @@ class PadSpBsbsController < ApplicationController
           @jg_bsbs.where(jg_type: 3, id: JgBsbSuper.where(super_jg_bsb_id: jg_type_1_ids).pluck(:jg_bsb_id)).select('id, jg_name, jg_contacts, jg_tel, jg_email').as_json
         end
       end
+=end
     end
     @sp_bsb.sp_i_state=0;
     @sp_bsb.sp_d_86=(Time.now).year.to_s+'-'+(Time.now).mon.to_s+'-'+(Time.now).day.to_s
@@ -356,7 +358,8 @@ class PadSpBsbsController < ApplicationController
     end
 
     @pictures = SpBsbPicture.where(:sp_bsb_id => @sp_bsb.id).order('sort_index ASC')
-    @jg_bsbs = JgBsb.where('status = 0  and jg_detection = 1',current_user.user_s_province).order('jg_province')
+    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email').where('status = 0  and jg_detection = 1',current_user.user_s_province).order('jg_province')
+=begin
     if @jg_bsb
       # 筛选 送检机构 下拉选项内容
       if @jg_bsb.jg_type == 3
@@ -370,6 +373,7 @@ class PadSpBsbsController < ApplicationController
         end
       end
     end
+=end
   end
 
   # POST /pad_sp_bsbs
