@@ -286,8 +286,9 @@ class SpBsbsController < ApplicationController
       @sp_bsb.sp_s_212 = current_user.jg_bsb.zipcode
       @sp_bsb.sp_s_213 = current_user.jg_bsb.fax
 
-      # 筛选 送检机构 下拉选项内容
-      if current_user.jg_bsb.jg_type == 3
+      # 筛选 送检机构 下拉选项内
+=begin
+     if current_user.jg_bsb.jg_type == 3
         @jg_bsbs = Rails.cache.fetch("jg_bsbs_type3.id.#{current_user.jg_bsb.id}", expires_in: 10.hours) do
           @jg_bsbs.where('id = ?', current_user.jg_bsb.id).as_json
         end
@@ -295,8 +296,8 @@ class SpBsbsController < ApplicationController
         @jg_bsbs = Rails.cache.fetch("jg_bsbs_type.others.prov.#{current_user.user_s_province}", expires_in: 10.hours) do
           jg_type_1_ids = JgBsb.where(jg_province: current_user.user_s_province, jg_type: 1).pluck(:id)
           @jg_bsbs.where(jg_type: 3, id: JgBsbSuper.where(super_jg_bsb_id: jg_type_1_ids).pluck(:jg_bsb_id)).as_json
-        end
-      end
+          end
+=end
     end
 
     @sp_bsb.sp_d_86=(Time.now).year.to_s+'-'+(Time.now).mon.to_s+'-'+(Time.now).day.to_s
@@ -318,6 +319,7 @@ class SpBsbsController < ApplicationController
 
     unless current_user.jg_bsb.nil?
       # 筛选 送检机构 下拉选项内容
+=begin
       if current_user.jg_bsb.jg_type == 3
         @jg_bsbs = Rails.cache.fetch("jg_bsbs_type3.id.#{current_user.jg_bsb.id}", expires_in: 10.hours) do
           @jg_bsbs.where('id = ?', current_user.jg_bsb.id).as_json
@@ -328,6 +330,7 @@ class SpBsbsController < ApplicationController
           @jg_bsbs.where(jg_type: 3, id: JgBsbSuper.where(super_jg_bsb_id: jg_type_1_ids).pluck(:jg_bsb_id)).as_json
         end
       end
+=end
     end
     sp_bsb = SpBsb.find(params[:id])
     #2015-01-12
