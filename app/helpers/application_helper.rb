@@ -84,17 +84,17 @@ module ApplicationHelper
   end
 
   def auto_adjust_text_size text, max_length
-    return "font-size: 14pt;" if not text
+    return "font-size: 12pt;" if not text
     max_length = max_length || "10"
     case text.length / max_length.to_f
       when 0..1
-        return "font-size: 14pt;"
-      when 1..1.5
         return "font-size: 12pt;"
-      when 1.5..2
+      when 1..1.5
         return "font-size: 10pt;"
-      else
+      when 1.5..2
         return "font-size: 8pt;"
+      else
+        return "font-size: 6pt;"
     end
   end
 

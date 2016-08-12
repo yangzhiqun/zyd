@@ -173,7 +173,11 @@
         </tr>
         <tr height="30">
           <th colspan="2">样品数量</th>
-          <td align="left" colspan="2"><%= @spbsb.sp_s_207 %></td>
+         <!-- <td align="left" colspan="2"><%#= @spbsb.sp_s_207 %></td>-->
+          <td align="left" colspan="2">
+            <% if @spbsb.sp_n_15.to_s[@spbsb.sp_n_15.to_s.length-2, @spbsb.sp_n_15.to_s.length-1]=='.0' %><%= @spbsb.sp_n_15.to_s.chop.chop %>
+                <% else %><%= @spbsb.sp_n_15.to_s %>
+            <% end %>&nbsp;<%= @spbsb.sp_s_6 %></td>
           <th colspan="2">抽样基数</th>
           <td align="left" colspan="2"><%= @spbsb.sp_s_206 %></td>
         </tr>
@@ -184,18 +188,18 @@
           <td align="left" colspan="2"><%= @jcfy %></td>
         </tr>
         <tr>
-          <th height="45" colspan="2">抽样地点</th>
+          <th height="30" colspan="2">抽样地点</th>
           <td align="left" colspan="2"><%= @spbsb.sp_s_68 %><%= @spbsb.sp_s_2 %></td>
           <th colspan="2">封样状态</th>
           <td align="left" colspan="2">完好</td>
         </tr>
         <tr>
-          <th height="45" colspan="2">检验项目</th>
-          <td align="left" colspan="6"><%= @jyxm_str %></td>
+          <th height="30" colspan="2">检验项目</th>
+          <td align="left" colspan="6"  style="<%= auto_adjust_text_size(@jyxm_str, 10) %>"><%= @jyxm_str %></td>
         </tr>
         <tr>
-          <th height="80" colspan="2">检验依据</th>
-          <td align="left" colspan="6" style="<%= auto_adjust_text_size(@jyjy_struni, 80) %>"><%= @jyjy_struni %></td>
+          <th height="50" colspan="2">检验依据</th>
+          <td align="left" colspan="6" style="<%= auto_adjust_text_size(@jyjy_struni, 20) %>"><%= @jyjy_struni %></td>
         </tr>
         <tr>
           <th height="150" colspan="2">检验结论</th>
@@ -209,7 +213,7 @@
                   @jyjl_print = @jyjl_print+'检验结论为不合格。'
                 end %>
           <td colspan="6">
-            <p align="left" style="<%= auto_adjust_text_size(@jyjl_print, 90) %>">
+            <p align="left" style="<%= auto_adjust_text_size(@jyjl_print, 70) %>">
               <%= @jyjl_print %>
             </p>
 

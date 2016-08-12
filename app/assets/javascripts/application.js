@@ -56,6 +56,7 @@
 //= require sp_bsb_publications
 
 //= require provincesdata
+//= require jquery.cfda_province
 //= require spfldata
 // require spdata1
 // require spdata2
