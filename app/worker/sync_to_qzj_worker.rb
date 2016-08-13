@@ -19,15 +19,12 @@ class SyncToQzjWorker
         @cjbhs.push(bsb.sp_s_16)
       end
 
-			logger.error @cjbhs
-
       response = Utils.post(Url::TransferSpBsb, {access_token: @token_manager.get_token, data: @form_data.to_json})
-      logger.info response.as_json
 
       if response['errorcode'].present? and response['errorcode'].to_i == 0
         #TODO: 这里应该处理为只更新提交成功的样品
         SpBsb.where(sp_s_16: @cjbhs).each do |bsb|
-					bsb.update_attributes(synced_at: bsb.updated_at)
+					bsb.update_columns(synced_at: bsb.updated_at)
 				end
       end
 
