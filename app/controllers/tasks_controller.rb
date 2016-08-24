@@ -219,7 +219,15 @@ class TasksController < ApplicationController
     if params[:jg_id].blank? or params[:dl].blank? or params[:quota].blank?
       render json: {status: 'ERR', msg: '请提供必要参数'}
     else
-      @province = SysProvince.level1.find_by_name(current_user.prov_city)
+      info = "";
+      if  current_user.prov_country.nil? or current_user.prov_country.blank? or  %w{ 请选择 }.include?(current_user.prov_country)
+        info = current_user.prov_city;
+        @province = SysProvince.level1.find_by_name(info)
+      else
+        info = current_user.prov_country;
+        @province = SysProvince.level2.find_by_name(info)
+      end
+     # @province = SysProvince.level1.find_by_name(info)
       @plan = TaskJgBsb.new(identifier: params[:identifier], sys_province_id: @province.id, jg_bsb_id: params[:jg_id], :a_category_id => params[:dl], :quota => params[:quota])
 
       destroy_category_level = 'a_category_id'
