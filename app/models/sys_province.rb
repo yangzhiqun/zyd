@@ -8,7 +8,7 @@ class SysProvince < ActiveRecord::Base
   }
   scope :level2, -> {
     prov = SysProvince.where("level like '_' or level like '__'").find_by_name(SysConfig.get(SysConfig::Key::PROV))
-    where('level LIKE ? or level LIKE ? or level LIKE ? or level LIKE ?', "#{prov.level}._._", "#{prov.level}.__._", "#{prov.level}.__.__", "#{prov.level}._.__")
+    where('level LIKE ? or level LIKE ? or level LIKE ? or level LIKE ? or level LIKE ? or level LIKE ?', "#{prov.level}._._", "#{prov.level}.__._", "#{prov.level}.__.__", "#{prov.level}._.__","#{prov.level}._", "#{prov.level}.__")
   }
    scope :level1_old, -> { where("level LIKE '_' or level LIKE '__'") }
 
