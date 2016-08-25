@@ -220,7 +220,7 @@ class TasksController < ApplicationController
       render json: {status: 'ERR', msg: '请提供必要参数'}
     else
       info = "";
-      if  current_user.prov_country.nil? or current_user.prov_country.blank? or  %w{ 请选择 }.include?(current_user.prov_country)
+      if  current_user.prov_country.nil? or current_user.prov_country.blank? or  %w{ -请选择- }.include?(current_user.prov_country)
         info = current_user.prov_city;
         @province = SysProvince.level1.find_by_name(info)
       else
