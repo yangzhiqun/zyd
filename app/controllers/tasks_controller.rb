@@ -307,10 +307,14 @@ class TasksController < ApplicationController
       # Task
       info_s = current_user.prov_city;
       @province_s = SysProvince.level1.find_by_name(info_s)
-      if @province_s.id == params[:rwly] || params[:rwly] == -1
+      if @province_s.nil? or @province_s.blank?
         @tasks = TaskJgBsb.where(:jg_bsb_id => @jg_bsb.id, :sys_province_id => params[:rwly]) #, identifier: @baosong_b.identifier)
       else
-        @tasks = TaskJgBsb.where(:jg_bsb_id => @jg_bsb.id, :sys_province_id => @province_s.id) #, identifier: @baosong_b.identifier)
+        if @province_s.id == params[:rwly] || params[:rwly] == -1
+          @tasks = TaskJgBsb.where(:jg_bsb_id => @jg_bsb.id, :sys_province_id => params[:rwly]) #, identifier: @baosong_b.identifier)
+        else
+          @tasks = TaskJgBsb.where(:jg_bsb_id => @jg_bsb.id, :sys_province_id => @province_s.id) #, identifier: @baosong_b.identifier)
+        end
       end
       @delegate = @tasks.select('jg_bsb_id').first
 
