@@ -143,12 +143,8 @@ class JgBsbsController < ApplicationController
   # PUT /jg_bsbs/1.json
   def update
     @jg_bsb = JgBsb.find(params[:id])
-    logger.error '##############################################################'
-   logger.error @jg_bsb.id
     @super_jg_bsb = JgBsbSuper.find_by_sql(["select t.* from jg_bsb_supers t where t.jg_bsb_id =? ",params[:id]])#JgBsbSuper.find_by_jg_bsb_id(params[:id])
-    logger.error @super_jg_bsb.to_json
     @super_jg_bsb.each do |da|
-      logger.error da.id
       da.destroy
     end
     respond_to do |format|
