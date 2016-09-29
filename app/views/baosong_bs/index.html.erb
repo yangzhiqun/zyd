@@ -1,27 +1,31 @@
-<h1>Listing baosong_bs</h1>
+<h1>报送分类B</h1>
 
-<table>
+<table style="table-layout: fixed;" class="table table-bordered">
+  <thead>
   <tr>
-    <th>Name</th>
-    <th>Note</th>
-    <th>Baosong a</th>
-    <th></th>
-    <th></th>
+    <th>名称</th>
+    <th>所在区域</th>
+    <th>所属报送分类A</th>
+    <th>备注</th>
+    <th>创建时间</th>
     <th></th>
   </tr>
-
+  </thead>
 <% @baosong_bs.each do |baosong_b| %>
   <tr>
-    <td><%= baosong_b.name %></td>
-    <td><%= baosong_b.note %></td>
+    <td><%= link_to baosong_b.name ,baosong_b %></td>
+    <td><%= baosong_b.prov %></td>
     <td><%= baosong_b.baosong_a_id %></td>
-    <td><%= link_to 'Show', baosong_b %></td>
-    <td><%= link_to 'Edit', edit_baosong_b_path(baosong_b) %></td>
-    <td><%= link_to 'Destroy', baosong_b, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    <td><%= baosong_b.note %></td>
+    <td><%= (baosong_b.created_at + 8.hours).strftime("%Y-%m-%d %H:%M:%S")%></td>
+    <td>
+      <%= link_to '修改', edit_baosong_b_path(baosong_b), :class => "btn btn-xs btn-primary" %>
+      <%= link_to '删除', baosong_b, :class => "btn btn-xs btn-danger", method: :delete, data: { confirm: '你确定要删除?此操作相当危险,可能导致报送表取值错误,删除前请确认承受风险的能力' } %>
+    </td>
   </tr>
 <% end %>
 </table>
 
 <br />
 
-<%= link_to 'New Baosong b', new_baosong_b_path %>
+<%= link_to '新建报送分类B', new_baosong_b_path, :class => "btn btn-xs btn-primary" %>
