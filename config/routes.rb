@@ -16,6 +16,7 @@ Rails.application.routes.draw do
   get "ca_helper/verify_report"
   post "ca_helper/verify_report"
   get "beica_sso" => 'ca_helper#sso'
+	get "synchronize_info" => "ca_helper#account_sync"
   resources :xsbg_tt_data
   resources :xsbg_tts
   resources :sample_members do
@@ -248,6 +249,8 @@ Rails.application.routes.draw do
       post "hccz/list"
       get "hccz/list"
       get 'hccz/:cjbh/report' => 'hccz#report'
+			post "sp_bsbs/sync_sp_bsb"
+			post "spdata/sync_spdaum"
     end
   end
 

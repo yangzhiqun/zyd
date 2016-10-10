@@ -161,6 +161,13 @@ ActiveRecord::Schema.define(version: 20160819032913) do
 
   add_index "d_categories", ["deleted_at"], name: "index_d_categories_on_deleted_at", using: :btree
 
+  create_table "ejz_heartbeats", force: :cascade do |t|
+    t.integer  "application_id", limit: 4
+    t.text     "info",           limit: 65535
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "flexcontents", force: :cascade do |t|
     t.string   "flex_field",   limit: 255
     t.string   "flex_name",    limit: 255
@@ -234,6 +241,7 @@ ActiveRecord::Schema.define(version: 20160819032913) do
     t.string   "zipcode",           limit: 255
     t.string   "fax",               limit: 255
     t.integer  "jg_type",           limit: 4
+    t.string   "jg_code",           limit: 255
   end
 
   create_table "login_logs", force: :cascade do |t|
@@ -287,6 +295,7 @@ ActiveRecord::Schema.define(version: 20160819032913) do
     t.string   "prov",         limit: 255
     t.string   "jg",           limit: 255
     t.boolean  "auto_submit",                default: false
+    t.boolean  "is_ejz",                     default: false
   end
 
   add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true, using: :btree
@@ -1157,6 +1166,9 @@ ActiveRecord::Schema.define(version: 20160819032913) do
     t.integer  "blr_user_id",     limit: 4
     t.integer  "tbr_user_id",     limit: 4
     t.integer  "shr_user_id",     limit: 4
+    t.integer  "application_id",  limit: 4
+    t.integer  "note",            limit: 4
+    t.boolean  "via_api",                       default: false
   end
 
   create_table "spdata", force: :cascade do |t|
@@ -1524,6 +1536,7 @@ ActiveRecord::Schema.define(version: 20160819032913) do
     t.integer  "hccz_type",              limit: 4,     default: 0
     t.string   "ca_uuid",                limit: 50
     t.integer  "ca_user_status",         limit: 4
+    t.string   "user_code",              limit: 255
   end
 
   add_index "users", ["name"], name: "index_name", using: :btree
@@ -1774,6 +1787,8 @@ ActiveRecord::Schema.define(version: 20160819032913) do
     t.boolean  "part_submit_flag5",                 default: false
     t.boolean  "part_submit_flag6",                 default: false
     t.boolean  "part_submit_flag7",                 default: false
+    t.integer  "application_id",      limit: 4
+    t.boolean  "via_api",                           default: false
   end
 
   add_index "wtyp_czb_parts", ["cjbh"], name: "index_wtyp_czb_parts_on_cjbh", using: :btree
@@ -1895,6 +1910,9 @@ ActiveRecord::Schema.define(version: 20160819032913) do
     t.boolean  "part_submit_flag5",                    default: false
     t.boolean  "part_submit_flag6",                    default: false
     t.boolean  "part_submit_flag7",                    default: false
+    t.integer  "application_id",         limit: 4
+    t.boolean  "via_api",                              default: false
+    t.string   "note",                   limit: 256
   end
 
   add_index "wtyp_czbs", ["bsscqymc"], name: "index_wtyp_czbs_on_bsscqymc", using: :btree
