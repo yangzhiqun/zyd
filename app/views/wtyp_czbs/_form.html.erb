@@ -291,7 +291,7 @@
       <tr>
         <th colspan="4">报告书编号</th>
         <td colspan="26">
-          <a target="_blank" href="/sp_bsbs/<%= @wtyp_czb.wtyp_sp_bsbs_id %>/print.pdf"><%= @wtyp_czb.bgsbh %></a>
+          <a target="_blank" href="/sp_bsbs/<%= @wtyp_czb.wtyp_sp_bsbs_id %>/print"><%= @wtyp_czb.bgsbh %></a>
           <% if @sp_bsb.xsbg_file_path.present? %>
               &emsp;&emsp;<a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @sp_bsb.id %>/xsbg_24h"><i class="glyphicon glyphicon-download-alt"></i>24小时限时报告</a>
           <% end %>

@@ -354,12 +354,27 @@
       level2: "<%= @sp_bsb.sp_s_220 %>",
       level3: "<%= @sp_bsb.sp_s_221 %>"
     });
-    $("#sp_bsb_sp_d_22, #sp_bsb_sp_d_28, #sp_bsb_sp_d_38, #sp_bsb_sp_d_46, #sp_bsb_sp_d_86, #sp_bsb_sp_s_209").datepicker({
+    $("#sp_bsb_sp_d_22, /*#sp_bsb_sp_d_28 #sp_bsb_sp_d_38,*/ #sp_bsb_sp_d_46, #sp_bsb_sp_d_86, #sp_bsb_sp_s_209").datepicker({
       dateFormat: "yy-mm-dd",
       changeMonth: true,
       changeYear: true,
       maxDate: new Date()
     });
+    var issa = false;
+    <% if current_user.is_super? %>
+    issa = true;
+    <% end %>
+    if ($('#sp_bsb_sp_s_reason').val() == '' || $('#sp_bsb_sp_s_reason').val() == undefined || $('#sp_bsb_sp_s_reason').val() == null || issa || $('#sp_bsb_sp_s_70').val() == '抽检监测（总局本级一司）' || $('#sp_bsb_sp_s_70').val() == '抽检监测（三司专项）' || $('#sp_bsb_sp_s_70').val() == '抽检监测（二司专项）'){
+      $("#sp_bsb_sp_d_38, #sp_bsb_sp_d_28").datepicker({
+        dateFormat: "yy-mm-dd",
+        changeMonth: true,
+        changeYear: true,
+        maxDate: new Date()
+      });
+    }
+    if ($('#sp_bsb_sp_s_reason').val() != '' && $('#sp_bsb_sp_s_reason').val() != undefined && $('#sp_bsb_sp_s_reason').val() != null && !issa && $('#sp_bsb_sp_s_70').val() != '抽检监测（总局本级一司）' && $('#sp_bsb_sp_s_70').val() != '抽检监测（三司专项）' && $('#sp_bsb_sp_s_70').val() != '抽检监测（二司专项）'){
+      $("#sp_bsb_sp_s_13, #sp_bsb_sp_s_14, #sp_bsb_sp_s_215").attr({readonly:"true"});
+    }
     <% if [5, 9].include? @sp_bsb["sp_i_state"] %>
     $("#sp_bsb_sp_d_47").datepicker({
       dateFormat: "yy-mm-dd",
