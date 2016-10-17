@@ -44,7 +44,7 @@ class BaosongBsController < ApplicationController
         format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.select("id, name, identifier")} }
       else
        # format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province).select("id, name, identifier")} }
-        if info.length == 0 or (info.length > 0 and info1.length == 0) or (info.length > 0 and info2.length == 0)
+        if info.length == 0 or (info.length > 0 and info1.length == 0 and info2.length == 0) or (info.length > 0 and info2.length == 0)
           format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.select("id, name, identifier")} }
         else
           format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.where("prov in (?)",info).select("id, name, identifier")} }
