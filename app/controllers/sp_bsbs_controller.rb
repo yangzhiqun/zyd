@@ -277,6 +277,7 @@ class SpBsbsController < ApplicationController
     @sp_bsb.sp_s_39 = current_user.tel
     @sp_bsb.sp_s_52 = current_user.user_s_province
     @sp_bsb.sp_s_71 = '未检验'
+		@sp_bsb.sp_s_202 = current_user.user_s_province
     if current_user.jg_bsb
       @sp_bsb.sp_s_40 = current_user.jg_bsb.jg_contacts
       @sp_bsb.sp_s_41 = current_user.jg_bsb.jg_tel
