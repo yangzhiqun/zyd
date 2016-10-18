@@ -695,7 +695,7 @@
         return false;
       }
 
-      <%@check=[1,2,3,4,5,6,7,8,11,12,14,16,21,24,30,33,35,36,37,39,40,41,42,61,62,63,65,70]%>
+      <%@check=[1,2,3,4,5,6,7,8,11,12,14,16,21,24,30,33,35,36,37,39,40,41,42,61,62,63,65,70,220,221]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
         var info = "";
@@ -784,6 +784,12 @@
         if(info==65){
           info = "标识生产企业地址，详细地址";
         }
+        if(info==220){
+          info = "标识生产企业地址,市级";
+        }
+        if(info==221){
+          info = "标识生产企业地址,县级";
+        }
         alert(info + " ,该项为必填项");
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
@@ -861,6 +867,13 @@
       if (!confirm('确定提交吗？')) {
         return false;
       }
+			
+			var file1 = $.trim($("#sp_bsb_cyd_file").val());
+			var file2 = $.trim($("#sp_bsb_cyjygzs_file").val());
+			if(file1 == '' || file2 == ''){
+				alert("请填写完整【抽样单电子版】和【抽样检验告知电子版】");
+				return false;
+			}
 
       varDate = $("#sp_bsb_sp_d_86").val();
       varData = varDate.split("-");
