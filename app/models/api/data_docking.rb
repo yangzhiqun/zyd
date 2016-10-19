@@ -5,7 +5,6 @@ class API::DataDocking
 	
 	class << self
 		
-
 		# 用户对应Hash
 		User_data_hash = {"tname": "userName", "id_card": "userIdcardNum", "email": "userEmail", "state": "userStatus", "user_s_province": "", "user_code": "userIdCode", "mobile": "userPhone"}
 			
