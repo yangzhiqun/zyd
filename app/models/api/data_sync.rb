@@ -25,7 +25,7 @@ module Api::DataSync
 					dept_docking = API::DataDocking.convert_org(result["info"]) 
 					if result["info"]["orgUpCodeNumber"] != "root"
 						name = select_up_number(result["info"]["orgUpCodeNumber"])
-						dept_docking["jg_province"] = name
+						dept_docking[:jg_province] = name
 					end
 					if !dept.blank?
 						up_result = dept.update_attributes(dept_docking)
