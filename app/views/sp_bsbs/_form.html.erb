@@ -697,7 +697,7 @@
 
       <%@check=[1,2,3,4,5,6,7,8,11,12,14,16,21,24,30,33,35,36,37,39,40,41,42,61,62,63,65,70,220,221]%>
       <%@check.each do |i|%>
-      if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
+      if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0 || $("#sp_bsb_sp_s_" +<%=i%>).val() == '请选择') {
         var info = "";
         info = "<%=i%>";
         if(info==70){
@@ -870,7 +870,8 @@
 			
 			var file1 = $.trim($("#sp_bsb_cyd_file").val());
 			var file2 = $.trim($("#sp_bsb_cyjygzs_file").val());
-			if(file1 == '' || file2 == ''){
+			var pdf_length = $("a.btn.btn-default.btn-xs").length;
+			if((file1 == '' || file2 == '')&&(pdf_length==0)){
 				alert("请填写完整【抽样单电子版】和【抽样检验告知电子版】");
 				return false;
 			}
