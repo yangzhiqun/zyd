@@ -30,12 +30,16 @@ class BaosongBsController < ApplicationController
       data<<da.super_jg_bsb_id
     end
     info1 = [] #存储上级是否到市级
+    info3 = [] #存储上级是否是省
     data.each do |daa|
       @jgBsb_info = JgBsb.find_by_id(daa)
       if !@jgBsb_info.nil? and !@jgBsb_info.blank?
         if !@jgBsb_info.city.nil? and !@jgBsb_info.city.blank? and !@jgBsb_info.city.include?("请选择")
-          info.<<@jgBsb_info.city
-          info1.<<@jgBsb_info.city
+          info<<@jgBsb_info.city
+          info1<<@jgBsb_info.city
+        end
+        if !@jgBsb_info.jg_province.nil? and !@jgBsb_info.jg_province.blank? and !@jgBsb_info.jg_province.include?("请选择")
+          info3<<@jgBsb_info.jg_province
         end
       end
     end
@@ -43,8 +47,8 @@ class BaosongBsController < ApplicationController
       if current_user.is_admin?
         format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.select("id, name, identifier")} }
       else
-       # format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province).select("id, name, identifier")} }
-        if info.length == 0 or (info.length > 0 and info1.length == 0 and info2.length == 0) or (info.length > 0 and info2.length == 0)
+        # format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province).select("id, name, identifier")} }
+        if info.length == 0 or (info.length > 0 and info1.length == 0 and info2.length == 0) or (info.length > 0 and info2.length == 0) or (info.length > 0 and info1.length ==0 and info2.length > 0 and info3.length > 0)
           format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.select("id, name, identifier")} }
         else
           format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.where("prov in (?)",info).select("id, name, identifier")} }
@@ -52,6 +56,7 @@ class BaosongBsController < ApplicationController
       end
     end
   end
+
 
   # GET /baosong_bs/1
   # GET /baosong_bs/1.json
