@@ -52,7 +52,7 @@ class WtypCzbsController < ApplicationController
 
     # 生产部分
     # 生产部分核查处置仅包含：生产 & 流通
-    if !@sp_bsb.sp_s_68.eql?("餐饮")
+    if !@sp_bsb.sp_s_68.eql?("餐饮") or (@sp_bsb.sp_s_68.eql?('餐饮') and @sp_bsb.sp_s_63.eql?('预包装'))
       @part_sc = WtypCzbPart.where(wtyp_czb_type: WtypCzbPart::Type::SC, wtyp_czb_id: @wtyp_czb.id).first
     end
 

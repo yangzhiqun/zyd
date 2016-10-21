@@ -47,7 +47,7 @@ class BaosongBsController < ApplicationController
       if current_user.is_admin?
         format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.select("id, name, identifier")} }
       else
-       # format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province).select("id, name, identifier")} }
+        # format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province).select("id, name, identifier")} }
         if info.length == 0 or (info.length > 0 and info1.length == 0 and info2.length == 0) or (info.length > 0 and info2.length == 0) or (info.length > 0 and info1.length ==0 and info2.length > 0 and info3.length > 0)
           format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.select("id, name, identifier")} }
         else
@@ -56,6 +56,7 @@ class BaosongBsController < ApplicationController
       end
     end
   end
+
 
   # GET /baosong_bs/1
   # GET /baosong_bs/1.json
