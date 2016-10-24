@@ -26,7 +26,7 @@
 </style>
 <script type="text/javascript">
   app.value('BaosongB', <%= @baosong_b.to_json.html_safe %>);
-   var info = '<%= SysProvince.level1.map { |p| [p.name, p.name] }.unshift(['不限制', nil]).to_json.html_safe %>';
+   var info = '<%= SysProvince.level1.map { |p| [p.name, p.name] }.unshift(['不限制', '']).to_json.html_safe %>';
   $(function(){
     var reg = /&quot;/ig;
     var sNewStr = info.replace(reg,'"');
@@ -42,9 +42,9 @@
       emptytext: "",       //空值的默认文本
       mode: "inline",            //编辑框的模式：支持popup和inline两种模式，默认是popup
       validate: function (value) { //字段验证
-        if (!$.trim(value)) {
-          return '不能为空';
-        }
+       // if (!$.trim(value)) {
+       //   return '不能为空';
+       // }
       },
       success:function(a,b){
         var params = { baosong_b: {}};
