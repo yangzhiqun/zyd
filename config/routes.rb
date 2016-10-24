@@ -66,6 +66,7 @@ Rails.application.routes.draw do
   resources :baosong_bs do
     collection do
       get "by_name" => "baosong_bs#baosong_bs_by_name"
+      get "by_cityname" => "baosong_bs#baosong_bs_by_cityname"
     end
 
     member do
