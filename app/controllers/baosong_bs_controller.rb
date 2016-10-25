@@ -14,12 +14,12 @@ class BaosongBsController < ApplicationController
   def baosong_bs_by_name
     @baosong_a = BaosongA.find_by_name(params[:a_name])
     respond_to do |format|
-      if current_user.is_admin?
+     # if current_user.is_admin?
         format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.select("id, name, identifier")} }
-      else
+     # else
       #  format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province).select("id, name, identifier")} }
-        format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.select("id, name, identifier")} }
-      end
+       # format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.select("id, name, identifier")} }
+     # end
     end
   end
   def baosong_bs_by_cityname

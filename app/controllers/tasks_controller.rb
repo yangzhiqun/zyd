@@ -37,9 +37,9 @@ class TasksController < ApplicationController
 
         @baosong_bs = baosong_a.baosong_bs
 
-        if !current_user.is_admin?
-          @baosong_bs = @baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province)
-        end
+       # if !current_user.is_admin?
+       #   @baosong_bs = @baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province)
+       # end
 
         # 如果baosong_b不为空，则取出 @baosong_b
         unless params[:baosong_b].blank?
@@ -88,9 +88,9 @@ class TasksController < ApplicationController
           @baosong_bs = BaosongB.where(:baosong_a_id => @baosong_a.id)
 
           @baosong_b = @baosong_bs.where(name: params[:baosong_b]).last
-          if !current_user.is_admin?
-            @baosong_bs = @baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province)
-          end
+        #  if !current_user.is_admin?
+        #    @baosong_bs = @baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province)
+        #  end
         else
           @baosong_bs = []
         end
@@ -268,9 +268,9 @@ class TasksController < ApplicationController
       @baosong_bs = @baosong_a.baosong_bs
 
       @baosong_b = @baosong_bs.where(name: params[:baosong_b]).last
-      if !current_user.is_admin?
-        @baosong_bs = @baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province)
-      end
+      #if !current_user.is_admin?
+      #  @baosong_bs = @baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province)
+      #end
     end
 
     @tasks = TaskJgBsb.where(:jg_bsb_id => @jg_bsb.id)
