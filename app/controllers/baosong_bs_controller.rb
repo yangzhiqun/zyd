@@ -18,7 +18,7 @@ class BaosongBsController < ApplicationController
         format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.select("id, name, identifier")} }
       else
       #  format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province).select("id, name, identifier")} }
-        format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.where(" prov IS NULL OR prov = ''").select("id, name, identifier")} }
+        format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.select("id, name, identifier")} }
       end
     end
   end
