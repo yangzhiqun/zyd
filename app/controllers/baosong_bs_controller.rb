@@ -11,17 +11,62 @@ class BaosongBsController < ApplicationController
       format.json { render json: @baosong_bs }
     end
   end
-
   def baosong_bs_by_name
     @baosong_a = BaosongA.find_by_name(params[:a_name])
+    respond_to do |format|
+     # if current_user.is_admin?
+        format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.select("id, name, identifier")} }
+     # else
+      #  format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province).select("id, name, identifier")} }
+       # format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.select("id, name, identifier")} }
+     # end
+    end
+  end
+  def baosong_bs_by_cityname
+    @baosong_a = BaosongA.find_by_name(params[:a_name])
+    @jgBsb = JgBsb.find_by_id(current_user.jg_bsb_id)
+    info=[]
+    info2=[]
+    if !@jgBsb.nil? and !@jgBsb.blank?
+      if !@jgBsb.city.nil? and !@jgBsb.city.blank? and !@jgBsb.city.include?("请选择")
+        info<<@jgBsb.city
+        info2<<@jgBsb.city
+      end
+    end
+    #@superjgBsb = JgBsbSuper.find_by_jg_bsb_id(current_user.jg_bsb_id).groupBy("super_jg_bsb_id")
+    @superjgBsb = JgBsbSuper.find_by_sql(["select super_jg_bsb_id from jg_bsb_supers where jg_bsb_id =? group by super_jg_bsb_id",current_user.jg_bsb_id])
+    data=[]
+    @superjgBsb.each_with_index do |da,n|
+      data<<da.super_jg_bsb_id
+    end
+    info1 = [] #存储上级是否到市级
+    info3 = [] #存储上级是否是省
+    data.each do |daa|
+      @jgBsb_info = JgBsb.find_by_id(daa)
+      if !@jgBsb_info.nil? and !@jgBsb_info.blank?
+        if !@jgBsb_info.city.nil? and !@jgBsb_info.city.blank? and !@jgBsb_info.city.include?("请选择")
+          info<<@jgBsb_info.city
+          info1<<@jgBsb_info.city
+        end
+        if !@jgBsb_info.jg_province.nil? and !@jgBsb_info.jg_province.blank? and !@jgBsb_info.jg_province.include?("请选择")
+          info3<<@jgBsb_info.jg_province
+        end
+      end
+    end
     respond_to do |format|
       if current_user.is_admin?
         format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.select("id, name, identifier")} }
       else
-        format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province).select("id, name, identifier")} }
+        # format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province).select("id, name, identifier")} }
+        if info.length == 0 or (info.length > 0 and info1.length == 0 and info2.length == 0) or (info.length > 0 and info2.length == 0) or (info.length > 0 and info1.length ==0 and info2.length > 0 and info3.length > 0)
+          format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.select("id, name, identifier")} }
+        else
+          format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.where("prov in (?)",info).select("id, name, identifier")} }
+        end
       end
     end
   end
+
 
   # GET /baosong_bs/1
   # GET /baosong_bs/1.json

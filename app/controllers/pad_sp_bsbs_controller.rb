@@ -148,12 +148,20 @@ class PadSpBsbsController < ApplicationController
     # @sp_bsb.sp_s_37=session[:user_tname]
     @sp_bsb.sp_s_39=current_user.tel
     @sp_bsb.sp_s_52=current_user.user_s_province
-
+    @sp_bsb.sp_s_202 = current_user.user_s_province
     if params[:rwly].to_i != 0
       if params[:rwly].to_i == -1
         @sp_bsb.sp_s_2_1 = "#{SysConfig.get(SysConfig::Key::PROV)}食品药品监督管理局"
       else
-        @sp_bsb.sp_s_2_1 = SysProvince.level1.find(params[:rwly].to_i).name + '食品药品监督管理局'
+       # info = "";
+       # if  current_user.prov_country.nil? or current_user.prov_country.blank? or  %w{ 请选择 }.include?(current_user.prov_country)
+        #  info = current_user.prov_city;
+        #  @sp_bsb.sp_s_2_1 = SysProvince.level1.find(params[:rwly].to_i).name + '食品药品监督管理局'
+        #else
+        #  info = current_user.prov_country;
+          @sp_bsb.sp_s_2_1 = SysProvince.level2.find(params[:rwly].to_i).name + '食品药品监督管理局'
+        #end
+
       end
       @sp_bsb.sys_province_id = params[:rwly].to_i
     end
