@@ -61,7 +61,7 @@ class BaosongBsController < ApplicationController
         if info.length == 0 or (info.length > 0 and info1.length == 0 and info2.length == 0) or (info.length > 0 and info2.length == 0) or (info.length > 0 and info1.length ==0 and info2.length > 0 and info3.length > 0)
           format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.select("id, name, identifier")} }
         else
-          format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.where("prov in (?)",info).select("id, name, identifier")} }
+          format.json { render json: {status: "OK", msg: "", data: @baosong_a.baosong_bs.where("prov in (?) or prov = '省级任务'",info).select("id, name, identifier")} }
         end
       end
     end
