@@ -7,7 +7,7 @@ development:
   database: tdepot_demo_production_ceshi
   pool: 25
   username: root
-  password: 123456
+  password: admin
 
 production:
   adapter: mysql2
@@ -17,4 +17,4 @@ production:
   pool: 25
   #host: '10.0.39.208'
   username: root
-  password: 123456
+  password: admin
