@@ -26,13 +26,53 @@
 </style>
 <script type="text/javascript">
   app.value('BaosongB', <%= @baosong_b.to_json.html_safe %>);
+   var info = '<%= SysProvince.level1.map { |p| [p.name, p.name] }.unshift(['不限制', ''],['省级任务', '省级任务']).to_json.html_safe %>';
+  $(function(){
+    var reg = /&quot;/ig;
+    var sNewStr = info.replace(reg,'"');
+    sNewStr = eval("(" + sNewStr + ")");
+    sNewStr = sNewStr.map(function(ary){
+      return {value : ary[1], text : ary[0]};
+    });
+    $('#department').editable({
+      type: "select",              //编辑框的类型。支持text|textarea|select|date|checklist等
+      source: sNewStr,//[{ value: "开发部", text: "开发部" }, { value: "销售部", text: "销售部" }, {value:"行政部",text:"行政部"}],
+      title: "选择区域",           //编辑框的标题
+      disabled: false,           //是否禁用编辑
+      emptytext: "",       //空值的默认文本
+      mode: "inline",            //编辑框的模式：支持popup和inline两种模式，默认是popup
+      validate: function (value) { //字段验证
+       // if (!$.trim(value)) {
+       //   return '不能为空';
+       // }
+      },
+      success:function(a,b){
+        var params = { baosong_b: {}};
+        params.baosong_b['prov'] = b;
+        $.ajax({
+          url: '/baosong_bs/'+'<%=@baosong_b.id%>'+'.json',
+          data:params,
+          type: 'PUT',
+          success: function( response ,v) {
+           // console.log(v);
+          }
+        });
+
+      }
+    });
+  });
 </script>
 <div data-ng-controller="PlanMakerCtrl">
   <div class="form-group">
     <label>名称：</label>
     <a href="javascript:void(0);" onbeforesave="updateBaosongB('name', $data)" e-style="width: 400px;" editable-text="baosong_b.name">{{baosong_b.name}}</a>
   </div>
-
+  <div class="form-group">
+     <label>所在区域：</label>
+    <!--  <a href="javascript:void(0);" onbeforesave="updateBaosongB('prov', $data)" e-style="width: 400px;" editable-select="baosong_b.prov">{{baosong_b.prov || '无限制'}}</a>-->
+      <a href="#" id="department"  e-style="width: 400px;" >{{baosong_b.prov || '无限制'}}</a>
+    <!-- <#%= select :prov, options_for_select(SysProvince.level1.map { |p| [p.name, p.name] }.unshift(['不限制', nil]), @baosong_b.prov), {}, :class => 'form-control input-sm' %>-->
+ </div>
   <div class="form-group">
     <label>备注：</label>
     <a href="javascript:void(0);" onbeforesave="updateBaosongB('note', $data)" e-style="width: 400px;" e-rows="10" editable-textarea="baosong_b.note">{{baosong_b.note || '无备注'}}</a>

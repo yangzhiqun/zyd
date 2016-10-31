@@ -63,7 +63,7 @@
         <div class="field">
           <label>市/区</label>
           <br>
-          <%= f.select :prov, options_for_select(SysProvince.level1.map{|p| [p.name, p.name]}.unshift(["不限制", nil])), {}, :class => "form-control input-sm"%>
+          <%= f.select :prov, options_for_select(SysProvince.level1.map{|p| [p.name, p.name]}.unshift(["不限制", nil],["省级任务","省级任务"])), {}, :class => "form-control input-sm"%>
         </div>
 
         <%= f.hidden_field :baosong_a_id %>

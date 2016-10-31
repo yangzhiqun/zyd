@@ -354,12 +354,27 @@
       level2: "<%= @sp_bsb.sp_s_220 %>",
       level3: "<%= @sp_bsb.sp_s_221 %>"
     });
-    $("#sp_bsb_sp_d_22, #sp_bsb_sp_d_28, #sp_bsb_sp_d_38, #sp_bsb_sp_d_46, #sp_bsb_sp_d_86, #sp_bsb_sp_s_209").datepicker({
+    $("#sp_bsb_sp_d_22, /*#sp_bsb_sp_d_28 #sp_bsb_sp_d_38,*/ #sp_bsb_sp_d_46, #sp_bsb_sp_d_86, #sp_bsb_sp_s_209").datepicker({
       dateFormat: "yy-mm-dd",
       changeMonth: true,
       changeYear: true,
       maxDate: new Date()
     });
+    var issa = false;
+    <% if current_user.is_super? %>
+    issa = true;
+    <% end %>
+    if ($('#sp_bsb_sp_s_reason').val() == '' || $('#sp_bsb_sp_s_reason').val() == undefined || $('#sp_bsb_sp_s_reason').val() == null || issa || $('#sp_bsb_sp_s_70').val() == '抽检监测（总局本级一司）' || $('#sp_bsb_sp_s_70').val() == '抽检监测（三司专项）' || $('#sp_bsb_sp_s_70').val() == '抽检监测（二司专项）'){
+      $("#sp_bsb_sp_d_38, #sp_bsb_sp_d_28").datepicker({
+        dateFormat: "yy-mm-dd",
+        changeMonth: true,
+        changeYear: true,
+        maxDate: new Date()
+      });
+    }
+    if ($('#sp_bsb_sp_s_reason').val() != '' && $('#sp_bsb_sp_s_reason').val() != undefined && $('#sp_bsb_sp_s_reason').val() != null && !issa && $('#sp_bsb_sp_s_70').val() != '抽检监测（总局本级一司）' && $('#sp_bsb_sp_s_70').val() != '抽检监测（三司专项）' && $('#sp_bsb_sp_s_70').val() != '抽检监测（二司专项）'){
+      $("#sp_bsb_sp_s_13, #sp_bsb_sp_s_14, #sp_bsb_sp_s_215").attr({readonly:"true"});
+    }
     <% if [5, 9].include? @sp_bsb["sp_i_state"] %>
     $("#sp_bsb_sp_d_47").datepicker({
       dateFormat: "yy-mm-dd",
@@ -424,7 +439,7 @@
     $('#sp_bsb_sp_s_70').change(function () {
       var o = $(this);
       if (o.val() != '') {
-        $.get('/baosong_bs/by_name.json', {a_name: o.val()}, function (data) {
+        $.get('/baosong_bs/by_cityname.json', {a_name: o.val()}, function (data) {
           if (data.status == 'OK') {
             $('#sp_bsb_sp_s_17, #sp_bsb_sp_s_18, #sp_bsb_sp_s_19, #sp_bsb_sp_s_20').empty();
             render_spec_list([]);
@@ -680,9 +695,9 @@
         return false;
       }
 
-      <%@check=[1,2,3,4,5,6,7,8,11,12,14,16,21,24,30,33,35,36,37,39,40,41,42,61,62,63,65,70]%>
+      <%@check=[1,2,3,4,5,6,7,8,11,12,14,16,21,24,30,33,35,36,37,39,40,41,42,61,62,63,65,70,220,221]%>
       <%@check.each do |i|%>
-      if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
+      if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0 || $("#sp_bsb_sp_s_" +<%=i%>).val() == '请选择') {
         var info = "";
         info = "<%=i%>";
         if(info==70){
@@ -769,6 +784,12 @@
         if(info==65){
           info = "标识生产企业地址，详细地址";
         }
+        if(info==220){
+          info = "标识生产企业地址,市级";
+        }
+        if(info==221){
+          info = "标识生产企业地址,县级";
+        }
         alert(info + " ,该项为必填项");
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
@@ -846,6 +867,14 @@
       if (!confirm('确定提交吗？')) {
         return false;
       }
+			
+			var file1 = $.trim($("#sp_bsb_cyd_file").val());
+			var file2 = $.trim($("#sp_bsb_cyjygzs_file").val());
+			var pdf_length = $("a.btn.btn-default.btn-xs").length;
+			if((file1 == '' || file2 == '')&&(pdf_length==0)){
+				alert("请填写完整【抽样单电子版】和【抽样检验告知电子版】");
+				return false;
+			}
 
       varDate = $("#sp_bsb_sp_d_86").val();
       varData = varDate.split("-");

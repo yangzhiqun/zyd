@@ -277,6 +277,7 @@ class SpBsbsController < ApplicationController
     @sp_bsb.sp_s_39 = current_user.tel
     @sp_bsb.sp_s_52 = current_user.user_s_province
     @sp_bsb.sp_s_71 = '未检验'
+		@sp_bsb.sp_s_202 = current_user.user_s_province
     if current_user.jg_bsb
       @sp_bsb.sp_s_40 = current_user.jg_bsb.jg_contacts
       @sp_bsb.sp_s_41 = current_user.jg_bsb.jg_tel
@@ -466,24 +467,50 @@ class SpBsbsController < ApplicationController
         # end
         @sp_bsb.submit_d_flag = @sp_bsb.updated_at
 
-        if @sp_bsb.save
-          unless params[:spdata].blank?
-            params[:spdata].delete_if { |data| data.keys.length == 1 }
-            params[:spdata].each do |data|
-              data.delete(:id)
-              data[:sp_bsb_id] = @sp_bsb.id
-              Spdatum.create!(data.as_json)
-            end
-          end
-          format.json { render :json => {:status => "保存成功!", :msg => "保存成功!"} }
-          format.html { redirect_to "/sp_bsbs/#{@sp_bsb.id}" }
-        else
-          format.json { render :json => {:status => "保存出错!", :msg => "提交失败！#{@sp_bsb.errors.first.last}"} }
+        if @sp_bsb.changes.has_key?('sp_i_state') and @sp_bsb.changes['sp_i_state'][1] == 2  and (@sp_bsb.cyd_file.blank? or @sp_bsb.cyjygzs_file.blank?)
+          format.json { render :json => {:status => "保存出错!", :msg => "请填写完整【抽样单电子版】和【抽样检验告知书电子版"} }
           format.html {
-            flash[:import_result] = "提交失败，#{@sp_bsb.errors.first.last}"
-            render action: 'new'
+            redirect_to :back, :flash => {import_result: "请填写完整【抽样单电子版】和【抽样检验告知书电子版】"}
           }
+        else
+          if @sp_bsb.save
+            unless params[:spdata].blank?
+              params[:spdata].delete_if { |data| data.keys.length == 1 }
+              params[:spdata].each do |data|
+                data.delete(:id)
+                data[:sp_bsb_id] = @sp_bsb.id
+                Spdatum.create!(data.as_json)
+              end
+            end
+            SpLog.create(:sp_bsb_id => @sp_bsb.id, :sp_i_state => params[:sp_bsb][:sp_i_state], :remark => @role_name, :user_id => current_user.id)
+            format.json { render :json => {:status => "保存成功!", :msg => "保存成功!"} }
+            format.html { redirect_to "/sp_bsbs/#{@sp_bsb.id}" }
+          else
+            format.json { render :json => {:status => "保存出错!", :msg => "提交失败！#{@sp_bsb.errors.first.last}"} }
+            format.html {
+              flash[:import_result] = "提交失败，#{@sp_bsb.errors.first.last}"
+              render action: 'new'
+            }
+          end
         end
+#         if @sp_bsb.save
+#          unless params[:spdata].blank?
+#            params[:spdata].delete_if { |data| data.keys.length == 1 }
+#            params[:spdata].each do |data|
+#              data.delete(:id)
+#              data[:sp_bsb_id] = @sp_bsb.id
+#              Spdatum.create!(data.as_json)
+#            end
+#          end
+#          format.json { render :json => {:status => "保存成功!", :msg => "保存成功!"} }
+#          format.html { redirect_to "/sp_bsbs/#{@sp_bsb.id}" }
+#        else
+#          format.json { render :json => {:status => "保存出错!", :msg => "提交失败！#{@sp_bsb.errors.first.last}"} }
+#          format.html {
+#            flash[:import_result] = "提交失败，#{@sp_bsb.errors.first.last}"
+#            render action: 'new'
+#          }
+#        end
       end
     end
   end

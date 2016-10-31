@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160420084650) do
+ActiveRecord::Schema.define(version: 20160819032913) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -92,474 +92,8 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.string   "identifier",   limit: 255
     t.text     "msg",          limit: 65535
     t.integer  "user_id",      limit: 4
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
-  end
-
-  create_table "bjp_bsbs", force: :cascade do |t|
-    t.string   "bjp_s_1",        limit: 60
-    t.string   "bjp_s_2",        limit: 60
-    t.datetime "created_at",                                null: false
-    t.datetime "updated_at",                                null: false
-    t.string   "bjp_s_6",        limit: 100
-    t.string   "bjp_s_7",        limit: 60
-    t.string   "bjp_s_8",        limit: 60
-    t.string   "bjp_s_9",        limit: 60
-    t.string   "bjp_s_10",       limit: 60
-    t.string   "bjp_s_11",       limit: 60
-    t.string   "bjp_s_12",       limit: 60
-    t.string   "bjp_s_13",       limit: 60
-    t.string   "bjp_s_14",       limit: 60
-    t.string   "bjp_s_15",       limit: 30
-    t.string   "bjp_s_16",       limit: 30
-    t.string   "bjp_s_17",       limit: 30
-    t.string   "bjp_s_18",       limit: 30
-    t.string   "bjp_s_19",       limit: 30
-    t.string   "bjp_s_20",       limit: 30
-    t.string   "bjp_s_22",       limit: 30
-    t.date     "bjp_d_21"
-    t.string   "bjp_s_3",        limit: 60
-    t.string   "bjp_s_4",        limit: 60
-    t.string   "bjp_s_5",        limit: 60
-    t.string   "bjp_s_23",       limit: 30
-    t.decimal  "bjp_n_24",                   precision: 10
-    t.string   "bjp_s_25",       limit: 30
-    t.decimal  "bjp_n_26",                   precision: 10
-    t.string   "bjp_s_27",       limit: 30
-    t.string   "bjp_s_28",       limit: 60
-    t.string   "bjp_s_29",       limit: 60
-    t.string   "bjp_s_30",       limit: 60
-    t.string   "bjp_s_31",       limit: 60
-    t.string   "bjp_s_32",       limit: 30
-    t.string   "bjp_s_33",       limit: 30
-    t.date     "bjp_d_34"
-    t.string   "bjp_s_35",       limit: 30
-    t.string   "bjp_s_36",       limit: 30
-    t.string   "bjp_s_37",       limit: 255
-    t.string   "bjp_s_38",       limit: 30
-    t.string   "bjp_s_39",       limit: 255
-    t.string   "bjp_s_40",       limit: 255
-    t.string   "bjp_s_41",       limit: 255
-    t.date     "bjp_d_42"
-    t.date     "bjp_d_43"
-    t.string   "bjp_s_44",       limit: 60
-    t.string   "bjp_s_45",       limit: 60
-    t.string   "bjp_s_46",       limit: 60
-    t.string   "bjp_s_47",       limit: 60
-    t.string   "bjp_s_48",       limit: 60
-    t.string   "bjp_s_49",       limit: 60
-    t.string   "bjp_s_50",       limit: 60
-    t.string   "bjp_s_51",       limit: 60
-    t.string   "bjp_s_52",       limit: 60
-    t.string   "bjp_s_53",       limit: 60
-    t.string   "bjp_s_54",       limit: 60
-    t.string   "bjp_s_55",       limit: 60
-    t.string   "bjp_s_56",       limit: 60
-    t.string   "bjp_s_57",       limit: 60
-    t.string   "bjp_s_58",       limit: 60
-    t.string   "bjp_s_59",       limit: 60
-    t.string   "bjp_s_60",       limit: 60
-    t.string   "bjp_s_61",       limit: 60
-    t.string   "bjp_s_62",       limit: 60
-    t.string   "bjp_s_63",       limit: 60
-    t.string   "bjp_s_64",       limit: 60
-    t.string   "bjp_s_65",       limit: 255
-    t.string   "bjp_s_66",       limit: 255
-    t.string   "bjp_s_67",       limit: 255
-    t.string   "bjp_s_68",       limit: 255
-    t.string   "bjp_s_69",       limit: 255
-    t.string   "bjp_s_70",       limit: 255
-    t.string   "bjp_s_71",       limit: 255
-    t.string   "bjp_s_72",       limit: 255
-    t.string   "bjp_s_73",       limit: 255
-    t.string   "bjp_s_74",       limit: 255
-    t.string   "bjp_s_75",       limit: 255
-    t.string   "bjp_s_76",       limit: 255
-    t.string   "bjp_s_77",       limit: 255
-    t.string   "bjp_s_78",       limit: 255
-    t.string   "bjp_s_79",       limit: 255
-    t.string   "bjp_s_80",       limit: 255
-    t.string   "bjp_s_81",       limit: 255
-    t.string   "bjp_s_82",       limit: 255
-    t.string   "bjp_s_83",       limit: 255
-    t.string   "bjp_s_84",       limit: 255
-    t.string   "bjp_s_85",       limit: 255
-    t.string   "bjp_s_87",       limit: 255
-    t.string   "bjp_s_88",       limit: 255
-    t.string   "bjp_s_86",       limit: 255
-    t.string   "bjp_s_89",       limit: 255
-    t.string   "bjp_s_90",       limit: 255
-    t.string   "bjp_s_91",       limit: 255
-    t.string   "bjp_s_92",       limit: 255
-    t.string   "bjp_s_93",       limit: 255
-    t.string   "bjp_s_94",       limit: 255
-    t.date     "bjp_d_95"
-    t.string   "bjp_s_96",       limit: 255
-    t.string   "bjp_s_97",       limit: 255
-    t.string   "tname",          limit: 60
-    t.datetime "submit_d_flag"
-    t.decimal  "bjp_n_jcxcount",             precision: 10
-    t.string   "bjp_s_bsfl",     limit: 16
-    t.string   "bjp_s_2_1",      limit: 16
-    t.string   "bjp_s_40_1",     limit: 16
-    t.string   "bjp_s_110_1",    limit: 16
-    t.string   "bjp_s_110_2",    limit: 16
-    t.string   "bjp_s_110_3",    limit: 16
-    t.string   "bjp_s_110_4",    limit: 16
-    t.string   "bjp_s_110_5",    limit: 16
-    t.string   "bjp_s_110_6",    limit: 16
-    t.string   "bjp_s_110_7",    limit: 16
-    t.string   "bjp_s_110_8",    limit: 16
-    t.string   "bjp_s_111_1",    limit: 16
-    t.string   "bjp_s_111_2",    limit: 16
-    t.string   "bjp_s_111_3",    limit: 16
-    t.string   "bjp_s_111_4",    limit: 16
-    t.string   "bjp_s_111_5",    limit: 16
-    t.string   "bjp_s_111_6",    limit: 16
-    t.string   "bjp_s_111_7",    limit: 16
-    t.string   "bjp_s_111_8",    limit: 16
-    t.string   "bjp_s_112_1",    limit: 16
-    t.string   "bjp_s_112_2",    limit: 16
-    t.string   "bjp_s_112_3",    limit: 16
-    t.string   "bjp_s_112_4",    limit: 16
-    t.string   "bjp_s_112_5",    limit: 16
-    t.string   "bjp_s_112_6",    limit: 16
-    t.string   "bjp_s_112_7",    limit: 16
-    t.string   "bjp_s_112_8",    limit: 16
-    t.string   "bjp_s_113_1",    limit: 16
-    t.string   "bjp_s_113_2",    limit: 16
-    t.string   "bjp_s_113_3",    limit: 16
-    t.string   "bjp_s_113_4",    limit: 16
-    t.string   "bjp_s_113_5",    limit: 16
-    t.string   "bjp_s_113_6",    limit: 16
-    t.string   "bjp_s_113_7",    limit: 16
-    t.string   "bjp_s_113_8",    limit: 16
-    t.string   "bjp_s_114_1",    limit: 16
-    t.string   "bjp_s_114_2",    limit: 16
-    t.string   "bjp_s_114_3",    limit: 16
-    t.string   "bjp_s_114_4",    limit: 16
-    t.string   "bjp_s_114_5",    limit: 16
-    t.string   "bjp_s_114_6",    limit: 16
-    t.string   "bjp_s_114_7",    limit: 16
-    t.string   "bjp_s_114_8",    limit: 16
-    t.string   "bjp_s_115_1",    limit: 16
-    t.string   "bjp_s_115_2",    limit: 16
-    t.string   "bjp_s_115_3",    limit: 16
-    t.string   "bjp_s_115_4",    limit: 16
-    t.string   "bjp_s_115_5",    limit: 16
-    t.string   "bjp_s_115_6",    limit: 16
-    t.string   "bjp_s_115_7",    limit: 16
-    t.string   "bjp_s_115_8",    limit: 16
-    t.string   "bjp_s_116_1",    limit: 16
-    t.string   "bjp_s_116_2",    limit: 16
-    t.string   "bjp_s_116_3",    limit: 16
-    t.string   "bjp_s_116_4",    limit: 16
-    t.string   "bjp_s_116_5",    limit: 16
-    t.string   "bjp_s_116_6",    limit: 16
-    t.string   "bjp_s_116_7",    limit: 16
-    t.string   "bjp_s_116_8",    limit: 16
-    t.string   "bjp_s_117_1",    limit: 16
-    t.string   "bjp_s_117_2",    limit: 16
-    t.string   "bjp_s_117_3",    limit: 16
-    t.string   "bjp_s_117_4",    limit: 16
-    t.string   "bjp_s_117_5",    limit: 16
-    t.string   "bjp_s_117_6",    limit: 16
-    t.string   "bjp_s_117_7",    limit: 16
-    t.string   "bjp_s_117_8",    limit: 16
-    t.string   "bjp_s_118_1",    limit: 16
-    t.string   "bjp_s_118_2",    limit: 16
-    t.string   "bjp_s_118_3",    limit: 16
-    t.string   "bjp_s_118_4",    limit: 16
-    t.string   "bjp_s_118_5",    limit: 16
-    t.string   "bjp_s_118_6",    limit: 16
-    t.string   "bjp_s_118_7",    limit: 16
-    t.string   "bjp_s_118_8",    limit: 16
-    t.string   "bjp_s_119_1",    limit: 16
-    t.string   "bjp_s_119_2",    limit: 16
-    t.string   "bjp_s_119_3",    limit: 16
-    t.string   "bjp_s_119_4",    limit: 16
-    t.string   "bjp_s_119_5",    limit: 16
-    t.string   "bjp_s_119_6",    limit: 16
-    t.string   "bjp_s_119_7",    limit: 16
-    t.string   "bjp_s_119_8",    limit: 16
-    t.string   "bjp_s_120_1",    limit: 16
-    t.string   "bjp_s_120_2",    limit: 16
-    t.string   "bjp_s_120_3",    limit: 16
-    t.string   "bjp_s_120_4",    limit: 16
-    t.string   "bjp_s_120_5",    limit: 16
-    t.string   "bjp_s_120_6",    limit: 16
-    t.string   "bjp_s_120_7",    limit: 16
-    t.string   "bjp_s_120_8",    limit: 16
-    t.string   "bjp_s_121_1",    limit: 16
-    t.string   "bjp_s_121_2",    limit: 16
-    t.string   "bjp_s_121_3",    limit: 16
-    t.string   "bjp_s_121_4",    limit: 16
-    t.string   "bjp_s_121_5",    limit: 16
-    t.string   "bjp_s_121_6",    limit: 16
-    t.string   "bjp_s_121_7",    limit: 16
-    t.string   "bjp_s_121_8",    limit: 16
-    t.string   "bjp_s_122_1",    limit: 16
-    t.string   "bjp_s_122_2",    limit: 16
-    t.string   "bjp_s_122_3",    limit: 16
-    t.string   "bjp_s_122_4",    limit: 16
-    t.string   "bjp_s_122_5",    limit: 16
-    t.string   "bjp_s_122_6",    limit: 16
-    t.string   "bjp_s_122_7",    limit: 16
-    t.string   "bjp_s_122_8",    limit: 16
-    t.string   "bjp_s_123_1",    limit: 16
-    t.string   "bjp_s_123_2",    limit: 16
-    t.string   "bjp_s_123_3",    limit: 16
-    t.string   "bjp_s_123_4",    limit: 16
-    t.string   "bjp_s_123_5",    limit: 16
-    t.string   "bjp_s_123_6",    limit: 16
-    t.string   "bjp_s_123_7",    limit: 16
-    t.string   "bjp_s_123_8",    limit: 16
-    t.string   "bjp_s_124_1",    limit: 16
-    t.string   "bjp_s_124_2",    limit: 16
-    t.string   "bjp_s_124_3",    limit: 16
-    t.string   "bjp_s_124_4",    limit: 16
-    t.string   "bjp_s_124_5",    limit: 16
-    t.string   "bjp_s_124_6",    limit: 16
-    t.string   "bjp_s_124_7",    limit: 16
-    t.string   "bjp_s_124_8",    limit: 16
-    t.string   "bjp_s_125_1",    limit: 16
-    t.string   "bjp_s_125_2",    limit: 16
-    t.string   "bjp_s_125_3",    limit: 16
-    t.string   "bjp_s_125_4",    limit: 16
-    t.string   "bjp_s_125_5",    limit: 16
-    t.string   "bjp_s_125_6",    limit: 16
-    t.string   "bjp_s_125_7",    limit: 16
-    t.string   "bjp_s_125_8",    limit: 16
-    t.string   "bjp_s_126_1",    limit: 16
-    t.string   "bjp_s_126_2",    limit: 16
-    t.string   "bjp_s_126_3",    limit: 16
-    t.string   "bjp_s_126_4",    limit: 16
-    t.string   "bjp_s_126_5",    limit: 16
-    t.string   "bjp_s_126_6",    limit: 16
-    t.string   "bjp_s_126_7",    limit: 16
-    t.string   "bjp_s_126_8",    limit: 16
-    t.string   "bjp_s_127_1",    limit: 16
-    t.string   "bjp_s_127_2",    limit: 16
-    t.string   "bjp_s_127_3",    limit: 16
-    t.string   "bjp_s_127_4",    limit: 16
-    t.string   "bjp_s_127_5",    limit: 16
-    t.string   "bjp_s_127_6",    limit: 16
-    t.string   "bjp_s_127_7",    limit: 16
-    t.string   "bjp_s_127_8",    limit: 16
-    t.string   "bjp_s_128_1",    limit: 16
-    t.string   "bjp_s_128_2",    limit: 16
-    t.string   "bjp_s_128_3",    limit: 16
-    t.string   "bjp_s_128_4",    limit: 16
-    t.string   "bjp_s_128_5",    limit: 16
-    t.string   "bjp_s_128_6",    limit: 16
-    t.string   "bjp_s_128_7",    limit: 16
-    t.string   "bjp_s_128_8",    limit: 16
-    t.string   "bjp_s_129_1",    limit: 16
-    t.string   "bjp_s_129_2",    limit: 16
-    t.string   "bjp_s_129_3",    limit: 16
-    t.string   "bjp_s_129_4",    limit: 16
-    t.string   "bjp_s_129_5",    limit: 16
-    t.string   "bjp_s_129_6",    limit: 16
-    t.string   "bjp_s_129_7",    limit: 16
-    t.string   "bjp_s_129_8",    limit: 16
-    t.string   "bjp_s_130_1",    limit: 16
-    t.string   "bjp_s_130_2",    limit: 16
-    t.string   "bjp_s_130_3",    limit: 16
-    t.string   "bjp_s_130_4",    limit: 16
-    t.string   "bjp_s_130_5",    limit: 16
-    t.string   "bjp_s_130_6",    limit: 16
-    t.string   "bjp_s_130_7",    limit: 16
-    t.string   "bjp_s_130_8",    limit: 16
-    t.string   "bjp_s_131_1",    limit: 16
-    t.string   "bjp_s_131_2",    limit: 16
-    t.string   "bjp_s_131_3",    limit: 16
-    t.string   "bjp_s_131_4",    limit: 16
-    t.string   "bjp_s_131_5",    limit: 16
-    t.string   "bjp_s_131_6",    limit: 16
-    t.string   "bjp_s_131_7",    limit: 16
-    t.string   "bjp_s_131_8",    limit: 16
-    t.string   "bjp_s_132_1",    limit: 16
-    t.string   "bjp_s_132_2",    limit: 16
-    t.string   "bjp_s_132_3",    limit: 16
-    t.string   "bjp_s_132_4",    limit: 16
-    t.string   "bjp_s_132_5",    limit: 16
-    t.string   "bjp_s_132_6",    limit: 16
-    t.string   "bjp_s_132_7",    limit: 16
-    t.string   "bjp_s_132_8",    limit: 16
-    t.string   "bjp_s_133_1",    limit: 16
-    t.string   "bjp_s_133_2",    limit: 16
-    t.string   "bjp_s_133_3",    limit: 16
-    t.string   "bjp_s_133_4",    limit: 16
-    t.string   "bjp_s_133_5",    limit: 16
-    t.string   "bjp_s_133_6",    limit: 16
-    t.string   "bjp_s_133_7",    limit: 16
-    t.string   "bjp_s_133_8",    limit: 16
-    t.string   "bjp_s_134_1",    limit: 16
-    t.string   "bjp_s_134_2",    limit: 16
-    t.string   "bjp_s_134_3",    limit: 16
-    t.string   "bjp_s_134_4",    limit: 16
-    t.string   "bjp_s_134_5",    limit: 16
-    t.string   "bjp_s_134_6",    limit: 16
-    t.string   "bjp_s_134_7",    limit: 16
-    t.string   "bjp_s_134_8",    limit: 16
-    t.string   "bjp_s_135_1",    limit: 16
-    t.string   "bjp_s_135_2",    limit: 16
-    t.string   "bjp_s_135_3",    limit: 16
-    t.string   "bjp_s_135_4",    limit: 16
-    t.string   "bjp_s_135_5",    limit: 16
-    t.string   "bjp_s_135_6",    limit: 16
-    t.string   "bjp_s_135_7",    limit: 16
-    t.string   "bjp_s_135_8",    limit: 16
-    t.string   "bjp_s_136_1",    limit: 16
-    t.string   "bjp_s_136_2",    limit: 16
-    t.string   "bjp_s_136_3",    limit: 16
-    t.string   "bjp_s_136_4",    limit: 16
-    t.string   "bjp_s_136_5",    limit: 16
-    t.string   "bjp_s_136_6",    limit: 16
-    t.string   "bjp_s_136_7",    limit: 16
-    t.string   "bjp_s_136_8",    limit: 16
-    t.string   "bjp_s_137_1",    limit: 16
-    t.string   "bjp_s_137_2",    limit: 16
-    t.string   "bjp_s_137_3",    limit: 16
-    t.string   "bjp_s_137_4",    limit: 16
-    t.string   "bjp_s_137_5",    limit: 16
-    t.string   "bjp_s_137_6",    limit: 16
-    t.string   "bjp_s_137_7",    limit: 16
-    t.string   "bjp_s_137_8",    limit: 16
-    t.string   "bjp_s_138_1",    limit: 16
-    t.string   "bjp_s_138_2",    limit: 16
-    t.string   "bjp_s_138_3",    limit: 16
-    t.string   "bjp_s_138_4",    limit: 16
-    t.string   "bjp_s_138_5",    limit: 16
-    t.string   "bjp_s_138_6",    limit: 16
-    t.string   "bjp_s_138_7",    limit: 16
-    t.string   "bjp_s_138_8",    limit: 16
-    t.string   "bjp_s_139_1",    limit: 16
-    t.string   "bjp_s_139_2",    limit: 16
-    t.string   "bjp_s_139_3",    limit: 16
-    t.string   "bjp_s_139_4",    limit: 16
-    t.string   "bjp_s_139_5",    limit: 16
-    t.string   "bjp_s_139_6",    limit: 16
-    t.string   "bjp_s_139_7",    limit: 16
-    t.string   "bjp_s_139_8",    limit: 16
-    t.string   "bjp_s_140_1",    limit: 16
-    t.string   "bjp_s_140_2",    limit: 16
-    t.string   "bjp_s_140_3",    limit: 16
-    t.string   "bjp_s_140_4",    limit: 16
-    t.string   "bjp_s_140_5",    limit: 16
-    t.string   "bjp_s_140_6",    limit: 16
-    t.string   "bjp_s_140_7",    limit: 16
-    t.string   "bjp_s_140_8",    limit: 16
-    t.string   "bjp_s_110_9",    limit: 16
-    t.string   "bjp_s_111_9",    limit: 16
-    t.string   "bjp_s_112_9",    limit: 16
-    t.string   "bjp_s_113_9",    limit: 16
-    t.string   "bjp_s_114_9",    limit: 16
-    t.string   "bjp_s_115_9",    limit: 16
-    t.string   "bjp_s_116_9",    limit: 16
-    t.string   "bjp_s_117_9",    limit: 16
-    t.string   "bjp_s_118_9",    limit: 16
-    t.string   "bjp_s_119_9",    limit: 16
-    t.string   "bjp_s_120_9",    limit: 16
-    t.string   "bjp_s_121_9",    limit: 16
-    t.string   "bjp_s_122_9",    limit: 16
-    t.string   "bjp_s_123_9",    limit: 16
-    t.string   "bjp_s_124_9",    limit: 16
-    t.string   "bjp_s_125_9",    limit: 16
-    t.string   "bjp_s_126_9",    limit: 16
-    t.string   "bjp_s_127_9",    limit: 16
-    t.string   "bjp_s_128_9",    limit: 16
-    t.string   "bjp_s_129_9",    limit: 16
-    t.string   "bjp_s_130_9",    limit: 16
-    t.string   "bjp_s_131_9",    limit: 16
-    t.string   "bjp_s_132_9",    limit: 16
-    t.string   "bjp_s_133_9",    limit: 16
-    t.string   "bjp_s_134_9",    limit: 16
-    t.string   "bjp_s_135_9",    limit: 16
-    t.string   "bjp_s_136_9",    limit: 16
-    t.string   "bjp_s_137_9",    limit: 16
-    t.string   "bjp_s_138_9",    limit: 16
-    t.string   "bjp_s_139_9",    limit: 16
-    t.string   "bjp_s_140_9",    limit: 16
-    t.string   "bjp_s_110_0",    limit: 16
-    t.string   "bjp_s_111_0",    limit: 16
-    t.string   "bjp_s_112_0",    limit: 16
-    t.string   "bjp_s_113_0",    limit: 16
-    t.string   "bjp_s_114_0",    limit: 16
-    t.string   "bjp_s_115_0",    limit: 16
-    t.string   "bjp_s_116_0",    limit: 16
-    t.string   "bjp_s_117_0",    limit: 16
-    t.string   "bjp_s_118_0",    limit: 16
-    t.string   "bjp_s_119_0",    limit: 16
-    t.string   "bjp_s_120_0",    limit: 16
-    t.string   "bjp_s_121_0",    limit: 16
-    t.string   "bjp_s_122_0",    limit: 16
-    t.string   "bjp_s_123_0",    limit: 16
-    t.string   "bjp_s_124_0",    limit: 16
-    t.string   "bjp_s_125_0",    limit: 16
-    t.string   "bjp_s_126_0",    limit: 16
-    t.string   "bjp_s_127_0",    limit: 16
-    t.string   "bjp_s_128_0",    limit: 16
-    t.string   "bjp_s_129_0",    limit: 16
-    t.string   "bjp_s_130_0",    limit: 16
-    t.string   "bjp_s_131_0",    limit: 16
-    t.string   "bjp_s_132_0",    limit: 16
-    t.string   "bjp_s_133_0",    limit: 16
-    t.string   "bjp_s_134_0",    limit: 16
-    t.string   "bjp_s_135_0",    limit: 16
-    t.string   "bjp_s_136_0",    limit: 16
-    t.string   "bjp_s_137_0",    limit: 16
-    t.string   "bjp_s_138_0",    limit: 16
-    t.string   "bjp_s_139_0",    limit: 16
-    t.string   "bjp_s_140_0",    limit: 16
-    t.string   "bjp_s_110_10",   limit: 16
-    t.string   "bjp_s_111_10",   limit: 16
-    t.string   "bjp_s_112_10",   limit: 16
-    t.string   "bjp_s_113_10",   limit: 16
-    t.string   "bjp_s_114_10",   limit: 16
-    t.string   "bjp_s_115_10",   limit: 16
-    t.string   "bjp_s_116_10",   limit: 16
-    t.string   "bjp_s_117_10",   limit: 16
-    t.string   "bjp_s_118_10",   limit: 16
-    t.string   "bjp_s_119_10",   limit: 16
-    t.string   "bjp_s_120_10",   limit: 16
-    t.string   "bjp_s_121_10",   limit: 16
-    t.string   "bjp_s_122_10",   limit: 16
-    t.string   "bjp_s_123_10",   limit: 16
-    t.string   "bjp_s_124_10",   limit: 16
-    t.string   "bjp_s_125_10",   limit: 16
-    t.string   "bjp_s_126_10",   limit: 16
-    t.string   "bjp_s_127_10",   limit: 16
-    t.string   "bjp_s_128_10",   limit: 16
-    t.string   "bjp_s_129_10",   limit: 16
-    t.string   "bjp_s_130_10",   limit: 16
-    t.string   "bjp_s_131_10",   limit: 16
-    t.string   "bjp_s_132_10",   limit: 16
-    t.string   "bjp_s_133_10",   limit: 16
-    t.string   "bjp_s_134_10",   limit: 16
-    t.string   "bjp_s_135_10",   limit: 16
-    t.string   "bjp_s_136_10",   limit: 16
-    t.string   "bjp_s_137_10",   limit: 16
-    t.string   "bjp_s_138_10",   limit: 16
-    t.string   "bjp_s_139_10",   limit: 16
-    t.string   "bjp_s_140_10",   limit: 16
-    t.integer  "bjp_i_state",    limit: 4
-  end
-
-  create_table "bjpdata", force: :cascade do |t|
-    t.string   "bjpdata_0",  limit: 255
-    t.string   "bjpdata_1",  limit: 255
-    t.string   "bjpdata_2",  limit: 255
-    t.string   "bjpdata_3",  limit: 255
-    t.string   "bjpdata_4",  limit: 255
-    t.string   "bjpdata_5",  limit: 255
-    t.string   "bjpdata_6",  limit: 255
-    t.string   "bjpdata_7",  limit: 255
-    t.string   "bjpdata_8",  limit: 255
-    t.string   "bjpdata_9",  limit: 255
-    t.integer  "bjp_bsb_id", limit: 4
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "c_categories", force: :cascade do |t|
@@ -627,16 +161,11 @@ ActiveRecord::Schema.define(version: 20160420084650) do
 
   add_index "d_categories", ["deleted_at"], name: "index_d_categories_on_deleted_at", using: :btree
 
-  create_table "export_requests", force: :cascade do |t|
-    t.string   "content",     limit: 255
-    t.integer  "user_id",     limit: 4
-    t.datetime "begin_at"
-    t.datetime "end_at"
-    t.string   "result_path", limit: 255
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
-    t.integer  "state",       limit: 4
-    t.datetime "finished_at"
+  create_table "ejz_heartbeats", force: :cascade do |t|
+    t.integer  "application_id", limit: 4
+    t.text     "info",           limit: 65535
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "flexcontents", force: :cascade do |t|
@@ -649,504 +178,13 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.integer  "flex_groupid", limit: 4
   end
 
-  create_table "hzp_bc_dws", force: :cascade do |t|
-    t.string   "dwname",     limit: 255
-    t.string   "dwlx",       limit: 255
-    t.string   "dwsf",       limit: 255
-    t.string   "dwdq",       limit: 255
-    t.string   "dwxs",       limit: 255
-    t.string   "dwxz",       limit: 255
-    t.string   "dwdz",       limit: 255
-    t.string   "dwyb",       limit: 255
-    t.string   "dwfr",       limit: 255
-    t.string   "dwfrdh",     limit: 255
-    t.string   "dwfzr",      limit: 255
-    t.string   "dwfzrdh",    limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-    t.string   "dwlxzdy",    limit: 255
-  end
-
-  create_table "hzp_bsbs", force: :cascade do |t|
-    t.string   "hzp_s_1",        limit: 60
-    t.string   "hzp_s_2",        limit: 60
-    t.string   "hzp_s_3",        limit: 60
-    t.string   "hzp_s_4",        limit: 60
-    t.string   "hzp_s_5",        limit: 60
-    t.string   "hzp_s_6",        limit: 60
-    t.string   "hzp_s_7",        limit: 60
-    t.string   "hzp_s_8",        limit: 60
-    t.string   "hzp_s_9",        limit: 60
-    t.string   "hzp_s_10",       limit: 60
-    t.string   "hzp_s_11",       limit: 60
-    t.string   "hzp_s_12",       limit: 60
-    t.string   "hzp_s_13",       limit: 60
-    t.string   "hzp_s_14",       limit: 60
-    t.string   "hzp_s_15",       limit: 60
-    t.string   "hzp_s_16",       limit: 60
-    t.string   "hzp_s_17",       limit: 60
-    t.string   "hzp_s_18",       limit: 60
-    t.string   "hzp_s_19",       limit: 60
-    t.date     "hzp_d_20"
-    t.string   "hzp_s_21",       limit: 60
-    t.string   "hzp_s_22",       limit: 60
-    t.string   "hzp_s_23",       limit: 60
-    t.string   "hzp_s_24",       limit: 60
-    t.string   "hzp_s_25",       limit: 60
-    t.decimal  "hzp_n_26",                  precision: 10
-    t.string   "hzp_s_27",       limit: 60
-    t.decimal  "hzp_n_28",                  precision: 10
-    t.string   "hzp_s_29",       limit: 60
-    t.string   "hzp_s_30",       limit: 60
-    t.string   "hzp_s_31",       limit: 60
-    t.string   "hzp_s_32",       limit: 60
-    t.string   "hzp_s_33",       limit: 60
-    t.date     "hzp_d_34"
-    t.string   "hzp_s_35",       limit: 60
-    t.string   "hzp_s_36",       limit: 60
-    t.string   "hzp_s_37",       limit: 60
-    t.string   "hzp_s_38",       limit: 60
-    t.string   "hzp_s_39",       limit: 60
-    t.string   "hzp_s_40",       limit: 60
-    t.string   "hzp_s_41",       limit: 60
-    t.date     "hzp_d_42"
-    t.date     "hzp_d_43"
-    t.string   "hzp_s_44",       limit: 60
-    t.string   "hzp_s_45",       limit: 60
-    t.string   "hzp_s_46",       limit: 60
-    t.string   "hzp_s_47",       limit: 60
-    t.string   "hzp_s_48",       limit: 60
-    t.string   "hzp_s_49",       limit: 60
-    t.string   "hzp_s_50",       limit: 60
-    t.string   "hzp_s_51",       limit: 60
-    t.string   "hzp_s_52",       limit: 60
-    t.string   "hzp_s_53",       limit: 60
-    t.string   "hzp_s_54",       limit: 60
-    t.string   "hzp_s_55",       limit: 60
-    t.string   "hzp_s_56",       limit: 60
-    t.string   "hzp_s_57",       limit: 60
-    t.string   "hzp_s_58",       limit: 60
-    t.string   "hzp_s_59",       limit: 60
-    t.string   "hzp_s_60",       limit: 60
-    t.string   "hzp_s_61",       limit: 60
-    t.string   "hzp_s_62",       limit: 60
-    t.string   "hzp_s_63",       limit: 60
-    t.string   "hzp_s_64",       limit: 60
-    t.string   "hzp_s_65",       limit: 60
-    t.string   "hzp_s_66",       limit: 60
-    t.string   "hzp_s_67",       limit: 60
-    t.string   "hzp_s_68",       limit: 60
-    t.string   "hzp_s_69",       limit: 60
-    t.string   "hzp_s_70",       limit: 60
-    t.string   "hzp_s_71",       limit: 60
-    t.string   "hzp_s_72",       limit: 60
-    t.string   "hzp_s_73",       limit: 60
-    t.string   "hzp_s_74",       limit: 60
-    t.string   "hzp_s_75",       limit: 60
-    t.string   "hzp_s_76",       limit: 60
-    t.string   "hzp_s_77",       limit: 60
-    t.string   "hzp_s_78",       limit: 60
-    t.string   "hzp_s_79",       limit: 60
-    t.string   "hzp_s_80",       limit: 60
-    t.string   "hzp_s_81",       limit: 60
-    t.string   "hzp_s_82",       limit: 60
-    t.string   "hzp_s_83",       limit: 60
-    t.string   "hzp_s_84",       limit: 60
-    t.string   "hzp_s_85",       limit: 60
-    t.string   "hzp_s_86",       limit: 60
-    t.string   "hzp_s_87",       limit: 60
-    t.string   "hzp_s_88",       limit: 60
-    t.string   "hzp_s_89",       limit: 60
-    t.date     "hzp_d_90"
-    t.string   "hzp_s_91",       limit: 60
-    t.string   "hzp_s_92",       limit: 60
-    t.string   "tname",          limit: 60
-    t.date     "submit_d_flag"
-    t.datetime "created_at",                               null: false
-    t.datetime "updated_at",                               null: false
-    t.decimal  "hzp_n_jcxcount",            precision: 10
-    t.string   "hzp_s_bsfl",     limit: 16
-    t.string   "hzp_s_2_1",      limit: 16
-    t.string   "hzp_s_16_1",     limit: 16
-    t.string   "hzp_s_40_1",     limit: 16
-    t.string   "hzp_s_110_1",    limit: 16
-    t.string   "hzp_s_110_2",    limit: 16
-    t.string   "hzp_s_110_3",    limit: 16
-    t.string   "hzp_s_110_4",    limit: 16
-    t.string   "hzp_s_110_5",    limit: 16
-    t.string   "hzp_s_110_6",    limit: 16
-    t.string   "hzp_s_110_7",    limit: 16
-    t.string   "hzp_s_110_8",    limit: 16
-    t.string   "hzp_s_111_1",    limit: 16
-    t.string   "hzp_s_111_2",    limit: 16
-    t.string   "hzp_s_111_3",    limit: 16
-    t.string   "hzp_s_111_4",    limit: 16
-    t.string   "hzp_s_111_5",    limit: 16
-    t.string   "hzp_s_111_6",    limit: 16
-    t.string   "hzp_s_111_7",    limit: 16
-    t.string   "hzp_s_111_8",    limit: 16
-    t.string   "hzp_s_112_1",    limit: 16
-    t.string   "hzp_s_112_2",    limit: 16
-    t.string   "hzp_s_112_3",    limit: 16
-    t.string   "hzp_s_112_4",    limit: 16
-    t.string   "hzp_s_112_5",    limit: 16
-    t.string   "hzp_s_112_6",    limit: 16
-    t.string   "hzp_s_112_7",    limit: 16
-    t.string   "hzp_s_112_8",    limit: 16
-    t.string   "hzp_s_113_1",    limit: 16
-    t.string   "hzp_s_113_2",    limit: 16
-    t.string   "hzp_s_113_3",    limit: 16
-    t.string   "hzp_s_113_4",    limit: 16
-    t.string   "hzp_s_113_5",    limit: 16
-    t.string   "hzp_s_113_6",    limit: 16
-    t.string   "hzp_s_113_7",    limit: 16
-    t.string   "hzp_s_113_8",    limit: 16
-    t.string   "hzp_s_114_1",    limit: 16
-    t.string   "hzp_s_114_2",    limit: 16
-    t.string   "hzp_s_114_3",    limit: 16
-    t.string   "hzp_s_114_4",    limit: 16
-    t.string   "hzp_s_114_5",    limit: 16
-    t.string   "hzp_s_114_6",    limit: 16
-    t.string   "hzp_s_114_7",    limit: 16
-    t.string   "hzp_s_114_8",    limit: 16
-    t.string   "hzp_s_115_1",    limit: 16
-    t.string   "hzp_s_115_2",    limit: 16
-    t.string   "hzp_s_115_3",    limit: 16
-    t.string   "hzp_s_115_4",    limit: 16
-    t.string   "hzp_s_115_5",    limit: 16
-    t.string   "hzp_s_115_6",    limit: 16
-    t.string   "hzp_s_115_7",    limit: 16
-    t.string   "hzp_s_115_8",    limit: 16
-    t.string   "hzp_s_116_1",    limit: 16
-    t.string   "hzp_s_116_2",    limit: 16
-    t.string   "hzp_s_116_3",    limit: 16
-    t.string   "hzp_s_116_4",    limit: 16
-    t.string   "hzp_s_116_5",    limit: 16
-    t.string   "hzp_s_116_6",    limit: 16
-    t.string   "hzp_s_116_7",    limit: 16
-    t.string   "hzp_s_116_8",    limit: 16
-    t.string   "hzp_s_117_1",    limit: 16
-    t.string   "hzp_s_117_2",    limit: 16
-    t.string   "hzp_s_117_3",    limit: 16
-    t.string   "hzp_s_117_4",    limit: 16
-    t.string   "hzp_s_117_5",    limit: 16
-    t.string   "hzp_s_117_6",    limit: 16
-    t.string   "hzp_s_117_7",    limit: 16
-    t.string   "hzp_s_117_8",    limit: 16
-    t.string   "hzp_s_118_1",    limit: 16
-    t.string   "hzp_s_118_2",    limit: 16
-    t.string   "hzp_s_118_3",    limit: 16
-    t.string   "hzp_s_118_4",    limit: 16
-    t.string   "hzp_s_118_5",    limit: 16
-    t.string   "hzp_s_118_6",    limit: 16
-    t.string   "hzp_s_118_7",    limit: 16
-    t.string   "hzp_s_118_8",    limit: 16
-    t.string   "hzp_s_119_1",    limit: 16
-    t.string   "hzp_s_119_2",    limit: 16
-    t.string   "hzp_s_119_3",    limit: 16
-    t.string   "hzp_s_119_4",    limit: 16
-    t.string   "hzp_s_119_5",    limit: 16
-    t.string   "hzp_s_119_6",    limit: 16
-    t.string   "hzp_s_119_7",    limit: 16
-    t.string   "hzp_s_119_8",    limit: 16
-    t.string   "hzp_s_120_1",    limit: 16
-    t.string   "hzp_s_120_2",    limit: 16
-    t.string   "hzp_s_120_3",    limit: 16
-    t.string   "hzp_s_120_4",    limit: 16
-    t.string   "hzp_s_120_5",    limit: 16
-    t.string   "hzp_s_120_6",    limit: 16
-    t.string   "hzp_s_120_7",    limit: 16
-    t.string   "hzp_s_120_8",    limit: 16
-    t.string   "hzp_s_121_1",    limit: 16
-    t.string   "hzp_s_121_2",    limit: 16
-    t.string   "hzp_s_121_3",    limit: 16
-    t.string   "hzp_s_121_4",    limit: 16
-    t.string   "hzp_s_121_5",    limit: 16
-    t.string   "hzp_s_121_6",    limit: 16
-    t.string   "hzp_s_121_7",    limit: 16
-    t.string   "hzp_s_121_8",    limit: 16
-    t.string   "hzp_s_122_1",    limit: 16
-    t.string   "hzp_s_122_2",    limit: 16
-    t.string   "hzp_s_122_3",    limit: 16
-    t.string   "hzp_s_122_4",    limit: 16
-    t.string   "hzp_s_122_5",    limit: 16
-    t.string   "hzp_s_122_6",    limit: 16
-    t.string   "hzp_s_122_7",    limit: 16
-    t.string   "hzp_s_122_8",    limit: 16
-    t.string   "hzp_s_123_1",    limit: 16
-    t.string   "hzp_s_123_2",    limit: 16
-    t.string   "hzp_s_123_3",    limit: 16
-    t.string   "hzp_s_123_4",    limit: 16
-    t.string   "hzp_s_123_5",    limit: 16
-    t.string   "hzp_s_123_6",    limit: 16
-    t.string   "hzp_s_123_7",    limit: 16
-    t.string   "hzp_s_123_8",    limit: 16
-    t.string   "hzp_s_124_1",    limit: 16
-    t.string   "hzp_s_124_2",    limit: 16
-    t.string   "hzp_s_124_3",    limit: 16
-    t.string   "hzp_s_124_4",    limit: 16
-    t.string   "hzp_s_124_5",    limit: 16
-    t.string   "hzp_s_124_6",    limit: 16
-    t.string   "hzp_s_124_7",    limit: 16
-    t.string   "hzp_s_124_8",    limit: 16
-    t.string   "hzp_s_125_1",    limit: 16
-    t.string   "hzp_s_125_2",    limit: 16
-    t.string   "hzp_s_125_3",    limit: 16
-    t.string   "hzp_s_125_4",    limit: 16
-    t.string   "hzp_s_125_5",    limit: 16
-    t.string   "hzp_s_125_6",    limit: 16
-    t.string   "hzp_s_125_7",    limit: 16
-    t.string   "hzp_s_125_8",    limit: 16
-    t.string   "hzp_s_126_1",    limit: 16
-    t.string   "hzp_s_126_2",    limit: 16
-    t.string   "hzp_s_126_3",    limit: 16
-    t.string   "hzp_s_126_4",    limit: 16
-    t.string   "hzp_s_126_5",    limit: 16
-    t.string   "hzp_s_126_6",    limit: 16
-    t.string   "hzp_s_126_7",    limit: 16
-    t.string   "hzp_s_126_8",    limit: 16
-    t.string   "hzp_s_127_1",    limit: 16
-    t.string   "hzp_s_127_2",    limit: 16
-    t.string   "hzp_s_127_3",    limit: 16
-    t.string   "hzp_s_127_4",    limit: 16
-    t.string   "hzp_s_127_5",    limit: 16
-    t.string   "hzp_s_127_6",    limit: 16
-    t.string   "hzp_s_127_7",    limit: 16
-    t.string   "hzp_s_127_8",    limit: 16
-    t.string   "hzp_s_128_1",    limit: 16
-    t.string   "hzp_s_128_2",    limit: 16
-    t.string   "hzp_s_128_3",    limit: 16
-    t.string   "hzp_s_128_4",    limit: 16
-    t.string   "hzp_s_128_5",    limit: 16
-    t.string   "hzp_s_128_6",    limit: 16
-    t.string   "hzp_s_128_7",    limit: 16
-    t.string   "hzp_s_128_8",    limit: 16
-    t.string   "hzp_s_129_1",    limit: 16
-    t.string   "hzp_s_129_2",    limit: 16
-    t.string   "hzp_s_129_3",    limit: 16
-    t.string   "hzp_s_129_4",    limit: 16
-    t.string   "hzp_s_129_5",    limit: 16
-    t.string   "hzp_s_129_6",    limit: 16
-    t.string   "hzp_s_129_7",    limit: 16
-    t.string   "hzp_s_129_8",    limit: 16
-    t.string   "hzp_s_130_1",    limit: 16
-    t.string   "hzp_s_130_2",    limit: 16
-    t.string   "hzp_s_130_3",    limit: 16
-    t.string   "hzp_s_130_4",    limit: 16
-    t.string   "hzp_s_130_5",    limit: 16
-    t.string   "hzp_s_130_6",    limit: 16
-    t.string   "hzp_s_130_7",    limit: 16
-    t.string   "hzp_s_130_8",    limit: 16
-    t.string   "hzp_s_131_1",    limit: 16
-    t.string   "hzp_s_131_2",    limit: 16
-    t.string   "hzp_s_131_3",    limit: 16
-    t.string   "hzp_s_131_4",    limit: 16
-    t.string   "hzp_s_131_5",    limit: 16
-    t.string   "hzp_s_131_6",    limit: 16
-    t.string   "hzp_s_131_7",    limit: 16
-    t.string   "hzp_s_131_8",    limit: 16
-    t.string   "hzp_s_132_1",    limit: 16
-    t.string   "hzp_s_132_2",    limit: 16
-    t.string   "hzp_s_132_3",    limit: 16
-    t.string   "hzp_s_132_4",    limit: 16
-    t.string   "hzp_s_132_5",    limit: 16
-    t.string   "hzp_s_132_6",    limit: 16
-    t.string   "hzp_s_132_7",    limit: 16
-    t.string   "hzp_s_132_8",    limit: 16
-    t.string   "hzp_s_133_1",    limit: 16
-    t.string   "hzp_s_133_2",    limit: 16
-    t.string   "hzp_s_133_3",    limit: 16
-    t.string   "hzp_s_133_4",    limit: 16
-    t.string   "hzp_s_133_5",    limit: 16
-    t.string   "hzp_s_133_6",    limit: 16
-    t.string   "hzp_s_133_7",    limit: 16
-    t.string   "hzp_s_133_8",    limit: 16
-    t.string   "hzp_s_134_1",    limit: 16
-    t.string   "hzp_s_134_2",    limit: 16
-    t.string   "hzp_s_134_3",    limit: 16
-    t.string   "hzp_s_134_4",    limit: 16
-    t.string   "hzp_s_134_5",    limit: 16
-    t.string   "hzp_s_134_6",    limit: 16
-    t.string   "hzp_s_134_7",    limit: 16
-    t.string   "hzp_s_134_8",    limit: 16
-    t.string   "hzp_s_135_1",    limit: 16
-    t.string   "hzp_s_135_2",    limit: 16
-    t.string   "hzp_s_135_3",    limit: 16
-    t.string   "hzp_s_135_4",    limit: 16
-    t.string   "hzp_s_135_5",    limit: 16
-    t.string   "hzp_s_135_6",    limit: 16
-    t.string   "hzp_s_135_7",    limit: 16
-    t.string   "hzp_s_135_8",    limit: 16
-    t.string   "hzp_s_136_1",    limit: 16
-    t.string   "hzp_s_136_2",    limit: 16
-    t.string   "hzp_s_136_3",    limit: 16
-    t.string   "hzp_s_136_4",    limit: 16
-    t.string   "hzp_s_136_5",    limit: 16
-    t.string   "hzp_s_136_6",    limit: 16
-    t.string   "hzp_s_136_7",    limit: 16
-    t.string   "hzp_s_136_8",    limit: 16
-    t.string   "hzp_s_137_1",    limit: 16
-    t.string   "hzp_s_137_2",    limit: 16
-    t.string   "hzp_s_137_3",    limit: 16
-    t.string   "hzp_s_137_4",    limit: 16
-    t.string   "hzp_s_137_5",    limit: 16
-    t.string   "hzp_s_137_6",    limit: 16
-    t.string   "hzp_s_137_7",    limit: 16
-    t.string   "hzp_s_137_8",    limit: 16
-    t.string   "hzp_s_138_1",    limit: 16
-    t.string   "hzp_s_138_2",    limit: 16
-    t.string   "hzp_s_138_3",    limit: 16
-    t.string   "hzp_s_138_4",    limit: 16
-    t.string   "hzp_s_138_5",    limit: 16
-    t.string   "hzp_s_138_6",    limit: 16
-    t.string   "hzp_s_138_7",    limit: 16
-    t.string   "hzp_s_138_8",    limit: 16
-    t.string   "hzp_s_139_1",    limit: 16
-    t.string   "hzp_s_139_2",    limit: 16
-    t.string   "hzp_s_139_3",    limit: 16
-    t.string   "hzp_s_139_4",    limit: 16
-    t.string   "hzp_s_139_5",    limit: 16
-    t.string   "hzp_s_139_6",    limit: 16
-    t.string   "hzp_s_139_7",    limit: 16
-    t.string   "hzp_s_139_8",    limit: 16
-    t.string   "hzp_s_140_1",    limit: 16
-    t.string   "hzp_s_140_2",    limit: 16
-    t.string   "hzp_s_140_3",    limit: 16
-    t.string   "hzp_s_140_4",    limit: 16
-    t.string   "hzp_s_140_5",    limit: 16
-    t.string   "hzp_s_140_6",    limit: 16
-    t.string   "hzp_s_140_7",    limit: 16
-    t.string   "hzp_s_140_8",    limit: 16
-    t.string   "hzp_s_110_0",    limit: 16
-    t.string   "hzp_s_111_0",    limit: 16
-    t.string   "hzp_s_112_0",    limit: 16
-    t.string   "hzp_s_113_0",    limit: 16
-    t.string   "hzp_s_114_0",    limit: 16
-    t.string   "hzp_s_115_0",    limit: 16
-    t.string   "hzp_s_116_0",    limit: 16
-    t.string   "hzp_s_117_0",    limit: 16
-    t.string   "hzp_s_118_0",    limit: 16
-    t.string   "hzp_s_119_0",    limit: 16
-    t.string   "hzp_s_120_0",    limit: 16
-    t.string   "hzp_s_121_0",    limit: 16
-    t.string   "hzp_s_122_0",    limit: 16
-    t.string   "hzp_s_123_0",    limit: 16
-    t.string   "hzp_s_124_0",    limit: 16
-    t.string   "hzp_s_125_0",    limit: 16
-    t.string   "hzp_s_126_0",    limit: 16
-    t.string   "hzp_s_127_0",    limit: 16
-    t.string   "hzp_s_128_0",    limit: 16
-    t.string   "hzp_s_129_0",    limit: 16
-    t.string   "hzp_s_130_0",    limit: 16
-    t.string   "hzp_s_131_0",    limit: 16
-    t.string   "hzp_s_132_0",    limit: 16
-    t.string   "hzp_s_133_0",    limit: 16
-    t.string   "hzp_s_134_0",    limit: 16
-    t.string   "hzp_s_135_0",    limit: 16
-    t.string   "hzp_s_136_0",    limit: 16
-    t.string   "hzp_s_137_0",    limit: 16
-    t.string   "hzp_s_138_0",    limit: 16
-    t.string   "hzp_s_139_0",    limit: 16
-    t.string   "hzp_s_140_0",    limit: 16
-    t.string   "hzp_s_110_9",    limit: 16
-    t.string   "hzp_s_111_9",    limit: 16
-    t.string   "hzp_s_112_9",    limit: 16
-    t.string   "hzp_s_113_9",    limit: 16
-    t.string   "hzp_s_114_9",    limit: 16
-    t.string   "hzp_s_115_9",    limit: 16
-    t.string   "hzp_s_116_9",    limit: 16
-    t.string   "hzp_s_117_9",    limit: 16
-    t.string   "hzp_s_118_9",    limit: 16
-    t.string   "hzp_s_119_9",    limit: 16
-    t.string   "hzp_s_120_9",    limit: 16
-    t.string   "hzp_s_121_9",    limit: 16
-    t.string   "hzp_s_122_9",    limit: 16
-    t.string   "hzp_s_123_9",    limit: 16
-    t.string   "hzp_s_124_9",    limit: 16
-    t.string   "hzp_s_125_9",    limit: 16
-    t.string   "hzp_s_126_9",    limit: 16
-    t.string   "hzp_s_127_9",    limit: 16
-    t.string   "hzp_s_128_9",    limit: 16
-    t.string   "hzp_s_129_9",    limit: 16
-    t.string   "hzp_s_130_9",    limit: 16
-    t.string   "hzp_s_131_9",    limit: 16
-    t.string   "hzp_s_132_9",    limit: 16
-    t.string   "hzp_s_133_9",    limit: 16
-    t.string   "hzp_s_134_9",    limit: 16
-    t.string   "hzp_s_135_9",    limit: 16
-    t.string   "hzp_s_136_9",    limit: 16
-    t.string   "hzp_s_137_9",    limit: 16
-    t.string   "hzp_s_138_9",    limit: 16
-    t.string   "hzp_s_139_9",    limit: 16
-    t.string   "hzp_s_140_9",    limit: 16
-    t.integer  "hzp_i_state",    limit: 4
-    t.string   "hzp_s_110_10",   limit: 16
-    t.string   "hzp_s_111_10",   limit: 16
-    t.string   "hzp_s_112_10",   limit: 16
-    t.string   "hzp_s_113_10",   limit: 16
-    t.string   "hzp_s_114_10",   limit: 16
-    t.string   "hzp_s_115_10",   limit: 16
-    t.string   "hzp_s_116_10",   limit: 16
-    t.string   "hzp_s_117_10",   limit: 16
-    t.string   "hzp_s_118_10",   limit: 16
-    t.string   "hzp_s_119_10",   limit: 16
-    t.string   "hzp_s_120_10",   limit: 16
-    t.string   "hzp_s_121_10",   limit: 16
-    t.string   "hzp_s_122_10",   limit: 16
-    t.string   "hzp_s_123_10",   limit: 16
-    t.string   "hzp_s_124_10",   limit: 16
-    t.string   "hzp_s_125_10",   limit: 16
-    t.string   "hzp_s_126_10",   limit: 16
-    t.string   "hzp_s_127_10",   limit: 16
-    t.string   "hzp_s_128_10",   limit: 16
-    t.string   "hzp_s_129_10",   limit: 16
-    t.string   "hzp_s_130_10",   limit: 16
-    t.string   "hzp_s_131_10",   limit: 16
-    t.string   "hzp_s_132_10",   limit: 16
-    t.string   "hzp_s_133_10",   limit: 16
-    t.string   "hzp_s_134_10",   limit: 16
-    t.string   "hzp_s_135_10",   limit: 16
-    t.string   "hzp_s_136_10",   limit: 16
-    t.string   "hzp_s_137_10",   limit: 16
-    t.string   "hzp_s_138_10",   limit: 16
-    t.string   "hzp_s_139_10",   limit: 16
-    t.string   "hzp_s_140_10",   limit: 16
-  end
-
-  create_table "hzp_ypbs", force: :cascade do |t|
-    t.string   "dwname",     limit: 255
-    t.string   "ypname",     limit: 255
-    t.string   "ypno",       limit: 255
-    t.string   "ypflei",     limit: 255
-    t.string   "ypleib",     limit: 255
-    t.string   "ypleibzdy",  limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-  end
-
-  create_table "hzpdata", force: :cascade do |t|
-    t.string   "hzpdata_0",  limit: 255
-    t.string   "hzpdata_1",  limit: 255
-    t.string   "hzpdata_2",  limit: 255
-    t.string   "hzpdata_3",  limit: 255
-    t.string   "hzpdata_4",  limit: 255
-    t.string   "hzpdata_5",  limit: 255
-    t.string   "hzpdata_6",  limit: 255
-    t.string   "hzpdata_7",  limit: 255
-    t.string   "hzpdata_8",  limit: 255
-    t.string   "hzpdata_9",  limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-    t.string   "hzp_bsb_id", limit: 255
-  end
-
   create_table "jg_bsb_names", force: :cascade do |t|
     t.string   "name",            limit: 255
     t.integer  "jg_bsb_id",       limit: 4
     t.string   "note",            limit: 255
     t.integer  "creator_user_id", limit: 4
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "jg_bsb_stamps", force: :cascade do |t|
@@ -1182,7 +220,7 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.integer  "jg_group",          limit: 4
     t.string   "jg_group_category", limit: 255
     t.integer  "jg_administrion",   limit: 4
-    t.integer  "jg_sp_permission",  limit: 4,     default: 1
+    t.integer  "jg_sp_permission",  limit: 4
     t.integer  "jg_bjp_permission", limit: 4
     t.integer  "jg_hzp_permission", limit: 4
     t.integer  "jg_enable",         limit: 4
@@ -1203,6 +241,7 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.string   "zipcode",           limit: 255
     t.string   "fax",               limit: 255
     t.integer  "jg_type",           limit: 4
+    t.string   "jg_code",           limit: 255
   end
 
   create_table "login_logs", force: :cascade do |t|
@@ -1217,13 +256,6 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.string   "sessionid",  limit: 255
   end
 
-  create_table "mytests", force: :cascade do |t|
-    t.string   "name",       limit: 255
-    t.string   "age",        limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-  end
-
   create_table "oauth_access_grants", force: :cascade do |t|
     t.integer  "resource_owner_id", limit: 4,     null: false
     t.integer  "application_id",    limit: 4,     null: false
@@ -1235,12 +267,11 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.string   "scopes",            limit: 255
   end
 
-  add_index "oauth_access_grants", ["application_id"], name: "fk_rails_b4b53e07b8", using: :btree
   add_index "oauth_access_grants", ["token"], name: "index_oauth_access_grants_on_token", unique: true, using: :btree
 
   create_table "oauth_access_tokens", force: :cascade do |t|
     t.integer  "resource_owner_id", limit: 4
-    t.integer  "application_id",    limit: 4,   null: false
+    t.integer  "application_id",    limit: 4
     t.string   "token",             limit: 255, null: false
     t.string   "refresh_token",     limit: 255
     t.integer  "expires_in",        limit: 4
@@ -1249,31 +280,25 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.string   "scopes",            limit: 255
   end
 
-  add_index "oauth_access_tokens", ["application_id"], name: "fk_rails_732cb83ab7", using: :btree
   add_index "oauth_access_tokens", ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true, using: :btree
   add_index "oauth_access_tokens", ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id", using: :btree
   add_index "oauth_access_tokens", ["token"], name: "index_oauth_access_tokens_on_token", unique: true, using: :btree
 
   create_table "oauth_applications", force: :cascade do |t|
-    t.string   "name",         limit: 255,                null: false
-    t.string   "uid",          limit: 255,                null: false
-    t.string   "secret",       limit: 255,                null: false
-    t.text     "redirect_uri", limit: 65535,              null: false
-    t.string   "scopes",       limit: 255,   default: "", null: false
+    t.string   "name",         limit: 255,                   null: false
+    t.string   "uid",          limit: 255,                   null: false
+    t.string   "secret",       limit: 255,                   null: false
+    t.text     "redirect_uri", limit: 65535,                 null: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "user_id",      limit: 4
+    t.string   "prov",         limit: 255
+    t.string   "jg",           limit: 255
+    t.boolean  "auto_submit",                default: false
+    t.boolean  "is_ejz",                     default: false
   end
 
   add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true, using: :btree
-
-  create_table "orders", force: :cascade do |t|
-    t.string   "name",       limit: 255
-    t.text     "address",    limit: 65535
-    t.string   "email",      limit: 255
-    t.string   "pay_type",   limit: 255
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
-  end
 
   create_table "pad_ca_signs", force: :cascade do |t|
     t.string   "sp_s_16",       limit: 255
@@ -1295,7 +320,7 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.string   "sp_s_4",            limit: 60
     t.string   "sp_s_5",            limit: 60
     t.string   "sp_s_6",            limit: 60
-    t.string   "sp_s_7",            limit: 255
+    t.string   "sp_s_7",            limit: 60
     t.string   "sp_s_8",            limit: 60
     t.string   "sp_s_9",            limit: 60
     t.string   "sp_s_10",           limit: 60
@@ -1420,12 +445,12 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.string   "sp_xkz_id",         limit: 255
     t.string   "cyd_file_path",     limit: 255
     t.string   "cyjygzs_file_path", limit: 255
-    t.string   "sp_s_220",          limit: 10
-    t.string   "sp_s_221",          limit: 10
-    t.string   "sp_s_222",          limit: 20
     t.integer  "sp_s_37_user_id",   limit: 4
     t.integer  "user_id",           limit: 4
     t.string   "uid",               limit: 20
+    t.string   "sp_s_220",          limit: 10
+    t.string   "sp_s_221",          limit: 10
+    t.string   "sp_s_222",          limit: 20
     t.datetime "deleted_at"
   end
 
@@ -1438,16 +463,8 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.text     "sp_s_16",       limit: 65535
     t.integer  "sp_i_state",    limit: 4
     t.integer  "user_id",       limit: 4
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
-  end
-
-  create_table "products", force: :cascade do |t|
-    t.string   "title",       limit: 255
-    t.text     "description", limit: 65535
-    t.string   "image_url",   limit: 255
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "provinces", id: false, force: :cascade do |t|
@@ -1617,9 +634,27 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.string   "cjbh",              limit: 255
     t.datetime "published_at"
     t.integer  "user_id",           limit: 4
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.date     "cfda_published_at"
+    t.string   "WH",                limit: 256
+    t.string   "url",               limit: 2048
+    t.string   "pub_method",        limit: 20,   default: "手工录入"
+    t.integer  "sp_bsb_id",         limit: 4
+  end
+
+  create_table "published_wtyp_czbs", force: :cascade do |t|
+    t.integer  "user_id",           limit: 4
+    t.integer  "sp_bsb_id",         limit: 4
+    t.string   "cjbh",              limit: 255
+    t.date     "cfda_published_at"
+    t.string   "WH",                limit: 255
+    t.string   "url",               limit: 255
+    t.datetime "created_at",                                     null: false
+    t.datetime "updated_at",                                     null: false
+    t.integer  "wtyp_czb_type",     limit: 4
+    t.string   "pub_method",        limit: 20,  default: "手工录入"
+    t.integer  "wtyp_czb_part_id",  limit: 4
   end
 
   create_table "sample_members", force: :cascade do |t|
@@ -1633,8 +668,8 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.string   "work_history",  limit: 255
     t.string   "note",          limit: 255
     t.integer  "attachment_id", limit: 4
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "gender",        limit: 5
   end
 
@@ -1658,6 +693,15 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.datetime "used_at"
   end
 
+  create_table "sp_bsb_api_logs", force: :cascade do |t|
+    t.integer  "application_id", limit: 4
+    t.integer  "sp_bsb_id",      limit: 4
+    t.text     "snapshot",       limit: 65535
+    t.string   "note",           limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "sp_bsb_certs", force: :cascade do |t|
     t.text     "source",     limit: 65535
     t.text     "user_cert",  limit: 65535
@@ -1665,8 +709,8 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.integer  "user_id",    limit: 4
     t.integer  "sp_i_state", limit: 4
     t.integer  "sp_bsb_id",  limit: 4
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "sp_bsb_pictures", force: :cascade do |t|
@@ -1692,15 +736,6 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.datetime "updated_at",                              null: false
     t.string   "jid",           limit: 255
     t.integer  "current_state", limit: 4,     default: 0
-  end
-
-  create_table "sp_bsb_stamp_rules", force: :cascade do |t|
-    t.integer  "user_id",     limit: 4
-    t.string   "pdf_rules",   limit: 255
-    t.integer  "sp_bsb_id",   limit: 4
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
-    t.string   "report_path", limit: 4096
   end
 
   create_table "sp_bsbs", force: :cascade do |t|
@@ -1829,13 +864,13 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.boolean  "czb_reverted_flag",                                     default: false
     t.boolean  "synced",                                                default: false
     t.string   "gbsj",                     limit: 255,                  default: "未公布"
+    t.boolean  "via_api",                                               default: false
+    t.integer  "application_id",           limit: 4
     t.string   "report_path",              limit: 255
     t.string   "cyd_file_path",            limit: 255
     t.string   "cyjygzs_file_path",        limit: 255
     t.datetime "yydj_enabled_by_admin_at"
-    t.boolean  "via_api",                                               default: false
     t.datetime "synced_at"
-    t.integer  "application_id",           limit: 4
     t.string   "czb_reverted_reason",      limit: 255
     t.string   "sp_s_220",                 limit: 10
     t.string   "sp_s_221",                 limit: 10
@@ -1844,6 +879,7 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.string   "uid",                      limit: 20
     t.integer  "sp_s_37_user_id",          limit: 4
     t.datetime "deleted_at"
+    t.string   "xsbg_file_path",           limit: 256
   end
 
   add_index "sp_bsbs", ["application_id"], name: "index_sp_bsbs_on_application_id", using: :btree
@@ -1863,7 +899,6 @@ ActiveRecord::Schema.define(version: 20160420084650) do
   add_index "sp_bsbs", ["sp_s_71"], name: "index_sp_bsbs_on_sp_s_71", using: :btree
   add_index "sp_bsbs", ["tname"], name: "index_tname", using: :btree
   add_index "sp_bsbs", ["uid"], name: "index_sp_bsbs_on_uid", using: :btree
-  add_index "sp_bsbs", ["updated_at", "sp_i_state"], name: "updated_at_state_idx", using: :btree
   add_index "sp_bsbs", ["updated_at"], name: "update_desc", using: :btree
   add_index "sp_bsbs", ["user_id"], name: "index_sp_bsbs_on_user_id", using: :btree
   add_index "sp_bsbs", ["via_api"], name: "index_sp_bsbs_on_via_api", using: :btree
@@ -1931,24 +966,6 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
     t.integer  "user_id",    limit: 4
-    t.datetime "deleted_at"
-  end
-
-  add_index "sp_logs", ["deleted_at"], name: "index_sp_logs_on_deleted_at", using: :btree
-
-  create_table "sp_product_infos", force: :cascade do |t|
-    t.string   "cp_name",      limit: 255
-    t.string   "cp_dcategory", limit: 255
-    t.string   "cp_brand",     limit: 255
-    t.string   "cp_price",     limit: 255
-    t.string   "cp_size",      limit: 255
-    t.string   "cp_rank",      limit: 255
-    t.string   "cp_barcode",   limit: 255
-    t.string   "cp_license",   limit: 255
-    t.string   "cp_coname",    limit: 255
-    t.string   "cp_standard",  limit: 255
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
   end
 
   create_table "sp_production_infos", force: :cascade do |t|
@@ -1961,8 +978,8 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.string   "scdz",       limit: 255
     t.date     "zsyxq"
     t.string   "zs",         limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
     t.string   "spdl",       limit: 255
     t.string   "spyl",       limit: 255
     t.string   "spcyl",      limit: 255
@@ -1971,6 +988,8 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.string   "sp_s_4",     limit: 255
     t.string   "sp_s_5",     limit: 255
     t.integer  "qylx",       limit: 4,   default: 0
+    t.string   "jieduan",    limit: 20
+    t.boolean  "benji_only",             default: false
   end
 
   create_table "sp_publications", force: :cascade do |t|
@@ -2046,8 +1065,8 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.text     "cjbh",           limit: 65535
     t.text     "content",        limit: 65535
     t.integer  "user_id",        limit: 4
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "sp_yydjb_state", limit: 4
   end
 
@@ -2081,73 +1100,75 @@ ActiveRecord::Schema.define(version: 20160420084650) do
   end
 
   create_table "sp_yydjbs", force: :cascade do |t|
-    t.datetime "created_at",                                         null: false
-    t.datetime "updated_at",                                         null: false
-    t.string   "cjbh",               limit: 60
-    t.string   "ypmc",               limit: 60
-    t.string   "ypgg",               limit: 60
-    t.string   "ypph",               limit: 60
+    t.datetime "created_at",                                      null: false
+    t.datetime "updated_at",                                      null: false
+    t.string   "cjbh",            limit: 60
+    t.string   "ypmc",            limit: 60
+    t.string   "ypgg",            limit: 60
+    t.string   "ypph",            limit: 60
     t.datetime "scrq"
-    t.string   "spdl",               limit: 60
-    t.string   "spyl",               limit: 60
-    t.string   "spcyl",              limit: 60
-    t.string   "spxl",               limit: 60
-    t.string   "jyjl",               limit: 60
-    t.string   "yytcr",              limit: 60
+    t.string   "spdl",            limit: 60
+    t.string   "spyl",            limit: 60
+    t.string   "spcyl",           limit: 60
+    t.string   "spxl",            limit: 60
+    t.string   "jyjl",            limit: 60
+    t.string   "yytcr",           limit: 60
     t.datetime "yytcsj"
     t.datetime "yysdsj"
-    t.string   "yyfl",               limit: 60
-    t.text     "yynr",               limit: 65535
-    t.string   "yyczbm",             limit: 60
-    t.string   "yyczfzr",            limit: 60
-    t.string   "yyczqk",             limit: 255
-    t.string   "yyczzt",             limit: 60
-    t.string   "yyczjg",             limit: 255,   default: "异议处置中"
-    t.integer  "fjsqqk",             limit: 4,     default: 0
-    t.string   "fjzt",               limit: 255,   default: "初检结论"
-    t.string   "fjsqr",              limit: 60
+    t.string   "yyfl",            limit: 60
+    t.text     "yynr",            limit: 65535
+    t.string   "yyczbm",          limit: 60
+    t.string   "yyczfzr",         limit: 60
+    t.string   "yyczqk",          limit: 60
+    t.string   "yyczzt",          limit: 60
+    t.string   "yyczjg",          limit: 255,   default: "异议处置中"
+    t.integer  "fjsqqk",          limit: 4,     default: 0
+    t.string   "fjzt",            limit: 255,   default: "初检结论"
+    t.string   "fjsqr",           limit: 60
     t.datetime "fjsqsj"
     t.datetime "fjslrq"
     t.datetime "fjwcsj"
-    t.string   "fjxm",               limit: 60
-    t.string   "fjjg",               limit: 60
-    t.string   "fjjl",               limit: 60
-    t.string   "fjjgou",             limit: 60
-    t.string   "bljg",               limit: 60
-    t.string   "djbm",               limit: 60
-    t.string   "djr",                limit: 60
+    t.string   "fjxm",            limit: 60
+    t.string   "fjjg",            limit: 60
+    t.string   "fjjl",            limit: 60
+    t.string   "fjjgou",          limit: 60
+    t.string   "bljg",            limit: 60
+    t.string   "djbm",            limit: 60
+    t.string   "djr",             limit: 60
     t.datetime "djsj"
-    t.string   "blbm",               limit: 60
-    t.string   "blr",                limit: 60
+    t.string   "blbm",            limit: 60
+    t.string   "blr",             limit: 60
     t.datetime "blsj"
-    t.string   "tbbm",               limit: 60
-    t.string   "tbr",                limit: 60
+    t.string   "tbbm",            limit: 60
+    t.string   "tbr",             limit: 60
     t.datetime "tbsj"
-    t.string   "shbm",               limit: 60
-    t.string   "shr",                limit: 60
+    t.string   "shbm",            limit: 60
+    t.string   "shr",             limit: 60
     t.datetime "shsj"
-    t.string   "bcydw",              limit: 60
-    t.string   "bcydwsf",            limit: 60
-    t.string   "cydw",               limit: 60
-    t.string   "cydwsf",             limit: 60
-    t.string   "bsscqy",             limit: 60
-    t.string   "bsscqysf",           limit: 60
-    t.string   "jyxm",               limit: 60
-    t.string   "jgpd",               limit: 60
-    t.string   "jyjg",               limit: 60
-    t.integer  "current_state",      limit: 4
-    t.text     "thyy",               limit: 65535
-    t.boolean  "dj_delayed",                       default: false
-    t.integer  "sp_bsb_id",          limit: 4
+    t.string   "bcydw",           limit: 60
+    t.string   "bcydwsf",         limit: 60
+    t.string   "cydw",            limit: 60
+    t.string   "cydwsf",          limit: 60
+    t.string   "bsscqy",          limit: 60
+    t.string   "bsscqysf",        limit: 60
+    t.string   "jyxm",            limit: 60
+    t.string   "jgpd",            limit: 60
+    t.string   "jyjg",            limit: 60
+    t.integer  "current_state",   limit: 4
+    t.text     "thyy",            limit: 65535
+    t.boolean  "dj_delayed",                    default: false
+    t.integer  "sp_bsb_id",       limit: 4
     t.date     "gzscqyrq"
     t.date     "gzbcydwrq"
-    t.string   "attachment_path",    limit: 255
-    t.string   "attachments",        limit: 255
-    t.integer  "djr_user_id",        limit: 4
-    t.integer  "blr_user_id",        limit: 4
-    t.integer  "tbr_user_id",        limit: 4
-    t.integer  "shr_user_id",        limit: 4
-    t.string   "sh_attachment_path", limit: 100
+    t.string   "attachment_path", limit: 255
+    t.string   "attachments",     limit: 255
+    t.integer  "djr_user_id",     limit: 4
+    t.integer  "blr_user_id",     limit: 4
+    t.integer  "tbr_user_id",     limit: 4
+    t.integer  "shr_user_id",     limit: 4
+    t.integer  "application_id",  limit: 4
+    t.integer  "note",            limit: 4
+    t.boolean  "via_api",                       default: false
   end
 
   create_table "spdata", force: :cascade do |t|
@@ -2173,10 +1194,8 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.string   "spdata_16",  limit: 255
     t.string   "spdata_17",  limit: 255
     t.string   "spdata_18",  limit: 255
-    t.datetime "deleted_at"
   end
 
-  add_index "spdata", ["deleted_at"], name: "index_spdata_on_deleted_at", using: :btree
   add_index "spdata", ["sp_bsb_id"], name: "index_spdata_on_sp_bsb_id", using: :btree
 
   create_table "spkj_bsbs", force: :cascade do |t|
@@ -2310,6 +1329,15 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.string   "sp_s_215",       limit: 255
   end
 
+  create_table "static_queues", force: :cascade do |t|
+    t.string   "name",        limit: 255
+    t.integer  "user_id",     limit: 4
+    t.datetime "finished_at"
+    t.text     "msg",         limit: 65535
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+  end
+
   create_table "sys_configs", force: :cascade do |t|
     t.string   "key",        limit: 255
     t.text     "value",      limit: 65535
@@ -2397,6 +1425,8 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.text     "sp_s_reason",       limit: 65535
     t.string   "sp_s_2",            limit: 255
     t.datetime "deleted_at"
+    t.date     "sp_d_38"
+    t.date     "sp_d_28"
   end
 
   add_index "tmp_sp_bsbs", ["sp_i_state"], name: "index_tmp_sp_bsbs_on_sp_i_state", using: :btree
@@ -2479,14 +1509,14 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.string   "user_s_city",            limit: 255
     t.string   "user_s_lcity",           limit: 255
     t.integer  "publication_permission", limit: 4,     default: 0
-    t.string   "id_card",                limit: 255
-    t.text     "user_sign",              limit: 65535
-    t.integer  "jg_bsb_id",              limit: 4
     t.string   "email",                  limit: 255,   default: "",    null: false
     t.string   "encrypted_password",     limit: 255,   default: "",    null: false
     t.string   "reset_password_token",   limit: 255
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
+    t.string   "id_card",                limit: 255
+    t.text     "user_sign",              limit: 65535
+    t.integer  "jg_bsb_id",              limit: 4
     t.integer  "sign_in_count",          limit: 4,     default: 0,     null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
@@ -2502,17 +1532,23 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.datetime "apply_refused_at"
     t.integer  "state",                  limit: 4,     default: 0
     t.integer  "jg_type",                limit: 4,     default: 0
+    t.integer  "hccz_level",             limit: 4,     default: 0
+    t.integer  "hccz_type",              limit: 4,     default: 0
+    t.string   "ca_uuid",                limit: 50
+    t.integer  "ca_user_status",         limit: 4
+    t.string   "user_code",              limit: 255
   end
 
   add_index "users", ["name"], name: "index_name", using: :btree
+  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
   create_table "welcome_notices", force: :cascade do |t|
     t.string   "title",           limit: 255
     t.integer  "red",             limit: 4
     t.integer  "top",             limit: 4
     t.string   "attachment_path", limit: 255
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "url",             limit: 255
   end
 
@@ -2615,7 +1651,7 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.string   "djr",                 limit: 60
     t.datetime "djsj"
     t.string   "fjsqzk",              limit: 60
-    t.string   "yyczqk",              limit: 255
+    t.string   "yyczqk",              limit: 60
     t.text     "thyy",                limit: 65535
     t.string   "jyjgzt",              limit: 255
     t.date     "qdhcczrq"
@@ -2697,6 +1733,8 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.integer  "blr_user_id",         limit: 4
     t.integer  "tbr_user_id",         limit: 4
     t.integer  "shr_user_id",         limit: 4
+    t.string   "sp_s_4",              limit: 20
+    t.string   "sp_s_5",              limit: 20
     t.string   "sp_s_220",            limit: 20
     t.string   "sp_s_221",            limit: 20
     t.string   "SPDL",                limit: 255
@@ -2706,14 +1744,54 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.string   "xc_attachment_path",  limit: 100
     t.string   "pc_attachment_path",  limit: 100
     t.string   "xz_attachment_path",  limit: 100
-    t.string   "sp_s_4",              limit: 20
-    t.string   "sp_s_5",              limit: 20
+    t.date     "qdqk_sdrq"
+    t.string   "qdqk_sfjs",           limit: 60
+    t.text     "cpkzqk_wzhyy",        limit: 65535
+    t.string   "cpkzqk_sfdw",         limit: 60
+    t.string   "cpkzqk_sfhl",         limit: 60
+    t.string   "yypc_zsylly",         limit: 60
+    t.text     "yypc_bhgscz",         limit: 65535
+    t.text     "yypc_wzcyy",          limit: 65535
+    t.string   "yypc_sfhl",           limit: 60
+    t.text     "xzcf_rdyj",           limit: 65535
+    t.string   "xzcf_yjsfsd",         limit: 60
+    t.string   "xzcf_cssfsd",         limit: 60
+    t.text     "xzcf_wlayy",          limit: 65535
+    t.text     "xzcf_wcfyy",          limit: 65535
+    t.string   "xzcf_blasfhl",        limit: 60
+    t.string   "zgfc_sftjbg",         limit: 60
+    t.string   "zgfc_jgbmyj",         limit: 60
+    t.string   "zgfc_zgsfhl",         limit: 60
+    t.string   "tbys_tbqtbm",         limit: 60
+    t.string   "tbys_xzbmmc",         limit: 255
+    t.string   "tbys_sfjgmc",         limit: 255
+    t.string   "tbys_sfla",           limit: 60
+    t.string   "tbys_sftbys",         limit: 60
+    t.string   "bcydw_shi",           limit: 60
+    t.string   "bcydw_xian",          limit: 60
+    t.string   "bsscqy_shi",          limit: 60
+    t.string   "cpkzqk_kc",           limit: 255
+    t.string   "cpkzqk_zj",           limit: 255
+    t.date     "zgfc_fcrq"
+    t.string   "tbys_sfsfys",         limit: 60
+    t.string   "tbr_dh",              limit: 255
+    t.string   "tbr_cz",              limit: 255
+    t.string   "shr_dh",              limit: 255
+    t.string   "shr_cz",              limit: 255
+    t.string   "cpkzqk_kcdw",         limit: 60
+    t.integer  "yypc_yylbsc",         limit: 4
+    t.integer  "yypc_yylbys",         limit: 4
+    t.integer  "yypc_yylbxs",         limit: 4
+    t.integer  "wtyp_dbtype",         limit: 4
+    t.string   "qd_attachment_path",  limit: 100
+    t.boolean  "part_submit_flag5",                 default: false
+    t.boolean  "part_submit_flag6",                 default: false
+    t.boolean  "part_submit_flag7",                 default: false
+    t.integer  "application_id",      limit: 4
+    t.boolean  "via_api",                           default: false
   end
 
   add_index "wtyp_czb_parts", ["cjbh"], name: "index_wtyp_czb_parts_on_cjbh", using: :btree
-  add_index "wtyp_czb_parts", ["current_state", "sp_bsb_id"], name: "state_sp_bsb_id_idx", using: :btree
-  add_index "wtyp_czb_parts", ["current_state"], name: "current_state_idx", using: :btree
-  add_index "wtyp_czb_parts", ["sp_bsb_id"], name: "sp_bsb_id_idx", using: :btree
 
   create_table "wtyp_czbs", force: :cascade do |t|
     t.string   "wtyp_jg",                limit: 255
@@ -2728,8 +1806,8 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.text     "wtyp_deal_detail",       limit: 65535
     t.string   "wtyp_deal_jg",           limit: 255
     t.text     "wtyp_remark",            limit: 65535
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
+    t.datetime "created_at",                                           null: false
+    t.datetime "updated_at",                                           null: false
     t.integer  "wtyp_sp_bsbs_id",        limit: 4
     t.string   "wtyp_no",                limit: 255
     t.string   "wtyp_state_sc",          limit: 255
@@ -2818,14 +1896,23 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.string   "cydwsf",                 limit: 60
     t.string   "bsscqymc",               limit: 60
     t.datetime "scrq"
+    t.string   "sp_s_4",                 limit: 20
+    t.string   "sp_s_5",                 limit: 20
     t.string   "sp_s_220",               limit: 20
     t.string   "sp_s_221",               limit: 20
     t.string   "SPDL",                   limit: 255
     t.string   "SPYL",                   limit: 255
     t.string   "SPCYL",                  limit: 255
     t.string   "SPXL",                   limit: 255
-    t.string   "sp_s_4",                 limit: 20
-    t.string   "sp_s_5",                 limit: 20
+    t.string   "bcydw_shi",              limit: 60
+    t.string   "bcydw_xian",             limit: 60
+    t.string   "bsscqy_shi",             limit: 60
+    t.boolean  "part_submit_flag5",                    default: false
+    t.boolean  "part_submit_flag6",                    default: false
+    t.boolean  "part_submit_flag7",                    default: false
+    t.integer  "application_id",         limit: 4
+    t.boolean  "via_api",                              default: false
+    t.string   "note",                   limit: 256
   end
 
   add_index "wtyp_czbs", ["bsscqymc"], name: "index_wtyp_czbs_on_bsscqymc", using: :btree
@@ -2855,45 +1942,35 @@ ActiveRecord::Schema.define(version: 20160420084650) do
     t.string   "spdata_17",  limit: 255
     t.string   "spdata_18",  limit: 255
     t.integer  "spdata_id",  limit: 4,   null: false
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "xsbg_tts", force: :cascade do |t|
     t.string   "GJMC",       limit: 255
     t.string   "CJBH",       limit: 255
     t.integer  "sp_bsb_id",  limit: 4
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
-
-  add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
-  add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
-  # WARNING: generating adapter-specific definition for sp_bsbs_after_insert_row_tr due to a mismatch.
-  # either there's a bug in hairtrigger or you've messed up your migrations and/or db :-/
-  execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'lb'@'localhost' TRIGGER sp_bsbs_after_insert_row_tr AFTER INSERT ON `sp_bsbs`
-FOR EACH ROW
-BEGIN
-    INSERT INTO tmp_sp_bsbs(sp_s_reason, id, sp_i_state, sp_s_16, sp_s_3, deleted_at, sp_s_2, sp_s_202, sp_s_14, sp_s_43, sp_s_2_1, sp_s_35, sp_s_64, sp_s_1, sp_s_17, sp_s_20, sp_s_85, created_at, updated_at, sp_s_214, sp_s_71, fail_report_path, tname, user_id, uid, sp_s_18, sp_s_70, sp_s_215, sp_s_68, sp_s_13, sp_s_27, czb_reverted_flag) values(NEW.sp_s_reason, NEW.id, NEW.sp_i_state, NEW.sp_s_16, NEW.sp_s_3, NEW.deleted_at,NEW.sp_s_2, NEW.sp_s_202, NEW.sp_s_14, NEW.sp_s_43, NEW.sp_s_2_1, NEW.sp_s_35, NEW.sp_s_64, NEW.sp_s_1, NEW.sp_s_17, NEW.sp_s_20, NEW.sp_s_85, NEW.created_at, NEW.updated_at, NEW.sp_s_214, NEW.sp_s_71, NEW.fail_report_path, NEW.tname, NEW.user_id, NEW.uid, NEW.sp_s_18, NEW.sp_s_70, NEW.sp_s_215, NEW.sp_s_68, NEW.sp_s_13, NEW.sp_s_27, NEW.czb_reverted_flag);
-END
-  TRIGGERSQL
-
-  # no candidate create_trigger statement could be found, creating an adapter-specific one
-  execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'lb'@'localhost' TRIGGER sp_bsbs_after_update_of_deleted_at_updated_at_sp_i_state_row_tr AFTER UPDATE ON `sp_bsbs`
-FOR EACH ROW
-BEGIN
-    IF NEW.deleted_at <> OLD.deleted_at OR (NEW.deleted_at IS NULL) <> (OLD.deleted_at IS NULL) OR NEW.updated_at <> OLD.updated_at OR (NEW.updated_at IS NULL) <> (OLD.updated_at IS NULL) OR NEW.sp_i_state <> OLD.sp_i_state OR (NEW.sp_i_state IS NULL) <> (OLD.sp_i_state IS NULL) THEN
-        UPDATE tmp_sp_bsbs SET sp_s_reason=NEW.sp_s_reason, sp_i_state=NEW.sp_i_state, sp_s_16=NEW.sp_s_16, sp_s_3=NEW.sp_s_3, deleted_at=NEW.deleted_at, sp_s_2=NEW.sp_s_2, sp_s_202=NEW.sp_s_202, sp_s_14=NEW.sp_s_14, sp_s_43=NEW.sp_s_43, sp_s_2_1=NEW.sp_s_2_1, sp_s_35=NEW.sp_s_35, sp_s_64=NEW.sp_s_64, sp_s_1=NEW.sp_s_1, sp_s_17=NEW.sp_s_17, sp_s_20=NEW.sp_s_20, sp_s_85=NEW.sp_s_85, created_at=NEW.created_at, updated_at=NEW.updated_at, sp_s_214=NEW.sp_s_214, sp_s_71=NEW.sp_s_71, fail_report_path=NEW.fail_report_path, tname=NEW.tname, user_id=NEW.user_id, uid=NEW.uid, sp_s_18=NEW.sp_s_18, sp_s_70=NEW.sp_s_70, sp_s_215=NEW.sp_s_215, sp_s_68=NEW.sp_s_68, sp_s_13=NEW.sp_s_13, sp_s_27=NEW.sp_s_27, czb_reverted_flag=NEW.czb_reverted_flag where id=NEW.id;
-    END IF;
-END
-  TRIGGERSQL
 
   create_trigger("sp_bsbs_after_delete_row_tr", :generated => true, :compatibility => 1).
       on("sp_bsbs").
       after(:delete) do
     "DELETE FROM tmp_sp_bsbs where id=OLD.id;"
+  end
+
+  create_trigger("sp_bsbs_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("sp_bsbs").
+      after(:insert) do
+    "INSERT INTO tmp_sp_bsbs(sp_s_reason, id, sp_i_state, sp_s_16, sp_s_3, sp_s_202, sp_s_14, sp_s_43, sp_s_2_1, sp_s_35, sp_s_64, sp_s_1, sp_s_17, sp_s_20, sp_s_85, created_at, updated_at, sp_s_214, sp_s_71, fail_report_path, tname, user_id, uid, sp_s_18, sp_s_70, sp_s_215, sp_s_68, sp_s_13, sp_s_27, czb_reverted_flag) values(NEW.sp_s_reason, NEW.id, NEW.sp_i_state, NEW.sp_s_16, NEW.sp_s_3, NEW.sp_s_202, NEW.sp_s_14, NEW.sp_s_43, NEW.sp_s_2_1, NEW.sp_s_35, NEW.sp_s_64, NEW.sp_s_1, NEW.sp_s_17, NEW.sp_s_20, NEW.sp_s_85, NEW.created_at, NEW.updated_at, NEW.sp_s_214, NEW.sp_s_71, NEW.fail_report_path, NEW.tname, NEW.user_id, NEW.uid, NEW.sp_s_18, NEW.sp_s_70, NEW.sp_s_215, NEW.sp_s_68, NEW.sp_s_13, NEW.sp_s_27, NEW.czb_reverted_flag);"
+  end
+
+  create_trigger("sp_bsbs_after_update_of_updated_at_sp_i_state_row_tr", :generated => true, :compatibility => 1).
+      on("sp_bsbs").
+      after(:update).
+      of(:updated_at, :sp_i_state) do
+    "UPDATE tmp_sp_bsbs SET sp_s_reason=NEW.sp_s_reason, sp_i_state=NEW.sp_i_state, sp_s_16=NEW.sp_s_16, sp_s_3=NEW.sp_s_3, sp_s_202=NEW.sp_s_202, sp_s_14=NEW.sp_s_14, sp_s_43=NEW.sp_s_43, sp_s_2_1=NEW.sp_s_2_1, sp_s_35=NEW.sp_s_35, sp_s_64=NEW.sp_s_64, sp_s_1=NEW.sp_s_1, sp_s_17=NEW.sp_s_17, sp_s_20=NEW.sp_s_20, sp_s_85=NEW.sp_s_85, created_at=NEW.created_at, updated_at=NEW.updated_at, sp_s_214=NEW.sp_s_214, sp_s_71=NEW.sp_s_71, fail_report_path=NEW.fail_report_path, tname=NEW.tname, user_id=NEW.user_id, uid=NEW.uid, sp_s_18=NEW.sp_s_18, sp_s_70=NEW.sp_s_70, sp_s_215=NEW.sp_s_215, sp_s_68=NEW.sp_s_68, sp_s_13=NEW.sp_s_13, sp_s_27=NEW.sp_s_27, czb_reverted_flag=NEW.czb_reverted_flag where id=NEW.id;"
   end
 
 end

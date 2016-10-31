@@ -527,8 +527,8 @@
               <% end %>
               <li class="<%= "active" if action?("check") %>"><cite></cite><a href="/tasks/check">任务查看</a><i></i></li>
               <% if (current_user.rwxd == 1 or current_user.is_admin?) and !current_user.jg_bsb.nil? %>
-                  <li><cite></cite><a target="_blank" href="http://210.72.225.133/webgps/logins.aspx?username=<%= current_user.jg_bsb.gpsname %>&pwd=<%= current_user.jg_bsb.gpspassword %>">GPS信息留存</a><i></i>
-                  </li>
+               <!--   <li><cite></cite><a target="_blank" href="http://210.72.225.133/webgps/logins.aspx?username=<%= current_user.jg_bsb.gpsname %>&pwd=<%= current_user.jg_bsb.gpspassword %>">GPS信息留存</a><i></i>
+                  </li>-->
               <% end %>
             </ul>
           </dd>
@@ -619,19 +619,19 @@
               <li><cite></cite><a href="">发布数据查询</a><i></i></li>
             </ul>
           </dd>-->
-          <dd>
+          <!--<dd>
             <div class="title">
-              <span><img src="<%= asset_path('leftico05.png') %>"/></span>抽检结果发布
+              <span><img src="<%#= asset_path('leftico05.png') %>"/></span>抽检结果发布
             </div>
-            <ul class="menuson" style="<%= "display: block;" if controller?("sp_bsb_publications") %>">
-              <li class="<%= 'active' if action?('check_duplicate') %>">
+            <ul class="menuson" style="<%#= "display: block;" if controller?("sp_bsb_publications") %>">
+              <li class="<%#= 'active' if action?('check_duplicate') %>">
                 <cite></cite><a href="/sp_bsb_publications/check_duplicate">筛选发布数据</a><i></i>
               </li>
               <li><cite></cite><a href="">核校发布数据</a><i></i></li>
               <li><cite></cite><a href="">审核发布数据</a><i></i></li>
               <li><cite></cite><a href="">发布数据查询</a><i></i></li>
             </ul>
-          </dd>
+          </dd>-->
           <dd>
             <div class="title">
               <span><img src="<%= asset_path('leftico05.png') %>"/></span>抽检信息公示
@@ -668,8 +668,8 @@
                   <li class="<%= "active" if controller?("jg_bsbs") and action?("index") %>">
                     <cite></cite><a href="/jg_bsbs">机构信息录入</a><i></i>
                   </li>
-                  <li class="<%= "active" if controller?("jg_bsbs") and action?("merge_request") %>">
-                    <cite></cite><a href="/jg_bsbs/merge_request">机构合并</a><i></i></li>
+                  <!--<li class="<%#= "active" if controller?("jg_bsbs") and action?("merge_request") %>">
+                    <cite></cite><a href="/jg_bsbs/merge_request">机构合并</a><i></i></li>-->
                 </ul>
               </dd>
               <dd>

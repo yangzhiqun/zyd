@@ -37,9 +37,9 @@ class TasksController < ApplicationController
 
         @baosong_bs = baosong_a.baosong_bs
 
-        if !current_user.is_admin?
-          @baosong_bs = @baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province)
-        end
+       # if !current_user.is_admin?
+       #   @baosong_bs = @baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province)
+       # end
 
         # 如果baosong_b不为空，则取出 @baosong_b
         unless params[:baosong_b].blank?
@@ -88,9 +88,9 @@ class TasksController < ApplicationController
           @baosong_bs = BaosongB.where(:baosong_a_id => @baosong_a.id)
 
           @baosong_b = @baosong_bs.where(name: params[:baosong_b]).last
-          if !current_user.is_admin?
-            @baosong_bs = @baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province)
-          end
+        #  if !current_user.is_admin?
+        #    @baosong_bs = @baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province)
+        #  end
         else
           @baosong_bs = []
         end
@@ -219,6 +219,13 @@ class TasksController < ApplicationController
     if params[:jg_id].blank? or params[:dl].blank? or params[:quota].blank?
       render json: {status: 'ERR', msg: '请提供必要参数'}
     else
+     # if  current_user.prov_country.nil? or current_user.prov_country.blank? or  %w{ -请选择- }.include?(current_user.prov_country)
+      #  info = current_user.prov_city;
+      #  @province = SysProvince.level1.find_by_name(info)
+      #else
+      #  info = current_user.prov_country;
+      #  @province = SysProvince.level2.find_by_name(info)
+      #end
       @province = SysProvince.level1.find_by_name(current_user.prov_city)
       @plan = TaskJgBsb.new(identifier: params[:identifier], sys_province_id: @province.id, jg_bsb_id: params[:jg_id], :a_category_id => params[:dl], :quota => params[:quota])
 
@@ -261,9 +268,9 @@ class TasksController < ApplicationController
       @baosong_bs = @baosong_a.baosong_bs
 
       @baosong_b = @baosong_bs.where(name: params[:baosong_b]).last
-      if !current_user.is_admin?
-        @baosong_bs = @baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province)
-      end
+      #if !current_user.is_admin?
+      #  @baosong_bs = @baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province)
+      #end
     end
 
     @tasks = TaskJgBsb.where(:jg_bsb_id => @jg_bsb.id)
@@ -274,7 +281,16 @@ class TasksController < ApplicationController
       if task.sys_province_id == -1
         @rwly.unshift(["#{SysConfig.get(SysConfig::Key::PROV)}食品药品监督管理局", -1])
       else
-        @rwly.push(["#{task.name}食品药品监督管理局", task.sys_province_id])
+        if  current_user.prov_country.nil? or current_user.prov_country.blank? or  %w{ -请选择- }.include?(current_user.prov_country)
+          info = current_user.prov_city;
+          @province = SysProvince.level1.find_by_name(info)
+          @rwly.push(["#{info}食品药品监督管理局", @province.id])
+        else
+          info = current_user.prov_country;
+          @province = SysProvince.level2.find_by_name(info)
+          @rwly.push(["#{info}食品药品监督管理局", @province.id])
+        end
+        #@rwly.push(["#{task.name}食品药品监督管理局", task.sys_province_id])
       end
     end
 
@@ -289,7 +305,17 @@ class TasksController < ApplicationController
       @a_categories = ACategory.select('distinct(a_categories.id), a_categories.*').joins('RIGHT JOIN task_jg_bsbs AS ab ON ab.a_category_id=a_categories.id').where('a_categories.identifier = ? AND ab.jg_bsb_id = ?', @baosong_b.identifier, @jg_bsb.id)
 
       # Task
-      @tasks = TaskJgBsb.where(:jg_bsb_id => @jg_bsb.id, :sys_province_id => params[:rwly]) #, identifier: @baosong_b.identifier)
+      info_s = current_user.prov_city;
+      @province_s = SysProvince.level1.find_by_name(info_s)
+      if @province_s.nil? or @province_s.blank?
+        @tasks = TaskJgBsb.where(:jg_bsb_id => @jg_bsb.id, :sys_province_id => params[:rwly]) #, identifier: @baosong_b.identifier)
+      else
+        if @province_s.id == params[:rwly] || params[:rwly] == -1
+          @tasks = TaskJgBsb.where(:jg_bsb_id => @jg_bsb.id, :sys_province_id => params[:rwly]) #, identifier: @baosong_b.identifier)
+        else
+          @tasks = TaskJgBsb.where(:jg_bsb_id => @jg_bsb.id, :sys_province_id => @province_s.id) #, identifier: @baosong_b.identifier)
+        end
+      end
       @delegate = @tasks.select('jg_bsb_id').first
 
       d_category_ids = []
