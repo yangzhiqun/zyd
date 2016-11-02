@@ -284,7 +284,7 @@ class TasksController < ApplicationController
         if  current_user.prov_country.nil? or current_user.prov_country.blank? or  %w{ -请选择- }.include?(current_user.prov_country)
           info = current_user.prov_city;
           if(info.nil? or info.blank? or %w{ -请选择- }.include?(info))
-          @province = SysProvince.level1.find_by_name(current_user.user_s_province)
+          @province = SysProvince.level1_old.find_by_name(current_user.user_s_province)
           @rwly.push(["#{current_user.user_s_province}食品药品监督管理局", @province.id])
           else
           @province = SysProvince.level1.find_by_name(info)
