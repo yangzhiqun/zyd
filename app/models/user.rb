@@ -94,6 +94,8 @@ class User < ActiveRecord::Base
           self.yybl = 1
         when 15
           self.yysh = 1
+       when 16
+         self.jbxx_sh=1
       end
     end
 
@@ -139,7 +141,8 @@ class User < ActiveRecord::Base
       '核查处置审核人' => 12,
       '异议登记' => 13,
       '异议办理' => 14,
-      '异议审核' => 15
+      '异议审核' => 15,
+     '报告发送人'=> 16
   }
 
   # 后处置权限
@@ -509,8 +512,10 @@ class User < ActiveRecord::Base
         self.function_type = '14'
       elsif self.yysh == 1
         self.function_type = '15'
+      elsif self.jbxx_sh == 1
+	self.function_type = '16'
       else
-        self.function_type = rand(16..99).to_s
+        self.function_type = rand(17..99).to_s
       end
     end
   end
@@ -632,6 +637,7 @@ class User < ActiveRecord::Base
     attribute :jbjcsj, Integer, default: 0
     attribute :sbsh, Integer, default: 0
     attribute :sbpz, Integer, default: 0
+    attribute :jbxxsh, Integer, default: 0
 
     attribute :yy_gly, Integer, default: 0
     attribute :yy_yysl, Integer, default: 0
