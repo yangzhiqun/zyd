@@ -1,3 +1,41 @@
+<script type="text/javascript">
+  $(function () {
+    $('#submityypc').click(function () {
+      if(!($('#parts__pczgfc_2').attr("checked"))){
+        $('#parts__pczgfc_2').attr("checked","checked");
+        $('#parts__pczgfc_2').attr("value","0");
+      };
+      if(!($('#parts__pczgfc_11').attr("checked"))){
+        $('#parts__pczgfc_11').attr("checked","checked");
+        $('#parts__pczgfc_11').attr("value","0");
+      };
+      if(!($('#parts__pczgfc_12').attr("checked"))){
+        $('#parts__pczgfc_12').attr("checked","checked");
+        $('#parts__pczgfc_12').attr("value","0");
+      };
+      if(!($('#parts__pczgfc_13').attr("checked"))){
+        $('#parts__pczgfc_13').attr("checked","checked");
+        $('#parts__pczgfc_13').attr("value","0");
+      };
+      if(!($('#parts__pczgfc_14').attr("checked"))){
+        $('#parts__pczgfc_14').attr("checked","checked");
+        $('#parts__pczgfc_14').attr("value","0");
+      };
+      if(!($('#parts__pczgfc_15').attr("checked"))){
+        $('#parts__pczgfc_15').attr("checked","checked");
+        $('#parts__pczgfc_15').attr("value","0");
+      };
+      if(!($('#parts__pczgfc_16').attr("checked"))){
+        $('#parts__pczgfc_16').attr("checked","checked");
+        $('#parts__pczgfc_16').attr("value","0");
+      };
+      if(!($('#parts__pczgfc_17').attr("checked"))){
+        $('#parts__pczgfc_17').attr("checked","checked");
+        $('#parts__pczgfc_17').attr("value","0");
+      };
+    })
+  })
+</script>
 <div class="panel panel-primary part-ctner" data-current-state="<%= czb.current_state %>" data-type="<%= czb.wtyp_czb_type %>">
   <div class="panel-heading" style="cursor: pointer;">
     <i class="glyphicon glyphicon-triangle-right"></i>
@@ -93,7 +131,8 @@
         <td colspan="23" class="form-inline" style="line-height: 40px; position: relative;">
           <% if is_fill_enabled?(czb) && !czb.part_submit_flag1 %>
               1.
-              检验报告上传日期（监管部门收到检验报告日期）：<%= czb.wtyp_date.blank? ? czb.sp_bsb.updated_at.strftime("%Y-%m-%d") : czb.wtyp_date %><input type="hidden" name="parts[][wtyp_date]" class="form-control input-sm datepicker" value="<%= czb.wtyp_date.blank? ? czb.sp_bsb.updated_at.strftime("%Y-%m-%d") : czb.wtyp_date %>"><br>
+             <!-- 检验报告上传日期（监管部门收到检验报告日期）：<%= czb.wtyp_date.blank? ? czb.sp_bsb.updated_at.strftime("%Y-%m-%d") : czb.wtyp_date %><input type="hidden" name="parts[][wtyp_date]" class="form-control input-sm datepicker" value="<%= czb.wtyp_date.blank? ? czb.sp_bsb.updated_at.strftime("%Y-%m-%d") : czb.wtyp_date %>"><br>-->
+              检验报告上传日期（监管部门收到检验报告日期）：<%= czb.created_at.strftime("%Y-%m-%d")%><input type="hidden" name="parts[][wtyp_date]" class="form-control input-sm datepicker" value="<%= czb.wtyp_date.blank? ? czb.sp_bsb.updated_at.strftime("%Y-%m-%d") : czb.wtyp_date %>"><br>
               检验报告送达企业日期：<input type="text" name="parts[][qdqk_sdrq]" class="form-control input-sm datepicker" value="<%= czb.qdqk_sdrq %>">；<br>
               启动核查处置日期：<input title="启动核查处置日期" type="text" name="parts[][qdhcczrq]" class="form-control input-sm datepicker" value="<%= czb.qdhcczrq %>">
               <% if czb.current_state == ::WtypCzb::State::ASSIGNED %>
