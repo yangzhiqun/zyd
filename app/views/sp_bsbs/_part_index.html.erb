@@ -69,7 +69,7 @@
     <% if current_user.jsyp == 1 %>
     <!-- 只有样品接收人员拥有该权限 -->
     <tr>
-      <td colspan="10">
+      <td colspan="11">
         <a href="javascript:void(0);" class="push-all btn btn-xs btn-success"><i class="glyphicon glyphicon-download"></i>批量推送基本信息</a>
       </td>
     </tr>
@@ -84,6 +84,12 @@
       <th class="<%= 'up' if (params[:sp_order_seq] == 'ASC' and params[:sp_order] == 'sp_s_3')%>" width="60" data-field="sp_s_3">
         省份
         <% if params[:sp_order] == "sp_s_3" %>
+        <i class="glyphicon glyphicon-sort-by-attributes<%= params[:sp_order_seq] == "DESC" ? "-alt" : ""%> text-success"></i>
+        <% end %>
+      </th>
+      <th class="<%= 'up' if (params[:sp_order_seq] == 'ASC' and params[:sp_order] == 'sp_s_4')%>" width="60" data-field="sp_s_4">
+        市/区
+        <% if params[:sp_order] == "sp_s_4" %>
         <i class="glyphicon glyphicon-sort-by-attributes<%= params[:sp_order_seq] == "DESC" ? "-alt" : ""%> text-success"></i>
         <% end %>
       </th>
@@ -126,6 +132,7 @@
     <tr class="<%= 'danger' if sp_bsb.is_bad_report? %>">
       <td width="20"><input type="checkbox" data-id="<%= sp_bsb.id %>" class="check"></td>
       <td><%=((sp_bsb.updated_at).ago(-3600*8)).to_s[0,19]%></td>
+      <td><%= sp_bsb.sp_s_3 %></td>
       <td><%= sp_bsb.sp_s_3 %></td>
       <td style="word-break:break-all"><%= sp_bsb.sp_s_16 %></td>
       <td><%= sp_bsb.sp_s_14 %></td>

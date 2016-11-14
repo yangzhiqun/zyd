@@ -98,6 +98,11 @@ module ApplicationHelper
     end
   end
 
+	def is_city?
+		result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.prov_city != "-请选择-"	
+		return result
+	end
+
   def generate_tab_params(tab)
     p = request.GET
     p[:page] = 1 if tab.to_i != p[:current_tab]

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160819032913) do
+ActiveRecord::Schema.define(version: 20161110032718) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -880,6 +880,7 @@ ActiveRecord::Schema.define(version: 20160819032913) do
     t.integer  "sp_s_37_user_id",          limit: 4
     t.datetime "deleted_at"
     t.string   "xsbg_file_path",           limit: 256
+    t.text     "sp_s_city",                limit: 65535
   end
 
   add_index "sp_bsbs", ["application_id"], name: "index_sp_bsbs_on_application_id", using: :btree

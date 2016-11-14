@@ -1,5 +1,8 @@
 <script type="text/javascript">
   $(function () {
+		if(<%= is_city? %>){
+			$('#city').attr("disabled","disabled");
+		}
 //    reload_jg_data();
     $('a.unbind').click(function () {
       $('#user_id_card, .id-card, #user_user_sign').val('');

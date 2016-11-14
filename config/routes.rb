@@ -251,6 +251,7 @@ Rails.application.routes.draw do
       get 'hccz/:cjbh/report' => 'hccz#report'
 			post "sp_bsbs/sync_sp_bsb"
 			post "spdata/sync_spdaum"
+			post "spdata/transfer"
     end
   end
 

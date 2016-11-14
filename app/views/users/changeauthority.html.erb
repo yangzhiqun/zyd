@@ -12,28 +12,28 @@ $(document).ready(function(){
         <label class="radio-inline c-radio">
           <input type="radio" id="r1" value="1" name="r1"/>
           <span class="fa fa-circle"></span>
-          药监局采样信息填报人员
+          药监局<%= "市级" if is_city? %>采样信息填报人员
         </label>
       <%end%>
       <%if @user.user_i_js==1&&@user.user_d_authority_2==1%>
         <label class="radio-inline c-radio">
           <input type="radio" id="r2" value="2" name="r1">
           <span class="fa fa-circle"></span>
-          药监局审核人员
+          药监局<%= "市级" if is_city? %>审核人员
         </label>
       <%end%>
       <%if @user.user_i_js==1&&@user.user_d_authority_3==1%>
         <label class="radio-inline c-radio">
           <input type="radio" id="r3" value="3" name="r1">
           <span class="fa fa-circle"></span>
-          药监局样品处理人员
+          药监局<%= "市级" if is_city? %>样品处理人员
         </label>
       <%end%>
       <%if @user.user_i_js==1&&@user.user_d_authority_4==1%>
         <label class="radio-inline c-radio">
           <input type="radio" id="r4" value="4" name="r1">
           <span class="fa fa-circle"></span>
-          药监局统计人员
+          药监局<%= "市级" if is_city? %>统计人员
         </label>
       <%end%>
       <%if @user.user_i_js==0&&@user.user_d_authority==1%>

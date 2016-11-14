@@ -272,10 +272,12 @@ class SpBsbsController < ApplicationController
     @sp_bsb.user_id = current_user.id
     @sp_bsb.uid = current_user.uid
     @sp_bsb.sp_s_3 = current_user.user_s_province
+    @sp_bsb.sp_s_4 = current_user.prov_city
     @sp_bsb.sp_s_35 = current_user.jg_bsb.jg_name
     @sp_bsb.sp_s_37 = current_user.tname
     @sp_bsb.sp_s_39 = current_user.tel
     @sp_bsb.sp_s_52 = current_user.user_s_province
+		@sp_bsb.sp_s_city = current_user.prov_city
     @sp_bsb.sp_s_71 = '未检验'
 		@sp_bsb.sp_s_202 = current_user.user_s_province
     if current_user.jg_bsb
@@ -283,6 +285,7 @@ class SpBsbsController < ApplicationController
       @sp_bsb.sp_s_41 = current_user.jg_bsb.jg_tel
       @sp_bsb.sp_s_42 = current_user.jg_bsb.jg_email
       @sp_bsb.sp_s_52 = current_user.jg_bsb.jg_province
+      @sp_bsb.sp_s_city = current_user.jg_bsb.city
       @sp_bsb.sp_s_211 = current_user.jg_bsb.jg_address
       @sp_bsb.sp_s_212 = current_user.jg_bsb.zipcode
       @sp_bsb.sp_s_213 = current_user.jg_bsb.fax
@@ -1747,7 +1750,7 @@ class SpBsbsController < ApplicationController
         :updated_at,
         :czb_reverted_flag,
         :czb_reverted_reason,
-        :synced, :ca_source, :ca_sign
+        :synced, :ca_source, :ca_sign, :sp_s_city
     )
   end
 end
