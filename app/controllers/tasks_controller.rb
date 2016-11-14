@@ -37,9 +37,9 @@ class TasksController < ApplicationController
 
         @baosong_bs = baosong_a.baosong_bs
 
-        if !current_user.is_admin?
-          @baosong_bs = @baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province)
-        end
+       # if !current_user.is_admin?
+       #   @baosong_bs = @baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province)
+       # end
 
         # 如果baosong_b不为空，则取出 @baosong_b
         unless params[:baosong_b].blank?
@@ -88,9 +88,9 @@ class TasksController < ApplicationController
           @baosong_bs = BaosongB.where(:baosong_a_id => @baosong_a.id)
 
           @baosong_b = @baosong_bs.where(name: params[:baosong_b]).last
-          if !current_user.is_admin?
-            @baosong_bs = @baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province)
-          end
+        #  if !current_user.is_admin?
+        #    @baosong_bs = @baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province)
+        #  end
         else
           @baosong_bs = []
         end
@@ -268,9 +268,9 @@ class TasksController < ApplicationController
       @baosong_bs = @baosong_a.baosong_bs
 
       @baosong_b = @baosong_bs.where(name: params[:baosong_b]).last
-      if !current_user.is_admin?
-        @baosong_bs = @baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province)
-      end
+      #if !current_user.is_admin?
+      #  @baosong_bs = @baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province)
+      #end
     end
 
     @tasks = TaskJgBsb.where(:jg_bsb_id => @jg_bsb.id)
@@ -283,8 +283,13 @@ class TasksController < ApplicationController
       else
         if  current_user.prov_country.nil? or current_user.prov_country.blank? or  %w{ -请选择- }.include?(current_user.prov_country)
           info = current_user.prov_city;
+          if(info.nil? or info.blank? or %w{ -请选择- }.include?(info))
+          @province = SysProvince.level1_old.find_by_name(current_user.user_s_province)
+          @rwly.push(["#{current_user.user_s_province}食品药品监督管理局", @province.id])
+          else
           @province = SysProvince.level1.find_by_name(info)
           @rwly.push(["#{info}食品药品监督管理局", @province.id])
+          end
         else
           info = current_user.prov_country;
           @province = SysProvince.level2.find_by_name(info)

@@ -485,13 +485,16 @@
       <a target="_blank"  href="http://www.cfda.gov.cn/WS01/CL1689/"><img src="<%= asset_path('icon03.png') %>" title="抽检公示"/>
         <h2>抽检公示</h2></a></li>
     <li>
-      <a target="_blank" href="http://61.158.162.77:9091/app/doc/shuoming.pdf"><img src="<%= asset_path('icon04.png') %>" title="系统说明"/>
+      <a target="_blank" href="http://bbs.cfda.pub:8080/app/doc/shuoming.pdf"><img src="<%= asset_path('icon04.png') %>" title="系统说明"/>
         <h2>系统说明</h2></a></li>
-    <li>
+  <!--  <li>
       <a href="#"><img src="<%= asset_path('icon02.png') %>" title="常见问题"/>
-        <h2>常见问题</h2></a></li>
-    <li><a target="_blank" href="http://61.158.162.77:9091/app/?name=<%=SysConfig.get(SysConfig::Key::PROV)%>"><img src="<%= asset_path('icon05.png') %>" title="终端下载"/>
+        <h2>常见问题</h2></a></li>-->
+    <li><a target="_blank" href="http://bbs.cfda.pub:8080/app/?name=<%=SysConfig.get(SysConfig::Key::PROV)%>"><img src="<%= asset_path('icon05.png') %>" title="终端下载"/>
       <h2>终端下载</h2></a></li>
+    <li>
+      <a href="http://bbs.cfda.pub:8080/lims_buttjoint/" target="_blank"><img src="<%= asset_path('icon06.png') %>" title="lims对接"/>
+        <h2>lims对接</h2></a></li>
   </ul>
   <div class="topright">
     <div class="user">
@@ -527,8 +530,8 @@
               <% end %>
               <li class="<%= "active" if action?("check") %>"><cite></cite><a href="/tasks/check">任务查看</a><i></i></li>
               <% if (current_user.rwxd == 1 or current_user.is_admin?) and !current_user.jg_bsb.nil? %>
-                  <li><cite></cite><a target="_blank" href="http://210.72.225.133/webgps/logins.aspx?username=<%= current_user.jg_bsb.gpsname %>&pwd=<%= current_user.jg_bsb.gpspassword %>">GPS信息留存</a><i></i>
-                  </li>
+               <!--   <li><cite></cite><a target="_blank" href="http://210.72.225.133/webgps/logins.aspx?username=<%= current_user.jg_bsb.gpsname %>&pwd=<%= current_user.jg_bsb.gpspassword %>">GPS信息留存</a><i></i>
+                  </li>-->
               <% end %>
             </ul>
           </dd>

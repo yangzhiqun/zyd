@@ -545,7 +545,7 @@ class SpBsb < ActiveRecord::Base
 
       # 生产部分
       # 生产部分核查处置仅包含：生产 & 流通
-      if !self.sp_s_68.eql?('餐饮')
+      if !self.sp_s_68.eql?('餐饮') or (self.sp_s_68.eql?('餐饮') and self.sp_s_63.eql?('预包装'))
         @part_sc = WtypCzbPart.where(wtyp_czb_type: WtypCzbPart::Type::SC, wtyp_czb_id: wtyp_czb.id).first
         if @part_sc.nil?
           @part_sc = WtypCzbPart.new(wtyp_czb_type: WtypCzbPart::Type::SC, wtyp_czb_id: wtyp_czb.id)
