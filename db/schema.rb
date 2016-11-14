@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161028102724) do
+ActiveRecord::Schema.define(version: 20161114095848) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -235,6 +235,7 @@ ActiveRecord::Schema.define(version: 20161028102724) do
     t.string   "fax",               limit: 255
     t.integer  "jg_type",           limit: 4
     t.string   "jg_code",           limit: 255
+    t.string   "ca_org",            limit: 255
   end
 
   create_table "login_logs", force: :cascade do |t|
@@ -1163,6 +1164,8 @@ ActiveRecord::Schema.define(version: 20161028102724) do
     t.integer  "blr_user_id",     limit: 4
     t.integer  "tbr_user_id",     limit: 4
     t.integer  "shr_user_id",     limit: 4
+    t.string   "bcydws",          limit: 255
+    t.string   "bsscqys",         limit: 255
   end
 
   create_table "spdata", force: :cascade do |t|
@@ -1531,6 +1534,7 @@ ActiveRecord::Schema.define(version: 20161028102724) do
     t.string   "ca_uuid",                limit: 50
     t.integer  "ca_user_status",         limit: 4
     t.string   "user_code",              limit: 255
+    t.integer  "jbxx_sh",                limit: 4,     default: 0
   end
 
   add_index "users", ["name"], name: "index_name", using: :btree

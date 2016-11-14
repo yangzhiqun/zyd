@@ -6,17 +6,17 @@
          var val_test =$('#cyjg').find('option:selected').text();
         $('#jyjg').empty();
        $('<option>请选择检验机构</option>').appendTo($('#jyjg'));
-       if(jg_type==1){
+     //  if(jg_type==1){
          $.get('/sp_bsbs/super_jg.json', {super_jg_bsb_id: jg_val}, function (data) {
-         $('<option>').attr({'value': val_test, 'data-jg-type': 1}).text(val_test).appendTo($('#jyjg'));
+         //$('<option>').attr({'value': val_test, 'data-jg-type': 1}).text(val_test).appendTo($('#jyjg'));
             $.each(data.msg, function (i, super_jg) {
               console.log(super_jg);
-              $('<option>').attr({'value': super_jg.id, 'data-jg-type': 1}).text(super_jg.jg_name).appendTo($('#jyjg'));
+              $('<option>').attr({'value': super_jg.id, 'data-jg-type': super_jg.jg_type}).text(super_jg.jg_name).appendTo($('#jyjg'));
             }); 
           }, 'json');
-       }else{
-        $('<option>').attr({'value': jg_val, 'data-jg-type': 3}).text(val_test).appendTo($('#jyjg'));
-       }
+ //      }else{
+   //     $('<option>').attr({'value': jg_val, 'data-jg-type': 3}).text(val_test).appendTo($('#jyjg'));
+    //  }
   }
    
 </script>
@@ -48,7 +48,7 @@
                       <option value="<%= jg_bsb.id %>" data-jg-type="<%= jg_bsb.jg_type.to_i %>" disabled="disabled"><%= jg_bsb.jg_name %>
                         (未设编号,无法安排)
                       </option>
-                  <% else %>
+                  <% elsif jg_bsb.jg_sampling==1 %>
                       <option value="<%= jg_bsb.id %>" data-jg-type="<%= jg_bsb.jg_type.to_i %>"><%= jg_bsb.jg_name %></option>
                   <% end %>
               <% end %>

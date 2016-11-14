@@ -94,9 +94,9 @@ class YyczController < ApplicationController
     @yyczs = SpYydjb.select("y.*").joins("as y left join sp_bsbs as s on y.cjbh = s.sp_s_16")
 
     if params[:current_tab].to_i == 0
-      @yyczs = @yyczs.where("y.current_state = ?", SpYydjb::State::ASSIGNED).order("y.created_at ASC")
+      @yyczs = @yyczs.where("y.current_state = ? and (bcydws =? or bsscqys =?)", SpYydjb::State::ASSIGNED,current_user.prov_city,current_user.prov_city).order("y.created_at ASC")
     else
-      @yyczs = @yyczs.where("y.current_state = ?", SpYydjb::State::FILLED).order("y.created_at ASC")
+      @yyczs = @yyczs.where("y.current_state = ? and (bcydws =? or bsscqys =?)", SpYydjb::State::FILLED,current_user.prov_city,current_user.prov_city).order("y.created_at ASC")
     end
 
     if current_user.yyadmin != 1
@@ -400,10 +400,10 @@ class YyczController < ApplicationController
 
   private
   def yydjb_params
-    params.require(:yycz).permit(:attachments, :attachment_file, :sp_bsb_id, :yyczqk, :yyczzt, :yyczjg, :fjzt, :fjsqqk, :bcydw, :bcydwsf, :cydw, :cydwsf, :bsscqy, :bsscqysf, :yysdsj, :yytcsj, :yyfl, :yyczbm, :yyczfzr, :cjbh, :ypmc, :ypgg, :ypph, :jyjl, :scrq, :yytcr, :yynr, :fjsqr, :fjsqsj, :fjslrq, :fjwcsj, :fjjg, :bljg, :djbm, :djr, :djsj, :blbm, :blr, :blsj, :tbbm, :tbr, :tbsj, :shbm, :shr, :shsj, :dj_delayed,:gzscqyrq,:gzbcydwrq)
+    params.require(:yycz).permit(:bcydws,:bsscqys,:attachments, :attachment_file, :sp_bsb_id, :yyczqk, :yyczzt, :yyczjg, :fjzt, :fjsqqk, :bcydw, :bcydwsf, :cydw, :cydwsf, :bsscqy, :bsscqysf, :yysdsj, :yytcsj, :yyfl, :yyczbm, :yyczfzr, :cjbh, :ypmc, :ypgg, :ypph, :jyjl, :scrq, :yytcr, :yynr, :fjsqr, :fjsqsj, :fjslrq, :fjwcsj, :fjjg, :bljg, :djbm, :djr, :djsj, :blbm, :blr, :blsj, :tbbm, :tbr, :tbsj, :shbm, :shr, :shsj, :dj_delayed,:gzscqyrq,:gzbcydwrq)
   end
 
   def djb_params
-    params.require(:djb).permit(:attachments, :attachment_file, :sp_bsb_id, :yyczqk, :yyczzt, :yyczjg, :fjzt, :fjsqqk, :bcydw, :bcydwsf, :cydw, :cydwsf, :bsscqy, :bsscqysf, :yysdsj, :yytcsj, :yyfl, :yyczbm, :yyczfzr, :cjbh, :ypmc, :ypgg, :ypph, :jyjl, :scrq, :yytcr, :yynr, :fjsqr, :fjsqsj, :fjslrq, :fjwcsj, :fjjg, :bljg, :djbm, :djr, :djsj, :blbm, :blr, :blsj, :tbbm, :tbr, :tbsj, :shbm, :shr, :shsj, :dj_delayed,:gzscqyrq,:gzbcydwrq)
+    params.require(:djb).permit(:bcydws,:bsscqys,:attachments, :attachment_file, :sp_bsb_id, :yyczqk, :yyczzt, :yyczjg, :fjzt, :fjsqqk, :bcydw, :bcydwsf, :cydw, :cydwsf, :bsscqy, :bsscqysf, :yysdsj, :yytcsj, :yyfl, :yyczbm, :yyczfzr, :cjbh, :ypmc, :ypgg, :ypph, :jyjl, :scrq, :yytcr, :yynr, :fjsqr, :fjsqsj, :fjslrq, :fjwcsj, :fjjg, :bljg, :djbm, :djr, :djsj, :blbm, :blr, :blsj, :tbbm, :tbr, :tbsj, :shbm, :shr, :shsj, :dj_delayed,:gzscqyrq,:gzbcydwrq)
   end
 end

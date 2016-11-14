@@ -81,6 +81,12 @@ $(function(){
 
           $('.yycz #bsscqysf').text(data.msg.sp_s_202);
           $('#yycz_bsscqysf').val(data.msg.sp_s_202);
+           
+          $('.yycz #bcydws').text(data.msg.sp_s_4);
+          $('#yycz_bcydws').val(data.msg.sp_s_4);
+
+          $('.yycz #bsscqys').text(data.msg.sp_s_220);
+          $('#yycz_bsscqys').val(data.msg.sp_s_220);
 
           $('.yycz').removeClass('hidden');
         } else {
@@ -153,6 +159,8 @@ $(function(){
       <%= f.hidden_field :cydwsf %>
       <%= f.hidden_field :bsscqy %>
       <%= f.hidden_field :bsscqysf %>
+     <%= f.hidden_field :bcydws %>
+     <%= f.hidden_field :bsscqys %>
       <h4>样品信息区</h4>
       <table class="yycz table table-bordered">
         <tr>
@@ -176,9 +184,9 @@ $(function(){
         <tr>
           <th>被抽样单位名称</th>
           <td id="bcydw"><%= f.text_field :bcydw,:readonly => :readonly %></td>
-          <th>被抽样单位省份</th>
+          <th>被抽样单位省份/市</th>
           <td id="bcydwsf"><%= f.text_field :bcydwsf,:readonly => :readonly %></td>
-        </tr>
+          </tr>
         <tr>
           <th>抽样单位名称</th>
           <td id="cydw"><%= f.text_field :cydw,:readonly => :readonly %></td>
@@ -188,9 +196,15 @@ $(function(){
         <tr>
           <th>标识生产企业名称</th>
           <td id="bsscqy"><%= f.text_field :bsscqy,:readonly => :readonly %></td>
-          <th>标识生产企业省份</th>
+          <th>标识生产企业省份/市</th>
           <td id="bsscqysf"><%= f.text_field :bsscqysf,:readonly => :readonly %></td>
         </tr>
+       <tr>
+         <th>被抽样单位市</th>
+         <td id="bcydws"><%= f.text_field :cydwsf,:readonly => :readonly %></td>
+         <th>标识生产企业市</th>
+         <td id="bsscqys"><%= f.text_field :bsscqysf,:readonly => :readonly %></td>
+       </tr>
       </table>
       <h4>异议登记信息区</h4>
       <table class="yycz table table-bordered">

@@ -24,6 +24,25 @@
 
     $('#cyjg, #jyjg').select2();
   });
+
+function jg_change(){
+       //var jg_type =$('#cyjg').find('option:selected').attr('data-jg-type');
+       //监管部门-1 检验机构-3
+        var jg_val =  $('#cyjg').val();
+         var val_test =$('#cyjg').find('option:selected').text();
+        $('#jyjg').empty();
+       $('<option>请选择检验机构</option>').appendTo($('#jyjg'));
+      // if(jg_type==1){
+         $.get('/sp_bsbs/super_jg.json', {super_jg_bsb_id: jg_val}, function (data) {
+            $.each(data.msg, function (i, super_jg) {
+              console.log(super_jg);
+              $('<option>').attr({'value': super_jg.id, 'data-jg-type': 1}).text(super_jg.jg_name).appendTo($('#jyjg'));
+            }); 
+          }, 'json');
+      // }else{
+       // $('<option>').attr({'value': jg_val, 'data-jg-type': 3}).text(val_test).appendTo($('#jyjg'));
+      // }
+  }
 </script>
 <h3 class="text-center"><%= current_user.user_s_province %>采样任务部署</h3>
 <div class="ctner" style="overflow-x: scroll;">
@@ -46,7 +65,7 @@
     <br>
     <br>
     <label for="">采样机构：</label>
-    <select id="cyjg" style="width: 400px;" class="form-control input-sm">
+    <select id="cyjg" style="width: 400px;" class="form-control input-sm" onchange="jg_change()">
       <option value="">请选择采样机构</option>
       <% @cyjgs.each do |cyjg| %>
           <% if cyjg.code.blank? %>
@@ -60,14 +79,6 @@
     <br>
     <label for="">检验机构：</label>
     <select id="jyjg" style="width: 400px;" class="form-control input-sm">
-      <option value="">请选择检验机构</option>
-      <% @jyjgs.each do |jyjg| %>
-          <% if jyjg.code.blank? %>
-              <option value="<%= jyjg.id %>" disabled="disabled"><%= jyjg.jg_name %>(未设编号,无法安排)</option>
-          <% else %>
-              <option value="<%= jyjg.id %>"><%= jyjg.jg_name %></option>
-          <% end %>
-      <% end %>
     </select>
     <br>
     <br>

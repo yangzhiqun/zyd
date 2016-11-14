@@ -1463,12 +1463,12 @@ logger.error "session[:change_js]"
       end
 
       if !@jg_bsbsuper.nil?
-       @jg=JgBsb.find(jg_ids)
+       @jg=JgBsb.find(jg_ids).where("jg_bsbs.jg_detection=? and jg_bsbs.id in(?)",1,super_jg_bsb_id)
       end
      
         render json: {status: 'OK', msg: @jg }
     rescue
-     @jg= JgBsb.find(super_jg_bsb_id)
+     @jg= JgBsb.where("jg_bsbs.jg_detection=? and jg_bsbs.id in(?)",1,super_jg_bsb_id)
       render json: {status: 'OK', msg: @jg}
     end
   end
