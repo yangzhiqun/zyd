@@ -201,6 +201,7 @@ class YyczController < ApplicationController
 
       if current_user.yyadmin != 1
         @sp_bsbs = @sp_bsbs.where("s.sp_s_3 = ? OR s.sp_s_202 = ?", current_user.user_s_province, current_user.user_s_province)
+	@sp_bsbs = @sp_bsbs.where("s.sp_s_4 = ? OR s.sp_s_220 = ?", current_user.prov_city, current_user.prov_city)	
       end
 
       if !params[:cjbh].blank?
@@ -213,7 +214,7 @@ class YyczController < ApplicationController
   def show
     @djb = SpYydjb.find(params[:id])
     @spdata = SpYydjbSpdata.where(:sp_yydjb_id => @djb.id)
-
+    @sp_bsb =SpBsb.find_by_sp_s_16(@djb.cjbh)
     @attachments = Attachment.where("id in (?)", (@djb.attachments||"").split(","))
 
     respond_to do |format|

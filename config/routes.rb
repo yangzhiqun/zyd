@@ -213,6 +213,7 @@ Rails.application.routes.draw do
      get 'no_available_pdf_found'
      get 'by_ca_info'
      get 'print_pdf'
+     get 'super_jg'
     end
   end
 
