@@ -566,9 +566,11 @@
                       </li>
                   <% end %>
                   <% if current_user.yyadmin == 1 %>
+										<% if !is_city? %>
                       <li class="<%= "active" if action?("renew") %>">
                         <cite></cite><a href="/yycz/renew">异议延期登记</a><i></i>
                       </li>
+										<% end %>
                   <% end %>
                   <% if false and current_user.zhxt == 1 %>
                       <li class="<%= "active" if action?("gzap") %>"><cite></cite><a href="/yycz/gzap">异议工作安排</a><i></i>
@@ -675,22 +677,26 @@
                     <cite></cite><a href="/jg_bsbs/merge_request">机构合并</a><i></i></li>-->
                 </ul>
               </dd>
-              <dd>
-                <div class="title not-expand">
-                  <span><img src="<%= asset_path('leftico07.png') %>"/></span><a href="/sp_production_infos">生产企业库维护</a>
-                </div>
-              </dd>
-              <dd>
-                <div class="title not-expand">
-                  <span><img src="<%= asset_path('leftico08.png') %>"/></span><a href="/sp_company_infos">被抽样单位库维护</a>
-                </div>
-              </dd>
+							<% if !is_city? %>
+              	<dd>
+              	  <div class="title not-expand">
+              	    <span><img src="<%= asset_path('leftico07.png') %>"/></span><a href="/sp_production_infos">生产企业库维护</a>
+              	  </div>
+              	</dd>
+              	<dd>
+              	  <div class="title not-expand">
+              	    <span><img src="<%= asset_path('leftico08.png') %>"/></span><a href="/sp_company_infos">被抽样单位库维护</a>
+              	  </div>
+              	</dd>
+							<% end %>
           <% end %>
-          <dd>
-            <div class="title not-expand">
-              <span><img src="<%= asset_path('leftico09.png') %>"/></span><a href="/baosong_as">报送分类维护</a>
-            </div>
-          </dd>
+					<% if !is_city? %>
+          	<dd>
+          	  <div class="title not-expand">
+          	    <span><img src="<%= asset_path('leftico09.png') %>"/></span><a href="/baosong_as">报送分类维护</a>
+          	  </div>
+          	</dd>
+          <% end %>
       <% end %>
       <dd>
         <div class="title not-expand">
@@ -698,11 +704,13 @@
         </div>
       </dd>
       <% if current_user.is_super? or ((current_user.user_i_js == 1) and (current_user.is_account_manager)) %>
-      <dd>
-        <div class="title not-expand">
-          <span><img src="<%= asset_path('leftico10.png') %>"/></span><a href="/sys_provinces">区域维护</a>
-        </div>
-      </dd>
+				<% if !is_city? %>
+      		<dd>
+      		  <div class="title not-expand">
+      		    <span><img src="<%= asset_path('leftico10.png') %>"/></span><a href="/sys_provinces">区域维护</a>
+      		  </div>
+      		</dd>
+      	<% end %>
       <% end %>
       <% if current_user.is_account_manager %>
           <dd>
@@ -712,18 +720,22 @@
           </dd>
       <% end %>
       <% if current_user.user_i_js == 1 %>
-          <dd>
-            <div class="title not-expand">
-              <span><img src="<%= asset_path('leftico12.png') %>"/></span><a href="/sample_members">人员信息查看</a>
-            </div>
-          </dd>
+				<% if !is_city? %>
+        	<dd>
+        	  <div class="title not-expand">
+        	    <span><img src="<%= asset_path('leftico12.png') %>"/></span><a href="/sample_members">人员信息查看</a>
+        	  </div>
+        	</dd>
+      	<% end %>
       <% end %>
       <% if current_user.user_d_authority_1 == 1 or current_user.is_super? %>
+				<% if !is_city? %>
           <dd>
             <div class="title not-expand">
               <span><img src="<%= asset_path('leftico10.png') %>"/></span><a href="/company_standards">企业标准库维护</a>
             </div>
           </dd>
+      	<% end %>
       <% end %>
       <% if current_user.is_admin? %>
           <dd>

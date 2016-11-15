@@ -874,6 +874,7 @@ ActiveRecord::Schema.define(version: 20161114095848) do
     t.datetime "deleted_at"
     t.string   "xsbg_file_path",           limit: 256
     t.integer  "ca_key_status",            limit: 4,                    default: 0
+    t.text     "sp_s_city",                limit: 65535
   end
 
   add_index "sp_bsbs", ["application_id"], name: "index_sp_bsbs_on_application_id", using: :btree

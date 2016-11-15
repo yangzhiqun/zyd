@@ -49,7 +49,11 @@ class UsersController < ApplicationController
 
       if current_user.is_account_manager
         if current_user.user_i_js == 1
-          @users = @users.where(user_s_province: current_user.user_s_province)
+					if current_user.prov_city == "-请选择-"
+          	@users = @users.where(user_s_province: current_user.user_s_province)
+					else
+						@users = @users.where(user_s_province: current_user.user_s_province,prov_city:current_user.prov_city)
+					end
         else
           @users = @users.where(jg_bsb_id: current_user.jg_bsb_id)
         end
