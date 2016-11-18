@@ -514,7 +514,7 @@
   <div class="main_left" style="background:#f0f9fd; width:15%;">
     <div class="lefttop"><span></span>操作列表</div>
     <dl class="leftmenu">
-      <% if current_user.pad_permission.to_i > 0 || current_user.is_admin? %>
+      <% if current_user.pad_permission.to_i > 0 || current_user.is_admin? || is_shengshi? %>
           <dd>
             <div class="title">
               <span><img src="<%= asset_path('leftico05.png') %>"/></span>样品采集
@@ -546,14 +546,14 @@
                   <li class="<%= "active" if action?("new") %>"><cite></cite><a href="/sp_bsbs/new">食品检验数据录入</a><i></i>
                   </li>
               <% end %>
-              <% if current_user.user_d_authority_5 == 1 or current_user.user_i_switch == 1 or current_user.user_d_authority == 1 or current_user.user_d_authority_1 == 1 or current_user.user_d_authority_2 == 1 or current_user.user_d_authority_3 == 1 %>
+              <% if current_user.user_d_authority_5 == 1 or current_user.user_i_switch == 1 or current_user.user_d_authority == 1 or current_user.user_d_authority_1 == 1 or current_user.user_d_authority_2 == 1 or current_user.user_d_authority_3 == 1 or is_shengshi? %>
                   <li class="<%= "active" if controller?("sp_bsbs") and action?('spsearch') %>">
                     <cite></cite><a href="/sp_bsbs_spsearch?<%= session[:query] %>">食品检验数据查看</a><i></i>
                   </li>
               <% end %>
             </ul>
           </dd>
-          <% if current_user.hcz_permission.to_i > 0 || current_user.yycz_permission.to_i > 0 %>
+          <% if current_user.hcz_permission.to_i > 0 || current_user.yycz_permission.to_i > 0 || is_shengshi? %>
               <dd>
                 <div class="title">
                   <span><img src="<%= asset_path('leftico04.png') %>"/></span>核查处置
@@ -561,7 +561,7 @@
                 <ul class="menuson" style="<%= "display: block;" if controller?("wtyp_czbs") or controller?("yycz") %>">
 
                   <%# if current_user.yycz_permission.to_i > 0 || current_user.is_admin? %>
-                  <% if current_user.yyadmin == 1 or current_user.yysl == 1 %>
+                  <% if current_user.yyadmin == 1 or current_user.yysl == 1 or is_shengshi? %>
                       <li class="<%= "active" if action?("dj") %>"><cite></cite><a href="/yycz/dj">异议登记</a><i></i>
                       </li>
                   <% end %>
@@ -576,12 +576,12 @@
                       <li class="<%= "active" if action?("gzap") %>"><cite></cite><a href="/yycz/gzap">异议工作安排</a><i></i>
                       </li>
                   <% end %>
-                  <% if current_user.yyadmin == 1 or current_user.yybl == 1 %>
+                  <% if current_user.yyadmin == 1 or current_user.yybl == 1 or is_shengshi? %>
                       <li class="<%= "active" if action?("cztb") %>">
                         <cite></cite><a href="/yycz/cztb">异议填报</a><i></i>
                       </li>
                   <% end %>
-                  <% if current_user.yyadmin == 1 or current_user.yysh == 1 %>
+                  <% if current_user.yyadmin == 1 or current_user.yysh == 1 or is_shengshi? %>
                       <li class="<%= "active" if action?("czsh") %>">
                         <cite></cite><a href="/yycz/czsh">异议审核</a><i></i>
                       </li>
@@ -663,8 +663,8 @@
             </ul>
           </dd>
       <% end%>
-      <% if current_user.is_admin?  %>
-          <% if current_user.is_super? %>
+      <% if current_user.is_admin? or is_shengshi? %>
+          <% if current_user.is_super? or is_shengshi? %>
               <dd>
                 <div class="title">
                   <span><img src="<%= asset_path('leftico06.png') %>"/></span>机构信息维护

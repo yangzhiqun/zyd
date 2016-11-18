@@ -104,11 +104,11 @@
               <td><%= user.mobile %><%= user.tel %></td>
               <td><%= user.eaddress %></td>
               <td><%= user.user_s_province %></td>
-              <td><%= user.prov_city %></td>
+              <td><%= user.prov_city == "-请选择-" ? "" : user.prov_city %></td>
               <td><%= user.last_sign_in_at %></td>
               <td>
                 <%= link_to '修改', edit_user_path(user), :class => "btn btn-info btn-xs", style: 'margin-bottom: 5px;' %>
-                <% if current_user.name.eql?('superadmin') %>
+                <% if current_user.name.eql?('superadmin') or is_shengshi? %>
                     <%= link_to '删除', user, :method => :delete, :confirm => "确认删除?", :class => "btn btn-danger btn-xs" %>
                 <% end %>
               </td>
@@ -121,7 +121,7 @@
       <% end %>
     </div>
   </div>
-  <% if current_user.name == 'superadmin' %>
+  <% if current_user.name == 'superadmin' or is_shengshi? %>
       <div class="panel panel-default">
         <div class="panel-heading">添加用户</div>
         <div class="panel-body">

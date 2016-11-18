@@ -20,7 +20,7 @@ class Api::V1::SpdataController < ApplicationController
   # /api/v1/spdata/transfer
   def transfer
     #respond_to do |format|
-			self.error_hash = {"result":{"code": "0","msg":""},"detail":[]}
+			self.error_hash = {:result=>{:code=>"0", :msg=>""}, :detail=>[]}
       begin
 				params_h = params.symbolize_keys
 				# code: 1:全部插入成功；0：全部插入失败；2：部分成功
@@ -54,11 +54,11 @@ class Api::V1::SpdataController < ApplicationController
 					@spbsb = SpBsb.find_by_sp_s_16(data["cjbh"])
 					if @spbsb.nil?
 						@error_num += 1
-						self.error_hash[:detail] << {"cjbh":data["cjbh"],"itemId":"","error_code":ErrorCode::CjbhError,"msg":"没有该抽检编号"}
+						self.error_hash[:detail] << {:cjbh => data["cjbh"],:itemId => "",:error_code => ErrorCode::CjbhError,:msg => "没有该抽检编号"}
 					else
 						if @spbsb.sp_i_state != 2
 							@error_num += 1
-							self.error_hash[:detail] << {"cjbh":data["cjbh"],"itemId":"","error_code":ErrorCode::StateError,"msg":"状态不正确"}
+							self.error_hash[:detail] << {:cjbh => data["cjbh"],:itemId => "",:error_code => ErrorCode::StateError,:msg => "状态不正确"}
 						else
 							@items += data["items"].length
 							data["items"].each do |item|
@@ -74,11 +74,11 @@ class Api::V1::SpdataController < ApplicationController
 									@spdata.sp_bsb_id = @spbsb.id	
 									unless @spdata.save
 										@items_err += 1
-										self.error_hash[:detail] << {"cjbh":data["cjbh"],"itemId":item["itemId"],"error_code":ErrorCode::ItemError,"msg": @spdata.errors}	
+										self.error_hash[:detail] << {:cjbh => data["cjbh"],:itemId => item["itemId"],:error_code => ErrorCode::ItemError,:msg => @spdata.errors}	
 									end
 								else	
 									@items_err += 1
-									self.error_hash[:detail] << {"cjbh":data["cjbh"],"itemId":item["itemId"],"error_code":ErrorCode::DetectionTypeError,"msg":"检测类型不匹配"}
+									self.error_hash[:detail] << {:cjbh => data["cjbh"],:itemId => item["itemId"],:error_code => ErrorCode::DetectionTypeError,:msg => "检测类型不匹配"}
 								end
 							end
 						end

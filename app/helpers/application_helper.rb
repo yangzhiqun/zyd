@@ -97,9 +97,16 @@ module ApplicationHelper
         return "font-size: 6pt;"
     end
   end
-
+	
+	#是否是市级管理员
 	def is_city?
 		result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.prov_city != "-请选择-"	
+		return result
+	end
+	
+	#是否是省或市管理员
+	def is_shengshi?
+		result = current_user.is_account_manager && current_user.user_i_js == 1
 		return result
 	end
 
