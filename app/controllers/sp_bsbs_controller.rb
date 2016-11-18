@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ﻿#encoding=UTF-8
 require 'csv'
 require 'net/http'
