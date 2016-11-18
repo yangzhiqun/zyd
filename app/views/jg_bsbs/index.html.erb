@@ -75,7 +75,7 @@
       </tr>
   <% end %>
 </table>
-<% if current_user.is_admin?  %>
+<% if current_user.is_admin? or is_shengshi? %>
 <h2><%= link_to '新建机构', new_jg_bsb_path, :class => "btn btn-sm btn-primary" %></h2>
 <% end%>
 <p><%= will_paginate @sp_bsbs, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>

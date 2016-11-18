@@ -3,6 +3,18 @@
 		if(<%= is_city? %>){
 			$('#city').attr("disabled","disabled");
 		}
+		if($("#user_user_i_js").prop("checked")){
+			$("#user_admin_level").show();
+		}
+		$(".admin_level").click(function () {
+			console.log("AA");
+			if($("#user_user_i_js").prop("checked")){
+				$("#user_admin_level").show();
+			}	else {
+				$("#user_admin_level").hide();
+				$("#user_admin_level").val("0");
+			}
+		});
 //    reload_jg_data();
     $('a.unbind').click(function () {
       $('#user_id_card, .id-card, #user_user_sign').val('');
@@ -53,7 +65,11 @@
           $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#city'));
         }
       });
-
+		
+			if(window.location.pathname.indexOf("new") != -1){
+				$("#city").val("<%= current_user.prov_city %>");
+				$("#city").change();
+			}
     }, 'json');
 //
 //
@@ -175,9 +191,10 @@
             <% if current_user.is_super? %>
                 <div class="form-inline">
                   <div class="checkbox">
-                    <label>
+                    <label class="admin_level">
                       <%= f.check_box :user_i_js, options = {}, checked_value = "1", unchecked_value = "0" %>
                       是否为地方药监局
+                  		<%= f.select :admin_level, options_for_select([['请选择级别', 0], ['省', 1], ['市', 2], ['县', 3]], @user.admin_level), {}, class: 'form-control input-sm', :style => "height: 20px;padding: 0px 1px 0px 0px;margin-left: 9px;display: none" %>
                     </label>
                   </div>
                   <!--div class="checkbox">
@@ -316,7 +333,7 @@
             </div>
         <% end %>
         <br>
-        <% if !@user.is_passed? and !current_user.is_super? %>
+        <% if !@user.is_passed? and !current_user.is_super? and !is_shengshi? %>
             <label>审核记录:</label>
             <ul>
               <% @user.user_audit_logs.order('id asc').each do |log| %>

@@ -133,7 +133,7 @@
       <td width="20"><input type="checkbox" data-id="<%= sp_bsb.id %>" class="check"></td>
       <td><%=((sp_bsb.updated_at).ago(-3600*8)).to_s[0,19]%></td>
       <td><%= sp_bsb.sp_s_3 %></td>
-      <td><%= sp_bsb.sp_s_3 %></td>
+      <td><%= sp_bsb.sp_s_4.include?("请选择") ? "":sp_bsb.sp_s_4 %></td>
       <td style="word-break:break-all"><%= sp_bsb.sp_s_16 %></td>
       <td><%= sp_bsb.sp_s_14 %></td>
       <td valign="top"><%= sp_bsb.sp_s_35 %></td>

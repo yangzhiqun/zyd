@@ -12,6 +12,10 @@ class JgBsbsController < ApplicationController
       @jg_bsbs = @jg_bsbs.where(id: current_user.jg_bsb_id)
     end
 
+		if is_city?
+			@jg_bsbs = @jg_bsbs.where(city: current_user.prov_city)
+		end 
+
     unless params[:name].blank?
       @jg_bsbs = @jg_bsbs.where(id: JgBsbName.where('name LIKE ?', "%#{params[:name]}%").pluck('jg_bsb_id'))
     end
