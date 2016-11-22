@@ -76,6 +76,10 @@
           level2: "<%= @sp_bsb.sp_s_220 %>",
           level3: "<%= @sp_bsb.sp_s_221 %>"
         });
+    		$(".region3").CfdaProvince_1({
+					level1:	"<%= @sp_bsb.sp_s_52 %>",
+    		  level2: "<%= @sp_bsb.sp_s_city %>"
+    		});
         $("#pad_sp_bsb_sp_d_22").datepicker({
             dateFormat: "yy-mm-dd",
             changeMonth: true,
@@ -667,8 +671,12 @@
           <td colspan="7"><%= f.text_field :sp_s_35, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
           <td colspan="3">单位级别*</td>
           <td colspan="6"><%= f.select :sp_s_36, @options[36], {}, {:style => "width: 100%;"} %></td>
-          <td colspan="3">所在省份*</td>
-          <td colspan="6"><%= f.text_field :sp_s_52, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+          <td colspan="2">所在省份*</td>
+          <td colspan="2"><%= f.text_field :sp_s_52, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+					<td colspan="2" style="padding: 0cm 3.4pt">所在市/区*</td>
+          <td colspan="3" class="region3">
+            <%= f.select :sp_s_city, {} %>
+					</td>
         </tr>
         <tr>
           <td colspan="5">抽样人员*</td>

@@ -99,14 +99,20 @@ module ApplicationHelper
   end
 	
 	#是否是市级管理员
+	def is_county_level?
+		result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 3
+		return result
+	end
+
+	#是否是市级管理员
 	def is_city?
-		result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.prov_city != "-请选择-"	
+		result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 2
 		return result
 	end
 	
-	#是否是省或市管理员
+	#是否是省市县管理员
 	def is_shengshi?
-		result = current_user.is_account_manager && current_user.user_i_js == 1
+		result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level > 0
 		return result
 	end
 

@@ -63,6 +63,12 @@
   .search-form th, .search-form td {
     font-size: 12px;
   }
+	.ng-pristine tbody td.td_city {
+		text-align: center;
+    padding: 10px;
+    color: #555555;
+    font-size: 17px;
+	}
 </style>
 <script>
   $(function () {
@@ -97,6 +103,7 @@
 
     $('#sp_dl').select2({theme: 'bootstrap', placeholder: '食品大类'});
     $('#sp_sf').select2({theme: 'bootstrap', placeholder: '市/区'});
+		$(".td_city span.select2-container").css({"width":"98px","margin-left":"74px"});	
   });
 </script>
 
@@ -183,14 +190,16 @@
             <td colspan="4">食品细类</td>
             <td colspan="6">
               <input type="text" class="form-control input-sm" id="s6" value="<%= params[:s6] %>" name="s6"></td>
-            <td colspan="4">被抽样单位市/区</td>
-            <% if current_user.is_admin?||session[:change_js]==8||session[:change_js]==9||session[:change_js]==10 %>
-                <td colspan="6"><%= select_tag "sp_sf", options_for_select(SysProvince.level1.map { |prov| [prov.name, prov.name] }.unshift(['全部', '全部']), params[:sp_sf]), :class => "form-control" %></td>
-            <% else %>
-                <td colspan="6"><%= current_user.user_s_province %></td>
-                <td style="display:none">
-                  <select class="form-control input-sm" type="text" id="sp_sf" name="sp_sf"></select></td>
-            <% end %>
+            <td colspan="4">被抽样单位省市/区</td>
+            <td colspan="6" class="td_city">
+							<span style="float:left;margin:8px 24px;font-size:13px"><%= current_user.user_s_province %></span>
+            	<% if current_user.is_admin?||session[:change_js]==8||session[:change_js]==9||session[:change_js]==10 || is_shengshi? %>
+            		<%= select_tag "sp_sf", options_for_select(SysProvince.level1.map { |prov| [prov.name, prov.name] }.unshift(['全部', '全部']), params[:sp_sf]), :class => "form-control" %>
+            	<% end %>
+						</td>
+            <td style="display:none">
+              <select class="form-control input-sm" type="text" id="sp_sf" name="sp_sf"></select>
+						</td>
           </tr>
           <tr>
             <td colspan="4">单位类型</td>
@@ -232,7 +241,7 @@
 
 <div id="tabs">
   <ul class="data-tabs">
-    <% if current_user.is_admin? or session[:change_js]==10 %>
+    <% if current_user.is_admin? or session[:change_js]==10 or is_shengshi? %>
         <li>
           <a class="<%= (params[:flag].eql?('tabs_1') ? "active" : "") %>" style="cursor: pointer;" id="tabs_1">结果数据</a>
         </li>
