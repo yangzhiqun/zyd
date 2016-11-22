@@ -333,7 +333,7 @@
             </div>
         <% end %>
         <br>
-        <% if !@user.is_passed? and !current_user.is_super? and !is_shengshi? %>
+        <% if !@user.is_passed? and !current_user.is_super? and is_shengshi? %>
             <label>审核记录:</label>
             <ul>
               <% @user.user_audit_logs.order('id asc').each do |log| %>

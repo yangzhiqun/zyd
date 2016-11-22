@@ -591,6 +591,14 @@ class User < ActiveRecord::Base
     self.state == User::State::Rejected
   end
 
+  def self.jg_type_map
+    {"监管用户" =>1 ,"机构用户" =>3}
+  end
+
+  def jg_type_name
+    User.jg_type_map.invert[self.jg_type]
+  end
+
   private
   # def password_non_blank
   #   errors.add(:password, "Missing password") if hashed_password.blank?
@@ -622,8 +630,7 @@ class User < ActiveRecord::Base
     string_to_hash = password + "wibble" + salt
     Digest::SHA1.hexdigest(string_to_hash)
   end
-
-  # 用户检索表单虚拟类
+   # 用户检索表单虚拟类
   class UserSearchForm
     include ActiveModel::Model
     include Virtus.model

@@ -259,7 +259,18 @@ class SpBsbsController < ApplicationController
     if current_user.user_s_province == "宁夏"
       @province_plus = ""
     end
-    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
+    if current_user.jg_bsb.jg_type==1
+     super_jg= JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
+        jg_names=[]
+        jg_names.push(current_user.jg_bsb_id)
+        super_jg.each do |j|
+           jg_names.push(j.jg_bsb_id)
+        end
+    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1  and id in (?)',jg_names).order('jg_province')
+    elsif current_user.jg_bsb.jg_type==3
+    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1 and id in (?) ',current_user.jg_bsb_id).order('jg_province')
+    end
+    #@jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
     # logger.error  @jg_bsbs.to_json
     flash[:import_result] =nil
     @sp_bsb = SpBsb.new
@@ -1464,15 +1475,15 @@ logger.error "session[:change_js]"
       @jg_bsbsuper.each do |j|
          jg_ids.push(j.jg_bsb_id)
       end
-
       if !@jg_bsbsuper.nil?
-       @jg=JgBsb.find(jg_ids).where("jg_bsbs.jg_detection=? and jg_bsbs.id in(?)",1,super_jg_bsb_id)
+       @jg=JgBsb.find(jg_ids).where("jg_bsbs.jg_detection=? and jg_bsbs.id in(?)",1,jg_ids)
+      #else
+       #@jg= JgBsb.where("jg_bsbs.jg_detection=? and jg_bsbs.id in(?)",1,super_jg_bsb_id)
       end
-     
         render json: {status: 'OK', msg: @jg }
     rescue
-     @jg= JgBsb.where("jg_bsbs.jg_detection=? and jg_bsbs.id in(?)",1,super_jg_bsb_id)
-      render json: {status: 'OK', msg: @jg}
+      @jg= JgBsb.where("jg_bsbs.jg_detection=? and jg_bsbs.id in(?)",1,super_jg_bsb_id)
+           render json: {status: 'OK', msg: @jg}
     end
   end
   private

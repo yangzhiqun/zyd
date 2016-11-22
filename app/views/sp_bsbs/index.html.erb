@@ -97,6 +97,21 @@
 
     $('#sp_dl').select2({theme: 'bootstrap', placeholder: '食品大类'});
     $('#sp_sf').select2({theme: 'bootstrap', placeholder: '市/区'});
+  
+    // 大类
+    $('#sp_dl').change(function () {
+      $.get('/b_categories_by_a_id.json', {a_category_id: $(this).find('option:selected').attr('data-id')}, function (data) {
+        if (data.status == 'OK') {
+          $('#s6').empty();
+          //render_spec_list([]);
+          $('<option>').text("请选择").appendTo($('#s6'));
+          $.each(data.data, function () {
+            $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#s6'));
+          });
+        }
+      }, 'json');
+    });
+
   });
 </script>
 
@@ -131,8 +146,6 @@
                     <option value=5>检测数据(机构审核中)</option>
                     <option value=15>检测数据(机构批准中)</option>
                     <option value=16>检测数据(报告发送人审核中)</option>
-                    <option value=6>检测数据(药监局审核中)</option>
-                    <option value=7>检测数据(牵头单位审核中)</option>
                     <option value=8>检测数据(已提交至秘书处)</option>
                 <% end %>
                 <option value=9>不合格样品</option>
@@ -183,7 +196,8 @@
             <% end %>
             <td colspan="4">食品细类</td>
             <td colspan="6">
-              <input type="text" class="form-control input-sm" id="s6" value="<%= params[:s6] %>" name="s6"></td>
+            <select class="form-control input-sm" type="text" id="s6" name="s6" style="width:123px"></select>
+          </td>
             <td colspan="4">被抽样单位市/区</td>
             <% if current_user.is_admin?||session[:change_js]==8||session[:change_js]==9||session[:change_js]==10 %>
                 <td colspan="6"><%= select_tag "sp_sf", options_for_select(SysProvince.level1.map { |prov| [prov.name, prov.name] }.unshift(['全部', '全部']), params[:sp_sf]), :class => "form-control" %></td>

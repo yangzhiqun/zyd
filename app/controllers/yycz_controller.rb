@@ -92,17 +92,16 @@ class YyczController < ApplicationController
     @begin_at = params[:begin_at].blank? ? (Time.now - 1.year) : DateTime.parse(params[:begin_at]).beginning_of_day
     @end_at = params[:end_at].blank? ? Time.now : DateTime.parse(params[:end_at]).end_of_day
     @yyczs = SpYydjb.select("y.*").joins("as y left join sp_bsbs as s on y.cjbh = s.sp_s_16")
-
+  
+   if current_user.is_admin? || current_user.yyadmin == 1
+        @yyczs = @yyczs.where("y.bcydwsf = ? or y.bsscqysf = ?", current_user.user_s_province, current_user.user_s_province)
+   else
     if params[:current_tab].to_i == 0
       @yyczs = @yyczs.where("y.current_state = ? and (bcydws =? or bsscqys =?)", SpYydjb::State::ASSIGNED,current_user.prov_city,current_user.prov_city).order("y.created_at ASC")
     else
       @yyczs = @yyczs.where("y.current_state = ? and (bcydws =? or bsscqys =?)", SpYydjb::State::FILLED,current_user.prov_city,current_user.prov_city).order("y.created_at ASC")
     end
-
-    if current_user.yyadmin != 1
-      @yyczs = @yyczs.where("y.bcydwsf = ? or y.bsscqysf = ?", current_user.user_s_province, current_user.user_s_province)
-    end
-
+   end
     # 样品名称
     unless params[:ypmc].blank?
       @yyczs = @yyczs.where("y.ypmc like ?", "%#{params[:ypmc]}%")

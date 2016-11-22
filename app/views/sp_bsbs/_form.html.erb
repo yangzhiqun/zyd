@@ -1502,10 +1502,8 @@
     <%end%>
 
     $.each(jg_data, function () {
-   <%if  current_user.jg_bsb.jg_sampling==1  %>
-   $('#jg_jg_id').append($('<option/>').attr({'value': this.jg_name,'jg_type':this.jg_type,'j_id':this.id}).text(this.jg_name));
-  <% end %> 
-  });
+    $('#jg_jg_id').append($('<option/>').attr({'value': this.jg_name,'jg_type':this.jg_type,'j_id':this.id}).text(this.jg_name));
+   });
 
     $('#jg_jg_id').change(function () {
       index_jg = this.selectedIndex;
@@ -1514,22 +1512,22 @@
         $("#jg_jg_id").val(jg_data[index_jg].jg_name);
       }
       if (index_jg != -1) {
-      jg_type= $("#jg_jg_id").find('option:selected').attr('jg_type');
-         jg_id=$("#jg_jg_id").find('option:selected').attr('j_id');
-         jg_val =  $('#jg_jg_id').val();
-         $('#sp_bsb_sp_s_43').empty();
-        if(jg_type==1){
-         $.get('/sp_bsbs/super_jg.json', {super_jg_bsb_id: jg_id}, function (data) {
-         $('<option>').attr({'value': jg_val, 'jg_type': 1}).text(jg_val).appendTo($('#sp_bsb_sp_s_43'));
-            $.each(data.msg, function (i, super_jg) {
-              console.log(super_jg);
-              $('<option>').attr({'value': super_jg.id, 'jg_type': 1}).text(super_jg.jg_name).appendTo($('#sp_bsb_sp_s_43'));
-            }); 
-          }, 'json');
-       }else{
-        $('<option>').attr({'value': jg_val, 'jg_type': 3}).text(jg_val).appendTo($('#sp_bsb_sp_s_43'));
-       }       
-       // $("#sp_bsb_sp_s_43").val($("#jg_jg_id").val());
+ 	// jg_type= $("#jg_jg_id").find('option:selected').attr('jg_type');
+        // jg_id=$("#jg_jg_id").find('option:selected').attr('j_id');
+        // jg_val =  $('#jg_jg_id').val();
+        // $('#sp_bsb_sp_s_43').empty();
+       // if(jg_type==1){
+       //  $.get('/sp_bsbs/super_jg.json', {super_jg_bsb_id: jg_id}, function (data) {
+       //  $('<option>').attr({'value': jg_val, 'jg_type': 1}).text(jg_val).appendTo($('#sp_bsb_sp_s_43'));
+        //    $.each(data.msg, function (i, super_jg) {
+         //     console.log(super_jg);
+         //     $('<option>').attr({'value': super_jg.id, 'jg_type': 1}).text(super_jg.jg_name).appendTo($('#sp_bsb_sp_s_43'));
+         //   }); 
+        //  }, 'json');
+      // }else{
+     //   $('<option>').attr({'value': jg_val, 'jg_type': 3}).text(jg_val).appendTo($('#sp_bsb_sp_s_43'));
+     //  }       
+        $("#sp_bsb_sp_s_43").val($("#jg_jg_id").val());
         $("#sp_bsb_sp_s_49").val(jg_data[index_jg].jg_contacts);
         $("#sp_bsb_sp_s_50").val(jg_data[index_jg].jg_tel);
         $("#sp_bsb_sp_s_51").val(jg_data[index_jg].jg_email);
@@ -2071,7 +2069,7 @@ function pass_ca(){
           <td colspan="3">单位级别*</td>
           <td colspan="6"><%= f.select :sp_s_36, @options[36], {}, {:style => "width: 100%;"} %></td>
           <td colspan="2">所在省份*</td>
-				  <td colspan="2"><%= f.text_field :sp_s_52, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %><
+				  <td colspan="2"><%= f.text_field :sp_s_52, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %>
           <td colspan="2" style="padding: 0cm 3.4pt">所在市/区*</td>
           <td colspan="3" class="region3">
           	<%= f.select :sp_s_city, {} %>
@@ -2114,7 +2112,7 @@ function pass_ca(){
         <% end %>
         <tr>
           <td colspan="4">检验机构名称*</td>
-	  <td colspan="8"><%= f.select :sp_s_43, {}, class: 'form-control input-sm' %></td> 
+	  <td colspan="8"><%= f.text_field :sp_s_43, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td> 
           <td colspan="5">检验目的/任务类别*</td>
           <td colspan="3"><%= f.select :sp_s_44, @options[44], {}, :style => "width: 100%" %></td>
           <td colspan="4">报告书编号*</td>

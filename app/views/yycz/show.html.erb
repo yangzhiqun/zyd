@@ -85,8 +85,8 @@
         <tr>
           <th>被抽样单位名称</th>
           <td><%= @djb.bcydw %></td>
-          <th>被抽样单位省份</th>
-          <td><%= @djb.bcydwsf %></td>
+          <th>被抽样单位省份/市</th>
+          <td><%= @djb.bcydwsf %>/<%= @djb.bcydws if !@djb.bcydws.blank? %></td>
         </tr>
         <tr>
           <th>抽样单位名称</th>
@@ -97,8 +97,8 @@
         <tr>
           <th>标识生产企业名称</th>
           <td><%= @djb.bsscqy %></td>
-          <th>标识生产企业省份</th>
-          <td><%= @djb.bsscqysf %></td>
+          <th>标识生产企业省份/市</th>
+          <td><%= @djb.bsscqysf %>/<%= @djb.bsscqys if !@djb.bsscqys.blank? %></td>
         </tr>
       </table>
     </div>
