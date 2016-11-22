@@ -29,6 +29,15 @@
   .yycz-list tbody tr{
     cursor: pointer;
   }
+	table td.td_city span{
+		float: left;
+    padding: 6px 0px 4px 29px;
+    font-size: 12px;
+	}	
+	table td.td_city .input-sm{
+		width: 60%;
+    float: right;
+	}
 </style>
 <script type="text/javascript">
 $(function(){
@@ -89,8 +98,9 @@ $(function(){
     <tr>
       <td colspan="4">被抽样单位名称</td>
       <td colspan="6"><input class="form-control input-sm" type="text" value="<%= params[:bcydwmc]%>" name="bcydwmc"></td>
-      <td colspan="4">被抽样单位市/区</td>
-      <td colspan="6">
+      <td colspan="4">被抽样单位省市/区</td>
+      <td colspan="6" class="td_city">
+				<span><%= current_user.user_s_province %></span>
         <select name="bcydw_sheng" class="form-control input-sm">
           <option value="">请选择</option>
           <% SysProvince.level1.each do |prov| %>
@@ -106,8 +116,9 @@ $(function(){
     <tr>
       <td colspan="4">标识生产企业名称</td>
       <td colspan="6"><input class="form-control input-sm" type="text" value="<%= params[:bsscqymc]%>" name="bsscqymc"></td>
-      <td colspan="4">标识生产企业市/区</td>
-      <td colspan="6">
+      <td colspan="4">标识生产企业省市/区</td>
+      <td colspan="6" class="td_city">
+				<span><%= current_user.user_s_province %></span>
         <select name="bsscqy_sheng" class="form-control input-sm">
           <option value="">请选择</option>
           <% SysProvince.level1.each do |prov| %>

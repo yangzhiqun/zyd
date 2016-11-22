@@ -6,6 +6,11 @@
       });
     </script>
 <% end %>
+<script type="text/javascript" charset="utf-8">
+	$(function () {
+		$(".td_city span.select2-container").css({"width":"130px","margin-left":"104px"});
+	});
+</script>
 <div class="fontbody">
   <div class="panel panel-default">
     <div class="panel-heading"><h3 class="panel-title">用户查询</h3></div>
@@ -16,8 +21,11 @@
                 <tr>
                   <th width="80">姓名:</th>
                   <td><%= f.text_field :tname, class: 'form-control input-sm' %></td>
-                  <th width="80">市/区:</th>
-                  <td><%= f.select :prov, options_for_select(SysProvince.level1.pluck(:name).unshift(%w{-不限- /}), @search_form.prov), {}, class: 'form-control input-sm' %></td>
+                  <th width="80">省市/区:</th>
+                  <td class="td_city">
+										<span style="float:left;margin:8px 29px;font-size:13px"><%= current_user.user_s_province %></span>
+										<%= f.select :prov, options_for_select(SysProvince.level1.pluck(:name).unshift(%w{-不限- /}), @search_form.prov), {}, class: 'form-control input-sm' %>
+									</td>
                   <th width="80">机构:</th>
                   <% cache 'jg_data' do %>
                       <td><%= f.select :jg_id, options_for_select(JgBsb.all.map { |jg| [jg.jg_name, jg.id] }.unshift(%w{-不限- /}), @search_form.jg_id), {}, class: 'form-control input-sm' %></td>

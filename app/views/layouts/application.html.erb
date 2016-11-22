@@ -553,7 +553,7 @@
               <% end %>
             </ul>
           </dd>
-          <% if current_user.hcz_permission.to_i > 0 || current_user.yycz_permission.to_i > 0 || is_shengshi? %>
+          <% if current_user.hcz_permission.to_i > 0 || current_user.yycz_permission.to_i > 0 %>
               <dd>
                 <div class="title">
                   <span><img src="<%= asset_path('leftico04.png') %>"/></span>核查处置
@@ -589,15 +589,15 @@
 
                   <%# end %>
 
-                  <% if current_user.hcz_czap == 1 or current_user.hcz_admin == 1 %>
+                  <% if current_user.hcz_czap == 1 or current_user.hcz_admin == 1  or is_shengshi? %>
                       <li class="<%= 'active' if controller?('wtyp_czbs') and action?('index') and params[:state].to_i == 0 %>">
                         <cite></cite><a href="/wtyp_czbs?current_tab=DBL">核查处置领取</a><i></i></li>
                   <% end %>
-                  <% if current_user.hcz_czbl == 1 or current_user.hcz_admin == 1 %>
+                  <% if current_user.hcz_czbl == 1 or current_user.hcz_admin == 1  or is_shengshi? %>
                       <li class="<%= 'active' if controller?('wtyp_czbs') and action?('index') and params[:state].to_i == 1 %>">
                         <cite></cite><a href="/wtyp_czbs_by_state/1?current_tab=DBL">核查处置办理</a><i></i></li>
                   <% end %>
-                  <% if current_user.hcz_czsh == 1 or current_user.hcz_admin == 1 %>
+                  <% if current_user.hcz_czsh == 1 or current_user.hcz_admin == 1  or is_shengshi? %>
                       <li class="<%= 'active' if controller?('wtyp_czbs') and action?('index') and params[:state].to_i == 2 %>">
                         <cite></cite><a href="/wtyp_czbs_by_state/2?current_tab=DSH">核查处置审核</a><i></i></li>
                   <% end %>
@@ -610,7 +610,7 @@
           <span><img src="<%= asset_path('leftico13.png') %>"/></span><a href="/users_changeauthority">用户角色切换</a>
         </div>
       </dd>
-      <% if current_user.pub_xxfb_sh == 1 or current_user.pub_xxfb == 1 %>
+      <% if (current_user.pub_xxfb_sh == 1 or current_user.pub_xxfb == 1) and is_shengshi? %>
           <!--<dd>
             <div class="title">
               <span><img src="<%#= asset_path('leftico05.png') %>"/></span>抽检结果发布
@@ -677,26 +677,22 @@
                     <cite></cite><a href="/jg_bsbs/merge_request">机构合并</a><i></i></li>-->
                 </ul>
               </dd>
-							<% if !is_city? %>
-              	<dd>
-              	  <div class="title not-expand">
-              	    <span><img src="<%= asset_path('leftico07.png') %>"/></span><a href="/sp_production_infos">生产企业库维护</a>
-              	  </div>
-              	</dd>
-              	<dd>
-              	  <div class="title not-expand">
-              	    <span><img src="<%= asset_path('leftico08.png') %>"/></span><a href="/sp_company_infos">被抽样单位库维护</a>
-              	  </div>
-              	</dd>
-							<% end %>
+              <dd>
+                <div class="title not-expand">
+                  <span><img src="<%= asset_path('leftico07.png') %>"/></span><a href="/sp_production_infos">生产企业库维护</a>
+                </div>
+              </dd>
+              <dd>
+                <div class="title not-expand">
+                  <span><img src="<%= asset_path('leftico08.png') %>"/></span><a href="/sp_company_infos">被抽样单位库维护</a>
+                </div>
+              </dd>
           <% end %>
-					<% if !is_city? %>
-          	<dd>
-          	  <div class="title not-expand">
-          	    <span><img src="<%= asset_path('leftico09.png') %>"/></span><a href="/baosong_as">报送分类维护</a>
-          	  </div>
-          	</dd>
-          <% end %>
+          <dd>
+            <div class="title not-expand">
+              <span><img src="<%= asset_path('leftico09.png') %>"/></span><a href="/baosong_as">报送分类维护</a>
+            </div>
+          </dd>
       <% end %>
       <dd>
         <div class="title not-expand">
@@ -737,7 +733,7 @@
           </dd>
       	<% end %>
       <% end %>
-      <% if current_user.is_admin? %>
+      <% if current_user.is_admin? or is_shengshi? %>
           <dd>
             <div class="title not-expand">
               <span><img src="<%= asset_path('leftico11.png') %>"/></span><a target="_blank" href="http://121.52.214.78:88/ExternalPage/BiaoZhunPage/BiaoZhun.aspx">标准查询</a>

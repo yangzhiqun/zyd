@@ -714,6 +714,10 @@ class SpBsbsController < ApplicationController
     end
 
     @sp_bsbs = SpBsb.select("sp_bsbs.ca_key_status,sp_bsbs.report_path,sp_bsbs.id, sp_bsbs.updated_at, sp_bsbs.sp_s_3, sp_bsbs.sp_s_4, sp_bsbs.sp_s_14, sp_bsbs.sp_s_16, sp_bsbs.sp_s_43, sp_bsbs.sp_s_214, sp_bsbs.sp_s_35, sp_bsbs.sp_s_71, sp_bsbs.sp_s_202, sp_bsbs.sp_i_state, sp_bsbs.fail_report_path, sp_bsbs.czb_reverted_flag")
+    
+    if is_city?
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_4 =?", current_user.prov_city)
+    end
 
     if params[:r1]
       session[:change_js]=params[:r1].to_i
@@ -1058,6 +1062,11 @@ logger.error "session[:change_js]"
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 and sp_bsbs.sp_s_70 NOT LIKE '%一司%'").paginate(page: params[:page], per_page: 10)
       end
     end
+
+    if is_shengshi?
+      @sp_bsbs = @sp_bsbs.paginate(page: params[:page], per_page: 10)
+    end
+
     respond_to do |format|
       format.html {
         if @sp_bsbs.respond_to?(:total_pages)
