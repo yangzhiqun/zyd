@@ -50,10 +50,13 @@ class TasksController < ApplicationController
       end
 
       # 国家局任务部署
-      if current_user.is_admin?
+      if current_user.is_admin? || params[:tab].to_i == 2
         # 取出省级Province
-        @provinces = SysProvince.level1
-
+        if  params[:tab].to_i == 2
+         @provinces = SysProvince.level3(current_user.prov_city)
+        else
+         @provinces = SysProvince.level1
+        end
         if @baosong_b.nil?
           @a_categories = []
         else
@@ -79,10 +82,18 @@ class TasksController < ApplicationController
           @count = count.first.count
         end
       else
-        # 省局任务部署
-        @province = SysProvince.level1.find_by_name(current_user.prov_city)
+         # 省局任务部署
+         @province = SysProvince.level1.find_by_name(current_user.prov_city)
+            if current_user.is_city?
+              @province = SysProvince.level1.find_by_name(current_user.prov_city)
+           elsif current_user.is_county_level?
+             @province = SysProvince.level3(current_user.prov_city).find_by_name(current_user.prov_country)
+          else
+           @province = SysProvince.level1.find_by_name(current_user.prov_city) 
+          end
+        #end
         tasks = @province.task_provinces
-
+	@jg_bsbs = JgBsb.where(status: 0)
         unless params[:baosong_a].blank?
           @baosong_a = BaosongA.find_by_name(params[:baosong_a])
           @baosong_bs = BaosongB.where(:baosong_a_id => @baosong_a.id)
@@ -106,10 +117,12 @@ class TasksController < ApplicationController
 
         ids = TaskProvince.where(sys_province_id: @province.id).map { |b| b.a_category_id }
         @a_categories = ACategory.where(id: ids)
-
+       if params[:tab].to_i ==2
+        @delegates = TaskJgBsb.select('distinct(jg_bsb_id)').where(:sys_province_id => @province.id,:status => 1)
+       else
         @delegates = TaskJgBsb.select('distinct(jg_bsb_id)').where(:sys_province_id => @province.id)
-        @count = @delegates.count
-
+        end
+      @count = @delegates.count
         # TODO: 如何精准筛选剩余部分
         @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0)
         @jyjgs = JgBsb.where(:jg_detection => 1, status: 0)
@@ -123,7 +136,10 @@ class TasksController < ApplicationController
       render json: {status: 'ERR', msg: '请提供必要参数'}
     else
       @plan = TaskProvince.new(identifier: params[:identifier], sys_province_id: params[:prov], :a_category_id => params[:dl], :quota => params[:quota])
-
+     if current_user.is_city?
+      @plan.status=1
+     end
+     
       destroy_category_level = 'a_category_id'
 
       if params[:yl].to_i != 0
@@ -157,7 +173,17 @@ class TasksController < ApplicationController
     if params[:jg_id].blank? or params[:dl].blank? or params[:quota].blank?
       render json: {status: 'ERR', msg: '请提供必要参数'}
     else
-      @plan = TaskJgBsb.new(identifier: params[:identifier], sys_province_id: -1, is_national: true, test_jg_bsb_id: params[:test_jg_id], jg_bsb_id: params[:jg_id], :a_category_id => params[:dl], :quota => params[:quota])
+       if current_user.is_city?
+        sysProvince =SysProvince.level1.find_by_name(current_user.prov_city)
+        sys_province_id= sysProvince.id
+      elsif current_user.is_county_level?
+        sysProvince=SysProvince.level3(current_user.prov_city).find_by_name(current_user.prov_country)
+        sys_province_id= sysProvince.id
+      else
+        sys_province_id = -1 
+      end
+
+      @plan = TaskJgBsb.new(identifier: params[:identifier], sys_province_id: sys_province_id, is_national: true, test_jg_bsb_id: params[:test_jg_id], jg_bsb_id: params[:jg_id], :a_category_id => params[:dl], :quota => params[:quota])
 
       destroy_category_level = 'a_category_id'
 
@@ -177,7 +203,7 @@ class TasksController < ApplicationController
       end
 
       # 强制清除已经部署的与当前有冲突的任务
-      TaskJgBsb.where("identifier = ? and sys_province_id = -1 and jg_bsb_id = ? and (#{destroy_category_level} is NULL or #{destroy_category_level} = ?)", params[:identifier], params[:jg_id], @plan[destroy_category_level]).destroy_all
+      TaskJgBsb.where("identifier = ? and sys_province_id = #{sys_province_id} and jg_bsb_id = ? and (#{destroy_category_level} is NULL or #{destroy_category_level} = ?)", params[:identifier], params[:jg_id], @plan[destroy_category_level]).destroy_all
 
       if @plan.save
         render json: {status: 'OK', msg: '成功！'}
@@ -226,7 +252,13 @@ class TasksController < ApplicationController
       #  info = current_user.prov_country;
       #  @province = SysProvince.level2.find_by_name(info)
       #end
-      @province = SysProvince.level1.find_by_name(current_user.prov_city)
+      if current_user.is_city?
+        @province =SysProvince.level1.find_by_name(current_user.prov_city)
+      elsif current_user.is_county_level?
+        @province =SysProvince.level3(current_user.prov_city).find_by_name(current_user.prov_country)
+      else
+        @province =SysProvince.level1.find_by_name(current_user.prov_city)
+      end
       @plan = TaskJgBsb.new(identifier: params[:identifier], sys_province_id: @province.id, jg_bsb_id: params[:jg_id], :a_category_id => params[:dl], :quota => params[:quota])
 
       destroy_category_level = 'a_category_id'

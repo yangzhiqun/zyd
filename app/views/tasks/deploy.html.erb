@@ -24,7 +24,27 @@
       <% # /委托地方 %>
     </div>
 <% else %>
-    <% #省局下达 %>
-    <%= render 'tasks/deploy/prov' %>
-    <% #/省局下达 %>
+ <% if is_city? %>  
+    <ul class="nav nav-tabs" role="tablist">
+       <li role="presentation" class="<%= 'active' if params[:tab].to_i == 0 %>"><a href="?tab=0">市级任务</a></li>
+       <li role="presentation" class="<%= 'active' if params[:tab].to_i == 2 %>"><a href="?tab=2">县级分配</a></li>
+    </ul>
+  <div class="tab-content">
+      <% if params[:tab].to_i == 0 %>
+          <%= render 'tasks/deploy/prov' %>
+      <% end %>
+      <% if params[:tab].to_i == 2 %>
+          <%= render 'tasks/deploy/transfer' %>
+      <% end %>
+ </div>
+ <% elsif is_county_level? %>
+      <ul class="nav nav-tabs" role="tablist">
+      <li role="presentation" class="<%= 'active' if params[:tab].to_i == 0 %>"><a href="?tab=1">县级任务</a></li>
+    </ul>
+   <div class="tab-content">
+          <%= render 'tasks/deploy/prov' %>
+  </div>
+<% else %>
+   <%= render 'tasks/deploy/prov' %>
+ <% end %>
 <% end %>

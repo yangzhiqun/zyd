@@ -791,13 +791,19 @@ logger.error "session[:change_js]"
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_14 LIKE ?", "%#{params[:s4]}%")
     end
 
-    unless params[:s5].blank?
+    if  !params[:s5].blank? and params[:s5] != "请选择"
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_2 LIKE ?", "%#{params[:s5]}%")
     end
 
-    unless params[:s6].blank?
+     if  !params[:s6].blank? and params[:s6] != "请选择"
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_20 LIKE ?", "%#{params[:s6]}%")
     end
+   if !params[:sp_bsa].blank? and params[:sp_bsa] !="请选择"
+     @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 LIKE ?", "%#{params[:sp_bsa]}%")
+  end
+  if !params[:sp_bsb].blank? and params[:sp_bsb] !="请选择"
+     @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_67 LIKE ?", "%#{params[:sp_bsb]}%")
+  end
 
     unless params[:s7].blank?
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_16 LIKE ?", "%#{params[:s7]}%")
@@ -1477,24 +1483,33 @@ logger.error "session[:change_js]"
   end
 
   def  super_jg
-    begin
+    #begin
       super_jg_bsb_id = params[:super_jg_bsb_id]
       @jg_bsbsuper=JgBsbSuper.where(super_jg_bsb_id: super_jg_bsb_id ).group("jg_bsb_id")
       jg_ids=[]
+      logger.error "===================="
+     logger.error  @jg_bsbsuper
+    if !@jg_bsbsuper.blank?
+      jg_ids.push(super_jg_bsb_id)
       @jg_bsbsuper.each do |j|
          jg_ids.push(j.jg_bsb_id)
       end
-      if !@jg_bsbsuper.nil?
-       @jg=JgBsb.find(jg_ids).where("jg_bsbs.jg_detection=? and jg_bsbs.id in(?)",1,jg_ids)
-      #else
-       #@jg= JgBsb.where("jg_bsbs.jg_detection=? and jg_bsbs.id in(?)",1,super_jg_bsb_id)
-      end
-        render json: {status: 'OK', msg: @jg }
-    rescue
-      @jg= JgBsb.where("jg_bsbs.jg_detection=? and jg_bsbs.id in(?)",1,super_jg_bsb_id)
-           render json: {status: 'OK', msg: @jg}
+        logger.error "----------------"
+       logger.error jg_ids
+       @jg=JgBsb.where("jg_bsbs.jg_detection=? and jg_bsbs.id in(?)",1,jg_ids)
+      logger.error "---------1111-------"
+      else
+      logger.error "-------2---------"
+       @jg= JgBsb.where("jg_bsbs.jg_detection=? and jg_bsbs.id in(?)",1,super_jg_bsb_id)
+       logger.error "=========----===="
     end
-  end
+        render json: {status: 'OK', msg: @jg }
+   # rescue
+     #@jg= JgBsb.where("jg_bsbs.jg_detection=? and jg_bsbs.id in(?)",1,18) 
+    # render json: {status: 'OK', msg: @jg }
+   # end
+    end
+ 
   private
   def sp_bsb_params
     params.require(:sp_bsb).permit(

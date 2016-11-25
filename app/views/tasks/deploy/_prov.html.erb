@@ -28,9 +28,10 @@
 function jg_change(){
        //var jg_type =$('#cyjg').find('option:selected').attr('data-jg-type');
        //监管部门-1 检验机构-3
+        $('#jyjg').empty();
         var jg_val =  $('#cyjg').val();
          var val_test =$('#cyjg').find('option:selected').text();
-        $('#jyjg').empty();
+       //$('#jyjg').empty();
        $('<option>请选择检验机构</option>').appendTo($('#jyjg'));
       // if(jg_type==1){
          $.get('/sp_bsbs/super_jg.json', {super_jg_bsb_id: jg_val}, function (data) {
@@ -48,7 +49,11 @@ function jg_change(){
 <div class="ctner" style="overflow-x: scroll;">
   <div class="form-inline">
     <label for="">报送分类：</label>
-    <%= select_tag "baosong_a", options_for_select(BaosongA.all.map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+      <% if is_county_level? %>
+        <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx = "县"').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+       <% else %>
+        <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx = "市/区局"').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+   <% end %>
     <%= select_tag "baosong_b", options_for_select(@baosong_bs.map { |a| [a.name, a.name, {"data-identifier" => a.identifier}] }.unshift(["请选择", ""]), params[:baosong_b]), {:class => "form-control input-sm", id: "baosong_b", style: "width: 150px;"} %>
     <br>
     <br>
@@ -123,8 +128,11 @@ function jg_change(){
 
           <!-- 细类名称 -->
           <td><%= d.name %></td>
-
+	 <% if is_county_level? %>
+            <%= grid3(SysProvince.level3(current_user.prov_city).find_by_name(current_user.prov_country), d) %>
+         <% else %>
           <%= grid3(SysProvince.level1.find_by_name(current_user.prov_city), d) %>
+         <% end %>
           <!-- 交叉点 -->
           <% @delegates.each do |del| %>
               <%= grid5(del, d) %>

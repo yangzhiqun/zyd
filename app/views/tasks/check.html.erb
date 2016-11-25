@@ -124,9 +124,9 @@
           <td colspan="4">被抽样单位省市/区</td>
 					<td colspan="6" class="td_city">
 						<span><%= current_user.user_s_province %></span>	
-          	<% if current_user.is_admin?||session[:change_js]==8||session[:change_js]==9||session[:change_js]==10||is_shengshi? %>
+          	<%# if current_user.is_admin?||session[:change_js]==8||session[:change_js]==9||session[:change_js]==10||is_shengshi? %>
           	  <%= select_tag 'sp_s_3', options_for_select(SysProvince.level1.map { |prov| [prov.name, prov.name] }.unshift(['请选择', '']), params[:sp_s_3]), :class => 'form-control input-sm' %>
-          	<% end %>
+          	<%# end %>
 					</td>
           <td style="display:none">
             <select type="text" class="form-control input-sm" id="sp_s_3" name="sp_s_3"></select>

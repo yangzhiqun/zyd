@@ -92,8 +92,8 @@
     });
 		$(".btn-success").click(function () {
 			var level_num = $("#user_admin_level").val();
-			var shi   = $("#city").val() == "-请选择-";
-			var xian  = $("#lcity").val() == "-请选择-";
+			var shi   = $("#city").val() == "-请选择-" || $("#city").val() == "";
+			var xian  = $("#lcity").val() == "-请选择-" || $("#lcity").val() == "";
 			if ($(".admin_level input[type='checkbox']").is(':checked')) {
 				if (level_num == 2 && shi){
 					alert("请选择所在市");

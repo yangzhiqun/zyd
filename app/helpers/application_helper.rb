@@ -98,7 +98,7 @@ module ApplicationHelper
     end
   end
 	
-	#是否是市级管理员
+	#是否是县级管理员
 	def is_county_level?
 		result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 3
 		return result

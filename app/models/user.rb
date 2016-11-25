@@ -599,6 +599,14 @@ class User < ActiveRecord::Base
     User.jg_type_map.invert[self.jg_type]
   end
 
+ def is_county_level?
+    self.is_account_manager && self.user_i_js == 1 && self.admin_level == 3
+ end
+
+ def is_city?
+   self.is_account_manager && self.user_i_js == 1 && self.admin_level == 2
+ end
+
   private
   # def password_non_blank
   #   errors.add(:password, "Missing password") if hashed_password.blank?
