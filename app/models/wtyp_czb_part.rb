@@ -448,6 +448,10 @@ class WtypCzbPart < ActiveRecord::Base
           wtyp_czbs = wtyp_czbs.where('1=2')
         end
       end
+     elsif !current_user.prov_city.blank?
+      wtyp_czbs = wtyp_czbs.where('sp_s_220 = ? or sp_s_4 = ?',current_user.prov_city, current_user.prov_city)
+    elsif !current_user.prov_country.blank?
+     wtyp_czbs = wtyp_czbs.where('sp_s_221 = ? or sp_s_5 = ?',current_user.prov_country, current_user.prov_country)
     end
 
     # 时间范围筛选

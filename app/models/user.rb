@@ -607,6 +607,9 @@ class User < ActiveRecord::Base
    self.is_account_manager && self.user_i_js == 1 && self.admin_level == 2
  end
 
+ def is_sheng?
+   self.is_account_manager && self.user_i_js == 1 && self.admin_level == 1
+ end
   private
   # def password_non_blank
   #   errors.add(:password, "Missing password") if hashed_password.blank?

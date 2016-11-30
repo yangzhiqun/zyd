@@ -226,7 +226,7 @@
           <tr>
          <td colspan="4">报送A类</td>
             <td colspan="6">
-             <%= select_tag 'sp_bsa', options_for_select(BaosongA.where("prov = ? or prov is null or prov = ''", current_user.user_s_province).map { |b| [b.name, b.name, {'parentid' => b.rwlylx}] }.unshift(["请选择", ""]), params[:sp_bsa]), :style => "width: 123px;",:class => 'form-control input-sm' %>
+             <%= select_tag 'sp_bsa', options_for_select(BaosongA.all.map { |b| [b.name, b.name, {'parentid' => b.rwlylx}] }.unshift(["请选择", ""]), params[:sp_bsa]), :style => "width: 123px;",:class => 'form-control input-sm' %>
 	    </td>
           <td colspan="4">
             报送B类  

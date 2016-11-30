@@ -45,7 +45,7 @@ class JgBsbsController < ApplicationController
     if  !params[:city].blank? and params[:city] != "-请选择-"
       @jg_bsbs = @jg_bsbs.where(city: params[:city])
     end
-    render json: {status: 'OK', msg: @jg_bsbs.map { |j| [j.jg_name, j.id] }}
+    render json: {status: 'OK', msg: @jg_bsbs.map { |j| [j.jg_name, j.id, j.jg_type] }}
   end
   # GET /jg_bsbs/1
   # GET /jg_bsbs/1.json

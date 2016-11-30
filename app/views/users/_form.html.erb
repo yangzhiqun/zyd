@@ -84,13 +84,14 @@
       reload_jg_data();
    	});
     $('#submit').click(function () {
-      if (($("#user_hccz_level").find("option:selected").val() == 0)&&($("#user_hcz_czbl").attr("checked"))) {
+       if (($("#user_hccz_level").find("option:selected").val() == 0)&&($("#user_hcz_czbl").attr("checked"))) {
         alert("请选择核查处置领取级别");
         $("#user_hccz_level").focus();
         return false;
       }
     });
 		$(".btn-success").click(function () {
+                       $('#user_jg_type').val($('#user_jg_bsb_id').find('option:selected').attr('jg_type'));
 			var level_num = $("#user_admin_level").val();
 			var shi   = $("#city").val() == "-请选择-" || $("#city").val() == "";
 			var xian  = $("#lcity").val() == "-请选择-" || $("#lcity").val() == "";
@@ -114,7 +115,7 @@
   	    if (data.status == 'OK') {
   	      $('#user_jg_bsb_id').empty();
   	      $.each(data.msg, function (index, item) {
-  	        $("<option>").attr({'value': item[1]}).text(item[0]).appendTo($('#user_jg_bsb_id'));
+  	        $("<option>").attr({'value': item[1],'jg_type': item[2]}).text(item[0]).appendTo($('#user_jg_bsb_id'));
   	      });
   	      $('#user_jg_bsb_id').select2({theme: 'bootstrap', placeholder: '请选择所在机构'});
   	    }
@@ -190,8 +191,9 @@
         <% if current_user.is_super? or current_user.is_prov_manager? %>
             <label>机构名称：</label>
             <!--%= f.select :jg_bsb_id, options_for_select(JgBsb.list_jgbsb(SysConfig.get(SysConfig::Key::PROV)).map { |jg| [jg.jg_name, jg.id] }.unshift(["请选择", nil]), @user.jg_bsb_id), {}, :class => "form-control input-sm" %>-->
-            <%= f.select :jg_bsb_id, options_for_select(JgBsb.where(status: 0).map { |jg| [jg.jg_name, jg.id] }, @user.jg_bsb_id), {}, :class => "form-control input-sm" %>
+            <%= f.select :jg_bsb_id, options_for_select(JgBsb.where(status: 0).map { |jg| [jg.jg_name, jg.id,{"jg_type" => jg.jg_type}] }, @user.jg_bsb_id), {}, :class => "form-control input-sm" %>
             <!--%= f.select :jg_bsb_id, [], {},:class => "form-control input-sm" %>-->
+           <%= f.hidden_field :jg_type %>
             <% if current_user.is_admin? or current_user.is_account_manager %>
                 <div class="form-inline">
                   <div class="checkbox">
@@ -349,7 +351,7 @@
             </div>
         <% end %>
         <br>
-        <% if !@user.is_passed? and !current_user.is_super? and is_shengshi? %>
+        <% if !@user.is_passed? and !current_user.is_super?  %>
             <label>审核记录:</label>
             <ul>
               <% @user.user_audit_logs.order('id asc').each do |log| %>

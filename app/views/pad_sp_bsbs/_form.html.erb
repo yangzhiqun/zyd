@@ -9,7 +9,7 @@
     ///////////////////
 
     $(function () {
-      $("#pad_sp_bsb_sp_s_16").val('<%= @id_partssum%>')
+     // $("#pad_sp_bsb_sp_s_16").val('<%= @id_partssum%>')
       //包装分类选为散装时若干项自动置为/
       if ($("#pad_sp_bsb_sp_s_63").val() == "散装") {
         <%@check=[26,27,13,72,73,74]%>
@@ -331,6 +331,29 @@
             $("#pad_sp_bsb_sp_s_70").removeAttr("disabled");
             $("#pad_sp_bsb_sp_s_20").removeAttr("disabled");
             $('#pad_sp_bsb_sp_i_state').val("<%= ::PadSpBsb::Step::DEPLOYED %>");
+           <%@check=[4,5,220,221]%>
+         <%@check.each do |i|%>
+           if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0 || $("#sp_bsb_sp_s_" +<%=i%>).val() == '请选择') {
+             var info = "";
+             info = "<%=i%>";
+             if(info==4){
+               info = "被抽样单位市";
+             }
+             if(info==5){
+               info = "被抽样单位县";
+             }
+             if(info==220){
+               info = "标识生产企业市";
+             }
+             if(info==221){
+               info = "标识生产企业市";
+             }
+              alert(info + " ,该项为必填项");
+              $("#sp_bsb_sp_s_" +<%=i%>).focus();
+              return false;
+            }
+          <%end%>
+
             return true;
         });
 
@@ -550,7 +573,8 @@
             <% if @sp_bsb.sp_s_16.blank? %>
                 <i class="text-danger">任务下达后由系统生成(3000开始)</i>
             <% else %>
-                <i class="text-danger"><%= @sp_bsb.sp_s_16 %></i>
+                <%= f.text_field :sp_s_16,:class => "inputText",  :style => "width: 100%; height: 19px" %>
+                <!--<i class="text-danger">%= @sp_bsb.sp_s_16 %>-->
             <% end %>
           </td>
         </tr>
@@ -877,7 +901,12 @@
                         return false;
                     }
                     <%end%>
-
+      							var file1 = $.trim($("#pad_sp_bsb_cyd_file").val());
+										var file2 = $.trim($("#pad_sp_bsb_cyjygzs_file").val());
+										if(file1 == '' || file2 == ''){
+													alert("请填写完整【抽样单电子版】和【抽样检验告知电子版】");
+												return false;
+										}
                     varDate = $("#pad_sp_bsb_sp_d_86").val();
                     varData = varDate.split("-")
                     varDate = new Date(varData[0], varData[1] - 1, varData[2]);

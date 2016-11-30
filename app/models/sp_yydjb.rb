@@ -179,6 +179,13 @@ class SpYydjb < ActiveRecord::Base
     end
   end
 
+ def tbr_city
+  if self.djr_user_id.blank?
+   ""
+  else
+   User.find(self.djr_user_id).prov_city
+  end
+ end
   # 日志记录
   def callback_when_saved
     content_tmp = ''

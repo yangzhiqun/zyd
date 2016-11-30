@@ -84,9 +84,9 @@ class TasksController < ApplicationController
       else
          # 省局任务部署
          @province = SysProvince.level1.find_by_name(current_user.prov_city)
-            if current_user.is_city?
+            if current_user.is_city? or (!current_user.prov_city.blank? && (current_user.prov_country.blank? or current_user.prov_country.include?('请选择')))
               @province = SysProvince.level1.find_by_name(current_user.prov_city)
-           elsif current_user.is_county_level?
+           elsif current_user.is_county_level? or (!current_user.prov_city.blank? && !current_user.prov_country.blank?)
              @province = SysProvince.level3(current_user.prov_city).find_by_name(current_user.prov_country)
           else
            @province = SysProvince.level1.find_by_name(current_user.prov_city) 
@@ -124,7 +124,17 @@ class TasksController < ApplicationController
         end
       @count = @delegates.count
         # TODO: 如何精准筛选剩余部分
-        @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0)
+        if current_user.is_admin?
+          @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0)
+        else
+        if current_user.is_city? || !current_user.prov_city.blank?
+          @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0,:city => current_user.prov_city)
+         elsif  current_user.is_county_level? || !current_user.prov_country.blank?
+          @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0,:city => current_user.prov_city,:country => current_user.prov_country)
+         else
+          @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0)
+         end
+        end 
         @jyjgs = JgBsb.where(:jg_detection => 1, status: 0)
       end
     end
@@ -368,20 +378,50 @@ class TasksController < ApplicationController
     @jg_bsb = current_user.jg_bsb
     case params[:tab].to_i
       when 0
-        if current_user.is_admin?
-          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::FINISHED)
+    if current_user.is_admin? 
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::TMP_SAVE)
         elsif session[:change_js]==10
-          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::FINISHED, :sp_s_43 => @jg_bsb.all_names)
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::TMP_SAVE, :sp_s_43 => @jg_bsb.all_names)
+        elsif current_user.is_sheng?
+          @pad_sp_bsbs = PadSpBsb.where("sp_i_state =? ",::PadSpBsb::Step::TMP_SAVE)
+        elsif current_user.is_city?
+           @pad_sp_bsbs = PadSpBsb.where("sp_i_state =? and (sp_s_4= ? or sp_s_220 =?)",::PadSpBsb::Step::TMP_SAVE,current_user.prov_city,current_user.prov_city)
+        elsif current_user.is_county_level?
+          @pad_sp_bsbs = PadSpBsb.where("sp_i_state =? and (sp_s_5= ? or sp_s_221 =?)",::PadSpBsb::Step::TMP_SAVE,current_user.prov_country,current_user.prov_country)
         else
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::TMP_SAVE, :sp_s_43 => @jg_bsb.all_names)
         end
       when 1
-        @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED], :sp_s_43 => @jg_bsb.all_names)
+        if current_user.is_sheng? or current_user.is_admin?
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state =>[::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED])
+        elsif current_user.is_city?
+          @pad_sp_bsbs = PadSpBsb.where("sp_i_state in (?) and (sp_s_4= ? or sp_s_220 =?)",[::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED],current_user.prov_city,current_user.prov_city)
+        elsif current_user.is_county_level?
+          @pad_sp_bsbs = PadSpBsb.where("sp_i_state in (?) and (sp_s_5= ? or sp_s_221 =?)",[::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED],current_user.prov_country,current_user.prov_country)
+        else 
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED], :sp_s_43 => @jg_bsb.all_names)
+        end
       when 2
+        if current_user.is_sheng? or current_user.is_admin?
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state =>[::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED])
+        elsif current_user.is_city?
+          @pad_sp_bsbs = PadSpBsb.where("sp_i_state in (?) and (sp_s_4= ? or sp_s_220 =?)",[::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED],current_user.prov_city,current_user.prov_city)
+        elsif current_user.is_county_level?
+          @pad_sp_bsbs = PadSpBsb.where("sp_i_state in (?) and (sp_s_5= ? or sp_s_221 =?)",[::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED],current_user.prov_country,current_user.prov_country)
+        else 
         @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED], :sp_s_43 => @jg_bsb.all_names)
+        end
       when 3
-        @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::SAMPLE_REFUSED, :sp_s_43 => @jg_bsb.all_names)
-    end
+        if current_user.is_sheng? or current_user.is_admin?
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state =>::PadSpBsb::Step::SAMPLE_REFUSED)
+        elsif current_user.is_city?
+          @pad_sp_bsbs = PadSpBsb.where("sp_i_state in (?) and (sp_s_4= ? or sp_s_220 =?)",::PadSpBsb::Step::SAMPLE_REFUSED,current_user.prov_city,current_user.prov_city)
+        elsif current_user.is_county_level?
+          @pad_sp_bsbs = PadSpBsb.where("sp_i_state in (?) and (sp_s_5= ? or sp_s_221 =?)",::PadSpBsb::Step::SAMPLE_REFUSED,current_user.prov_country,current_user.prov_country)
+        else 
+          @pad_sp_bsbs = PadSZpBsb.where(:sp_i_state => ::PadSpBsb::Step::SAMPLE_REFUSED, :sp_s_43 => @jg_bsb.all_names)
+        end
+     end
 
     unless params[:begin_time].blank?
       @begin_time = DateTime.parse(params[:begin_time]).beginning_of_day

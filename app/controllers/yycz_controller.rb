@@ -93,9 +93,13 @@ class YyczController < ApplicationController
     @end_at = params[:end_at].blank? ? Time.now : DateTime.parse(params[:end_at]).end_of_day
     @yyczs = SpYydjb.select("y.*").joins("as y left join sp_bsbs as s on y.cjbh = s.sp_s_16")
   
-   if current_user.is_admin? || current_user.yyadmin == 1
-        @yyczs = @yyczs.where("y.bcydwsf = ? or y.bsscqysf = ?", current_user.user_s_province, current_user.user_s_province)
-   else
+   if current_user.is_admin? || current_user.yyadmin == 1 || current_user.prov_city.blank? || current_user.prov_city =="-请选择-"
+     if params[:current_tab].to_i == 0
+        @yyczs = @yyczs.where("y.current_state = ? and (y.bcydwsf = ? or y.bsscqysf = ?)",SpYydjb::State::ASSIGNED, current_user.user_s_province, current_user.user_s_province)
+      else
+       @yyczs = @yyczs.where("y.current_state = ? and (y.bcydwsf = ? or y.bsscqysf = ?)",SpYydjb::State::FILLED, current_user.user_s_province, current_user.user_s_province)
+     end 
+  else
     if params[:current_tab].to_i == 0
       @yyczs = @yyczs.where("y.current_state = ? and (bcydws =? or bsscqys =?)", SpYydjb::State::ASSIGNED,current_user.prov_city,current_user.prov_city).order("y.created_at ASC")
     else
@@ -145,14 +149,19 @@ class YyczController < ApplicationController
     @end_at = params[:end_at].blank? ? Time.now : DateTime.parse(params[:end_at]).end_of_day
     @yyczs = SpYydjb.select("y.*").joins("as y left join sp_bsbs as s on y.cjbh = s.sp_s_16")
 
-    if params[:current_tab].to_i == 0
-      @yyczs = @yyczs.where("y.current_state = ?", SpYydjb::State::FILLED).order("y.created_at ASC")
+    if  current_user.is_admin? || current_user.yyadmin == 1 || current_user.prov_city.blank? || current_user.prov_city =="-请选择-"
+     if params[:current_tab].to_i == 0
+      @yyczs = @yyczs.where(" y.current_state = ? and(y.bcydwsf = ? or y.bsscqysf = ?)",SpYydjb::State::FILLED, current_user.user_s_province, current_user.user_s_province)
+      else
+      @yyczs = @yyczs.where(" y.current_state = ? and ( y.bcydwsf = ? or y.bsscqysf = ?)",SpYydjb::State::PASSED, current_user.user_s_province, current_user.user_s_province)
+     end
+     else
+      if params[:current_tab].to_i == 0
+      @yyczs = @yyczs.where("y.current_state = ? and (bcydws =? or bsscqys =?)", SpYydjb::State::FILLED,current_user.prov_city,current_user.prov_city).order("y.created_at ASC")
     else
-      @yyczs = @yyczs.where("y.current_state = ?", SpYydjb::State::PASSED).order("y.created_at ASC")
+      @yyczs = @yyczs.where("y.current_state = ? and (bcydws =? or bsscqys =?)", SpYydjb::State::PASSED,current_user.prov_city,current_user.prov_city).order("y.created_at ASC")
     end
 
-    if current_user.yyadmin != 1
-      @yyczs = @yyczs.where("y.bcydwsf = ? or y.bsscqysf = ?", current_user.user_s_province, current_user.user_s_province)
     end
     # 样品名称
     unless params[:ypmc].blank?
@@ -197,12 +206,14 @@ class YyczController < ApplicationController
       @sp_bsbs = []
     else
       @sp_bsbs = SpBsb.select("s.*").group('s.sp_s_16').order('s.updated_at DESC').joins("AS s LEFT JOIN sp_yydjbs AS y ON s.sp_s_16=y.cjbh").where("y.current_state NOT IN (1, 2, 3) OR y.cjbh IS NULL").where("(s.sp_s_71 LIKE ? OR s.sp_s_71 LIKE ?) AND s.sp_i_state = 9", "%问题样品%", "%不合格样品%")
-
-      if current_user.yyadmin != 1
+     if !current_user.is_admin?
+      if current_user.yyadmin !=1 
+       if !current_user.prov_city.blank? and current_user.prov_city !="-请选择-"
         @sp_bsbs = @sp_bsbs.where("s.sp_s_3 = ? OR s.sp_s_202 = ?", current_user.user_s_province, current_user.user_s_province)
 	@sp_bsbs = @sp_bsbs.where("s.sp_s_4 = ? OR s.sp_s_220 = ?", current_user.prov_city, current_user.prov_city)	
+       end
       end
-
+		end
       if !params[:cjbh].blank?
         @sp_bsbs = @sp_bsbs.where("s.sp_s_16 like ? ", "%#{params[:cjbh]}%")
       end

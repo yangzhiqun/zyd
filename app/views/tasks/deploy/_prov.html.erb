@@ -51,9 +51,13 @@ function jg_change(){
     <label for="">报送分类：</label>
       <% if is_county_level? %>
         <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx = "县"').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
-       <% else %>
+      <% elsif is_city? %>
         <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx = "市/区局"').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
-   <% end %>
+      <% elsif !current_user.prov_city.blank? && (current_user.prov_country.blank? or current_user.prov_country.include?('请选择'))  %>
+         <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx = "市/区局"').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+     <% elsif !current_user.prov_city.blank? && !current_user.prov_country.blank?%>
+        <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx = "县"').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>   
+     <% end %>
     <%= select_tag "baosong_b", options_for_select(@baosong_bs.map { |a| [a.name, a.name, {"data-identifier" => a.identifier}] }.unshift(["请选择", ""]), params[:baosong_b]), {:class => "form-control input-sm", id: "baosong_b", style: "width: 150px;"} %>
     <br>
     <br>

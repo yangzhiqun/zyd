@@ -85,8 +85,8 @@
         <tr>
           <th>被抽样单位名称</th>
           <td><%= @djb.bcydw %></td>
-          <th>被抽样单位省份/市</th>
-          <td><%= @djb.bcydwsf %>/<%= @djb.bcydws if !@djb.bcydws.blank? %></td>
+          <th>被抽样单位省份</th>
+          <td><%= @djb.bcydwsf %></td>
         </tr>
         <tr>
           <th>抽样单位名称</th>
@@ -98,8 +98,14 @@
           <th>标识生产企业名称</th>
           <td><%= @djb.bsscqy %></td>
           <th>标识生产企业省份/市</th>
-          <td><%= @djb.bsscqysf %>/<%= @djb.bsscqys if !@djb.bsscqys.blank? %></td>
+          <td><%= @djb.bsscqysf %></td>
         </tr>
+      <tr>
+          <th>抽样单位市</th>
+          <td><%= @djb.bcydws if !@djb.bcydws.blank? %></td>
+          <th>标识生产企业市</th>
+          <td><%= @djb.bsscqys if !@djb.bsscqys.blank? %></td>
+     </tr>
       </table>
     </div>
   </div>
@@ -374,7 +380,7 @@
     <br>
   <% end %>
   <input type="hidden" id="current_step_finished" name="current_step_finished" value="0">
-  <%  if @djb.blr_user_id == current_user.id  %>	
+  <%  if @djb.tbr_city == current_user.prov_city  %>	
     <% if params[:preview].blank? and @djb.can_be_handled_by?(current_user) %>
     <% if @djb.current_state == ::SpYydjb::State::LOGGED %>
     <%= f.submit "确认处置安排", :id => "save1", :class => 'btn btn-primary' %>
