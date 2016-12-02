@@ -333,7 +333,7 @@
             $('#pad_sp_bsb_sp_i_state').val("<%= ::PadSpBsb::Step::DEPLOYED %>");
            <%@check=[4,5,220,221]%>
          <%@check.each do |i|%>
-           if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0 || $("#sp_bsb_sp_s_" +<%=i%>).val() == '请选择') {
+           if ($.trim($("#pad_sp_bsb_sp_s_" +<%=i%>).val()).length == 0 || $("#pad_sp_bsb_sp_s_" +<%=i%>).val() == '请选择') {
              var info = "";
              info = "<%=i%>";
              if(info==4){
@@ -349,7 +349,7 @@
                info = "标识生产企业市";
              }
               alert(info + " ,该项为必填项");
-              $("#sp_bsb_sp_s_" +<%=i%>).focus();
+              $("#pad_sp_bsb_sp_s_" +<%=i%>).focus();
               return false;
             }
           <%end%>

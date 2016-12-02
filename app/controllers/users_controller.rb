@@ -445,6 +445,8 @@ class UsersController < ApplicationController
     return not_found unless current_user.is_account_manager
 		if is_city?
       @pending_users = User.where('state = ? and user_s_province = ? and prov_city = ? ', User::State::ReviewSJ, current_user.user_s_province, current_user.prov_city)
+   elsif 
+      @pending_users = User.where('state = ? and user_s_province = ? and prov_city = ? and prov_country = ?', User::State::ReviewSJ, current_user.user_s_province, current_user.prov_city,current_user.prov_country)
     elsif current_user.user_i_js == 1
      # @pending_users = User.where('state = ? and user_s_province = ? and prov_city = ?', User::State::ReviewSJ, current_user.user_s_province, current_user.prov_city)
       @pending_users = User.where('state = ? and user_s_province = ? ', User::State::ReviewSJ, current_user.user_s_province)

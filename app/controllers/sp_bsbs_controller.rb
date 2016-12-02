@@ -149,7 +149,7 @@ class SpBsbsController < ApplicationController
 
   #2014-01-12
   def data_owner(params_data)
-    if current_user.is_admin?||session[:change_js]==9||session[:change_js]==10||is_shengshi?
+    if current_user.is_admin?||session[:change_js]==9||session[:change_js]==10||is_shengshi?||current_user.jg_type==1
       return 1
     end
     if params_data.user_id == current_user.id
@@ -1158,6 +1158,8 @@ logger.error "session[:change_js]"
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_4 = ? or sp_bsbs.sp_s_220 =?",current_user.prov_city,current_user.prov_city).paginate(page: params[:page], per_page: 10)
     elsif current_user.is_county_level? and (!current_user.is_super? or !current_user.is_admin?)
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_5 = ? or sp_bsbs.sp_s_221 =?",current_user.prov_country,current_user.prov_country).paginate(page: params[:page], per_page: 10)
+    elsif (current_user.prov_city.blank? or current_user.prov_city.include?('请选择')) and (current_user.prov_country.blank? or current_user.prov_country.include?('请选择'))
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3	=?",current_user.user_s_province).paginate(page: params[:page], per_page: 10)
    end
 
      respond_to do |format|

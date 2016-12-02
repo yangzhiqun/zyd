@@ -116,6 +116,14 @@ module ApplicationHelper
 		return result
 	end
 
+  def is_shi_deploy?
+   current_user.is_city? or ((!current_user.prov_city.blank? and !current_user.prov_city.include?('请选择')) and ( current_user.prov_country.include?('请选择') or current_user.prov_country.blank?))
+  end
+
+  def is_xian_deploy?
+    current_user.is_county_level? or ((!current_user.prov_city.blank? and !current_user.prov_city.include?('请选择')) and (!current_user.prov_country.blank? and !current_user.prov_country.include?('请选择')))
+  end
+
   def generate_tab_params(tab)
     p = request.GET
     p[:page] = 1 if tab.to_i != p[:current_tab]

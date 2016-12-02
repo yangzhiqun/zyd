@@ -42,7 +42,7 @@
       </td>
     </tr>
   </table>
-  <% if current_user.is_admin?  %>
+  <% if current_user.is_admin? or is_shengshi?  %>
   <input type="submit" value="搜索" class="btn btn-sm btn-primary">
   <% end %>
   <hr>

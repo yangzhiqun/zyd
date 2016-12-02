@@ -84,9 +84,9 @@ class TasksController < ApplicationController
       else
          # 省局任务部署
          @province = SysProvince.level1.find_by_name(current_user.prov_city)
-            if current_user.is_city? or (!current_user.prov_city.blank? && (current_user.prov_country.blank? or current_user.prov_country.include?('请选择')))
+            if is_shi_deploy? # current_user.is_city? or ((!current_user.prov_city.blank? and !current_user.prov_city..include?('请选择')) and (current_user.prov_country.blank? or current_user.prov_country.include?('请选择')))
               @province = SysProvince.level1.find_by_name(current_user.prov_city)
-           elsif current_user.is_county_level? or (!current_user.prov_city.blank? && !current_user.prov_country.blank?)
+           elsif is_xian_deploy? # current_user.is_county_level? or ((!current_user.prov_city.blank? and !current_user.prov_city.include?('请选择')) and (!current_user.prov_country.blank? and !current_user.prov_country.include?('请选择')))
              @province = SysProvince.level3(current_user.prov_city).find_by_name(current_user.prov_country)
           else
            @province = SysProvince.level1.find_by_name(current_user.prov_city) 
@@ -99,8 +99,6 @@ class TasksController < ApplicationController
           @baosong_bs = BaosongB.where(:baosong_a_id => @baosong_a.id)
 
           @baosong_b = @baosong_bs.where(name: params[:baosong_b]).last
-        #  if !current_user.is_admin?
-        #    @baosong_bs = @baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province)
         #  end
         else
           @baosong_bs = []
@@ -124,17 +122,18 @@ class TasksController < ApplicationController
         end
       @count = @delegates.count
         # TODO: 如何精准筛选剩余部分
-        if current_user.is_admin?
-          @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0)
-        else
-        if current_user.is_city? || !current_user.prov_city.blank?
-          @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0,:city => current_user.prov_city)
-         elsif  current_user.is_county_level? || !current_user.prov_country.blank?
-          @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0,:city => current_user.prov_city,:country => current_user.prov_country)
-         else
-          @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0)
-         end
-        end 
+        #if current_user.is_admin?
+         # @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0)
+        #else
+       # if current_user.is_city?
+        #  @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0,:city => current_user.prov_city)
+        # elsif  current_user.is_county_level?
+        #  @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0,:city => current_user.prov_city,:country => current_user.prov_country)
+        # else
+        #  @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0)
+        # end
+        #end 
+         @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0)
         @jyjgs = JgBsb.where(:jg_detection => 1, status: 0)
       end
     end
@@ -183,10 +182,10 @@ class TasksController < ApplicationController
     if params[:jg_id].blank? or params[:dl].blank? or params[:quota].blank?
       render json: {status: 'ERR', msg: '请提供必要参数'}
     else
-       if current_user.is_city?
+       if is_shi_deploy? # current_user.is_city?
         sysProvince =SysProvince.level1.find_by_name(current_user.prov_city)
         sys_province_id= sysProvince.id
-      elsif current_user.is_county_level?
+      elsif is_xian_deploy?# current_user.is_county_level?
         sysProvince=SysProvince.level3(current_user.prov_city).find_by_name(current_user.prov_country)
         sys_province_id= sysProvince.id
       else
@@ -262,9 +261,9 @@ class TasksController < ApplicationController
       #  info = current_user.prov_country;
       #  @province = SysProvince.level2.find_by_name(info)
       #end
-      if current_user.is_city?
+      if is_shi_deploy?#  current_user.is_city?
         @province =SysProvince.level1.find_by_name(current_user.prov_city)
-      elsif current_user.is_county_level?
+      elsif is_xian_deploy? # current_user.is_county_level?
         @province =SysProvince.level3(current_user.prov_city).find_by_name(current_user.prov_country)
       else
         @province =SysProvince.level1.find_by_name(current_user.prov_city)

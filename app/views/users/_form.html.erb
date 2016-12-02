@@ -3,6 +3,10 @@
 		if(<%= is_city? %>){
 			$('#city').attr("disabled","disabled");
 		}
+  if(<%= is_county_level? %>){
+    $('#city').attr("disabled","disabled");
+   $('#lcity').attr("disabled","disabled");
+  }
 		if($("#user_user_i_js").prop("checked")){
 			$("#user_admin_level").show();
 		}

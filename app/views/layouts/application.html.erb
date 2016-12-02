@@ -566,7 +566,7 @@
                       </li>
                   <% end %>
                   <% if current_user.yyadmin == 1 %>
-										<% if !is_city? %>
+										<% if !is_city? and !is_county_level? %>
                       <li class="<%= "active" if action?("renew") %>">
                         <cite></cite><a href="/yycz/renew">异议延期登记</a><i></i>
                       </li>

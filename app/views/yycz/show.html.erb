@@ -380,7 +380,7 @@
     <br>
   <% end %>
   <input type="hidden" id="current_step_finished" name="current_step_finished" value="0">
-  <%  if @djb.tbr_city == current_user.prov_city  %>	
+  <%  if @sp_bsb.sp_s_4 == current_user.prov_city or @sp_bsb.sp_s_220 == current_user.prov_city or current_user.prov_city.include?("请选择") or current_user.prov_city.blank? %>	
     <% if params[:preview].blank? and @djb.can_be_handled_by?(current_user) %>
     <% if @djb.current_state == ::SpYydjb::State::LOGGED %>
     <%= f.submit "确认处置安排", :id => "save1", :class => 'btn btn-primary' %>

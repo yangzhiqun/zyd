@@ -169,8 +169,24 @@ class PadSpBsbsController < ApplicationController
 
 
     @jg_bsb = current_user.jg_bsb
-    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
-    if !params[:cp].blank? # and params[:cp][:product_id].blank?
+   # @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
+   if current_user.is_admin?
+      @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
+ else
+    if current_user.jg_bsb.jg_type==1
+     super_jg= JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
+        jg_names=[]
+        jg_names.push(current_user.jg_bsb_id)
+        super_jg.each do |j|
+           jg_names.push(j.jg_bsb_id)
+        end
+    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1  and id in (?)',jg_names).order('jg_province')
+    elsif current_user.jg_bsb.jg_type==3
+    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1 and id in (?) ',current_user.jg_bsb_id).order('jg_province')
+    end
+  end 
+  
+  if !params[:cp].blank? # and params[:cp][:product_id].blank?
       @sp_bsb.sp_s_70 = params[:cp][:sp_s_70] unless params[:cp][:sp_s_70].blank?
       @sp_bsb.sp_s_67 = params[:cp][:sp_s_67] unless params[:cp][:sp_s_67].blank?
       @sp_bsb.sp_s_17 = params[:cp][:sp_s_17] unless params[:cp][:sp_s_17].blank?

@@ -316,7 +316,7 @@
           </ul>
         </td>
       </tr>
-      <% if current_user.is_admin? %>
+      <% if current_user.is_admin? or is_shengshi? %>
           <tr>
             <td colspan="40">
               <%= f.submit(vaule='保存并退出', options={id: 'save_and_exit', class: 'btn btn-sm btn-success'}) %>
