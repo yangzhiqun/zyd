@@ -77,8 +77,7 @@
           level3: "<%= @sp_bsb.sp_s_221 %>"
         });
     		$(".region3").CfdaProvince_1({
-					level1:	"<%= @sp_bsb.sp_s_52 %>",
-    		  level2: "<%= @sp_bsb.sp_s_city %>"
+				  level1: "<%= @sp_bsb.sp_s_city %>"
     		});
         $("#pad_sp_bsb_sp_d_22").datepicker({
             dateFormat: "yy-mm-dd",
@@ -346,7 +345,7 @@
                info = "标识生产企业市";
              }
              if(info==221){
-               info = "标识生产企业市";
+               info = "标识生产企业县";
              }
               alert(info + " ,该项为必填项");
               $("#pad_sp_bsb_sp_s_" +<%=i%>).focus();

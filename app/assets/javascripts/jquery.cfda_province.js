@@ -117,7 +117,7 @@ $.fn.CfdaProvince_1 = function (config) {
 	}
 
   function render_selector(num) {
-		level1.append($('<option>请选择</option>'));	
+	  //level1.append($('<option>请选择</option>'));	
 		$.each(prov_data.lvl2[num], function (i, prov) {
 			level1.append($('<option>').attr({'value': prov[0]}).text(prov[0]));
 		});
