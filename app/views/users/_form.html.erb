@@ -1,12 +1,12 @@
 <script type="text/javascript">
   $(function () {
-		if(<%= is_city? %>){
-			$('#city').attr("disabled","disabled");
-		}
-  if(<%= is_county_level? %>){
+     <% if is_city? and  params[:action] =="edit" %>
+       $('#city').attr("disabled","disabled");
+     <% end %>
+    <% if is_county_level? and  params[:action] =="edit" %>
     $('#city').attr("disabled","disabled");
    $('#lcity').attr("disabled","disabled");
-  }
+   <% end%>
 		if($("#user_user_i_js").prop("checked")){
 			$("#user_admin_level").show();
 		}
@@ -356,24 +356,26 @@
         <% end %>
         <br>
         <% if !@user.is_passed? and !current_user.is_super?  %>
-            <label>审核记录:</label>
-            <ul>
-              <% @user.user_audit_logs.order('id asc').each do |log| %>
-                  <li><%= log.msg %>
-                    <small>操作人:<%= log.operator.tname %>,
-                      操作时间:<%= log.created_at.strftime('%Y-%m-%d %H:%M:%S') %></small>
-                  </li>
-              <% end %>
-            </ul>
-            <input type="hidden" name="account-pass-request" value="1">
+             <input type="hidden" name="account-pass-request" value="1">
             <input type="hidden" name="account-pass" id="account-pass-flag">
             <% if current_user.is_account_manager %>
                 <% if (@user.state == User::State::ReviewJG and current_user.is_jg_manager?) or \
                 (current_user.user_s_province == @user.user_s_province and @user.state == User::State::ReviewSJ and current_user.is_prov_manager?) %>
+                 <label>审核记录:</label>
+           				 <ul>
+              		<% @user.user_audit_logs.order('id asc').each do |log| %>
+                  <li><%= log.msg %>
+                    <small>操作人:<%= log.operator.tname %>,
+                      操作时间:<%= log.created_at.strftime('%Y-%m-%d %H:%M:%S') %></small>
+                  </li>
+              		<% end %>
+         				  </ul>
                     <button class="btn btn-sm btn-success pass pass-request" data-confirm="确定审核通过该账号吗？">
                       <i class="glyphicon glyphicon-ok"></i>&nbsp;审核通过
                     </button>
                     <button class="btn btn-sm btn-danger deny pass-request" data-confirm="确定决绝该账号的申请吗？">拒绝申请</button>
+								<% else %>
+                    <button class="btn btn-sm btn-success" data-confirm="确定保存吗？">提交</button>
                 <% end %>
             <% elsif @user.id == current_user.id and @user.is_rejected? %>
                 <button class="btn btn-sm btn-warning pass pass-request" data-confirm="确定重新提交审核该账号吗？">

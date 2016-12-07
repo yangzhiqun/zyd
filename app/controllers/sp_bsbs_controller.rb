@@ -813,7 +813,7 @@ logger.error "session[:change_js]"
     end
 
      if  !params[:s6].blank? and params[:s6] != "请选择"
-      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_20 LIKE ?", "%#{params[:s6]}%")
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_18 LIKE ?", "%#{params[:s6]}%")
     end
    if !params[:sp_bsa].blank? and params[:sp_bsa] !="请选择"
      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 LIKE ?", "%#{params[:sp_bsa]}%")
