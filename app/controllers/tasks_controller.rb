@@ -50,7 +50,7 @@ class TasksController < ApplicationController
       end
 
       # 国家局任务部署
-      if current_user.is_admin? || params[:tab].to_i == 2
+      if current_user.is_admin? || params[:tab].to_i == 2 ||is_sheng?
         # 取出省级Province
         if  params[:tab].to_i == 2
          @provinces = SysProvince.level3(current_user.prov_city)
@@ -83,13 +83,15 @@ class TasksController < ApplicationController
         end
       else
          # 省局任务部署
-         @province = SysProvince.level1.find_by_name(current_user.prov_city)
-            if is_shi_deploy? # current_user.is_city? or ((!current_user.prov_city.blank? and !current_user.prov_city..include?('请选择')) and (current_user.prov_country.blank? or current_user.prov_country.include?('请选择')))
+           #@province = SysProvince.level1.find_by_name(current_user.prov_city)
+           # if is_sheng?
+						#	@province = SysProvince.level1
+            if is_shi_deploy?
               @province = SysProvince.level1.find_by_name(current_user.prov_city)
-           elsif is_xian_deploy? # current_user.is_county_level? or ((!current_user.prov_city.blank? and !current_user.prov_city.include?('请选择')) and (!current_user.prov_country.blank? and !current_user.prov_country.include?('请选择')))
+           elsif is_xian_deploy?
              @province = SysProvince.level3(current_user.prov_city).find_by_name(current_user.prov_country)
           else
-           @province = SysProvince.level1.find_by_name(current_user.prov_city) 
+           @province = SysProvince.level1 
           end
         #end
         tasks = @province.task_provinces
@@ -328,13 +330,13 @@ class TasksController < ApplicationController
           @province = SysProvince.level1_old.find_by_name(current_user.user_s_province)
           @rwly.push(["#{current_user.user_s_province}食品药品监督管理局", @province.id])
           else
-          @province = SysProvince.level1.find_by_name(info)
-          @rwly.push(["#{info}食品药品监督管理局", @province.id])
+          @province = SysProvince.level1.find_by_name(task.name)
+          @rwly.push(["#{@province.name}食品药品监督管理局", @province.id])
           end
         else
           info = current_user.prov_country;
-          @province = SysProvince.level2.find_by_name(info)
-          @rwly.push(["#{info}食品药品监督管理局", @province.id])
+          @province = SysProvince.level2.find_by_name(task.name)
+          @rwly.push(["#{@province.name}食品药品监督管理局", @province.id])
         end
         #@rwly.push(["#{task.name}食品药品监督管理局", task.sys_province_id])
       end
