@@ -4,17 +4,17 @@ development:
   #host: mysql_database
   encoding: utf8
   reconnect: false
-  database: tdepot_demo_production_ceshi
+  database: tdepot_demo_production
   pool: 25
   username: root
-  password: 123456
+  password: btbuzuomin5638
 
 production:
   adapter: mysql2
   encoding: utf8
   reconnect: false
-  database: tdepot_demo_production_ceshi
+  database: tdepot_demo_production
   pool: 25
   #host: '10.0.39.208'
   username: root
-  password: 123456
+  password: btbuzuomin5638
