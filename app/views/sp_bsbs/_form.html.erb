@@ -523,6 +523,7 @@
         $.get('/check_items_by_d_id.json', {d_category_id: dataid}, function (data) {
           if (data.status == 'OK') {
             render_spec_list(data.items);
+						get_basis();	
           }
         }, 'json');
       } else {
@@ -800,9 +801,32 @@
         return false;
       }
       <%end%>
-			if ($("#sp_bsb_sp_s_city").val().length == 0 || $("#sp_bsb_sp_s_city").val() == '请选择') {
-				alert("抽样单位所在市/区 ,该项为必填项");
-        $("#sp_bsb_sp_s_city").focus();
+
+			//不规则属性名称写在这
+			var field_arr = ["sp_s_city","inspection_basis","decision_basis"];
+			$.each(field_arr,function(index,value){
+				if ($.trim($("#sp_bsb_" + value).val()).length == 0 || $("#sp_bsb_" + value).val() == '请选择') {		
+					var info = "";		
+					if(value == "sp_s_city"){
+						info = "抽样单位所在市/区";
+					}
+					if(value == "inspection_basis"){
+						info = "检验依据";
+					}
+					if(value == "decision_basis"){
+						info = "判定依据";
+					}
+					alert(info + " ,该项为必填项");	
+					$("#sp_bsb_" + value).focus();					
+					return false;
+				}
+			})
+
+			var file1 = $.trim($("#sp_bsb_cyd_file").val());
+			var file2 = $.trim($("#sp_bsb_cyjygzs_file").val());
+			var pdf_length = $("a.btn.btn-default.btn-xs").length;
+			if((file1 == '' || file2 == '')&&(pdf_length==0)){
+				alert("请填写完整【抽样单电子版】和【抽样检验告知电子版】");
 				return false;
 			}
 
@@ -877,14 +901,6 @@
       if (!confirm('确定提交吗？')) {
         return false;
       }
-			
-			var file1 = $.trim($("#sp_bsb_cyd_file").val());
-			var file2 = $.trim($("#sp_bsb_cyjygzs_file").val());
-			var pdf_length = $("a.btn.btn-default.btn-xs").length;
-			if((file1 == '' || file2 == '')&&(pdf_length==0)){
-				alert("请填写完整【抽样单电子版】和【抽样检验告知电子版】");
-				return false;
-			}
 
       varDate = $("#sp_bsb_sp_d_86").val();
       varData = varDate.split("-");
@@ -1491,6 +1507,22 @@
       }
       return false;
     }
+		function get_basis() {
+			var inspection_basis = ""
+			var decision_basis   = ""
+			$(".JYYJ").each(function(){
+				if($(this).val() != null) {
+					inspection_basis = inspection_basis + $(this).val() + ";";
+				}
+			});
+			$(".PDYJ").each(function(){
+				if($(this).val() != null) {
+					decision_basis = decision_basis + $(this).val() + ";";
+				}
+			});
+			$("#sp_bsb_inspection_basis").val(inspection_basis.slice(0,-1));
+			$("#sp_bsb_decision_basis").val(decision_basis.slice(0,-1));
+		}
   });
 </script>
 <style type="text/css">
@@ -2014,7 +2046,23 @@
       <div class="clear"></div>
     </div>
     <br>
-
+		<div class="basis">
+			<table class="table table-bordered" style="table-layout: fixed;" id="tblGrid">
+      	<tr>
+      	  <th colspan="6">检验依据</th>
+      	  <td colspan="34">
+      	    <%= f.text_area :inspection_basis, :class => "form-control input-sm", :rows => "3" %>
+      	  </td>
+      	</tr>
+      	<tr>
+      	  <th colspan="6">判定依据</th>
+      	  <td colspan="34">
+      	    <%= f.text_area :decision_basis, :class => "form-control input-sm", :rows => "3" %>
+      	  </td>
+      	</tr>
+			</table>		
+		</div>
+    <br>
     <% @pictures.each do |pic| %>
         <a style="float: left; margin-right: 10px;" href="/pad_sp_bsbs/<%= pic.sp_bsb_id %>/picture/<%= pic.sort_index %>" target="_blank">
           <img border="0" width="150" height="150" src="/pad_sp_bsbs/<%= pic.sp_bsb_id %>/picture/<%= pic.sort_index %>.jpeg"/>

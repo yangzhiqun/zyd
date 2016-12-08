@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161110032718) do
+ActiveRecord::Schema.define(version: 20161201061930) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -452,6 +452,7 @@ ActiveRecord::Schema.define(version: 20161110032718) do
     t.string   "sp_s_221",          limit: 10
     t.string   "sp_s_222",          limit: 20
     t.datetime "deleted_at"
+    t.text     "sp_s_city",         limit: 65535
   end
 
   add_index "pad_sp_bsbs", ["deleted_at"], name: "index_pad_sp_bsbs_on_deleted_at", using: :btree
@@ -881,6 +882,8 @@ ActiveRecord::Schema.define(version: 20161110032718) do
     t.datetime "deleted_at"
     t.string   "xsbg_file_path",           limit: 256
     t.text     "sp_s_city",                limit: 65535
+    t.text     "inspection_basis",         limit: 65535
+    t.text     "decision_basis",           limit: 65535
   end
 
   add_index "sp_bsbs", ["application_id"], name: "index_sp_bsbs_on_application_id", using: :btree
@@ -1330,6 +1333,74 @@ ActiveRecord::Schema.define(version: 20161110032718) do
     t.string   "sp_s_215",       limit: 255
   end
 
+  create_table "standard_a_categories", force: :cascade do |t|
+    t.string   "name",       limit: 255
+    t.string   "note",       limit: 255
+    t.string   "identifier", limit: 255
+    t.boolean  "enable"
+    t.datetime "deleted_at"
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  create_table "standard_b_categories", force: :cascade do |t|
+    t.string   "name",                   limit: 255
+    t.integer  "standard_a_category_id", limit: 4
+    t.string   "note",                   limit: 255
+    t.string   "identifier",             limit: 255
+    t.boolean  "enable"
+    t.datetime "deleted_at"
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+  end
+
+  create_table "standard_c_categories", force: :cascade do |t|
+    t.string   "name",                   limit: 255
+    t.integer  "standard_a_category_id", limit: 4
+    t.integer  "standard_b_category_id", limit: 4
+    t.string   "note",                   limit: 255
+    t.string   "identifier",             limit: 255
+    t.boolean  "enable"
+    t.datetime "deleted_at"
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+  end
+
+  create_table "standard_check_items", force: :cascade do |t|
+    t.string   "name",                   limit: 255
+    t.string   "JGDW",                   limit: 255
+    t.string   "JYYJ",                   limit: 255
+    t.string   "PDYJ",                   limit: 255
+    t.string   "BZFFJCX",                limit: 255
+    t.string   "BZFFJCXDW",              limit: 255
+    t.string   "BZZXYXX",                limit: 255
+    t.string   "BZZXYXXDW",              limit: 255
+    t.string   "BZZDYXX",                limit: 255
+    t.string   "BZZDYXXDW",              limit: 255
+    t.integer  "standard_a_category_id", limit: 4
+    t.integer  "standard_b_category_id", limit: 4
+    t.integer  "standard_c_category_id", limit: 4
+    t.integer  "standard_d_category_id", limit: 4
+    t.string   "identifier",             limit: 255
+    t.boolean  "enable"
+    t.datetime "deleted_at"
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+  end
+
+  create_table "standard_d_categories", force: :cascade do |t|
+    t.string   "name",                   limit: 255
+    t.integer  "standard_a_category_id", limit: 4
+    t.integer  "standard_b_category_id", limit: 4
+    t.integer  "standard_c_category_id", limit: 4
+    t.string   "note",                   limit: 255
+    t.string   "identifier",             limit: 255
+    t.boolean  "enable"
+    t.datetime "deleted_at"
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+  end
+
   create_table "static_queues", force: :cascade do |t|
     t.string   "name",        limit: 255
     t.integer  "user_id",     limit: 4
@@ -1538,6 +1609,7 @@ ActiveRecord::Schema.define(version: 20161110032718) do
     t.string   "ca_uuid",                limit: 50
     t.integer  "ca_user_status",         limit: 4
     t.string   "user_code",              limit: 255
+    t.integer  "admin_level",            limit: 4,     default: 0
   end
 
   add_index "users", ["name"], name: "index_name", using: :btree

@@ -1758,7 +1758,8 @@ class SpBsbsController < ApplicationController
         :updated_at,
         :czb_reverted_flag,
         :czb_reverted_reason,
-        :synced, :ca_source, :ca_sign, :sp_s_city
+        :synced, :ca_source, :ca_sign, :sp_s_city,
+				:inspection_basis, :decision_basis
     )
   end
 end

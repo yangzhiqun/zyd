@@ -1,0 +1,29 @@
+<h1>报送分类维护</h1>
+<table style="table-layout: fixed;" class="table table-bordered">
+  <thead>
+    <tr>
+      <th width="200">报送分类A</th>
+      <th>备注</th>
+      <th>任务来源类型</th>
+      <th>市/区</th>
+      <th>创建时间</th>
+      <th width="120">#</th>
+    </tr>
+  </thead>
+
+  <% @baosong_as.each do |baosong_a| %>
+  <tr>
+    <td><%= baosong_a.name %></td>
+    <td><%= baosong_a.note %></td>
+    <td><%= baosong_a.rwlylx %></td>
+    <td><%= baosong_a.prov.blank? ? "<i class='text-success'>不限制</i>".html_safe : baosong_a.prov %></td>
+    <td><%= (baosong_a.created_at + 8.hours).strftime("%Y-%m-%d %H:%M:%S")%></td>
+    <td>
+      <%= link_to '查看', {:controller => "baosong_as_newests",:action => "show", :id => baosong_a}, :class => "btn btn-xs btn-primary" %>
+      <%= link_to '删除', {:controller => "baosong_as_newests",:action => "destroy", :id => baosong_a}, :class => "btn btn-xs btn-danger", method: :delete, data: {confirm: '确定删除吗？此操作相当危险,可能导致报送表取值错误,删除前请确认承受风险的能力.'} %>
+    </td>
+  </tr>
+  <% end %>
+</table>
+<br>
+<%= link_to '添加报送分类', new_baosong_as_newest_path, :class => "btn btn-sm btn-primary"%>
