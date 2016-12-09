@@ -1680,7 +1680,7 @@
      };
    setTimeout(function(){$.get('/sp_bsbs/by_ca_info.json', {
        keyword: $("#keyword").val(),
-       id:  <%= @sp_bsb.id %>,
+       id:  '<%= @sp_bsb.id %>',
        keypic:  $("#keypic").val(),
        sign_cert: $("#sign_cert").val(),
        pr_status: $("#pr_status").val()
@@ -1695,7 +1695,7 @@
   function printpdf()
   {
     $.get('/sp_bsbs/print_pdf.json', {
-       id:  <%= @sp_bsb.id %>,
+       id:  '<%= @sp_bsb.id %>',
        sign_data:  $("#sign_data").val(),
        sp_status: $("#sp_status").val()
       }, function (data) {
@@ -2303,8 +2303,8 @@ function pass_ca(){
                 <div class="modal-body">
                   <div class="modal-group">
                   <select id="user_cert_list" name="user_cert_list" onchange= "testGetKeyPic()"  class="form-control input-sm"></select>
-                  <input type="text" name="keypic" id="keypic" size="30" hidden="true" ></input>
-                  <input type="text" name="sign_cert" id="sign_cert" size="30"  hidden="true" ></input>
+                  <input type="text" name="keypic" id="keypic" size="30" hidden="true" />
+                  <input type="text" name="sign_cert" id="sign_cert" size="30"  hidden="true" />
                   <IMG id="picimg1" height=20 src="" width=64>
                   </div>
                   <input type="button" value="获得签名" onclick="testGetKeyPic()"  hidden="true"/>
@@ -2435,7 +2435,7 @@ function pass_ca(){
  <script src="/assets/XTXSAB.js"></script>
 <script src="/assets/ESealWebSocket_PDFClientLogin.js"></script>
 <SCRIPT LANGUAGE=JAVASCRIPT>
-   SetUserCertList("edit_sp_bsb_<%= @sp_bsb.id %>.user_cert_list", CERT_TYPE_HARD);
+   SetUserCertList("edit_sp_bsb_"+'<%= @sp_bsb.id %>'+".user_cert_list", CERT_TYPE_HARD);
  setTimeout(function () {
    cur_cert_id = document.getElementById("user_cert_list").value;
    jg_count = <%= current_user.jg_bsb.jg_bsb_stamps.count %>;

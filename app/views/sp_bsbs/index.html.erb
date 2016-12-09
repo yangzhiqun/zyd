@@ -79,23 +79,33 @@
     });
 
     $("#tabs_4").click(function () {
+      <%=params[:page]=1%>
+      <%=session[:sp_page] = 1%>
       $('#flag').val('tabs_4');
       $('#sp_submit').trigger("click");
     });
 
     $("#tabs_2").click(function () {
+      <%=params[:page]=1%>
+      <%=session[:sp_page] = 1%>
       $('#flag').val('tabs_2');
       $('#sp_submit').trigger("click");
     });
     $("#tabs_1").click(function () {
+      <%=params[:page]=1%>
+      <%=session[:sp_page] = 1%>
       $('#flag').val('tabs_1');
       $('#sp_submit').trigger("click");
     });
     $("#tabs_5").click(function () {
+      <%=params[:page]=1%>
+      <%=session[:sp_page] = 1%>
       $('#flag').val('tabs_5');
       $('#sp_submit').trigger("click");
     });
     $("#tabs_6").click(function () {
+      <%=params[:page]=1%>
+      <%=session[:sp_page] = 1%>
       $('#flag').val('tabs_6');
       $('#sp_submit').trigger("click");
     });
@@ -334,7 +344,7 @@
   <% if !params[:flag].nil? and !params[:flag].eql?("tabs_3") %>
       <div class="tab-content"><br>
         共<strong style="font-size: 22px;"><%=@sp_bsbs.total_entries%></strong>条, 当前第<strong style="font-size: 22px;"><%= @sp_bsbs.current_page%></strong>页
-        <p><%= will_paginate @sp_bsbs, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页',:total_entries => 123 %></p>
+        <p><%= will_paginate @sp_bsbs, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
         <%= render 'part_index' %>
         <p><%= will_paginate @sp_bsbs, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
       </div>
