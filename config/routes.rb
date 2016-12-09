@@ -221,9 +221,12 @@ Rails.application.routes.draw do
       get "cyjygzs"
     end
 
-		collection do
-			get 'no_available_pdf_found'
-		end
+    collection do
+     get 'no_available_pdf_found'
+     get 'by_ca_info'
+     get 'print_pdf'
+     get 'super_jg'
+    end
   end
 
   resources :pad_sp_bsbs do

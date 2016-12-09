@@ -7,8 +7,12 @@
     <div class="panel-body">
       <div class="form-inline">
         <label for="">报送分类：</label>
-        <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx <> "省局"').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
-        <%= select_tag "baosong_b", options_for_select(@baosong_bs.map { |b| [b.name, b.name, {"data-identifier" => b.identifier}] }.unshift(["请选择", ""]), params[:baosong_b]), {:class => "form-control input-sm", id: "baosong_b", style: "width: 150px;"} %>
+      <% if is_city? or  ((!current_user.prov_city.blank? and !current_user.prov_city.include?("请选择")) and (current_user.prov_country.blank? or current_user.prov_country.include?("请选择"))) %>
+        <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx ="县"').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+       <% else %>
+        <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx = "市/区局"').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+   <% end %>    
+    <%= select_tag "baosong_b", options_for_select(@baosong_bs.map { |b| [b.name, b.name, {"data-identifier" => b.identifier}] }.unshift(["请选择", ""]), params[:baosong_b]), {:class => "form-control input-sm", id: "baosong_b", style: "width: 150px;"} %>
         <br>
         <br>
         <label>食品分类：</label>
@@ -19,9 +23,15 @@
         <br>
         <br>
         <select class="form-control input-sm" name="prov" id="prov">
+        <% if is_city?  or  ((!current_user.prov_city.blank? and !current_user.prov_city.include?("请选择")) and (current_user.prov_country.blank? or  current_user.prov_country.include?("请选择")))%>
+          <% SysProvince.level3(current_user.prov_city).each do |prov| %>
+              <option value="<%= prov.id %>"><%= prov.name %></option>
+          <% end %>
+        <% else %>
           <% SysProvince.level1.each do |prov| %>
               <option value="<%= prov.id %>"><%= prov.name %></option>
           <% end %>
+       <% end %>
         </select>
         <input type="number" class="form-control input-sm" placeholder="采样数" name="quota" id="quota">
         <button id="create_prov_plan" class="btn btn-primary btn-sm">创建</button>

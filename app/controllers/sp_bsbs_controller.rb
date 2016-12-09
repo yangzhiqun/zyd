@@ -1,4 +1,4 @@
-#encoding=UTF-8
+﻿#encoding=UTF-8
 require 'csv'
 require 'net/http'
 
@@ -7,126 +7,120 @@ class SpBsbsController < ApplicationController
 
   before_action :init, only: [:new, :edit, :update, :create, :show]
 
-  def print
+ def print
     @spbsb = SpBsb.find(params[:id])
-    @jg_bsb = JgBsb.find_by_jg_name(@spbsb.sp_s_43)
-    @jyxm_str = Spdatum.where('sp_bsb_id= ? and (spdata_2 = ? or spdata_2 = ?)', @spbsb.id, '合格项', '不合格项').limit(3).map { |s| s.spdata_0 }.join(",") + "等#{Spdatum.where("sp_bsb_id= ? and (spdata_2 = ? or spdata_2 = ?)", @spbsb.id, '合格项', '不合格项').count}项。"
-    #@jyjy_str = Spdatum.where(:sp_bsb_id => @spbsb.id,!spdata_4.eql?('/')).limit(2).map{|s| s.spdata_3}.join(",")
-    @jyjy_str = Spdatum.where("sp_bsb_id= ? and spdata_4 <> ?", @spbsb.id, '/').limit(2).map { |s| s.spdata_3 }.join(",")
-    @jyjy_str4 = Spdatum.where("sp_bsb_id= ? and spdata_4 <> ?", @spbsb.id, '/').limit(2).map { |s| s.spdata_4 }.join(",")
-    #@jyjy_str1 = Spdatum.where(:sp_bsb_id => @spbsb.id,:spdata_4 => '/').map{|s| s.spdata_3}.join(",")
-    @jyjy_str1 = Spdatum.where("sp_bsb_id = ? and (spdata_4 = ? OR spdata_4 = ?)", @spbsb.id, '/', '-').map { |s| s.spdata_3 }.uniq.join(",")
-    @splog = SpLog.where("sp_bsb_id = ? AND remark = ?", @spbsb.id, "检测机构批准").last
-    #抽检项
-    @cjx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE '%合格项%' OR spdata_2 LIKE '%不合格项%')", @spbsb.id)
-    @jyjy_struni = (@cjx.where("sp_bsb_id= ? and spdata_4 <> ?", @spbsb.id, '/').limit(2).map { |s| s.spdata_3 }).uniq.join(",")
-    #风险项
-    @fxx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE '%不判定项%' OR spdata_2 LIKE '%问题项%')", @spbsb.id)
-    #问题项
-    @wtx = Spdatum.where("sp_bsb_id = ? AND spdata_2 LIKE ?", @spbsb.id, "%不合格%")
-    #合格项检验依据，取合格项的spdata_4
-    #@hgx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE ?)", @spbsb.id, "%合格项%")
-    @jyyj_hgx_str4 = "经抽样检验，所检项目符合" + Spdatum.where("sp_bsb_id= ? and spdata_4 <> ? and spdata_2 like ?", @spbsb.id, '/', "%合格项%").map { |s| s.spdata_4 }.uniq.join(",")+"要求。"
-
-    #问题项字符串
-    @wtx_str = Spdatum.where("sp_bsb_id = ? AND spdata_2 LIKE ? ", @spbsb.id, "%问题%").map { |s| s.spdata_0 }.join(",")
-    #检查封样人员
-    @padsplog_jcfy = PadSpLogs.where("sp_s_16 = ? AND remark = ?", @spbsb.sp_s_16, "接受样品").last
-    @splog_jcfy = SpLog.where('sp_bsb_id = ? AND remark = ?', @spbsb.id, "基本信息提交入库").last
-    @jcfy = '/'
-
-    if !@padsplog_jcfy.nil?
-      @jcfy = User.where("id = ?", @padsplog_jcfy.user_id).last.tname
-    elsif @padsplog_jcfy.nil? and !@splog_jcfy.nil?
-      @jcfy = User.where("id = ?", @splog_jcfy.user_id).last.tname
-    end
-
     respond_to do |format|
       format.pdf {
-
-        if @spbsb.report_path.blank? or !File.exists?(@spbsb.absolute_report_path)
-          if params[:pdf_rules].blank?
-            #render text: '请选择签章规则号后使用'
-            flash[:error] = '无法生成或预览文件，请设置签章规则后使用'
-            redirect_to '/sp_bsbs/no_available_pdf_found'
-            return
-          end
-
-          tmp_file = Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}_print.pdf")
-          render template: 'sp_bsbs/1.html.erb',
-                 save_to_file: tmp_file,
-                 save_only: true,
-                 pdf: 'home',
-                 wkhtmltopdf: '/usr/local/bin/wkhtmltopdf',
-                 encoding: 'utf-8',
-                 disable_javascript: true,
-                 show_as_html: params[:debug].present?,
-                 print_media_type: true,
-                 lowquality: false
-
-          target_path = "#{Time.now.strftime('/%Y/%m/%d')}"
-          abs_target_path = File.expand_path('../reports', Rails.root).to_s + target_path
-          FileUtils.mkdir_p abs_target_path unless Dir.exists? abs_target_path
-
-          SpBsb.record_timestamps = false
-          @spbsb.report_path = "#{target_path}/#{@spbsb.id}.pdf"
-
-          cmd = "/usr/local/java-ppc64-80/jre/bin/java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 1 #{params[:pdf_rules].split(',').join('#')} #{tmp_file} #{@spbsb.absolute_report_path}"
-          logger.error cmd
-
-          result = `#{cmd}`
-          FileUtils.rm_f(tmp_file)
-          if result.strip.include?('200')
-            if @spbsb.save
-              send_file @spbsb.absolute_report_path, filename: "#{@spbsb.sp_s_16}-检验报告.pdf", disposition: "inline"
-            else
-              render text: "错误：#{@spbsb.errors.first.last}"
-            end
-          else
-            render text: "错误：#{result}"
-          end
-
-          SpBsb.record_timestamps = true
+				logger.error params[:pdf_rules]
+        filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], false, current_user.id,false)
+       logger.error "filepath_pdf"
+       logger.error filepath    
+       if filepath.nil?
+          flash[:error] = '查看报告失败'
+          redirect_to '/sp_bsbs/no_available_pdf_found' and return
         else
-          send_file @spbsb.absolute_report_path, filename: "#{@spbsb.sp_s_16}-检验报告.pdf", disposition: "inline"
+          send_file filepath, filename: "#{@spbsb.sp_s_16}-检验报告.pdf", disposition: 'inline'
         end
       }
       format.html {
-        # 这里相当于报告预览
-        tmp_file = Rails.root.join('tmp', "preview_sp_bsbs_#{@spbsb.id}_print.pdf")
-        render template: 'sp_bsbs/1.html.erb',
-               save_to_file: tmp_file,
-               save_only: true,
-               pdf: 'home',
-               wkhtmltopdf: '/usr/local/bin/wkhtmltopdf',
-               encoding: 'utf-8',
-               disable_javascript: true,
-               show_as_html: params[:debug].present?,
-               print_media_type: true,
-               lowquality: false
-
-        if params[:pdf_rules].blank?
-          send_file tmp_file, filename: "#{@spbsb.sp_s_16}-检验报告-预览A.pdf", disposition: 'inline'
+        filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], true, current_user.id,false)
+       logger.error "filepath_html"
+       logger.error filepath 
+        if filepath.nil?
+          flash[:error] = '查看报告失败'
+          redirect_to '/sp_bsbs/no_available_pdf_found' and return
         else
-          abs_target_path = Rails.root.join('tmp', 'pdf_preview', "#{Time.now.strftime('%Y/%m/%d')}")
-          filename = "preview_#{@spbsb.id}.pdf"
-
-          FileUtils.mkdir_p abs_target_path unless Dir.exists? abs_target_path
-
-          cmd = "/usr/local/java-ppc64-80/jre/bin/java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 1 #{params[:pdf_rules].split(',').join('#')} #{tmp_file} #{abs_target_path}/#{filename}"
-          logger.error cmd
-
-          result = `#{cmd}`
-          FileUtils.rm_f(tmp_file)
-          if result.strip.include?('200')
-            send_file "#{abs_target_path}/#{filename}", filename: "#{@spbsb.sp_s_16}-检验报告-预览B.pdf", disposition: 'inline'
-          else
-            render text: "错误：#{result}"
-          end
+	logger.error "filepath"
+	logger.error filepath
+          send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
         end
       }
     end
   end
+
+  def by_ca_info
+    @spbsb = SpBsb.find(params[:id])
+    logger.error " @spbsb.report_path"
+    logger.error  @spbsb.report_path
+    preview = false
+   if !params[:pr_status].blank?
+       preview =  params[:pr_status]
+    end
+    if  !@spbsb.report_path.blank? 
+       if @spbsb.ca_key_status ==0
+           pdfpath=@spbsb.generate_bsb_report_pdf(params[:pdf_rules], true, current_user.id,false)
+       else
+          pdfpath=File.expand_path('../reports', Rails.root).to_s + @spbsb.report_path
+       end
+    else
+     pdfpath=@spbsb.generate_bsb_report_pdf(params[:pdf_rules], preview, current_user.id,false)
+    end
+    
+    keyword= params[:keyword] 
+    signCert=params[:sign_cert]
+    sealImg=params[:keypic]
+    clientSignMessages=[]
+    clientSignMessage ={ruleType: 1,keyword: keyword,searchOrder: '2',fileUniqueId: '111111111111',heightMoveSize: 0,moveSize: 0,moveType: 3,searchOrder: 2}
+    clientSignMessages.push(clientSignMessage)
+    reqMessage ={appId: '9ff70fce51874b62a5f136fdda43c4b7',sealImg: sealImg, signCert: signCert,
+                    sealWidth: 0,sealHeight: 0, clientSignMessages: clientSignMessages}
+    logger.error reqMessage
+    reqMessage = Base64.strict_encode64(reqMessage.to_json)
+    #tmp_file = Rails.root.join('tmp', "jilin.pdf")
+    filename = Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}.txt")
+    cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  111.26.194.57 8081 108  #{reqMessage} #{pdfpath} #{filename}"
+      result = `#{cmd}`
+     Rails.logger.error "cmd"
+    Rails.logger.error cmd
+     Rails.logger.error "result"
+     Rails.logger.error result
+
+    if  result.strip.include?('200')
+      signSealMessagesJson =  File.read(Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}.txt"))
+      logger.error "signSealMessagesJson"
+      logger.error signSealMessagesJson
+      render json: {status: 'OK', msg: signSealMessagesJson}
+    end
+  end
+
+  def print_pdf
+    @spbsb = SpBsb.find(params[:id])
+    #espond_to do |format|
+   # pdfpath=File.expand_path('../reports', Rails.root).to_s + @spbsb.report_path
+   if  !@spbsb.report_path.blank?
+     pdfpath=File.expand_path('../reports', Rails.root).to_s + @spbsb.report_path
+    else
+     pdfpath=Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}_print.pdf")
+    end
+
+    sign_data=params[:sign_data]
+
+    logger.error sign_data
+    signSealMessagesJson =  File.read(Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}.txt"))
+     File.write(Rails.root.join('tmp', "yang.req"),sign_data)
+     writeJson= Rails.root.join('tmp', "yang.req")
+     logger.error  "writeJson"
+     logger.error  writeJson
+    #filename = Rails.root.join('tmp', "jilin.pdf")
+     reqMessage ={appId: '9ff70fce51874b62a5f136fdda43c4b7'}
+     reqMessage =  Base64.strict_encode64(reqMessage.to_json)
+     result = `java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  111.26.194.57 8081 199  #{reqMessage} #{writeJson} #{pdfpath}`
+     # result = `#{cmd}`
+      logger.error "result"
+      Rails.logger.error result
+      if  result.strip.include?('200')
+      logger.error signSealMessagesJson
+	sp_status=params[:sp_status]
+        @spbsb.update_attributes({:sp_i_state =>sp_status})
+         #if sp_status=4 and @spbsb.report_path.blank?
+           # report_path = "#{Time.now.strftime('/%Y/%m/%d')}/#{@spbsb.id}.pdf"
+             @spbsb.update_attributes({:ca_key_status => sp_status,:sp_s_48 =>current_user.tname})
+         SpLog.create(:sp_bsb_id => @spbsb.id, :sp_i_state => sp_status, :remark => "", :user_id => current_user.id,:ca_key_status => 1)
+	 render json: {status: 'OK', msg: '成功'}
+      end
+  end
+
+
 
   # 食品标准
   def checkout_standard
@@ -155,7 +149,7 @@ class SpBsbsController < ApplicationController
 
   #2014-01-12
   def data_owner(params_data)
-    if current_user.is_admin?||session[:change_js]==9||session[:change_js]==10
+    if current_user.is_admin?||session[:change_js]==9||session[:change_js]==10||is_shengshi?||current_user.jg_type==1
       return 1
     end
     if params_data.user_id == current_user.id
@@ -265,7 +259,22 @@ class SpBsbsController < ApplicationController
     if current_user.user_s_province == "宁夏"
       @province_plus = ""
     end
-    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
+  if current_user.is_admin?
+      @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
+ else
+    if current_user.jg_bsb.jg_type==1
+     super_jg= JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
+        jg_names=[]
+        jg_names.push(current_user.jg_bsb_id)
+        super_jg.each do |j|
+           jg_names.push(j.jg_bsb_id)
+        end
+    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1  and id in (?)',jg_names).order('jg_province')
+    elsif current_user.jg_bsb.jg_type==3
+    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1 and id in (?) ',current_user.jg_bsb_id).order('jg_province')
+    end
+  end
+    #@jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
     # logger.error  @jg_bsbs.to_json
     flash[:import_result] =nil
     @sp_bsb = SpBsb.new
@@ -277,15 +286,13 @@ class SpBsbsController < ApplicationController
     @sp_bsb.sp_s_37 = current_user.tname
     @sp_bsb.sp_s_39 = current_user.tel
     @sp_bsb.sp_s_52 = current_user.user_s_province
-		@sp_bsb.sp_s_city = current_user.prov_city
     @sp_bsb.sp_s_71 = '未检验'
-		@sp_bsb.sp_s_202 = current_user.user_s_province
+    @sp_bsb.sp_s_202 = current_user.user_s_province
     if current_user.jg_bsb
       @sp_bsb.sp_s_40 = current_user.jg_bsb.jg_contacts
       @sp_bsb.sp_s_41 = current_user.jg_bsb.jg_tel
       @sp_bsb.sp_s_42 = current_user.jg_bsb.jg_email
       @sp_bsb.sp_s_52 = current_user.jg_bsb.jg_province
-      @sp_bsb.sp_s_city = current_user.jg_bsb.city
       @sp_bsb.sp_s_211 = current_user.jg_bsb.jg_address
       @sp_bsb.sp_s_212 = current_user.jg_bsb.zipcode
       @sp_bsb.sp_s_213 = current_user.jg_bsb.fax
@@ -319,8 +326,21 @@ class SpBsbsController < ApplicationController
 
   # GET /sp_bsbs/1/edit
   def edit
-    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email').where('status = 0  and jg_detection = 1',current_user.user_s_province).order('jg_province')
-
+    if current_user.is_admin?
+      @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
+ else
+    if current_user.jg_bsb.jg_type==1
+     super_jg= JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
+        jg_names=[]
+        jg_names.push(current_user.jg_bsb_id)
+        super_jg.each do |j|
+           jg_names.push(j.jg_bsb_id)
+        end
+    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1  and id in (?)',jg_names).order('jg_province')
+    elsif current_user.jg_bsb.jg_type==3
+    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1 and id in (?) ',current_user.jg_bsb_id).order('jg_province')
+    end
+  end
     unless current_user.jg_bsb.nil?
       # 筛选 送检机构 下拉选项内容
 =begin
@@ -469,7 +489,7 @@ class SpBsbsController < ApplicationController
         #   @sp_bsb.sp_s_56='三司'
         # end
         @sp_bsb.submit_d_flag = @sp_bsb.updated_at
-
+	
         if @sp_bsb.changes.has_key?('sp_i_state') and @sp_bsb.changes['sp_i_state'][1] == 2  and (@sp_bsb.cyd_file.blank? or @sp_bsb.cyjygzs_file.blank?)
           format.json { render :json => {:status => "保存出错!", :msg => "请填写完整【抽样单电子版】和【抽样检验告知书电子版"} }
           format.html {
@@ -578,7 +598,7 @@ class SpBsbsController < ApplicationController
             @loglaststatesign = false
           end
         end
-        if @role_name.eql? '检测机构批准' or params[:sp_bsb][:sp_i_state].to_s == '6' or @loglaststatesign
+        if @role_name.eql? '检测机构批准' or params[:sp_bsb][:sp_i_state].to_s == '6' or @loglaststatesign or params[:sp_bsb][:sp_i_state].to_s =='5' 
           @sp_bsb.sp_s_48 = current_user.tname
         end
 
@@ -630,7 +650,7 @@ class SpBsbsController < ApplicationController
               SpBsbCert.create(source: @sp_bsb.ca_source, user_cert: session[:userCert], sign: @sp_bsb.ca_sign, user_id: current_user.id, sp_i_state: @sp_bsb.sp_i_state, sp_bsb_id: @sp_bsb.id)
             end
 
-            if @role_name.blank?
+            if @role_name.blank? and !@loglaststate.nil?
               if params[:sp_bsb][:sp_i_state].to_s == '6' or (params[:sp_bsb][:sp_i_state].to_s == '9' and @loglaststate.sp_i_state.to_s == '5')
                 @role_name = '检测机构批准'
               end
@@ -708,12 +728,8 @@ class SpBsbsController < ApplicationController
       end
     end
 
-    @sp_bsbs = SpBsb.select("sp_bsbs.id, sp_bsbs.updated_at, sp_bsbs.sp_s_3, sp_bsbs.sp_s_4, sp_bsbs.sp_s_14, sp_bsbs.sp_s_16, sp_bsbs.sp_s_43, sp_bsbs.sp_s_214, sp_bsbs.sp_s_35, sp_bsbs.sp_s_71, sp_bsbs.sp_s_202, sp_bsbs.sp_i_state, sp_bsbs.fail_report_path, sp_bsbs.czb_reverted_flag")
-
-		if is_city?
-			 @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_4 =?", current_user.prov_city)
-		end
-
+    @sp_bsbs = SpBsb.select("sp_bsbs.ca_key_status,sp_bsbs.report_path,sp_bsbs.id, sp_bsbs.updated_at, sp_bsbs.sp_s_3, sp_bsbs.sp_s_4, sp_bsbs.sp_s_14, sp_bsbs.sp_s_16, sp_bsbs.sp_s_43, sp_bsbs.sp_s_214, sp_bsbs.sp_s_35, sp_bsbs.sp_s_71, sp_bsbs.sp_s_202, sp_bsbs.sp_i_state, sp_bsbs.fail_report_path, sp_bsbs.czb_reverted_flag")
+    
     if params[:r1]
       session[:change_js]=params[:r1].to_i
     end
@@ -724,7 +740,6 @@ class SpBsbsController < ApplicationController
     else
       @tabs=params[:flag]
     end
-
     unless params[:page].blank?
       session[:sp_page] = params[:page]
     else
@@ -784,13 +799,19 @@ class SpBsbsController < ApplicationController
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_14 LIKE ?", "%#{params[:s4]}%")
     end
 
-    unless params[:s5].blank?
+    if  !params[:s5].blank? and params[:s5] != "请选择"
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_2 LIKE ?", "%#{params[:s5]}%")
     end
 
-    unless params[:s6].blank?
-      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_20 LIKE ?", "%#{params[:s6]}%")
+     if  !params[:s6].blank? and params[:s6] != "请选择"
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_18 LIKE ?", "%#{params[:s6]}%")
     end
+   if !params[:sp_bsa].blank? and params[:sp_bsa] !="请选择"
+     @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 LIKE ?", "%#{params[:sp_bsa]}%")
+  end
+  if !params[:sp_bsb].blank? and params[:sp_bsb] !="请选择"
+     @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_67 LIKE ?", "%#{params[:sp_bsb]}%")
+  end
 
     unless params[:s7].blank?
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_16 LIKE ?", "%#{params[:s7]}%")
@@ -822,7 +843,7 @@ class SpBsbsController < ApplicationController
     if current_user.is_admin? || session[:change_js]==10
       case params[:s8].to_i
         when 1
-          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state between 0 and 10")
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state between 0 and 16")
         when 2
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 10")
         when 3
@@ -830,7 +851,7 @@ class SpBsbsController < ApplicationController
         when 4
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state IN (2, 3)")
         when 5
-          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state IN (4, 5)")
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state IN (4)")
         when 6
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state IN (6, 7)")
         when 7
@@ -838,11 +859,13 @@ class SpBsbsController < ApplicationController
         when 8
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9")
         when 9, 10, 11, 12, 13
-          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state between 0 and 10")
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state between 0 and 16")
         when 15
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 5")
+        when 16
+        @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 16")
         else
-          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state between 0 and 10")
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state between 0 and 16")
       end
     elsif (session[:change_js]==2||session[:change_js]==3||session[:change_js]==4) && ['tabs_1', 'tabs_5'].include?(params[:flag])
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 6")
@@ -863,7 +886,7 @@ class SpBsbsController < ApplicationController
     elsif session[:change_js]==6&&params[:flag]=="tabs_4"
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9")
     elsif session[:change_js]==7 && ['tabs_1', 'tabs_5'].include?(params[:flag])
-      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 4")
+	 @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 4")
     elsif session[:change_js]==7&&params[:flag]=="tabs_2"
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state between 5 and 8")
     elsif session[:change_js]==7&&params[:flag]=="tabs_4"
@@ -871,13 +894,19 @@ class SpBsbsController < ApplicationController
     elsif session[:change_js]==11 && ['tabs_1', 'tabs_5'].include?(params[:flag])
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 5")
     elsif session[:change_js]==11&&params[:flag]=="tabs_2"
-      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state between 6 and 8")
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state =16")
     elsif session[:change_js]==11&&params[:flag]=="tabs_4"
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9")
     elsif session[:change_js]==8 && ['tabs_1', 'tabs_5'].include?(params[:flag])
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 8")
     elsif session[:change_js]==8&&params[:flag]=="tabs_4"
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9")
+    elsif session[:change_js]==16&&['tabs_1', 'tabs_5'].include?(params[:flag])
+	 @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 16")
+     elsif session[:change_js]==16&&params[:flag]=="tabs_4"
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9")
+     elsif session[:change_js]==16&&params[:flag]=="tabs_2"
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state =9")
     end
     if params[:flag]=="tabs_5"
       @sp_bsbs =@sp_bsbs.where("sp_bsbs.sp_s_reason IS NOT NULL")
@@ -951,11 +980,67 @@ class SpBsbsController < ApplicationController
         if session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3 = ? or sp_bsbs.sp_s_202 = ?", current_user.user_s_province, current_user.user_s_province).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==7 #数据审核
-          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
-        elsif session[:change_js]==6 #数据填报
-          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
-        elsif session[:change_js]==1||session[:change_js]==5 #填报
-          @sp_bsbs = @sp_bsbs.where('sp_bsbs.user_id = ?', current_user.id).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+          #@sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+     logger.error "77 " 
+     #if current_user.jg_bsb.jg_type ==1
+     # logger.error "7 "
+      #begin
+      # super_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
+      #  jg_names=[]
+      #  jg_names.push(current_user.jg_bsb.jg_name)
+      #  super_jg.each do |j|
+      #     jg_names.push(j.jg_bsb.jg_name)
+      #  end
+      #  logger.error "jg_names "
+      # #@sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",jg_names).paginate(page: params[:page], per_page: 10)
+      #rescue
+      #  
+      #end
+      #elsif current_user.jg_bsb.jg_type ==3
+      @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
+      #end 
+       elsif session[:change_js]==6 #数据填报
+         # @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+      logger.error "666 "
+      #if current_user.jg_bsb.jg_type ==1
+			#logger.error "6 "
+      #begin
+      # super_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
+      #  jg_names=[]
+      #  jg_names.push(current_user.jg_bsb.jg_name)
+      #  super_jg.each do |j|
+      #     jg_names.push(j.jg_bsb.jg_name)
+      #  end
+      #  logger.error "jg_names "
+      # @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",jg_names).paginate(page: params[:page], per_page: 10)
+      #rescue
+      #  
+      #end
+      #elsif current_user.jg_bsb.jg_type ==3
+      @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
+      #end  
+      elsif session[:change_js]==1||session[:change_js]==5 #填报
+         # @sp_bsbs = @sp_bsbs.where('sp_bsbs.user_id = ?', current_user.id).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+      #if current_user.jg_bsb.jg_type ==1
+		  #  begin
+      # super_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
+      #  jg_names=[]
+      #  jg_names.push(current_user.jg_bsb.jg_name)
+      #  super_jg.each do |j|
+      #     jg_names.push(j.jg_bsb.jg_name)
+      #  end
+      #  logger.error "jg_names "
+      # @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",jg_names).paginate(page: params[:page], per_page: 10)
+      #rescue
+      #  
+      #end
+      #elsif current_user.jg_bsb.jg_type ==3
+      @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
+      #end	
+ 
+      elsif session[:change_js]==16 #数据填报
+         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+
         elsif session[:change_js]==8 #牵头
           if session[:user_dl]=='乳制品'&& current_user.jg_bsb_id == JgBsb.find_by_history_name('上海市质量监督检验技术研究院').id
             @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_17 = ? or (sp_bsbs.sp_s_18='婴幼儿配方食品' and sp_bsbs.sp_s_70 LIKE '%一司%')", session[:user_dl]).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
@@ -974,11 +1059,77 @@ class SpBsbsController < ApplicationController
       if session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3=? or (sp_bsbs.sp_s_202=? and (sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'))", current_user.user_s_province, current_user.user_s_province).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==7 #数据审核
-        @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
+     #  if current_user.jg_bsb.jg_type ==1
+     #   begin
+     #  super_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
+     #   jg_names=[]
+     #   jg_names.push(current_user.jg_bsb.jg_name)
+     #   super_jg.each do |j|
+     #      jg_names.push(j.jg_bsb.jg_name)
+     #   end
+     #   logger.error "jg_names "
+     #  @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",jg_names).paginate(page: params[:page], per_page: 10)
+     # rescue
+     #   
+     # end
+     # elsif current_user.jg_bsb.jg_type ==3
+      @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
+     # end 
+       # @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==11 #数据批准
-        @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
+     #  if current_user.jg_bsb.jg_type ==1
+     #   begin
+     #  super_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
+     #   jg_names=[]
+     #   jg_names.push(current_user.jg_bsb.jg_name)
+     #   super_jg.each do |j|
+     #      jg_names.push(j.jg_bsb.jg_name)
+     #   end
+     #   logger.error "jg_names "
+     #  @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",jg_names).paginate(page: params[:page], per_page: 10)
+     # rescue
+     #   
+     # end
+     # elsif current_user.jg_bsb.jg_type ==3
+      @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
+     # end 
+       # @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==6 #数据填报
-        @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
+		#		if current_user.jg_bsb.jg_type ==1
+    #    begin
+    #   super_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
+    #    jg_names=[]
+    #    jg_names.push(current_user.jg_bsb.jg_name)
+    #    super_jg.each do |j|
+    #       jg_names.push(j.jg_bsb.jg_name)
+    #    end
+    #    logger.error "jg_names "
+    #   @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",jg_names).paginate(page: params[:page], per_page: 10)
+    #  rescue
+    #    
+    #  end
+    #  elsif current_user.jg_bsb.jg_type ==3
+      @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
+    #  end 	
+        #@sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
+       elsif session[:change_js]==16 #数据填报
+        if current_user.jg_bsb.jg_type ==1
+        begin
+       super_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
+        jg_names=[]
+        jg_names.push(current_user.jg_bsb.jg_name)
+        super_jg.each do |j|
+           jg_names.push(j.jg_bsb.jg_name)
+        end
+        logger.error "jg_names "
+       @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",jg_names).paginate(page: params[:page], per_page: 10)
+      rescue
+        
+      end
+      elsif current_user.jg_bsb.jg_type ==3
+      @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
+      end 
+       # @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==1||session[:change_js]==5 #填报
         @sp_bsbs = @sp_bsbs.where('sp_bsbs.user_id = ?', current_user.id).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==8 #牵头
@@ -993,14 +1144,19 @@ class SpBsbsController < ApplicationController
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 and sp_bsbs.sp_s_70 NOT LIKE '%一司%'").paginate(page: params[:page], per_page: 10)
       end
     end
+    
+    if  current_user.is_city? and (!current_user.is_super? or !current_user.is_admin?)
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_4 = ? or sp_bsbs.sp_s_220 =?",current_user.prov_city,current_user.prov_city).paginate(page: params[:page], per_page: 10)
+    elsif current_user.is_county_level? and (!current_user.is_super? or !current_user.is_admin?)
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_5 = ? or sp_bsbs.sp_s_221 =?",current_user.prov_country,current_user.prov_country).paginate(page: params[:page], per_page: 10)
+    elsif (current_user.prov_city.blank? or current_user.prov_city.include?('请选择')) and (current_user.prov_country.blank? or current_user.prov_country.include?('请选择'))
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3	=?",current_user.user_s_province).paginate(page: params[:page], per_page: 10)
+   end
 
-		if is_shengshi?
-			@sp_bsbs = @sp_bsbs.paginate(page: params[:page], per_page: 10)
-		end
-
-    respond_to do |format|
+     respond_to do |format|
       format.html {
         if @sp_bsbs.respond_to?(:total_pages)
+	logger.error "-"
           render action: "index"
         else
           render text: '账号存在异常，请联系系统维护方。'
@@ -1406,10 +1562,38 @@ class SpBsbsController < ApplicationController
     end
   end
 
+  def  super_jg
+    #begin
+      super_jg_bsb_id = params[:super_jg_bsb_id]
+      @jg_bsbsuper=JgBsbSuper.where(super_jg_bsb_id: super_jg_bsb_id ).group("jg_bsb_id")
+      jg_ids=[]
+      logger.error "===================="
+     logger.error  @jg_bsbsuper
+    if !@jg_bsbsuper.blank?
+      jg_ids.push(super_jg_bsb_id)
+      @jg_bsbsuper.each do |j|
+         jg_ids.push(j.jg_bsb_id)
+      end
+        logger.error "----------------"
+       logger.error jg_ids
+       @jg=JgBsb.where("jg_bsbs.jg_detection=? and jg_bsbs.id in(?)",1,jg_ids)
+      logger.error "---------1111-------"
+      else
+      logger.error "-------2---------"
+       @jg= JgBsb.where("jg_bsbs.jg_detection=? and jg_bsbs.id in(?)",1,super_jg_bsb_id)
+       logger.error "=========----===="
+    end
+        render json: {status: 'OK', msg: @jg }
+   # rescue
+     #@jg= JgBsb.where("jg_bsbs.jg_detection=? and jg_bsbs.id in(?)",1,18) 
+    # render json: {status: 'OK', msg: @jg }
+   # end
+    end
+ 
   private
   def sp_bsb_params
     params.require(:sp_bsb).permit(
-        :report_path, :sp_s_1, :sp_s_2, :sp_s_3, :sp_s_4, :sp_s_5, :sp_s_6, :sp_s_7, :sp_s_8, :sp_s_9, :sp_s_10, :sp_s_11, :sp_s_12, :sp_s_13, :sp_s_14, :sp_n_15, :sp_s_16, :sp_s_17, :sp_s_18, :sp_s_19, :sp_s_20, :sp_s_21, :sp_d_22, :sp_s_23, :sp_s_24, :sp_s_25, :sp_s_26, :sp_s_27, :sp_d_28, :sp_n_29, :sp_s_30, :sp_n_31, :sp_n_32, :sp_s_33, :sp_s_34, :sp_s_35, :sp_s_36, :sp_s_37, :sp_d_38, :sp_s_39, :sp_s_40, :sp_s_41, :sp_s_42, :sp_s_43, :sp_s_44, :sp_s_45, :sp_d_46, :sp_d_47, :sp_s_48, :sp_s_49, :sp_s_50, :sp_s_51, :sp_s_52, :sp_s_53, :sp_s_54, :sp_s_55, :sp_s_56, :sp_s_57, :sp_s_58, :sp_s_59, :sp_s_60, :sp_s_61, :sp_s_62, :sp_s_63, :sp_s_64, :sp_s_65, :sp_s_66, :sp_s_67, :sp_s_68, :sp_s_69, :sp_s_70, :sp_s_71, :sp_s_72, :sp_s_73, :sp_s_74, :sp_s_75, :sp_s_76, :sp_s_77, :sp_s_78, :sp_s_79, :sp_s_80, :sp_s_81, :sp_s_82, :sp_s_83, :sp_s_84, :sp_s_85, :sp_d_86, :sp_s_87, :sp_s_88, :user_id, :uid,
+        :ca_key_status,:report_path, :sp_s_1, :sp_s_2, :sp_s_3, :sp_s_4, :sp_s_5, :sp_s_6, :sp_s_7, :sp_s_8, :sp_s_9, :sp_s_10, :sp_s_11, :sp_s_12, :sp_s_13, :sp_s_14, :sp_n_15, :sp_s_16, :sp_s_17, :sp_s_18, :sp_s_19, :sp_s_20, :sp_s_21, :sp_d_22, :sp_s_23, :sp_s_24, :sp_s_25, :sp_s_26, :sp_s_27, :sp_d_28, :sp_n_29, :sp_s_30, :sp_n_31, :sp_n_32, :sp_s_33, :sp_s_34, :sp_s_35, :sp_s_36, :sp_s_37, :sp_d_38, :sp_s_39, :sp_s_40, :sp_s_41, :sp_s_42, :sp_s_43, :sp_s_44, :sp_s_45, :sp_d_46, :sp_d_47, :sp_s_48, :sp_s_49, :sp_s_50, :sp_s_51, :sp_s_52, :sp_s_53, :sp_s_54, :sp_s_55, :sp_s_56, :sp_s_57, :sp_s_58, :sp_s_59, :sp_s_60, :sp_s_61, :sp_s_62, :sp_s_63, :sp_s_64, :sp_s_65, :sp_s_66, :sp_s_67, :sp_s_68, :sp_s_69, :sp_s_70, :sp_s_71, :sp_s_72, :sp_s_73, :sp_s_74, :sp_s_75, :sp_s_76, :sp_s_77, :sp_s_78, :sp_s_79, :sp_s_80, :sp_s_81, :sp_s_82, :sp_s_83, :sp_s_84, :sp_s_85, :sp_d_86, :sp_s_87, :sp_s_88, :user_id, :uid,
         :sp_n_jcxcount,
         :cyd_file, :cyjygzs_file,
         :yydj_enabled_by_admin_at,
@@ -1758,7 +1942,7 @@ class SpBsbsController < ApplicationController
         :updated_at,
         :czb_reverted_flag,
         :czb_reverted_reason,
-        :synced, :ca_source, :ca_sign, :sp_s_city,
+				:synced, :ca_source, :ca_sign,
 				:inspection_basis, :decision_basis
     )
   end

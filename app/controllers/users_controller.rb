@@ -40,7 +40,7 @@ class UsersController < ApplicationController
   def index
     if current_user.is_super? or current_user.is_account_manager
       if params[:user_user_search_form].present?
-        @search_form = User::UserSearchForm.new(params.require(:user_user_search_form).permit(:qtjg, :uid, :hcl_gly, :hcl_czap, :hcl_czbl, :hcl_czsh, :pad_rwbs, :pad_jsyp, :pad_rwxd, :pad_zxcy, :tname, :prov, :jg_id, :tbjbxx, :jbjcsj, :sbsh, :sbpz, :yy_gly, :yy_yysl, :yy_zhxt, :yy_yybl, :yy_yysh))
+        @search_form = User::UserSearchForm.new(params.require(:user_user_search_form).permit(:qtjg, :uid, :hcl_gly, :hcl_czap, :hcl_czbl, :hcl_czsh, :pad_rwbs, :pad_jsyp, :pad_rwxd, :pad_zxcy, :tname, :prov, :jg_id, :tbjbxx, :jbjcsj, :sbsh, :sbpz, :yy_gly, :yy_yysl, :yy_zhxt, :yy_yybl, :yy_yysh,:jbxxsh))
       else
         @search_form = User::UserSearchForm.new
       end
@@ -48,13 +48,9 @@ class UsersController < ApplicationController
       @users = User.order('tname DESC')
 
       if current_user.is_account_manager
-        if current_user.user_i_js == 1
-					if current_user.prov_city == "-请选择-"
-          	@users = @users.where(user_s_province: current_user.user_s_province)
-					else
-						@users = @users.where(user_s_province: current_user.user_s_province,prov_city:current_user.prov_city)
-					end
-        else
+      	if current_user.user_i_js == 1 
+			   	@users = @users.where(user_s_province: current_user.user_s_province)
+			 else
           @users = @users.where(jg_bsb_id: current_user.jg_bsb_id)
         end
       end
@@ -70,9 +66,9 @@ class UsersController < ApplicationController
       if @search_form.prov.present? and !@search_form.prov.eql?('/')
          @users = @users.where('prov_city = ?', "#{@search_form.prov}")
       end
-
+			
       if @search_form.jg_id.present? and !@search_form.jg_id.eql?('/')
-        @users = @users.where('jg_bsb_id = ?', "#{@search_form.jg_id}")
+         @users = @users.where('jg_bsb_id = ?', "#{@search_form.jg_id}")
       end
 
 
@@ -80,7 +76,7 @@ class UsersController < ApplicationController
       @users = @users.where('user_d_authority_1 = 1') if @search_form.jbjcsj.to_i == 1
       @users = @users.where('user_d_authority_2 = 1') if @search_form.sbsh.to_i == 1
       @users = @users.where('user_d_authority_5 = 1') if @search_form.sbpz.to_i == 1
-
+      @users = @users.where('jbxx_sh = 1') if @search_form.jbxxsh.to_i == 1
       if @search_form.qtjg.to_i == 1
         @users = @users.where('user_i_switch = 1')
       else
@@ -102,7 +98,11 @@ class UsersController < ApplicationController
       @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::ZXCY) if @search_form.pad_zxcy.to_i == 1
       @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::RWXD) if @search_form.pad_rwxd.to_i == 1
       @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::JSYP) if @search_form.pad_jsyp.to_i == 1
-
+     if current_user.is_city? and (!current_user.is_super? or !current_user.is_admin?)
+      @users = @users.where(" prov_city = ?",current_user.prov_city)
+     elsif current_user.is_county_level? and (!current_user.is_super? or !current_user.is_admin?)
+      @users = @users.where(" prov_country = ?",current_user.prov_country)
+     end
       @users = @users.paginate(page: params[:page], per_page: 20)
     else
       @users = User.where(id: current_user.id)
@@ -364,6 +364,7 @@ class UsersController < ApplicationController
       user.user_i_sp = row[@title.index('食品')].to_i
       user.user_d_authority = row[@title.index('填报基本信息')].to_i
       user.user_d_authority_1 = row[@title.index('填报检测数据')].to_i
+      user.jbxx_sh = row[@title.index('报告发送人')].to_i
       user.user_d_authority_2 = row[@title.index('机构审核')].to_i
       user.user_d_authority_5 = row[@title.index('机构批准')].to_i
       user.user_d_authority_4 = row[@title.index('统计分析')].to_i
@@ -442,8 +443,12 @@ class UsersController < ApplicationController
 
   def pending
     return not_found unless current_user.is_account_manager
-		if is_city?
+    if is_sheng?
+      @pending_users = User.where('state = ?', User::State::ReviewSJ)
+		elsif is_city?
       @pending_users = User.where('state = ? and user_s_province = ? and prov_city = ? ', User::State::ReviewSJ, current_user.user_s_province, current_user.prov_city)
+   elsif 
+      @pending_users = User.where('state = ? and user_s_province = ? and prov_city = ? and prov_country = ?', User::State::ReviewSJ, current_user.user_s_province, current_user.prov_city,current_user.prov_country)
     elsif current_user.user_i_js == 1
      # @pending_users = User.where('state = ? and user_s_province = ? and prov_city = ?', User::State::ReviewSJ, current_user.user_s_province, current_user.prov_city)
       @pending_users = User.where('state = ? and user_s_province = ? ', User::State::ReviewSJ, current_user.user_s_province)
@@ -454,7 +459,7 @@ class UsersController < ApplicationController
 
   private
   def user_params
-    params.require(:user).permit(:ca_uuid, :hccz_level, :hccz_type, :is_account_manager, :mobile, :jg_bsb_id, :id_card, :user_sign, :pub_xxfb, :pub_xxfb_sh, :prov_city, :prov_country, :yyadmin, :jsyp, :hcz_admin, :car_sys_id, :zxcy, :rwbs, :rwxd, :enable_api, :hcz_sc, :hcz_lt, :hcz_czap, :hcz_czbl, :hcz_czsh, :yysl, :zhxt, :yybl, :yysh, :yycz_permission, :name, :password, :password_confirmation, :tname, :user_id, :uid, :tel, :eaddress, :company, :user_s_province, :user_d_authority, :user_d_authority_1, :user_jcjg, :user_jcjg_lxr, :user_jcjg_tel, :user_jcjg_mail, :user_cyjg, :user_cyjg_lxr, :user_cyjg_tel, :user_cyjg_mail, :user_d_authority_2, :user_d_authority_3, :user_d_authority_4, :user_d_authority_5, :user_i_js, :user_i_switch, :user_i_sp, :user_i_hzp, :user_i_bjp, :user_s_dl, :user_i_spys, :user_i_spss, :function_type, :prov_city, :prov_country, :admin_level)
+    params.require(:user).permit(:jbxx_sh,:jg_type,:ca_uuid, :hccz_level, :hccz_type, :is_account_manager, :mobile, :jg_bsb_id, :id_card, :user_sign, :pub_xxfb, :pub_xxfb_sh, :prov_city, :prov_country, :yyadmin, :jsyp, :hcz_admin, :car_sys_id, :zxcy, :rwbs, :rwxd, :enable_api, :hcz_sc, :hcz_lt, :hcz_czap, :hcz_czbl, :hcz_czsh, :yysl, :zhxt, :yybl, :yysh, :yycz_permission, :name, :password, :password_confirmation, :tname, :user_id, :uid, :tel, :eaddress, :company, :user_s_province, :user_d_authority, :user_d_authority_1, :user_jcjg, :user_jcjg_lxr, :user_jcjg_tel, :user_jcjg_mail, :user_cyjg, :user_cyjg_lxr, :user_cyjg_tel, :user_cyjg_mail, :user_d_authority_2, :user_d_authority_3, :user_d_authority_4, :user_d_authority_5, :user_i_js, :user_i_switch, :user_i_sp, :user_i_hzp, :user_i_bjp, :user_s_dl, :user_i_spys, :user_i_spss, :function_type, :prov_city, :prov_country, :admin_level)
   end
   def find_province
         @province = SysProvince.where("level like '_' or level like '__'").where(name: SysConfig.get(SysConfig::Key::PROV)).last

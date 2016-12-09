@@ -566,7 +566,7 @@
                       </li>
                   <% end %>
                   <% if current_user.yyadmin == 1 %>
-										<% if !is_city? %>
+										<% if !is_city? and !is_county_level? and (current_user.user_i_sp == 1 and current_user.yyadmin == 1 and current_user.prov_city == "-请选择-" and current_user.prov_country == "-请选择-") %>
                       <li class="<%= "active" if action?("renew") %>">
                         <cite></cite><a href="/yycz/renew">异议延期登记</a><i></i>
                       </li>
@@ -651,7 +651,7 @@
             </ul>
           </dd>
       <% end %>
-      <% if !current_user.is_admin? and current_user.is_jg_manager?  %>
+      <% if (!current_user.is_admin? and current_user.is_jg_manager?) or(is_shengshi?)  %>
           <dd>
             <div class="title">
               <span><img src="<%= asset_path('leftico06.png') %>"/></span>机构信息维护
@@ -663,8 +663,8 @@
             </ul>
           </dd>
       <% end%>
-      <% if current_user.is_admin? or is_shengshi? %>
-          <% if current_user.is_super? or is_shengshi? %>
+			<% if current_user.is_admin?  %>
+          <% if current_user.is_super? %>
               <dd>
                 <div class="title">
                   <span><img src="<%= asset_path('leftico06.png') %>"/></span>机构信息维护
@@ -677,6 +677,7 @@
                     <cite></cite><a href="/jg_bsbs/merge_request">机构合并</a><i></i></li>-->
                 </ul>
               </dd>
+        <% if !is_shengshi? %>
               <dd>
                 <div class="title not-expand">
                   <span><img src="<%= asset_path('leftico07.png') %>"/></span><a href="/sp_production_infos">生产企业库维护</a>
@@ -701,14 +702,15 @@
                </li>
             </ul>
           </dd>
-      <% end %>
-      <dd>
+       <% end %>
+			<% end %>
+         <dd>
         <div class="title not-expand">
           <span><img src="<%= asset_path('leftico12.png') %>"/></span><a href="/users">登录用户管理</a>
         </div>
       </dd>
       <% if current_user.is_super? or ((current_user.user_i_js == 1) and (current_user.is_account_manager)) %>
-				<% if !is_city? %>
+				<% if !is_city? and  !is_county_level? %>
       		<dd>
       		  <div class="title not-expand">
       		    <span><img src="<%= asset_path('leftico10.png') %>"/></span><a href="/sys_provinces">区域维护</a>
@@ -724,7 +726,7 @@
           </dd>
       <% end %>
       <% if current_user.user_i_js == 1 %>
-				<% if !is_city? %>
+				<% if !is_city?  and !is_county_level?  %>
         	<dd>
         	  <div class="title not-expand">
         	    <span><img src="<%= asset_path('leftico12.png') %>"/></span><a href="/sample_members">人员信息查看</a>

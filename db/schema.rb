@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161201061930) do
+ActiveRecord::Schema.define(version: 20161207053855) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -161,13 +161,6 @@ ActiveRecord::Schema.define(version: 20161201061930) do
 
   add_index "d_categories", ["deleted_at"], name: "index_d_categories_on_deleted_at", using: :btree
 
-  create_table "ejz_heartbeats", force: :cascade do |t|
-    t.integer  "application_id", limit: 4
-    t.text     "info",           limit: 65535
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "flexcontents", force: :cascade do |t|
     t.string   "flex_field",   limit: 255
     t.string   "flex_name",    limit: 255
@@ -242,6 +235,7 @@ ActiveRecord::Schema.define(version: 20161201061930) do
     t.string   "fax",               limit: 255
     t.integer  "jg_type",           limit: 4
     t.string   "jg_code",           limit: 255
+    t.string   "ca_org",            limit: 255
   end
 
   create_table "login_logs", force: :cascade do |t|
@@ -295,7 +289,6 @@ ActiveRecord::Schema.define(version: 20161201061930) do
     t.string   "prov",         limit: 255
     t.string   "jg",           limit: 255
     t.boolean  "auto_submit",                default: false
-    t.boolean  "is_ejz",                     default: false
   end
 
   add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true, using: :btree
@@ -881,6 +874,7 @@ ActiveRecord::Schema.define(version: 20161201061930) do
     t.integer  "sp_s_37_user_id",          limit: 4
     t.datetime "deleted_at"
     t.string   "xsbg_file_path",           limit: 256
+    t.integer  "ca_key_status",            limit: 4,                    default: 0
     t.text     "sp_s_city",                limit: 65535
     t.text     "inspection_basis",         limit: 65535
     t.text     "decision_basis",           limit: 65535
@@ -964,13 +958,17 @@ ActiveRecord::Schema.define(version: 20161201061930) do
   end
 
   create_table "sp_logs", force: :cascade do |t|
-    t.integer  "sp_bsb_id",  limit: 4
-    t.integer  "sp_i_state", limit: 4
-    t.string   "remark",     limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-    t.integer  "user_id",    limit: 4
+    t.integer  "sp_bsb_id",     limit: 4
+    t.integer  "sp_i_state",    limit: 4
+    t.string   "remark",        limit: 255
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+    t.integer  "user_id",       limit: 4
+    t.integer  "ca_key_status", limit: 4,   default: 0
+    t.datetime "deleted_at"
   end
+
+  add_index "sp_logs", ["deleted_at"], name: "index_sp_logs_on_deleted_at", using: :btree
 
   create_table "sp_production_infos", force: :cascade do |t|
     t.string   "scbh",       limit: 255
@@ -1170,9 +1168,8 @@ ActiveRecord::Schema.define(version: 20161201061930) do
     t.integer  "blr_user_id",     limit: 4
     t.integer  "tbr_user_id",     limit: 4
     t.integer  "shr_user_id",     limit: 4
-    t.integer  "application_id",  limit: 4
-    t.integer  "note",            limit: 4
-    t.boolean  "via_api",                       default: false
+    t.string   "bcydws",          limit: 255
+    t.string   "bsscqys",         limit: 255
   end
 
   create_table "spdata", force: :cascade do |t|
@@ -1445,6 +1442,8 @@ ActiveRecord::Schema.define(version: 20161201061930) do
     t.string   "d_category_name", limit: 255
     t.integer  "test_jg_bsb_id",  limit: 4
     t.boolean  "is_national",                 default: false
+    t.integer  "city_id",         limit: 4,   default: 0
+    t.integer  "country_id",      limit: 4,   default: 0
   end
 
   create_table "task_provinces", force: :cascade do |t|
@@ -1453,8 +1452,8 @@ ActiveRecord::Schema.define(version: 20161201061930) do
     t.integer  "quota",           limit: 4
     t.string   "year",            limit: 255
     t.string   "note",            limit: 255
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
     t.integer  "b_category_id",   limit: 4
     t.integer  "c_category_id",   limit: 4
     t.integer  "d_category_id",   limit: 4
@@ -1463,6 +1462,7 @@ ActiveRecord::Schema.define(version: 20161201061930) do
     t.string   "b_category_name", limit: 255
     t.string   "c_category_name", limit: 255
     t.string   "d_category_name", limit: 255
+    t.integer  "status",          limit: 4,   default: 0
   end
 
   create_table "tmp_sp_bsbs", force: :cascade do |t|
@@ -1609,6 +1609,7 @@ ActiveRecord::Schema.define(version: 20161201061930) do
     t.string   "ca_uuid",                limit: 50
     t.integer  "ca_user_status",         limit: 4
     t.string   "user_code",              limit: 255
+    t.integer  "jbxx_sh",                limit: 4,     default: 0
     t.integer  "admin_level",            limit: 4,     default: 0
   end
 
@@ -1860,8 +1861,6 @@ ActiveRecord::Schema.define(version: 20161201061930) do
     t.boolean  "part_submit_flag5",                 default: false
     t.boolean  "part_submit_flag6",                 default: false
     t.boolean  "part_submit_flag7",                 default: false
-    t.integer  "application_id",      limit: 4
-    t.boolean  "via_api",                           default: false
   end
 
   add_index "wtyp_czb_parts", ["cjbh"], name: "index_wtyp_czb_parts_on_cjbh", using: :btree
@@ -1983,9 +1982,6 @@ ActiveRecord::Schema.define(version: 20161201061930) do
     t.boolean  "part_submit_flag5",                    default: false
     t.boolean  "part_submit_flag6",                    default: false
     t.boolean  "part_submit_flag7",                    default: false
-    t.integer  "application_id",         limit: 4
-    t.boolean  "via_api",                              default: false
-    t.string   "note",                   limit: 256
   end
 
   add_index "wtyp_czbs", ["bsscqymc"], name: "index_wtyp_czbs_on_bsscqymc", using: :btree

@@ -98,7 +98,7 @@ module ApplicationHelper
     end
   end
 	
-	#是否是市级管理员
+	#是否是县级管理员
 	def is_county_level?
 		result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 3
 		return result
@@ -109,12 +109,29 @@ module ApplicationHelper
 		result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 2
 		return result
 	end
-	
+  def is_sheng?
+    result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 1
+    return result
+  end	
+
 	#是否是省市县管理员
 	def is_shengshi?
 		result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level > 0
 		return result
 	end
+
+  def is_shi_deploy?
+   current_user.is_city? or ((!current_user.prov_city.blank? and !current_user.prov_city.include?('请选择')) and ( current_user.prov_country.include?('请选择') or current_user.prov_country.blank?))
+  end
+
+  def is_xian_deploy?
+    current_user.is_county_level? or ((!current_user.prov_city.blank? and !current_user.prov_city.include?('请选择')) and (!current_user.prov_country.blank? and !current_user.prov_country.include?('请选择')))
+  end
+ def is_level?
+     return "升级"  if  is_sheng?
+     return "市级"  if  is_city?
+     return "县级"  if is_county_level?                              
+ end
 
   def generate_tab_params(tab)
     p = request.GET

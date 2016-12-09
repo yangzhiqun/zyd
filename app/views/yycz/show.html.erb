@@ -100,6 +100,12 @@
           <th>标识生产企业省份</th>
           <td><%= @djb.bsscqysf %></td>
         </tr>
+      <tr>
+          <th>抽样单位市</th>
+          <td><%= @djb.bcydws if !@djb.bcydws.blank? %></td>
+          <th>标识生产企业市</th>
+          <td><%= @djb.bsscqys if !@djb.bsscqys.blank? %></td>
+     </tr>
       </table>
     </div>
   </div>
@@ -374,7 +380,8 @@
     <br>
   <% end %>
   <input type="hidden" id="current_step_finished" name="current_step_finished" value="0">
-    <% if params[:preview].blank? and @djb.can_be_handled_by?(current_user) %>
+    <% if( (!current_user.prov_city.include?("请选择") and !current_user.prov_city.blank?) and @djb.tbr_city==current_user.prov_city) or current_user.prov_city.include?("请选择") or current_user.prov_city.blank? %> 
+   <% if params[:preview].blank? and @djb.can_be_handled_by?(current_user) %>
     <% if @djb.current_state == ::SpYydjb::State::LOGGED %>
     <%= f.submit "确认处置安排", :id => "save1", :class => 'btn btn-primary' %>
     <% else %>
@@ -384,6 +391,7 @@
       <%= f.submit "临时保存", :id => "save2", :class => 'btn btn-primary' %>
     <% end %>
   <% end %>
+<% end %>
 <% end %>
 <script type="text/javascript">
 var require_czjg = <%= current_user.yybl == 1 and [::SpYydjb::State::ASSIGNED].include?(@djb.current_state) %>;

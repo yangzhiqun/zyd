@@ -12,58 +12,65 @@ $(document).ready(function(){
         <label class="radio-inline c-radio">
           <input type="radio" id="r1" value="1" name="r1"/>
           <span class="fa fa-circle"></span>
-          药监局<%= "市级" if is_city? %>采样信息填报人员
+          药监局<%= is_level?  %>采样信息填报人员
         </label>
       <%end%>
       <%if @user.user_i_js==1&&@user.user_d_authority_2==1%>
         <label class="radio-inline c-radio">
           <input type="radio" id="r2" value="2" name="r1">
           <span class="fa fa-circle"></span>
-          药监局<%= "市级" if is_city? %>审核人员
+          药监局<%= is_level? %>审核人员
         </label>
       <%end%>
       <%if @user.user_i_js==1&&@user.user_d_authority_3==1%>
         <label class="radio-inline c-radio">
           <input type="radio" id="r3" value="3" name="r1">
           <span class="fa fa-circle"></span>
-          药监局<%= "市级" if is_city? %>样品处理人员
+          药监局<%= is_level? %>样品处理人员
         </label>
       <%end%>
       <%if @user.user_i_js==1&&@user.user_d_authority_4==1%>
         <label class="radio-inline c-radio">
           <input type="radio" id="r4" value="4" name="r1">
           <span class="fa fa-circle"></span>
-          药监局<%= "市级" if is_city? %>统计人员
+          药监局<%= is_level? %>统计人员
         </label>
       <%end%>
       <%if @user.user_i_js==0&&@user.user_d_authority==1%>
         <label class="radio-inline c-radio">
           <input type="radio" id="r5" value="5" name="r1">
           <span class="fa fa-circle"></span>
-          检测机构采样信息填报人员
+          检测机构<%= is_level? %>采样信息填报人员
         </label>
       <%end%>
       <%if @user.user_i_js==0&&@user.user_d_authority_1==1%>
         <label class="radio-inline c-radio">
           <input type="radio" id="r6" value="6" name="r1">
           <span class="fa fa-circle"></span>
-          检测机构检测数据填报人员
+          检测机构<%= is_level? %>检测数据填报人员
         </label>
       <%end%>
       <%if @user.user_i_js==0&&@user.user_d_authority_2==1%>
         <label class="radio-inline c-radio">
           <input type="radio" id="r7" value="7" name="r1">
           <span class="fa fa-circle"></span>
-          检测机构检测数据审核人员
+          检测机构<%= is_level? %>检测数据审核人员
         </label>
       <%end%>
       <%if @user.user_i_js==0&&@user.user_d_authority_5==1%>
         <label class="radio-inline c-radio">
           <input type="radio" id="r7" value="11" name="r1">
           <span class="fa fa-circle"></span>
-          检测机构检测数据批准人员
+          检测机构<%= is_level? %>检测数据批准人员
         </label>
       <%end%>
+     <% if @user.user_i_js==0&&@user.jbxx_sh==1 %>
+          <label class="radio-inline c-radio">
+          <input type="radio" id="r16" value="16" name="r1"/>
+          <span class="fa fa-circle"></span>
+          报告发送人
+       </label>
+     <% end %>
       <%if @user.user_i_switch==1%>
         <label class="radio-inline c-radio">
           <input type="radio" id="r8" value="8" name="r1">

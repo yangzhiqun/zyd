@@ -101,9 +101,58 @@
     });
     $('#s8').val('<%= params[:s8]%>');
 
-    $('#sp_dl').select2({theme: 'bootstrap', placeholder: '食品大类'});
+   // $('#sp_dl').select2({theme: 'bootstrap', placeholder: '食品大类'});
     $('#sp_sf').select2({theme: 'bootstrap', placeholder: '市/区'});
-		$(".td_city span.select2-container").css({"width":"98px","margin-left":"74px"});	
+    //$('#sp_bsa').select2({theme: 'bootstrap', placeholder: '报送A'});
+   // $('#sp_bsb').select2({theme: 'bootstrap', placeholder: '报送B'});
+   // $('#s6').select2({theme: 'bootstrap', placeholder: '食品亚类'}); 
+	// 报送分类A
+    $('#sp_bsa').change(function () {
+      var o = $(this);
+      if (o.val() != '') {
+        $.get('/baosong_bs/by_name.json', {a_name: o.val()}, function (data) {
+          if (data.status == 'OK') {
+            $('#sp_bsb,#sp_dl, #s6').empty();
+          //  render_spec_list([]);
+            $("<option>").text("请选择").appendTo($('#sp_bsb'));
+            $.each(data.data, function () {
+              $("<option>").attr('data-identifier', this.identifier).attr("value", this.name).text(this.name).appendTo($('#sp_bsb'));
+            });
+          }
+        }, "json")
+      }
+    });
+
+    // 报送分类B
+    $('#sp_bsb').change(function () {
+      $.get('/a_categories_by_identifier.json', {identifier: $(this).find('option:selected').attr('data-identifier')}, function (data) {
+        if (data.status == 'OK') {
+          $('#sp_dl,#s6').empty();
+          //render_spec_list([]);
+
+          $('<option>').text("请选择").appendTo($('#sp_dl'));
+          $.each(data.data, function () {
+            $('<option>').attr('value', this.name).text(this.name).attr('id', this.id).appendTo($('#sp_dl'));
+          });
+        }
+      }, 'json');
+    });
+ 
+    // 大类
+    $('#sp_dl').change(function () {
+      $.get('/b_categories_by_a_id.json', {a_category_id: $('#sp_dl').find('option:selected').attr('id')}, function (data) {
+        if (data.status == 'OK') {
+          $('#s6').empty();
+          //render_spec_list([]);
+          $('<option>').text("请选择").appendTo($('#s6'));
+          $.each(data.data, function () {
+            $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#s6'));
+          });
+        }
+      }, 'json');
+    });
+
+    $(".td_city span.select2-container").css({"width":"98px","margin-left":"74px"});	
   });
 </script>
 
@@ -137,8 +186,7 @@
                     <option value=4>检测数据(填报)</option>
                     <option value=5>检测数据(机构审核中)</option>
                     <option value=15>检测数据(机构批准中)</option>
-                    <option value=6>检测数据(药监局审核中)</option>
-                    <option value=7>检测数据(牵头单位审核中)</option>
+                    <option value=16>检测数据(报告发送人审核中)</option>
                     <option value=8>检测数据(已提交至秘书处)</option>
                 <% end %>
                 <option value=9>不合格样品</option>
@@ -176,10 +224,37 @@
               <input class="form-control input-sm" type="text" id="s4" value="<%= params[:s4] %>" name="s4"></td>
           </tr>
           <tr>
+         <td colspan="4">报送A类</td>
+            <td colspan="6">
+             <%= select_tag 'sp_bsa', options_for_select(BaosongA.all.map { |b| [b.name, b.name, {'parentid' => b.rwlylx}] }.unshift(["请选择", ""]), params[:sp_bsa]), :style => "width: 123px;",:class => 'form-control input-sm' %>
+	    </td>
+          <td colspan="4">
+            报送B类  
+          </td>
+           <td colspan="6">
+           <select class="form-control input-sm" type="text" id="sp_bsb" name="sp_bsb" style="width:123px"></select>
+            </td>
+            <td colspan="4">被抽样单位省市/区</td>
+            <td colspan="6" class="td_city">
+							<span style="float:left;margin:8px 24px;font-size:13px"><%= current_user.user_s_province %></span>
+            	<%# if current_user.is_admin?||session[:change_js]==8||session[:change_js]==9||session[:change_js]==10 || is_shengshi? %>
+            		<%= select_tag "sp_sf", options_for_select(SysProvince.level1.map { |prov| [prov.name, prov.name] }.unshift(['全部', '全部']), params[:sp_sf]), :class => "form-control" %>
+            	<%# end %>
+						</td>
+            <td style="display:none">
+              <select class="form-control input-sm" type="text" id="sp_sf" name="sp_sf"></select>
+						</td>
+          </tr>
+          <tr>
+          <!--  <td colspan="4">单位类型</td>
+            <td colspan="6">
+              <input class="form-control input-sm" type="text" id="s5" value="<%= params[:s5] %>" name="s5"></td>
+            <td colspan="4">填报人</td>
+            <td colspan="6"> -->
             <td colspan="4">食品大类</td>
-            <% if current_user.is_admin? || session[:change_js] != 8 %>
+              <% if current_user.is_admin? || session[:change_js] != 8 %>
                 <td colspan="6">
-                  <%= select_tag 'sp_dl', options_for_select(ACategory::Category24.map { |c| [c, c] }.unshift(['请选择', '']), params[:sp_dl]), class: 'form-control input-sm' %>
+                  <%= select_tag 'sp_dl','', class: 'form-control input-sm'  %>
                 </td>
             <% else %>
                 <td colspan="6"><%= current_user.user_s_dl %></td>
@@ -187,27 +262,10 @@
                   <select class="form-control input-sm" type="text" id="sp_dl" name="sp_dl" style="width:123px"></select>
                 </td>
             <% end %>
-            <td colspan="4">食品细类</td>
-            <td colspan="6">
-              <input type="text" class="form-control input-sm" id="s6" value="<%= params[:s6] %>" name="s6"></td>
-            <td colspan="4">被抽样单位省市/区</td>
-            <td colspan="6" class="td_city">
-							<span style="float:left;margin:8px 24px;font-size:13px"><%= current_user.user_s_province %></span>
-            	<% if current_user.is_admin?||session[:change_js]==8||session[:change_js]==9||session[:change_js]==10 || is_shengshi? %>
-            		<%= select_tag "sp_sf", options_for_select(SysProvince.level1.map { |prov| [prov.name, prov.name] }.unshift(['全部', '全部']), params[:sp_sf]), :class => "form-control" %>
-            	<% end %>
-						</td>
-            <td style="display:none">
-              <select class="form-control input-sm" type="text" id="sp_sf" name="sp_sf"></select>
-						</td>
-          </tr>
-          <tr>
-            <td colspan="4">单位类型</td>
-            <td colspan="6">
-              <input class="form-control input-sm" type="text" id="s5" value="<%= params[:s5] %>" name="s5"></td>
-            <td colspan="4">填报人</td>
-            <td colspan="6">
-              <input class="form-control input-sm" type="text" id="s3" value="<%= params[:s3] %>" name="s3"></td>
+            <td colspan="4">食品亚类</td>
+            <td colspan="6"> 
+            <select class="form-control input-sm"  id="s6" name="s6" style="width:123px"></select>   
+            </td>
             <td colspan="4">抽样编号</td>
             <td colspan="6">
               <input class="form-control input-sm" type="text" id="s7" value="<%= params[:s7] %>" name="s7"></td>
@@ -267,13 +325,15 @@
           <a class="<%= (params[:flag].eql?('tabs_4') ? "active" : "") %>" style="cursor: pointer;" id="tabs_4">完全提交数据</a>
         </li>
     <% end %>
+   <!--
     <li>
       <a class="<%= (params[:flag].eql?('tabs_3') ? "active" : "") %>" href="/sp_bsbs_spsearch?flag=tabs_3">文件导入与导出</a>
     </li>
+   -->
   </ul>
   <% if !params[:flag].nil? and !params[:flag].eql?("tabs_3") %>
       <div class="tab-content">
-        <p><%= will_paginate @sp_bsbs, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
+				<%= will_paginate @sp_bsbs, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %>
         <%= render 'part_index' %>
         <p><%= will_paginate @sp_bsbs, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
       </div>

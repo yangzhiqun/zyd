@@ -8,7 +8,7 @@
 <% end %>
 <script type="text/javascript" charset="utf-8">
 	$(function () {
-		$(".td_city span.select2-container").css({"width":"130px","margin-left":"104px"});
+		$(".td_city #user_user_search_form_prov").css({"width":"130px","margin-left":"104px"});
 	});
 </script>
 <div class="fontbody">
@@ -22,9 +22,8 @@
                   <th width="80">姓名:</th>
                   <td><%= f.text_field :tname, class: 'form-control input-sm' %></td>
                   <th width="80">省市/区:</th>
-                  <td class="td_city">
-										<span style="float:left;margin:8px 29px;font-size:13px"><%= current_user.user_s_province %></span>
-										<%= f.select :prov, options_for_select(SysProvince.level1.pluck(:name).unshift(%w{-不限- /}), @search_form.prov), {}, class: 'form-control input-sm' %>
+                  <td >
+											<%= f.select :prov, options_for_select(SysProvince.level1.pluck(:name).unshift(%w{-不限- /}),@search_form.prov), {}, class: 'form-control input-sm' %>
 									</td>
                   <th width="80">机构:</th>
                   <% cache 'jg_data' do %>
@@ -47,6 +46,8 @@
                       <label><%= f.check_box :sbsh %>上报审核</label>
                       &emsp;
                       <label><%= f.check_box :sbpz %>上报批准</label>
+                      &emsp;
+                      <label><%= f.check_box :jbxxsh %>报告发送人</label>
                     </div>
                     <hr>
                     <label for="">异议处理</label>
@@ -98,6 +99,7 @@
           <th width="100">UID</th>
           <th>电话</th>
           <th>E-Mail</th>
+	  <th>用户类型</th>
           <th width="60">省份</th>
           <th width="60">市/区</th>
           <th width="100">上次登录</th>
@@ -111,6 +113,7 @@
               <td><%= user.uid %></td>
               <td><%= user.mobile %><%= user.tel %></td>
               <td><%= user.eaddress %></td>
+              <td><%= user.jg_type_name %></td>
               <td><%= user.user_s_province %></td>
               <td><%= user.prov_city == "-请选择-" ? "" : user.prov_city %></td>
               <td><%= user.last_sign_in_at %></td>

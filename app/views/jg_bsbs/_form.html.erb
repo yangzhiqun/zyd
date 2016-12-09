@@ -67,28 +67,38 @@
         $.each(data.msg, function (i, item) {
           $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#jg_bsb_city'));
         });
+				<% if is_city? || is_county_level? %>
+					$('#jg_bsb_city').val("<%= current_user.prov_city %>").change().attr("disabled","disabled");	
+				<% end %>
       }, 'json');
     }).trigger('change');
+
+    <% if is_city? || is_county_level? %>
+      $('#jg_bsb_jg_province').val("<%= current_user.user_s_province %>").change().attr("disabled","disabled");
+    <% end %>
 
     $('#jg_bsb_city').change(function () {
       var o = $(this);
 
       $('#jg_bsb_country').empty();
       $('<option>-请选择-</option>').appendTo($('#jg_bsb_country'));
-
+			console.log("AA");
       $.get('/prov.json', {city: o.find('option:selected').attr('data-id')}, function (data) {
         $.each(data.msg, function (i, item) {
           $('<option>').attr('value', item.name).text(item.name).appendTo($('#jg_bsb_country'));
         });
+				<% if is_county_level? %>
+					$('#jg_bsb_country').val("<%= current_user.prov_country %>").attr("disabled","disabled");
+				<% end %>
       }, 'json');
     });
 
-    setTimeout(function () {
-      $('#jg_bsb_city').val('<%= @jg_bsb.city %>').trigger('change');
-      setTimeout(function () {
-        $('#jg_bsb_country').val('<%= @jg_bsb.country %>');
-      }, 1000);
-    }, 1000);
+    //setTimeout(function () {
+    //  $('#jg_bsb_city').val('<%= @jg_bsb.city %>').trigger('change');
+    //  setTimeout(function () {
+    //    $('#jg_bsb_country').val('<%= @jg_bsb.country %>');
+    //  }, 1000);
+    //}, 1000);
 
     $('#jg_bsb_super_jg_bsbs').select2({theme: 'bootstrap', placeholder: '请选择上级业务部门'});
   });
@@ -202,7 +212,8 @@
         <td colspan="6"><%= f.text_field :jg_email, placeholder: '请输入邮箱', :class => "form-control input-sm" %></td>
         <th colspan="6">联系电话</th>
         <td colspan="6"><%= f.text_field :jg_tel, placeholder: '请输入电话', :class => "form-control input-sm" %></td>
-        <td colspan="16"></td>
+        <td colspan="6">组织机构代码</td>
+        <td colspan="6"><%= f.text_field :ca_org, placeholder: '机构代码', :class => "form-control input-sm" %></td>
       </tr>
       <% if false %>
           <tr>
@@ -315,7 +326,7 @@
           </ul>
         </td>
       </tr>
-      <% if current_user.is_admin? %>
+      <% if current_user.is_admin? or is_shengshi? %>
           <tr>
             <td colspan="40">
               <%= f.submit(vaule='保存并退出', options={id: 'save_and_exit', class: 'btn btn-sm btn-success'}) %>

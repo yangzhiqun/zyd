@@ -94,6 +94,8 @@ class User < ActiveRecord::Base
           self.yybl = 1
         when 15
           self.yysh = 1
+       when 16
+         self.jbxx_sh=1
       end
     end
 
@@ -139,7 +141,8 @@ class User < ActiveRecord::Base
       '核查处置审核人' => 12,
       '异议登记' => 13,
       '异议办理' => 14,
-      '异议审核' => 15
+      '异议审核' => 15,
+     '报告发送人'=> 16
   }
 
   # 后处置权限
@@ -509,8 +512,10 @@ class User < ActiveRecord::Base
         self.function_type = '14'
       elsif self.yysh == 1
         self.function_type = '15'
+      elsif self.jbxx_sh == 1
+	self.function_type = '16'
       else
-        self.function_type = rand(16..99).to_s
+        self.function_type = rand(17..99).to_s
       end
     end
   end
@@ -586,6 +591,25 @@ class User < ActiveRecord::Base
     self.state == User::State::Rejected
   end
 
+  def self.jg_type_map
+    {"监管用户" =>1 ,"机构用户" =>3}
+  end
+
+  def jg_type_name
+    User.jg_type_map.invert[self.jg_type]
+  end
+
+ def is_county_level?
+    self.is_account_manager && self.user_i_js == 1 && self.admin_level == 3
+ end
+
+ def is_city?
+   self.is_account_manager && self.user_i_js == 1 && self.admin_level == 2
+ end
+
+ def is_sheng?
+   self.is_account_manager && self.user_i_js == 1 && self.admin_level == 1
+ end
   private
   # def password_non_blank
   #   errors.add(:password, "Missing password") if hashed_password.blank?
@@ -617,8 +641,7 @@ class User < ActiveRecord::Base
     string_to_hash = password + "wibble" + salt
     Digest::SHA1.hexdigest(string_to_hash)
   end
-
-  # 用户检索表单虚拟类
+   # 用户检索表单虚拟类
   class UserSearchForm
     include ActiveModel::Model
     include Virtus.model
@@ -632,6 +655,7 @@ class User < ActiveRecord::Base
     attribute :jbjcsj, Integer, default: 0
     attribute :sbsh, Integer, default: 0
     attribute :sbpz, Integer, default: 0
+    attribute :jbxxsh, Integer, default: 0
 
     attribute :yy_gly, Integer, default: 0
     attribute :yy_yysl, Integer, default: 0
