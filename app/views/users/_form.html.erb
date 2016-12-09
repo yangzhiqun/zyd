@@ -1,12 +1,11 @@
 <script type="text/javascript">
   $(function () {
-     <% if is_city? and  params[:action] =="edit" %>
-       $('#city').attr("disabled","disabled");
-     <% end %>
-    <% if is_county_level? and  params[:action] =="edit" %>
-    $('#city').attr("disabled","disabled");
-   $('#lcity').attr("disabled","disabled");
-   <% end%>
+    <% if is_city? %>
+      $('#city').attr("disabled","disabled");
+		<% elsif is_county_level? %>
+      $('#city').attr("disabled","disabled");
+      $('#lcity').attr("disabled","disabled");
+    <% end %>
 		if($("#user_user_i_js").prop("checked")){
 			$("#user_admin_level").show();
 		}
@@ -70,8 +69,7 @@
       });
 		
 			if(window.location.pathname.indexOf("new") != -1){
-				$("#city").val("<%= current_user.prov_city %>");
-				$("#city").change();
+				$("#city").val("<%= current_user.prov_city %>").change();
 			}
     }, 'json');
 //
@@ -84,6 +82,7 @@
         $.each(data.msg, function (i, item) {
           $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#lcity'));
         });
+				$("#lcity").val("<%= current_user.prov_country %>")
       }, 'json');
       reload_jg_data();
    	});

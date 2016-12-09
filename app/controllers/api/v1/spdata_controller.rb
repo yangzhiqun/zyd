@@ -60,14 +60,18 @@ class Api::V1::SpdataController < ApplicationController
 							@error_num += 1
 							self.error_hash[:detail] << {:cjbh => data["cjbh"],:itemId => "",:error_code => ErrorCode::StateError,:msg => "状态不正确"}
 						else
+							@spbsb_arr = []
+							@spbsb.spdata.each{|s| @spbsb_arr << s.spdata_0}
 							@items += data["items"].length
 							data["items"].each do |item|
 								one   = item["level1"] == @spbsb.sp_s_17
 								two   = item["level2"] == @spbsb.sp_s_18
 								three = item["level3"] == @spbsb.sp_s_19
 								four  = item["level4"] == @spbsb.sp_s_20
-								if one && two && three && four 							
-									@spdata = Spdatum.new()
+								five  = @spbsb_arr.include? item["spdata_0"]
+								if one && two && three && four && five 							
+									@spdata = Spdatum.where(spdata_0:item["spdata_0"],sp_bsb_id:@spbsb.id).first
+									@spdata.spdata_0  = item["spdata_0"]
 									@spdata.spdata_1  = item["spdata_1"] 
 									@spdata.spdata_2  = item["spdata_2"] 
 									@spdata.spdata_17 = item["spdata_17"] 
@@ -78,7 +82,11 @@ class Api::V1::SpdataController < ApplicationController
 									end
 								else	
 									@items_err += 1
-									self.error_hash[:detail] << {:cjbh => data["cjbh"],:itemId => item["itemId"],:error_code => ErrorCode::DetectionTypeError,:msg => "检测类型不匹配"}
+									if five
+										self.error_hash[:detail] << {:cjbh => data["cjbh"],:itemId => item["itemId"],:error_code => ErrorCode::DetectionTypeError,:msg => "检测类型不匹配"}
+									else
+										self.error_hash[:detail] << {:cjbh => data["cjbh"],:itemId => item["itemId"],:error_code => ErrorCode::DetectionTypeError,:msg => "检测项目不一致"}
+									end
 								end
 							end
 						end
