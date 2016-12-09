@@ -1158,14 +1158,14 @@
       $('#stamp-dlg').modal('show');
       return false;
       <% end %>
-     /*<% if !@sp_bsb.report_path.blank? %>
+     /*<#% if !@sp_bsb.report_path.blank? %>
 	 ca_value = document.getElementById("user_cert_list").value;
         if(ca_value.length >2){
            testGetKeyPic();
 	  $('#ca_validate').modal('show');
 	  return false;
 	}
-     <% end %> */
+     <#% end %> */
      $('#sp_bsb_sp_i_state').val("4");
       if (!confirm('确定提交吗？')) {
         return false;
