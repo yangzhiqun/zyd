@@ -346,14 +346,14 @@ class TasksController < ApplicationController
       else
         if  is_shi_deploy?
           info = current_user.prov_city
-          @province = SysProvince.level1.find_by_name(info)
+          @province = SysProvince.level1_old.find_by_name(info)
           @rwly.push(["#{@province.name}食品药品监督管理局", @province.id])
         elsif is_xian_deploy?
           info = current_user.prov_country
           @province = SysProvince.level2.find_by_name(info)
           @rwly.push(["#{@province.name}食品药品监督管理局", @province.id])
         else
-          @rwly.push(["#{@province.name}食品药品监督管理局", @province.id])
+          @rwly.push([current_user.user_s_province+"食品药品监督管理局", @province.id])
         end
         @rwly.uniq
       end
