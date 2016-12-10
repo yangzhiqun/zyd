@@ -1014,7 +1014,7 @@ class SpBsbsController < ApplicationController
       #  
       #end
       #elsif current_user.jg_bsb.jg_type ==3
-     if !params[:flag]=="tabs_4"
+     if params[:flag]!="tabs_4"
       @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
      end
       #end 
@@ -1036,7 +1036,7 @@ class SpBsbsController < ApplicationController
       #  
       #end
       #elsif current_user.jg_bsb.jg_type ==3
-      if !params[:flag]=="tabs_4"
+      if params[:flag]!="tabs_4"
       @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
       end
       #end  
@@ -1056,13 +1056,13 @@ class SpBsbsController < ApplicationController
       #  
       #end
       #elsif current_user.jg_bsb.jg_type ==3
-        if !params[:flag]=="tabs_4"
+        if params[:flag]!="tabs_4"
           @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
         end
       #end	
  
         elsif session[:change_js]==16 #数据填报
-          if !params[:flag]=="tabs_4"
+          if params[:flag]!="tabs_4"
          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
           end
         elsif session[:change_js]==8 #牵头
@@ -1097,7 +1097,7 @@ class SpBsbsController < ApplicationController
      #   
      # end
      # elsif current_user.jg_bsb.jg_type ==3
-        if !params[:flag]=="tabs_4"
+        if params[:flag]!="tabs_4"
       @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
         end
      # end 
@@ -1117,7 +1117,7 @@ class SpBsbsController < ApplicationController
      #   
      # end
      # elsif current_user.jg_bsb.jg_type ==3
-        if !params[:flag]=="tabs_4"
+        if params[:flag]!="tabs_4"
       @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
         end
      # end 
@@ -1137,7 +1137,7 @@ class SpBsbsController < ApplicationController
     #    
     #  end
     #  elsif current_user.jg_bsb.jg_type ==3
-        if !params[:flag]=="tabs_4"
+        if params[:flag]!="tabs_4"
       @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
         end
     #  end 	
@@ -1160,12 +1160,14 @@ class SpBsbsController < ApplicationController
       @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
       end
 =end
-         if !params[:flag]=="tabs_4"
+         if params[:flag]!="tabs_4"
          @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
          end
        # @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==1||session[:change_js]==5 #填报
+        if params[:flag]!="tabs_4"
         @sp_bsbs = @sp_bsbs.where('sp_bsbs.user_id = ?', current_user.id).paginate(page: params[:page], per_page: 10)
+        end
       elsif session[:change_js]==8 #牵头
         if session[:user_dl]=='乳制品'&&current_user.jg_bsb_id == JgBsb.find_by_history_name('上海市质量监督检验技术研究院').id
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_17=? or (sp_bsbs.sp_s_18='婴幼儿配方食品' and sp_bsbs.sp_s_70 LIKE '%一司%')", session[:user_dl]).paginate(page: params[:page], per_page: 10)
@@ -1186,7 +1188,8 @@ class SpBsbsController < ApplicationController
     elsif (current_user.prov_city.blank? or current_user.prov_city.include?('请选择')) and (current_user.prov_country.blank? or current_user.prov_country.include?('请选择'))
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3	=?",current_user.user_s_province).paginate(page: params[:page], per_page: 10)
    end
-
+logger.error  params[:flag]!="tabs_4"
+    logger.error params[:flag]
      respond_to do |format|
       format.html {
         if @sp_bsbs.respond_to?(:total_pages)
