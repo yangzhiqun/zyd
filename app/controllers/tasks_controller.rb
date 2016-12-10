@@ -450,7 +450,7 @@ class TasksController < ApplicationController
         elsif current_user.is_county_level?
           @pad_sp_bsbs = PadSpBsb.where("sp_i_state in (?) and (sp_s_5= ? or sp_s_221 =?)",::PadSpBsb::Step::SAMPLE_REFUSED,current_user.prov_country,current_user.prov_country)
         else 
-          @pad_sp_bsbs = PadSZpBsb.where(:sp_i_state => ::PadSpBsb::Step::SAMPLE_REFUSED, :sp_s_43 => jg_names)
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::SAMPLE_REFUSED, :sp_s_43 => jg_names)
         end
      end
 
