@@ -70,6 +70,7 @@
 		
 			if(window.location.pathname.indexOf("new") != -1){
 				$("#city").val("<%= current_user.prov_city %>").change();
+				$("#hidden_prov_city").val("<%= current_user.prov_city %>");
 			}
     }, 'json');
 //
@@ -187,6 +188,7 @@
               <%= f.select :user_s_province, '', {}, :class => 'hidden', :id => 'province' %>
               <%= f.select :prov_city, '', {}, :class => 'form-control input-sm', :id => 'city' %>
               <%= f.select :prov_country, '', {}, :class => 'form-control input-sm', :id => 'lcity' %>
+							<input type="hidden" name="user[:prov_city]" id="hidden_prov_city">
             </div>
         <% else %>
             <%= "#{@user.user_s_province}/#{@user.prov_city}/#{@user.prov_country}" %>
