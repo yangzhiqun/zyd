@@ -132,7 +132,8 @@ function jg_change(){
 
           <!-- 细类名称 -->
           <td><%= d.name %></td>
-	      <% if is_county_level?  or ((current_user.prov_city.blank? or current_user.prov_city.include?("请选择")) and (current_user.prov_country.blank? or  current_user.prov_country.include?("请选择"))) %>
+	      <%# if is_county_level?  or ((current_user.prov_city.blank? or current_user.prov_city.include?("请选择")) and (current_user.prov_country.blank? or  current_user.prov_country.include?("请选择"))) %>
+          <% if is_xian_deploy? %>
             <%= grid3(SysProvince.level3(current_user.prov_city).find_by_name(current_user.prov_country), d) %>
          <% else %>
           <%= grid3(SysProvince.level1.find_by_name(current_user.prov_city), d) %>
