@@ -187,8 +187,9 @@ class UsersController < ApplicationController
   def create
     if current_user.is_account_manager or current_user.is_super?
       @user = User.new(user_params)
-      @user.user_s_province = current_user.user_s_province
       @user.state = User::State::InUse
+			
+      @user.user_s_province = current_user.user_s_province
 
       respond_to do |format|
         if @user.save
@@ -460,7 +461,7 @@ class UsersController < ApplicationController
 
   private
   def user_params
-    params.require(:user).permit(:jbxx_sh,:jg_type,:ca_uuid, :hccz_level, :hccz_type, :is_account_manager, :mobile, :jg_bsb_id, :id_card, :user_sign, :pub_xxfb, :pub_xxfb_sh, :prov_city, :prov_country, :yyadmin, :jsyp, :hcz_admin, :car_sys_id, :zxcy, :rwbs, :rwxd, :enable_api, :hcz_sc, :hcz_lt, :hcz_czap, :hcz_czbl, :hcz_czsh, :yysl, :zhxt, :yybl, :yysh, :yycz_permission, :name, :password, :password_confirmation, :tname, :user_id, :uid, :tel, :eaddress, :company, :user_s_province, :user_d_authority, :user_d_authority_1, :user_jcjg, :user_jcjg_lxr, :user_jcjg_tel, :user_jcjg_mail, :user_cyjg, :user_cyjg_lxr, :user_cyjg_tel, :user_cyjg_mail, :user_d_authority_2, :user_d_authority_3, :user_d_authority_4, :user_d_authority_5, :user_i_js, :user_i_switch, :user_i_sp, :user_i_hzp, :user_i_bjp, :user_s_dl, :user_i_spys, :user_i_spss, :function_type, :prov_city, :prov_country, :admin_level)
+    params.require(:user).permit(:jbxx_sh,:jg_type,:ca_uuid, :hccz_level, :hccz_type, :is_account_manager, :mobile, :jg_bsb_id, :id_card, :user_sign, :pub_xxfb, :pub_xxfb_sh, :yyadmin, :jsyp, :hcz_admin, :car_sys_id, :zxcy, :rwbs, :rwxd, :enable_api, :hcz_sc, :hcz_lt, :hcz_czap, :hcz_czbl, :hcz_czsh, :yysl, :zhxt, :yybl, :yysh, :yycz_permission, :name, :password, :password_confirmation, :tname, :user_id, :uid, :tel, :eaddress, :company, :user_s_province, :user_d_authority, :user_d_authority_1, :user_jcjg, :user_jcjg_lxr, :user_jcjg_tel, :user_jcjg_mail, :user_cyjg, :user_cyjg_lxr, :user_cyjg_tel, :user_cyjg_mail, :user_d_authority_2, :user_d_authority_3, :user_d_authority_4, :user_d_authority_5, :user_i_js, :user_i_switch, :user_i_sp, :user_i_hzp, :user_i_bjp, :user_s_dl, :user_i_spys, :user_i_spss, :function_type, :prov_city, :prov_country, :admin_level)
   end
   def find_province
         @province = SysProvince.where("level like '_' or level like '__'").where(name: SysConfig.get(SysConfig::Key::PROV)).last

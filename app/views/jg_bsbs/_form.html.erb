@@ -69,12 +69,14 @@
         });
 				<% if is_city? || is_county_level? %>
 					$('#jg_bsb_city').val("<%= current_user.prov_city %>").change().attr("disabled","disabled");	
+					$('#hidden_city').val("<%= current_user.prov_city %>");
 				<% end %>
       }, 'json');
     }).trigger('change');
 
     <% if is_city? || is_county_level? %>
       $('#jg_bsb_jg_province').val("<%= current_user.user_s_province %>").change().attr("disabled","disabled");
+			$('#hidden_jg_province').val("<%= current_user.user_s_province %>");
     <% end %>
 
     $('#jg_bsb_city').change(function () {
@@ -82,7 +84,6 @@
 
       $('#jg_bsb_country').empty();
       $('<option>-请选择-</option>').appendTo($('#jg_bsb_country'));
-			console.log("AA");
       $.get('/prov.json', {city: o.find('option:selected').attr('data-id')}, function (data) {
         $.each(data.msg, function (i, item) {
           $('<option>').attr('value', item.name).text(item.name).appendTo($('#jg_bsb_country'));
@@ -181,6 +182,8 @@
             <%= f.select :jg_province, options_for_select(SysProvince.where("level LIKE '__' OR level LIKE '_'").pluck(:name, :id).map { |p| [p[0], p[0], {'data-id' => p[1]}] }.unshift(['-请选择-', nil]), @jg_bsb.jg_province), {}, :class => 'form-control input-sm' %>
             <%= f.select :city, [], {}, :class => 'form-control input-sm' %>
             <%= f.select :country, [], {}, :class => 'form-control input-sm' %>
+						<input type="hidden" name="jg_bsb[jg_province]" id="hidden_jg_province">
+						<input type="hidden" name="jg_bsb[city]" id="hidden_city">
           </div>
         </td>
       </tr>
