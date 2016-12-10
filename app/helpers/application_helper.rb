@@ -128,7 +128,7 @@ module ApplicationHelper
     current_user.is_county_level? or ((!current_user.prov_city.blank? and !current_user.prov_city.include?('请选择')) and (!current_user.prov_country.blank? and !current_user.prov_country.include?('请选择')))
   end
  def is_level?
-     return "升级"  if  is_sheng?
+     return "省级"  if  is_sheng?
      return "市级"  if  is_city?
      return "县级"  if is_county_level?                              
  end
