@@ -388,7 +388,8 @@ class TasksController < ApplicationController
         d_category_ids.concat DCategory.where(a_category_id: t.a_category_id, identifier: @baosong_b.identifier).map { |d| d.id }
       end
       d_category_ids.uniq!
-      @d_categories = DCategory.where(id: d_category_ids, identifier: @baosong_b.identifier).order("a_category_id, b_category_id, c_category_id")
+      #@d_categories = DCategory.where(id: d_category_ids, identifier: @baosong_b.identifier).order("a_category_id, b_category_id, c_category_id")
+      @d_categories = DCategory.where('id in (?) and identifier = ?', d_category_ids, @baosong_b.identifier).order("a_category_id, b_category_id, c_category_id")
     end
   end
 
