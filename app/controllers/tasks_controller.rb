@@ -353,7 +353,7 @@ class TasksController < ApplicationController
           @province = SysProvince.level2.find_by_name(info)
           @rwly.push(["#{@province.name}食品药品监督管理局", @province.id])
         else
-          @rwly.push([current_user.user_s_province+"食品药品监督管理局", @province.id])
+          @rwly.push([current_user.user_s_province+"食品药品监督管理局", task.sys_province_id])
         end
         @rwly.uniq
       end
