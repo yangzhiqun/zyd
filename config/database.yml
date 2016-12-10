@@ -9,6 +9,10 @@ development:
   pool: 25
   username: root
   password: zml
+  database: tdepot_demo_production_ceshi
+  pool: 25
+  username: root
+  password: admin
 
 production:
   adapter: mysql2

@@ -805,34 +805,12 @@
         return false;
       }
       <%end%>
-			
-			//不规则属性名称写在这
- 			var field_arr = ["inspection_basis","decision_basis"];
- 			$.each(field_arr,function(index,value){
- 				if ($.trim($("#sp_bsb_" + value).val()).length == 0 || $("#sp_bsb_" + value).val() == '请选择') {		
- 					var info = "";		
- 					if(value == "inspection_basis"){
- 						info = "检验依据";
- 					}
- 					if(value == "decision_basis"){
- 						info = "判定依据";
- 					}
-					modalHide();
- 					alert(info + " ,该项为必填项");	
- 					$("#sp_bsb_" + value).focus();					
- 					return false;
- 				}
- 			})			
+      //if ($("#sp_bsb_sp_s_city").val().length == 0 || $("#sp_bsb_sp_s_city").val() == '请选择') {
+      //	alert("抽样单位所在市/区 ,该项为必填项");
+       // $("#sp_bsb_sp_s_city").focus();
+        //return false;
+     // }
 
-			var file1 = $.trim($("#sp_bsb_cyd_file").val());
-      var file2 = $.trim($("#sp_bsb_cyjygzs_file").val());
-      var pdf_length = $("a.btn.btn-default.btn-xs").length;
-      if((file1 == '' || file2 == '')&&(pdf_length==0)){
-				modalHide();
-        alert("请填写完整【抽样单电子版】和【抽样检验告知电子版】");
-        return false;
-      }
-	
       <%@check=["xkz","xkz_id"]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_" + "<%=i%>").val()).length == 0) {
@@ -1181,14 +1159,14 @@
       $('#stamp-dlg').modal('show');
       return false;
       <% end %>
-     /*<% if !@sp_bsb.report_path.blank? %>
+     /*<#% if !@sp_bsb.report_path.blank? %>
 	 ca_value = document.getElementById("user_cert_list").value;
         if(ca_value.length >2){
            testGetKeyPic();
 	  $('#ca_validate').modal('show');
 	  return false;
 	}
-     <% end %> */
+     <#% end %> */
      $('#sp_bsb_sp_i_state').val("4");
       if (!confirm('确定提交吗？')) {
         return false;
@@ -1758,7 +1736,7 @@
      };
    setTimeout(function(){$.get('/sp_bsbs/by_ca_info.json', {
        keyword: $("#keyword").val(),
-       id:  <%= @sp_bsb.id.nil? ? "1" : @sp_bsb.id %>,
+       id:  '<%= @sp_bsb.id %>',
        keypic:  $("#keypic").val(),
        sign_cert: $("#sign_cert").val(),
        pr_status: $("#pr_status").val()
@@ -1773,7 +1751,7 @@
   function printpdf()
   {
     $.get('/sp_bsbs/print_pdf.json', {
-       id:  <%= @sp_bsb.id.nil? ? "1" : @sp_bsb.id %>,
+       id:  '<%= @sp_bsb.id %>',
        sign_data:  $("#sign_data").val(),
        sp_status: $("#sp_status").val()
       }, function (data) {
@@ -2399,8 +2377,8 @@ function pass_ca(){
                 <div class="modal-body">
                   <div class="modal-group">
                   <select id="user_cert_list" name="user_cert_list" onchange= "testGetKeyPic()"  class="form-control input-sm"></select>
-                  <input type="text" name="keypic" id="keypic" size="30" hidden="true" ></input>
-                  <input type="text" name="sign_cert" id="sign_cert" size="30"  hidden="true" ></input>
+                  <input type="text" name="keypic" id="keypic" size="30" hidden="true" />
+                  <input type="text" name="sign_cert" id="sign_cert" size="30"  hidden="true" />
                   <IMG id="picimg1" height=20 src="" width=64>
                   </div>
                   <input type="button" value="获得签名" onclick="testGetKeyPic()"  hidden="true"/>
@@ -2531,7 +2509,7 @@ function pass_ca(){
  <script src="/assets/XTXSAB.js"></script>
 <script src="/assets/ESealWebSocket_PDFClientLogin.js"></script>
 <SCRIPT LANGUAGE=JAVASCRIPT>
-   SetUserCertList("edit_sp_bsb_<%= @sp_bsb.id %>.user_cert_list", CERT_TYPE_HARD);
+   SetUserCertList("edit_sp_bsb_"+'<%= @sp_bsb.id %>'+".user_cert_list", CERT_TYPE_HARD);
  setTimeout(function () {
    cur_cert_id = document.getElementById("user_cert_list").value;
    jg_count = <%= current_user.jg_bsb.jg_bsb_stamps.count %>;
