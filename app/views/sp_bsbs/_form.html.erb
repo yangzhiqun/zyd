@@ -524,6 +524,7 @@
         $.get('/check_items_by_d_id.json', {d_category_id: dataid}, function (data) {
           if (data.status == 'OK') {
             render_spec_list(data.items);
+						get_basis();
           }
         }, 'json');
       } else {
@@ -694,9 +695,11 @@
 //        $('#sp_bsb_sp_s_16').focus();
 //        return false;
 //      }
+			modalShow();
       var bsfla = $('#sp_bsb_sp_s_70').val();
       var cybh6 = $('#sp_bsb_sp_s_16').val().substring(0, 6);
       if ((bsfla == '抽检监测（总局本级一司）' || bsfla == '抽检监测（总局本级三司）') && cybh6 != 'GC1600') {
+				modalHide();
         alert('抽检检测总局本级一司/三司抽样编号需以GC1600开头');
         return false;
       }
@@ -796,6 +799,7 @@
         if(info==221){
           info = "标识生产企业地址,县级";
         }
+				modalHide();
         alert(info + " ,该项为必填项");
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
@@ -807,6 +811,34 @@
         //return false;
      // }
 
+			
+			//不规则属性名称写在这
+ 			var field_arr = ["inspection_basis","decision_basis"];
+ 			$.each(field_arr,function(index,value){
+ 				if ($.trim($("#sp_bsb_" + value).val()).length == 0 || $("#sp_bsb_" + value).val() == '请选择') {		
+ 					var info = "";		
+ 					if(value == "inspection_basis"){
+ 						info = "检验依据";
+ 					}
+ 					if(value == "decision_basis"){
+ 						info = "判定依据";
+ 					}
+					modalHide();
+ 					alert(info + " ,该项为必填项");	
+ 					$("#sp_bsb_" + value).focus();					
+ 					return false;
+ 				}
+ 			})			
+
+			var file1 = $.trim($("#sp_bsb_cyd_file").val());
+      var file2 = $.trim($("#sp_bsb_cyjygzs_file").val());
+      var pdf_length = $("a.btn.btn-default.btn-xs").length;
+      if((file1 == '' || file2 == '')&&(pdf_length==0)){
+				modalHide();
+        alert("请填写完整【抽样单电子版】和【抽样检验告知电子版】");
+        return false;
+      }
+	
       <%@check=["xkz","xkz_id"]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_" + "<%=i%>").val()).length == 0) {
@@ -818,6 +850,7 @@
         if(info=="xkz_id"){
           info = "许可证号";
         }
+				modalHide();
         alert(info + " ,该项为必填项");
         $("#sp_bsb_sp_" + "<%=i%>").focus();
         return false;
@@ -827,6 +860,7 @@
       <%@check=[38]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_d_" +<%=i%>).val()).length == 0) {
+				modalHide();
         alert("该日期项为必填项");
         $("#sp_bsb_sp_d_" +<%=i%>).focus();
         return false;
@@ -836,6 +870,7 @@
       <%@check=[15]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_n_" +<%=i%>).val()).length == 0) {
+				modalHide();
         alert("该数据项为必填项");
         $("#sp_bsb_sp_n_" +<%=i%>).focus();
         return false;
@@ -869,6 +904,7 @@
         if(info==202){
           info = "标识生产企业地址，省份";
         }
+				modalHide();
         alert(info+"，该项为必选项");
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
@@ -876,14 +912,7 @@
       <%end%>
 
       if (!confirm('确定提交吗？')) {
-        return false;
-      }
-
-      var file1 = $.trim($("#sp_bsb_cyd_file").val());
-      var file2 = $.trim($("#sp_bsb_cyjygzs_file").val());
-      var pdf_length = $("a.btn.btn-default.btn-xs").length;
-      if((file1 == '' || file2 == '')&&(pdf_length==0)){
-        alert("请填写完整【抽样单电子版】和【抽样检验告知电子版】");
+				modalHide();
         return false;
       }
 
@@ -1185,9 +1214,11 @@
       return true;
     });
     $('#save').click(function () {
+			modalShow();
       <%@check=[3,16]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
+				modalHide();
         alert("保存时该项必须填写");
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
@@ -1200,6 +1231,7 @@
       var settime = varDate.getTime();
       var nowtime = varnow_Date.getTime();
       if (settime > nowtime) {
+				modalHide();
         alert("填报日期不能大于今天日期");
         $("#sp_bsb_sp_d_86").focus();
         return false;
@@ -1210,9 +1242,11 @@
       return true;
     });
     $('#save_and_create').click(function () {
+			modalShow();
       <%@check=[3,16]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
+				modalHide();
         alert("保存时该项必须填写");
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
@@ -1225,6 +1259,7 @@
       var settime = varDate.getTime();
       var nowtime = varnow_Date.getTime();
       if (settime > nowtime) {
+				modalHide();
         alert("填报日期不能大于今天日期");
         $("#sp_bsb_sp_d_86").focus();
         return false;
@@ -1245,6 +1280,7 @@
           $('#sp_bsb_sp_s_16').focus();
         }
       });
+			modalHide();
       return false;
     });
 
@@ -1589,6 +1625,54 @@
       }
       return false;
     }
+
+		function get_basis() {
+      var inspection_basis = ""
+      var decision_basis   = ""
+      $(".JYYJ").each(function(){
+        if($(this).val() != null) {
+          inspection_basis = inspection_basis + $(this).val() + ";";
+        }
+      });
+      $(".PDYJ").each(function(){
+        if($(this).val() != null) {
+          decision_basis = decision_basis + $(this).val() + ";";
+        }
+      });
+      $("#sp_bsb_inspection_basis").val(inspection_basis.slice(0,-1));
+      $("#sp_bsb_decision_basis").val(decision_basis.slice(0,-1));
+    }
+
+  	// 模态框需要调用父级框架的显示
+  	var modalShow = function(){
+  	  //获取父级框架
+  	  var parentFrame = $(document),
+  	  parentHtml = parentFrame.find('html').addClass('box-overhide'),
+  	  parentBody = parentFrame.find('body').addClass('box-overhide');
+  	  if(parentFrame.find('#modalbox').length === 0){
+  	    //如果不存在则创建模态层
+  	    var modalBox = "<div id='modalbox' style='display:block;overflow:hidden;background-color:rgba(0,0,0,0.3);position:absolute;top:0;left:0;right:0;bottom:0;'><img id='loadingPic' class='loadingpic' src='<%= asset_path('loading.png') %>' alert='加载...' /></div>";
+  	    parentBody.append(modalBox);
+  	  } else {
+  	      parentFrame.find('#modalbox').show();
+  	  }
+
+  	  parentBody.find('#loadingPic').css('top',function(){
+  	    return Math.floor((parentBody.height() - $(this).height())/2);
+  	  });
+  	  
+  	  //测试定时器，两秒钟
+  	  //setTimeout(modalHide,2000);
+    }
+
+  	// 关闭模态框
+  	var modalHide = function(){
+  	  //获取父级框架
+  	  var parentFrame = $(document);
+  	  parentFrame.find('html,body').removeClass('box-overhide');
+  	  parentFrame.find('#modalbox').hide();
+  	}	
+
   });
 </script>
  <script src="/assets/jquery.json-2.4.js"></script>
@@ -1691,7 +1775,7 @@
         }
          }, 'json');},1000);
   }
-
+	
   function printpdf()
   {
     $.get('/sp_bsbs/print_pdf.json', {
@@ -1783,6 +1867,12 @@ function pass_ca(){
   .modal-group{
      margin-bottom: 15px;
   }
+	/* 加载特效 */
+	.box-overhide{width:100% !important;height:100% !important;overflow:hidden !important;}
+  .loadingpic{position:absolute;margin-left:-16px;left:50%;max-width:100%;-webkit-animation:rotate 3s linear;animation:rotate 1s linear infinite;}
+  @-moz-keyframes rotate{0%{-moz-transform:rotate(0deg);}100%{-moz-transform:rotate(360deg);}}
+  @-webkit-keyframes rotate{0%{-webkit-transform:rotate(0deg);}100%{-webkit-transform:rotate(360deg);}}
+  @keyframes rotate{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 </style>
 
 <!-- 用于容纳检测项的tr模板 -->
@@ -2068,12 +2158,8 @@ function pass_ca(){
           <td colspan="7"><%= f.text_field :sp_s_35, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
           <td colspan="3">单位级别*</td>
           <td colspan="6"><%= f.select :sp_s_36, @options[36], {}, {:style => "width: 100%;"} %></td>
-          <td colspan="2">所在省份*</td>
-				  <td colspan="2"><%= f.text_field :sp_s_52, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %>
-          <td colspan="2" style="padding: 0cm 3.4pt">所在市/区*</td>
-          <td colspan="3" class="region3">
-          	<%= f.select :sp_s_city, {} %>
-          </td>
+          <td colspan="5">所在省份*</td>
+				  <td colspan="4"><%= f.text_field :sp_s_52, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %>
         </tr>
         <tr>
           <td colspan="5">抽样人员*</td>
@@ -2241,7 +2327,23 @@ function pass_ca(){
       <div class="clear"></div>
     </div>
     <br>
-
+		<div class="basis">
+      <table class="table table-bordered" style="table-layout: fixed;" id="tblGrid">
+        <tr>
+          <th colspan="6">检验依据</th>
+          <td colspan="34">
+            <%= f.text_area :inspection_basis, :class => "form-control input-sm", :rows => "3" %>
+          </td>
+        </tr>
+        <tr>
+          <th colspan="6">判定依据</th>
+          <td colspan="34">
+            <%= f.text_area :decision_basis, :class => "form-control input-sm", :rows => "3" %>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <br>
     <% @pictures.each do |pic| %>
         <a style="float: left; margin-right: 10px;" href="/pad_sp_bsbs/<%= pic.sp_bsb_id %>/picture/<%= pic.sort_index %>" target="_blank">
           <img border="0" width="150" height="150" src="/pad_sp_bsbs/<%= pic.sp_bsb_id %>/picture/<%= pic.sort_index %>.jpeg"/>
@@ -2344,7 +2446,7 @@ function pass_ca(){
           <%= f.submit(vaule="基本信息提交入库", options={"id" => "submit1", :class => "btn btn-xs btn-primary"}) %>
       <% end %>
 
-      <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<4&&current_user.user_d_authority_1==1&&current_user.jg_bsb.jg_name==@sp_bsb.sp_s_35 %>
+      <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<4&&current_user.user_d_authority_1==1 %>
           <%= f.submit(vaule="临时保存", options={"id" => "save_1", :class => "btn btn-xs btn-default"}) %>
           <%= f.submit(vaule="检测数据提交入库", options={"id" => "submit2", :class => "btn btn-xs btn-success"}) %>
           <% if @sp_bsb.sp_i_state == 2 %>
@@ -2380,21 +2482,21 @@ function pass_ca(){
           </div>
 
 
-      <% elsif @sp_bsb["sp_i_state"]==4&&session[:change_js]==7&&current_user.jg_bsb.jg_name==@sp_bsb.sp_s_35 %>
+      <% elsif @sp_bsb["sp_i_state"]==4&&session[:change_js]==7 %>
           <%= f.submit(vaule="检测机构审核通过", options={"id" => "save_2", :class => "btn btn-xs btn-success"}) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
 	       <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default kk">检验报告</a>
-      <% elsif @sp_bsb["sp_i_state"]==5&&session[:change_js]==11&&current_user.jg_bsb.jg_name==@sp_bsb.sp_s_35 %>
+      <% elsif @sp_bsb["sp_i_state"]==5&&session[:change_js]==11 %>
           <%= f.submit(vaule="检测机构批准", options={"id" => "save_5", :class => "btn btn-xs btn-success"}) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
          <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default kk">检验报告</a>
-     <% elsif @sp_bsb["sp_i_state"]==16&&session[:change_js]==16&&current_user.jg_bsb.jg_name==@sp_bsb.sp_s_35 %>
+     <% elsif @sp_bsb["sp_i_state"]==16&&session[:change_js]==16 %>
           <%= f.submit(vaule="确定通过", options={"id" => "save_16", :class => "btn btn-xs btn-success"}) %>
 	      <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default kk">检验报告</a>
-      <% elsif @sp_bsb["sp_i_state"]==6&&session[:change_js]==2&&current_user.jg_bsb.jg_name==@sp_bsb.sp_s_35 %>
+      <% elsif @sp_bsb["sp_i_state"]==6&&session[:change_js]==2 %>
           <%= f.submit(vaule="药监局审核通过", options={"id" => "save_3", :class => "btn btn-xs btn-success"}) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
-      <% elsif @sp_bsb["sp_i_state"]==8&&session[:change_js]==8&&current_user.jg_bsb.jg_name==@sp_bsb.sp_s_35 %>
+      <% elsif @sp_bsb["sp_i_state"]==8&&session[:change_js]==8 %>
           <%= f.submit(vaule="牵头单位审核通过", options={"id" => "save_4", :class => "btn btn-xs btn-success"}) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
       <% elsif @sp_bsb["sp_i_state"]==9&&current_user.is_admin? %>
