@@ -588,15 +588,15 @@
 
                   <%# end %>
 
-                  <% if current_user.hcz_czap == 1 or current_user.hcz_admin == 1  or is_shengshi? %>
+                  <% if current_user.hcz_czap == 1 or current_user.hcz_admin == 1   %>
                       <li class="<%= 'active' if controller?('wtyp_czbs') and action?('index') and params[:state].to_i == 0 %>">
                         <cite></cite><a href="/wtyp_czbs?current_tab=DBL">核查处置领取</a><i></i></li>
                   <% end %>
-                  <% if current_user.hcz_czbl == 1 or current_user.hcz_admin == 1  or is_shengshi? %>
+                  <% if current_user.hcz_czbl == 1 or current_user.hcz_admin == 1   %>
                       <li class="<%= 'active' if controller?('wtyp_czbs') and action?('index') and params[:state].to_i == 1 %>">
                         <cite></cite><a href="/wtyp_czbs_by_state/1?current_tab=DBL">核查处置办理</a><i></i></li>
                   <% end %>
-                  <% if current_user.hcz_czsh == 1 or current_user.hcz_admin == 1  or is_shengshi? %>
+                  <% if current_user.hcz_czsh == 1 or current_user.hcz_admin == 1   %>
                       <li class="<%= 'active' if controller?('wtyp_czbs') and action?('index') and params[:state].to_i == 2 %>">
                         <cite></cite><a href="/wtyp_czbs_by_state/2?current_tab=DSH">核查处置审核</a><i></i></li>
                   <% end %>
