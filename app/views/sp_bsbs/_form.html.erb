@@ -811,6 +811,34 @@
         //return false;
      // }
 
+			
+			//不规则属性名称写在这
+ 			var field_arr = ["inspection_basis","decision_basis"];
+ 			$.each(field_arr,function(index,value){
+ 				if ($.trim($("#sp_bsb_" + value).val()).length == 0 || $("#sp_bsb_" + value).val() == '请选择') {		
+ 					var info = "";		
+ 					if(value == "inspection_basis"){
+ 						info = "检验依据";
+ 					}
+ 					if(value == "decision_basis"){
+ 						info = "判定依据";
+ 					}
+					modalHide();
+ 					alert(info + " ,该项为必填项");	
+ 					$("#sp_bsb_" + value).focus();					
+ 					return false;
+ 				}
+ 			})			
+
+			var file1 = $.trim($("#sp_bsb_cyd_file").val());
+      var file2 = $.trim($("#sp_bsb_cyjygzs_file").val());
+      var pdf_length = $("a.btn.btn-default.btn-xs").length;
+      if((file1 == '' || file2 == '')&&(pdf_length==0)){
+				modalHide();
+        alert("请填写完整【抽样单电子版】和【抽样检验告知电子版】");
+        return false;
+      }
+	
       <%@check=["xkz","xkz_id"]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_" + "<%=i%>").val()).length == 0) {
