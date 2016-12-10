@@ -79,6 +79,7 @@
       var o = $(this);
       $('#lcity').empty();
       $('<option>-请选择-</option>').appendTo($('#lcity'));
+			$('#hidden_prov_city').val($('#city').val());
       $.get('/prov.json', {city: o.find('option:selected').attr('data-id')}, function (data) {
         $.each(data.msg, function (i, item) {
           $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#lcity'));
@@ -94,6 +95,9 @@
         return false;
       }
     });
+		$('#lcity').change(function () {
+			$('#hidden_prov_country').val($('#lcity').val());
+		});
 		$(".btn-success").click(function () {
 			var level_num = $("#user_admin_level").val();
 			var shi   = $("#city").val() == "-请选择-" || $("#city").val() == "";
@@ -189,6 +193,7 @@
               <%= f.select :prov_city, '', {}, :class => 'form-control input-sm', :id => 'city' %>
               <%= f.select :prov_country, '', {}, :class => 'form-control input-sm', :id => 'lcity' %>
 							<input type="hidden" name="user[:prov_city]" id="hidden_prov_city">
+							<input type="hidden" name="user[:prov_country]" id="hidden_prov_country">
             </div>
         <% else %>
             <%= "#{@user.user_s_province}/#{@user.prov_city}/#{@user.prov_country}" %>

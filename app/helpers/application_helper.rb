@@ -109,6 +109,8 @@ module ApplicationHelper
 		result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 2
 		return result
 	end
+	
+	#是否市省级管理员
   def is_sheng?
     result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 1
     return result
