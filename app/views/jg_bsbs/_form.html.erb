@@ -61,7 +61,7 @@
       if (o.val() == '') return false;
       $('#jg_bsb_city').empty();
       $('#jg_bsb_country').empty();
-
+			$('#hidden_jg_province').val($('#jg_bsb_jg_province').val());
       $.get('/prov.json', {prov: o.find('option:selected').attr('data-id')}, function (data) {
         $('<option>-请选择-</option>').appendTo($('#jg_bsb_city'));
         $.each(data.msg, function (i, item) {
@@ -74,7 +74,7 @@
       }, 'json');
     }).trigger('change');
 
-    <% if is_city? || is_county_level? %>
+    <% if is_sheng? || is_city? || is_county_level? %>
       $('#jg_bsb_jg_province').val("<%= current_user.user_s_province %>").change().attr("disabled","disabled");
 			$('#hidden_jg_province').val("<%= current_user.user_s_province %>");
     <% end %>
@@ -84,6 +84,7 @@
 
       $('#jg_bsb_country').empty();
       $('<option>-请选择-</option>').appendTo($('#jg_bsb_country'));
+			$('#hidden_city').val($('#jg_bsb_city').val());
       $.get('/prov.json', {city: o.find('option:selected').attr('data-id')}, function (data) {
         $.each(data.msg, function (i, item) {
           $('<option>').attr('value', item.name).text(item.name).appendTo($('#jg_bsb_country'));

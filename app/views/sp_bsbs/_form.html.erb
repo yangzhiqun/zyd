@@ -524,7 +524,9 @@
         $.get('/check_items_by_d_id.json', {d_category_id: dataid}, function (data) {
           if (data.status == 'OK') {
             render_spec_list(data.items);
-						get_basis();
+						if(window.location.pathname.indexOf("new") != -1){
+							get_basis();
+						}
           }
         }, 'json');
       } else {
@@ -1679,7 +1681,7 @@
   	  });
   	  
   	  //测试定时器，两秒钟
-  	  //setTimeout(modalHide,2000);
+  	  setTimeout(modalHide,4000);
     }
 
   	// 关闭模态框
