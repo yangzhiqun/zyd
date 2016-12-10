@@ -937,10 +937,12 @@
      * 检验数据提交入库
      * */
     $('#submit2').click(function () {
+			modalShow();
       var jcxnull = 0;
       $("#tblGrid input[name='spdata[][spdata_1]']").each(
           function () {
             if (($.trim($(this).val())).length == 0) {
+							modalHide();
               alert("该检测结果必须填写！");
               $(this).focus();
               jcxnull = 1;
@@ -949,11 +951,13 @@
           }
       );
       if (jcxnull) {
+				modalHide();
         return false;
       }
       $("#tblGrid input[name='spdata[][spdata_18]']").each(
           function () {
             if (($.trim($(this).val())).length == 0) {
+							modalHide();
               alert("该检测结果单位必须填写！");
               $(this).focus();
               jcxnull = 1;
@@ -962,6 +966,7 @@
           }
       );
       if (jcxnull) {
+				modalHide();
         return false;
       }
       $("#tblGrid select[name='spdata[][spdata_2]']").each(
@@ -970,6 +975,7 @@
             var ths = $(this).parents('tr').children('td');
             var index = ths.index(parentTD);
             if (($.trim($(this).val())) == '未检验' && ($.trim(ths.eq(index + 15).find('input').val())).length <= 3) {
+							modalHide();
               alert("该项必须检测！如果根据实际情况不需检验，请将必填项填'/',并在说明项中加以不检验的说明且说明文字多于三个字。");
               $(this).focus();
               jcxnull = 1;
@@ -978,6 +984,7 @@
           }
       );
       if (jcxnull) {
+				modalHide();
         return false;
       }
 
@@ -1064,6 +1071,7 @@
         if(info==63){
           info = "包装分类";
         }
+				modalHide();
         alert(info + " ,该项为必填项");
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
@@ -1072,6 +1080,7 @@
       <%@check=[38]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_d_" +<%=i%>).val()).length == 0) {
+				modalHide();
         alert("该日期项为必填项");
         $("#sp_bsb_sp_d_" +<%=i%>).focus();
         return false;
@@ -1081,6 +1090,7 @@
       <%@check=[15]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_n_" +<%=i%>).val()).length == 0) {
+				modalHide();
         alert("抽样数量，为必填项");
         $("#sp_bsb_sp_n_" +<%=i%>).focus();
         return false;
@@ -1104,6 +1114,7 @@
         if(info==202){
           info = "标识生产企业地址，省份";
         }
+				modalHide();
         alert(info+"，该项为必选项");
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
@@ -1143,7 +1154,7 @@
         if(info==88){
           info = "填报人电子邮箱";
         }
-
+				modalHide();
         alert(info+"，该项为必选项");
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
@@ -1152,6 +1163,7 @@
       <%@check=[46,86]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_d_" +<%=i%>).val()).length == 0) {
+				modalHide();
         alert("该日期项为必填项");
         $("#sp_bsb_sp_d_" +<%=i%>).focus();
         return false;
@@ -1161,6 +1173,7 @@
       <%@check=[71]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()) == '未完成') {
+				modalHide();
         alert("该项为必选项");
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
         return false;
@@ -1173,6 +1186,7 @@
       var settime = varDate.getTime();
       var nowtime = varnow_Date.getTime();
       if (settime > nowtime) {
+				modalHide();
         alert("填报日期不能大于今天日期");
         $("#sp_bsb_sp_d_86").focus();
         return false;
@@ -1185,6 +1199,7 @@
      $('#pr_status').val("true");
       <% if current_user.jg_bsb.jg_bsb_stamps.count > 0 &&  @sp_bsb.report_path.blank?  %>
       $('#stamp-dlg').modal('show');
+			modalHide();
       return false;
       <% end %>
      /*<#% if !@sp_bsb.report_path.blank? %>
@@ -1197,6 +1212,7 @@
      <#% end %> */
      $('#sp_bsb_sp_i_state').val("4");
       if (!confirm('确定提交吗？')) {
+				modalHide();
         return false;
       }else{
 	//% if !@sp_bsb.report_path.blank? %> 
@@ -1204,6 +1220,7 @@
          if(ca_value.length >2){
            testGetKeyPic();
           $('#ca_validate').modal('show');
+					modalHide();
           return false;
         }
 	//% end %>
