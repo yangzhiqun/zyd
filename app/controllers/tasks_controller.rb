@@ -355,6 +355,7 @@ class TasksController < ApplicationController
         else
           @rwly.push(["#{@province.name}食品药品监督管理局", @province.id])
         end
+        @rwly.uniq
       end
     end
 
