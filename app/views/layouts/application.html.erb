@@ -565,12 +565,12 @@
                       <li class="<%= "active" if action?("dj") %>"><cite></cite><a href="/yycz/dj">异议登记</a><i></i>
                       </li>
                   <% end %>
-                  <% if current_user.yyadmin == 1 %>
-										<% if !is_city? and !is_county_level? %>
+                  <% if current_user.yyadmin == 1 or (is_sheng? or current_user.is_admin? )%>
+										<%# if !is_city? and !is_county_level? %>
                       <li class="<%= "active" if action?("renew") %>">
                         <cite></cite><a href="/yycz/renew">异议延期登记</a><i></i>
                       </li>
-										<% end %>
+										<%# end %>
                   <% end %>
                   <% if false and current_user.zhxt == 1 %>
                       <li class="<%= "active" if action?("gzap") %>"><cite></cite><a href="/yycz/gzap">异议工作安排</a><i></i>
@@ -637,19 +637,19 @@
               <li><cite></cite><a href="">发布数据查询</a><i></i></li>
             </ul>
           </dd>-->
-          <dd>
+         <!-- <dd>
             <div class="title">
-              <span><img src="<%= asset_path('leftico05.png') %>"/></span>抽检信息公示
+              <span><img src="<%#= asset_path('leftico05.png') %>"/></span>抽检信息公示
             </div>
             <ul class="menuson" style="<%= "display: block;" if controller?("sp_bsb_publications") %>">
-              <li class="<%= 'active' if action?('unpublished') %>">
+              <li class="<%#= 'active' if action?('unpublished') %>">
                 <cite></cite><a href="/sp_bsb_publications/unpublished">未发布信息</a><i></i>
               </li>
-              <li class="<%= 'active' if action?('published') %>">
+              <li class="<%#= 'active' if action?('published') %>">
                 <cite></cite><a href="/sp_bsb_publications/published">已发布信息</a><i></i>
               </li>
             </ul>
-          </dd>
+          </dd>-->
       <% end %>
       <% if (!current_user.is_admin? and current_user.is_jg_manager?) or(is_shengshi?)  %>
           <dd>
