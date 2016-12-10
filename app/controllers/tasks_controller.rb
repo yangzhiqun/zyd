@@ -341,7 +341,7 @@ class TasksController < ApplicationController
         #@rwly.push(["#{task.name}食品药品监督管理局", task.sys_province_id])
 #end      end
     @tasks.joins('LEFT JOIN sys_provinces on sys_provinces.id=task_jg_bsbs.sys_province_id').select('distinct(task_jg_bsbs.sys_province_id), sys_provinces.name').each do |task|
-      if current_user.is_admin?
+      if  task.sys_province_id == -1 #current_user.is_admin? or
         @rwly.unshift(["#{SysConfig.get(SysConfig::Key::PROV)}食品药品监督管理局", -1])
       else
         if  is_shi_deploy?
@@ -355,8 +355,8 @@ class TasksController < ApplicationController
         else
           @rwly.push([current_user.user_s_province+"食品药品监督管理局", task.sys_province_id])
         end
-        @rwly.uniq
       end
+      @rwly.uniq!
     end
 
     if @baosong_b.nil?
