@@ -63,20 +63,39 @@
       $('#jg_bsb_country').empty();
 			$('#hidden_jg_province').val($('#jg_bsb_jg_province').val());
       $.get('/prov.json', {prov: o.find('option:selected').attr('data-id')}, function (data) {
+				$('#jg_bsb_city').empty();
         $('<option>-请选择-</option>').appendTo($('#jg_bsb_city'));
         $.each(data.msg, function (i, item) {
           $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#jg_bsb_city'));
         });
-				<% if is_city? || is_county_level? %>
+				<% if (is_city? || is_county_level?) && !@jg_bsb.id %>
 					$('#jg_bsb_city').val("<%= current_user.prov_city %>").change().attr("disabled","disabled");	
 					$('#hidden_city').val("<%= current_user.prov_city %>");
+				<% elsif @jg_bsb.id %>
+					$('#jg_bsb_city').val("<%= @jg_bsb.city %>").change();
+					$('#hidden_city').val("<%= @jg_bsb.city %>");
 				<% end %>
       }, 'json');
     }).trigger('change');
 
-    <% if is_sheng? || is_city? || is_county_level? %>
+		<% if is_county_level? && @jg_bsb.id %>		
+			$('#jg_bsb_jg_province').attr("disabled","disabled");
+			$('#jg_bsb_city').attr("disabled","disabled");
+			$('#jg_bsb_country').attr("disabled","disabled");
+		<% elsif is_city? && @jg_bsb.id%>
+			$('#jg_bsb_jg_province').attr("disabled","disabled");
+			$('#jg_bsb_city').attr("disabled","disabled");
+		<% elsif is_sheng?  && @jg_bsb.id%>
+			$('#jg_bsb_jg_province').attr("disabled","disabled");
+		<% end %>
+
+
+    <% if (is_sheng? || is_city? || is_county_level?) && !@jg_bsb.id %>
       $('#jg_bsb_jg_province').val("<%= current_user.user_s_province %>").change().attr("disabled","disabled");
 			$('#hidden_jg_province').val("<%= current_user.user_s_province %>");
+		<% elsif @jg_bsb.id %>
+			$('#jg_bsb_jg_province').val("<%= @jg_bsb.jg_province %>").change();
+			$('#hidden_jg_province').val("<%= @jg_bsb.jg_province %>");
     <% end %>
 
     $('#jg_bsb_city').change(function () {
@@ -86,14 +105,24 @@
       $('<option>-请选择-</option>').appendTo($('#jg_bsb_country'));
 			$('#hidden_city').val($('#jg_bsb_city').val());
       $.get('/prov.json', {city: o.find('option:selected').attr('data-id')}, function (data) {
+				$('#jg_bsb_country').empty();
+      	$('<option>-请选择-</option>').appendTo($('#jg_bsb_country'));
         $.each(data.msg, function (i, item) {
           $('<option>').attr('value', item.name).text(item.name).appendTo($('#jg_bsb_country'));
         });
-				<% if is_county_level? %>
+				<% if is_county_level? && !@jg_bsb.id %>
 					$('#jg_bsb_country').val("<%= current_user.prov_country %>").attr("disabled","disabled");
+					$('#hidden_country').val("<%= current_user.prov_country %>")
+				<% elsif @jg_bsb.id %>
+					$('#jg_bsb_country').val("<%= @jg_bsb.country %>");
+					$('#hidden_country').val("<%= @jg_bsb.country %>")
 				<% end %>
       }, 'json');
     });
+		
+		$('#jg_bsb_country').change(function () {
+			$("#hidden_country").val($("#jg_bsb_country").val());
+		});
 
     //setTimeout(function () {
     //  $('#jg_bsb_city').val('<%= @jg_bsb.city %>').trigger('change');
@@ -183,8 +212,10 @@
             <%= f.select :jg_province, options_for_select(SysProvince.where("level LIKE '__' OR level LIKE '_'").pluck(:name, :id).map { |p| [p[0], p[0], {'data-id' => p[1]}] }.unshift(['-请选择-', nil]), @jg_bsb.jg_province), {}, :class => 'form-control input-sm' %>
             <%= f.select :city, [], {}, :class => 'form-control input-sm' %>
             <%= f.select :country, [], {}, :class => 'form-control input-sm' %>
-						<input type="hidden" name="jg_bsb[jg_province]" id="hidden_jg_province">
-						<input type="hidden" name="jg_bsb[city]" id="hidden_city">
+					
+						<%= f.text_field :jg_province, :id => "hidden_jg_province", :type => "hidden" %>	
+						<%= f.text_field :city, :id => "hidden_city", :type => "hidden" %>	
+						<%= f.text_field :country, :id => "hidden_country", :type => "hidden" %>	
           </div>
         </td>
       </tr>
