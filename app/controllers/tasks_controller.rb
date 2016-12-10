@@ -346,7 +346,7 @@ class TasksController < ApplicationController
       else
         if  is_shi_deploy?
           info = current_user.prov_city
-          @province = SysProvince.level1_old.find_by_name(info)
+          @province = SysProvince.level1.find_by_name(info)
           @rwly.push(["#{@province.name}食品药品监督管理局", @province.id])
         elsif is_xian_deploy?
           info = current_user.prov_country
@@ -370,8 +370,15 @@ class TasksController < ApplicationController
       @a_categories = ACategory.select('distinct(a_categories.id), a_categories.*').joins('RIGHT JOIN task_jg_bsbs AS ab ON ab.a_category_id=a_categories.id').where('a_categories.identifier = ? AND ab.jg_bsb_id = ?', @baosong_b.identifier, @jg_bsb.id)
 
       # Task
-      info_s = current_user.prov_city;
-      @province_s = SysProvince.level1.find_by_name(info_s)
+      info_s = current_user.user_s_province
+      if is_shi_deploy?
+     		 info_s = current_user.prov_city;
+					@province_s = SysProvince.level1.find_by_name(info_s)
+      elsif is_xian_deploy?
+      	info_s = current_user.prov_country
+				@province_s = SysProvince.level2.find_by_name(info_s)
+			end
+      
       if @province_s.nil? or @province_s.blank?
         @tasks = TaskJgBsb.where(:jg_bsb_id => @jg_bsb.id, :sys_province_id => params[:rwly]) #, identifier: @baosong_b.identifier)
       else
@@ -382,7 +389,6 @@ class TasksController < ApplicationController
         end
       end
       @delegate = @tasks.select('jg_bsb_id').first
-
       d_category_ids = []
       @tasks.each do |t|
         d_category_ids.concat DCategory.where(a_category_id: t.a_category_id, identifier: @baosong_b.identifier).map { |d| d.id }
