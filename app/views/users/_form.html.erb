@@ -1,5 +1,22 @@
 <script type="text/javascript">
   $(function () {
+    <% if is_city? %>
+      $('#city').attr("disabled","disabled");
+		<% elsif is_county_level? %>
+      $('#city').attr("disabled","disabled");
+      $('#lcity').attr("disabled","disabled");
+    <% end %>
+		if($("#user_user_i_js").prop("checked")){
+			$("#user_admin_level").show();
+		}
+		$(".admin_level").click(function () {
+			if($("#user_user_i_js").prop("checked")){
+				$("#user_admin_level").show();
+			}	else {
+				$("#user_admin_level").hide();
+				$("#user_admin_level").val("0");
+			}
+		});
 //    reload_jg_data();
     $('a.unbind').click(function () {
       $('#user_id_card, .id-card, #user_user_sign').val('');
@@ -27,8 +44,8 @@
 //        $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#city'));
 //      });
 //    }, 'json' );
-  var c = "<%= @user.prov_city %>";
-  var lc = "<%= @user.prov_country %>";
+  	var c = "<%= @user.prov_city %>";
+  	var lc = "<%= @user.prov_country %>";
     $.get('/prov.json', {prov: <%= @province.id %>}, function (data) {
       $('<option>-请选择-</option>').appendTo($('#city'));
       $.each(data.msg, function (i, item) {
@@ -50,7 +67,12 @@
           $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#city'));
         }
       });
-
+		
+			if(window.location.pathname.indexOf("new") != -1){
+				$("#city").val("<%= current_user.prov_city %>").change();
+				$("#hidden_prov_city").val("<%= current_user.prov_city %>");
+				$("#hidden_prov_country").val("<%= current_user.prov_country %>");
+			}
     }, 'json');
 //
 //
@@ -58,34 +80,66 @@
       var o = $(this);
       $('#lcity').empty();
       $('<option>-请选择-</option>').appendTo($('#lcity'));
+			$('#hidden_prov_city').val($('#city').val());
       $.get('/prov.json', {city: o.find('option:selected').attr('data-id')}, function (data) {
         $.each(data.msg, function (i, item) {
           $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#lcity'));
         });
+				$("#lcity").val("<%= current_user.prov_country %>")
       }, 'json');
       reload_jg_data();
-   });
+   	});
+		
+		//给编辑状态下的下拉框赋值
+		<% if @user.id %>
+			$("#city").val("<%= @user.prov_city %>").change();
+			$("#hidden_prov_city").val("<%= @user.prov_city %>");
+			
+			$("#lcity").val("<%= @user.prov_country %>");
+			$("#hidden_prov_country").val("<%= @user.prov_country %>")
+		<% end %>
+
     $('#submit').click(function () {
-      if (($("#user_hccz_level").find("option:selected").val() == 0)&&($("#user_hcz_czbl").attr("checked"))) {
+       if (($("#user_hccz_level").find("option:selected").val() == 0)&&($("#user_hcz_czbl").attr("checked"))) {
         alert("请选择核查处置领取级别");
         $("#user_hccz_level").focus();
         return false;
       }
     });
-  });
-  function reload_jg_data() {
-    $.get('/jg_bsbs/by_jg_name.json', {
-     city:  $('#city').val()
-    }, function (data) {
-      if (data.status == 'OK') {
-        $('#user_jg_bsb_id').empty();
-        $.each(data.msg, function (index, item) {
-          $("<option>").attr({'value': item[1]}).text(item[0]).appendTo($('#user_jg_bsb_id'));
-        });
-        $('#user_jg_bsb_id').select2({theme: 'bootstrap', placeholder: '请选择所在机构'});
-      }
-    }, 'json');
-  }
+		$('#lcity').change(function () {
+			$('#hidden_prov_country').val($('#lcity').val());
+		});
+		$(".btn-success").click(function () {
+			var level_num = $("#user_admin_level").val();
+			var shi   = $("#city").val() == "-请选择-" || $("#city").val() == "";
+			var xian  = $("#lcity").val() == "-请选择-" || $("#lcity").val() == "";
+			if ($(".admin_level input[type='checkbox']").is(':checked')) {
+				if (level_num == 2 && shi){
+					alert("请选择所在市");
+					$("#city").focus();
+					return false;
+				} else if (level_num == 3 && xian) {
+					alert("请选择所在区/县");
+					$("#lcity").focus();
+					return false;
+				}
+			}
+		});
+
+  	function reload_jg_data() {
+  	  $.get('/jg_bsbs/by_jg_name.json', {
+  	   city:  $('#city').val()
+  	  }, function (data) {
+  	    if (data.status == 'OK') {
+  	      $('#user_jg_bsb_id').empty();
+  	      $.each(data.msg, function (index, item) {
+  	        $("<option>").attr({'value': item[1]}).text(item[0]).appendTo($('#user_jg_bsb_id'));
+  	      });
+  	      $('#user_jg_bsb_id').select2({theme: 'bootstrap', placeholder: '请选择所在机构'});
+  	    }
+  	  }, 'json');
+  	}
+	});
 </script>
 <div class="row" style="margin: 0;">
   <div class="col-sm-6 col-sm-offset-3">
@@ -137,7 +191,9 @@
         <br>
         <label>电子邮箱：</label>
         <%= f.text_field :eaddress, :class => "form-control input-sm" %>
-
+         <br>
+        <label>用户类型：</label>
+        <%= f.select :jg_type, options_for_select([['请选择', 0], ['监管部门', 1], ['检验机构', 3]],@user.jg_type), {}, class: 'form-control input-sm'%>
         <br>
         <label>所在省份：</label>
 
@@ -147,6 +203,9 @@
               <%= f.select :user_s_province, '', {}, :class => 'hidden', :id => 'province' %>
               <%= f.select :prov_city, '', {}, :class => 'form-control input-sm', :id => 'city' %>
               <%= f.select :prov_country, '', {}, :class => 'form-control input-sm', :id => 'lcity' %>
+
+        			<%= f.text_field :prov_city, :id => "hidden_prov_city", :type => "hidden" %>
+        			<%= f.text_field :prov_country, :id => "hidden_prov_country", :type => "hidden" %>
             </div>
         <% else %>
             <%= "#{@user.user_s_province}/#{@user.prov_city}/#{@user.prov_country}" %>
@@ -172,9 +231,10 @@
             <% if current_user.is_super? %>
                 <div class="form-inline">
                   <div class="checkbox">
-                    <label>
+                    <label class="admin_level">
                       <%= f.check_box :user_i_js, options = {}, checked_value = "1", unchecked_value = "0" %>
                       是否为地方药监局
+                  		<%= f.select :admin_level, options_for_select([['请选择级别', 0], ['省', 1], ['市', 2], ['县', 3]], @user.admin_level), {}, class: 'form-control input-sm', :style => "height: 20px;padding: 0px 1px 0px 0px;margin-left: 9px;display: none" %>
                     </label>
                   </div>
                   <!--div class="checkbox">
@@ -206,6 +266,9 @@
                 </label></div>
                 <div class="checkbox"><label>
                   <%= f.check_box :user_d_authority_1, options = {}, checked_value = "1", unchecked_value = "0" %>填报检测数据
+                </label></div>
+                <div class="checkbox"><label>
+                   <%= f.check_box :jbxx_sh, options = {}, checked_value = "1", unchecked_value = "0" %>报告发送人
                 </label></div>
                 <div class="checkbox"><label>
                   <%= f.check_box :user_d_authority_2, options = {}, checked_value = "1", unchecked_value = "0" %>上报审核
@@ -310,25 +373,27 @@
             </div>
         <% end %>
         <br>
-        <% if !@user.is_passed? and !current_user.is_super? %>
-            <label>审核记录:</label>
-            <ul>
-              <% @user.user_audit_logs.order('id asc').each do |log| %>
-                  <li><%= log.msg %>
-                    <small>操作人:<%= log.operator.tname %>,
-                      操作时间:<%= log.created_at.strftime('%Y-%m-%d %H:%M:%S') %></small>
-                  </li>
-              <% end %>
-            </ul>
-            <input type="hidden" name="account-pass-request" value="1">
+        <% if !@user.is_passed? and !current_user.is_super?  %>
+             <input type="hidden" name="account-pass-request" value="1">
             <input type="hidden" name="account-pass" id="account-pass-flag">
             <% if current_user.is_account_manager %>
                 <% if (@user.state == User::State::ReviewJG and current_user.is_jg_manager?) or \
                 (current_user.user_s_province == @user.user_s_province and @user.state == User::State::ReviewSJ and current_user.is_prov_manager?) %>
+                 <label>审核记录:</label>
+           				 <ul>
+              		<% @user.user_audit_logs.order('id asc').each do |log| %>
+                  <li><%= log.msg %>
+                    <small>操作人:<%= log.operator.tname %>,
+                      操作时间:<%= log.created_at.strftime('%Y-%m-%d %H:%M:%S') %></small>
+                  </li>
+              		<% end %>
+         				  </ul>
                     <button class="btn btn-sm btn-success pass pass-request" data-confirm="确定审核通过该账号吗？">
                       <i class="glyphicon glyphicon-ok"></i>&nbsp;审核通过
                     </button>
                     <button class="btn btn-sm btn-danger deny pass-request" data-confirm="确定决绝该账号的申请吗？">拒绝申请</button>
+								<% else %>
+                    <button class="btn btn-sm btn-success" data-confirm="确定保存吗？">提交</button>
                 <% end %>
             <% elsif @user.id == current_user.id and @user.is_rejected? %>
                 <button class="btn btn-sm btn-warning pass pass-request" data-confirm="确定重新提交审核该账号吗？">
