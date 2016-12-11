@@ -14,9 +14,9 @@
         </div>
         <br>
         <div class="field">
-          <label>任务来源类型：</label><b style="font-size:10px; color:#999">如省局/市局</b>
+          <label>任务来源类型：</label><b style="font-size:10px; color:#999">如省局/市局/县</b>
           <br>
-          <%= f.select :rwlylx, options_for_select(%w{省局 市/区局}, @baosong_a.rwlylx), {}, class: 'form-control input-sm'%>
+          <%= f.select :rwlylx, options_for_select(%w{省局 市/区局 县}, @baosong_a.rwlylx), {}, class: 'form-control input-sm'%>
         </div>
         <br>
         <div class="field">

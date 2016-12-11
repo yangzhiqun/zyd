@@ -69,7 +69,7 @@
     <% if current_user.jsyp == 1 %>
     <!-- 只有样品接收人员拥有该权限 -->
     <tr>
-      <td colspan="10">
+      <td colspan="11">
         <a href="javascript:void(0);" class="push-all btn btn-xs btn-success"><i class="glyphicon glyphicon-download"></i>批量推送基本信息</a>
       </td>
     </tr>
@@ -84,6 +84,12 @@
       <th class="<%= 'up' if (params[:sp_order_seq] == 'ASC' and params[:sp_order] == 'sp_s_3')%>" width="60" data-field="sp_s_3">
         省份
         <% if params[:sp_order] == "sp_s_3" %>
+        <i class="glyphicon glyphicon-sort-by-attributes<%= params[:sp_order_seq] == "DESC" ? "-alt" : ""%> text-success"></i>
+        <% end %>
+      </th>
+      <th class="<%= 'up' if (params[:sp_order_seq] == 'ASC' and params[:sp_order] == 'sp_s_4')%>" width="60" data-field="sp_s_4">
+       被抽样单位市
+        <% if params[:sp_order] == "sp_s_4" %>
         <i class="glyphicon glyphicon-sort-by-attributes<%= params[:sp_order_seq] == "DESC" ? "-alt" : ""%> text-success"></i>
         <% end %>
       </th>
@@ -127,6 +133,7 @@
       <td width="20"><input type="checkbox" data-id="<%= sp_bsb.id %>" class="check"></td>
       <td><%=((sp_bsb.updated_at).ago(-3600*8)).to_s[0,19]%></td>
       <td><%= sp_bsb.sp_s_3 %></td>
+      <td><%= sp_bsb.sp_s_4.include?("请选择") ? "":sp_bsb.sp_s_4 %></td>
       <td style="word-break:break-all"><%= sp_bsb.sp_s_16 %></td>
       <td><%= sp_bsb.sp_s_14 %></td>
       <td valign="top"><%= sp_bsb.sp_s_35 %></td>
@@ -159,7 +166,13 @@
 					<% else %>
           <%= link_to '已完全提交', "/sp_bsbs/#{sp_bsb.id}", :class => 'btn btn-info btn-xs center-block' %>
 					<% end %>
-          <a href="/sp_bsbs/<%= sp_bsb.id%>/print" class="print-sp-bsb btn btn-xs btn-link center-block" target="_blank">打印</a>
+       <% if sp_bsb.ca_key_status ==0 %>
+           <a href="/sp_bsbs/<%= sp_bsb.id%>/print" class="print-sp-bsb btn btn-xs btn-link center-block" target="_blank">打印</a>
+       <% else %>
+           <a href="/sp_bsbs/<%= sp_bsb.id%>/print.pdf" class="print-sp-bsb btn btn-xs btn-link center-block" target="_blank">打印</a>
+       <% end %>
+        <% elsif sp_bsb.sp_i_state == 16 %>
+             <%= link_to '报告发送人', "/sp_bsbs/#{sp_bsb.id}/edit", :class => 'btn btn-info btn-xs center-block' %>
         <% elsif sp_bsb.sp_i_state == 10 %>
           <%= link_to '批量导入待入库', "/sp_bsbs/#{sp_bsb.id}/edit", :class => 'btn btn-info btn-xs center-block' %>
         <% end %>

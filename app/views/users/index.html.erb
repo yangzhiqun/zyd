@@ -6,6 +6,11 @@
       });
     </script>
 <% end %>
+<script type="text/javascript" charset="utf-8">
+	$(function () {
+		$(".td_city #user_user_search_form_prov").css({"width":"130px","margin-left":"104px"});
+	});
+</script>
 <div class="fontbody">
   <div class="panel panel-default">
     <div class="panel-heading"><h3 class="panel-title">用户查询</h3></div>
@@ -16,8 +21,10 @@
                 <tr>
                   <th width="80">姓名:</th>
                   <td><%= f.text_field :tname, class: 'form-control input-sm' %></td>
-                  <th width="80">市/区:</th>
-                  <td><%= f.select :prov, options_for_select(SysProvince.level1.pluck(:name).unshift(%w{-不限- /}), @search_form.prov), {}, class: 'form-control input-sm' %></td>
+                  <th width="80">省市/区:</th>
+                  <td >
+											<%= f.select :prov, options_for_select(SysProvince.level1.pluck(:name).unshift(%w{-不限- /}),@search_form.prov), {}, class: 'form-control input-sm' %>
+									</td>
                   <th width="80">机构:</th>
                   <% cache 'jg_data' do %>
                       <td><%= f.select :jg_id, options_for_select(JgBsb.all.map { |jg| [jg.jg_name, jg.id] }.unshift(%w{-不限- /}), @search_form.jg_id), {}, class: 'form-control input-sm' %></td>
@@ -39,6 +46,8 @@
                       <label><%= f.check_box :sbsh %>上报审核</label>
                       &emsp;
                       <label><%= f.check_box :sbpz %>上报批准</label>
+                      &emsp;
+                      <label><%= f.check_box :jbxxsh %>报告发送人</label>
                     </div>
                     <hr>
                     <label for="">异议处理</label>
@@ -90,7 +99,9 @@
           <th width="100">UID</th>
           <th>电话</th>
           <th>E-Mail</th>
+	  <th>用户类型</th>
           <th width="60">省份</th>
+          <th width="60">市/区</th>
           <th width="100">上次登录</th>
           <th width="60">-</th>
         </tr>
@@ -102,11 +113,13 @@
               <td><%= user.uid %></td>
               <td><%= user.mobile %><%= user.tel %></td>
               <td><%= user.eaddress %></td>
+              <td><%= user.jg_type_name %></td>
               <td><%= user.user_s_province %></td>
+              <td><%= user.prov_city == "-请选择-" ? "" : user.prov_city %></td>
               <td><%= user.last_sign_in_at %></td>
               <td>
                 <%= link_to '修改', edit_user_path(user), :class => "btn btn-info btn-xs", style: 'margin-bottom: 5px;' %>
-                <% if current_user.name.eql?('superadmin') %>
+                <% if current_user.name.eql?('superadmin') or is_shengshi? %>
                     <%= link_to '删除', user, :method => :delete, :confirm => "确认删除?", :class => "btn btn-danger btn-xs" %>
                 <% end %>
               </td>
@@ -119,7 +132,7 @@
       <% end %>
     </div>
   </div>
-  <% if current_user.name == 'superadmin' %>
+  <% if current_user.name == 'superadmin' or is_shengshi? %>
       <div class="panel panel-default">
         <div class="panel-heading">添加用户</div>
         <div class="panel-body">

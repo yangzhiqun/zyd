@@ -48,6 +48,7 @@
 //= require angular-sanitize
 //= require angularjs/app
 //= require angularjs/controller
+//= require angularjs/controller_newests
 //= require angular-ui-bootstrap-tpls
 
 // Underscore

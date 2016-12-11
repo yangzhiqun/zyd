@@ -53,7 +53,7 @@ class PadSpBsbsController < ApplicationController
 
   #2014-01-12
   def data_owner(params_data)
-    if current_user.is_admin?||session[:change_js]==9||session[:change_js]==10
+    if current_user.is_admin?||session[:change_js]==9||session[:change_js]==10||current_user.is_sheng?||current_user.is_city?||current_user.is_county_level?||current_user.jg_type==1
       return 1
     end
     # if params_data.tname == current_user.name
@@ -148,6 +148,7 @@ class PadSpBsbsController < ApplicationController
     # @sp_bsb.sp_s_37=session[:user_tname]
     @sp_bsb.sp_s_39=current_user.tel
     @sp_bsb.sp_s_52=current_user.user_s_province
+		@sp_bsb.sp_s_city = current_user.prov_city
     @sp_bsb.sp_s_202 = current_user.user_s_province
     if params[:rwly].to_i != 0
       if params[:rwly].to_i == -1
@@ -168,8 +169,24 @@ class PadSpBsbsController < ApplicationController
 
 
     @jg_bsb = current_user.jg_bsb
-    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
-    if !params[:cp].blank? # and params[:cp][:product_id].blank?
+   # @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
+   if current_user.is_admin?
+      @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
+ else
+    if current_user.jg_bsb.jg_type==1
+     super_jg= JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
+        jg_names=[]
+        jg_names.push(current_user.jg_bsb_id)
+        super_jg.each do |j|
+           jg_names.push(j.jg_bsb_id)
+        end
+    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1  and id in (?)',jg_names).order('jg_province')
+    elsif current_user.jg_bsb.jg_type==3
+    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1 and id in (?) ',current_user.jg_bsb_id).order('jg_province')
+    end
+  end 
+  
+  if !params[:cp].blank? # and params[:cp][:product_id].blank?
       @sp_bsb.sp_s_70 = params[:cp][:sp_s_70] unless params[:cp][:sp_s_70].blank?
       @sp_bsb.sp_s_67 = params[:cp][:sp_s_67] unless params[:cp][:sp_s_67].blank?
       @sp_bsb.sp_s_17 = params[:cp][:sp_s_17] unless params[:cp][:sp_s_17].blank?
@@ -366,7 +383,22 @@ class PadSpBsbsController < ApplicationController
     end
 
     @pictures = SpBsbPicture.where(:sp_bsb_id => @sp_bsb.id).order('sort_index ASC')
-    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email').where('status = 0  and jg_detection = 1',current_user.user_s_province).order('jg_province')
+    #@jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email').where('status = 0  and jg_detection = 1',current_user.user_s_province).order('jg_province')
+   if current_user.is_admin?
+      @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
+ else
+    if current_user.jg_bsb.jg_type==1
+     super_jg= JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
+        jg_names=[]
+        jg_names.push(current_user.jg_bsb_id)
+        super_jg.each do |j|
+           jg_names.push(j.jg_bsb_id)
+        end
+    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1  and id in (?)',jg_names).order('jg_province')
+    elsif current_user.jg_bsb.jg_type==3
+    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1 and id in (?) ',current_user.jg_bsb_id).order('jg_province')
+    end
+  end
 =begin
     if @jg_bsb
       # 筛选 送检机构 下拉选项内容
@@ -618,7 +650,7 @@ class PadSpBsbsController < ApplicationController
 
   private
   def pad_sp_bsb_params
-    params.require(:pad_sp_bsb).permit(:report_path, :sp_s_1, :sp_s_2, :sp_s_3, :sp_s_4, :sp_s_5, :sp_s_6, :sp_s_7, :sp_s_8, :sp_s_9, :sp_s_10, :sp_s_11, :sp_s_12, :sp_s_13, :sp_s_14, :sp_n_15, :sp_s_16, :sp_s_17, :sp_s_18, :sp_s_19, :sp_s_20, :sp_s_21, :sp_d_22, :sp_s_23, :sp_s_24, :sp_s_25, :sp_s_26, :sp_s_27, :sp_d_28, :sp_n_29, :sp_s_30, :sp_n_31, :sp_n_32, :sp_s_33, :sp_s_34, :sp_s_35, :sp_s_36, :sp_s_37, :sp_d_38, :sp_s_39, :sp_s_40, :sp_s_41, :sp_s_42, :sp_s_43, :sp_s_44, :sp_s_45, :sp_d_46, :sp_d_47, :sp_s_48, :sp_s_49, :sp_s_50, :sp_s_51, :sp_s_52, :sp_s_53, :sp_s_54, :sp_s_55, :sp_s_56, :sp_s_57, :sp_s_58, :sp_s_59, :sp_s_60, :sp_s_61, :sp_s_62, :sp_s_63, :sp_s_64, :sp_s_65, :sp_s_66, :sp_s_67, :sp_s_68, :sp_s_69, :sp_s_70, :sp_s_71, :sp_s_72, :sp_s_73, :sp_s_74, :sp_s_75, :sp_s_76, :sp_s_77, :sp_s_78, :sp_s_79, :sp_s_80, :sp_s_81, :sp_s_82, :sp_s_83, :sp_s_84, :sp_s_85, :sp_d_86, :sp_s_87, :sp_s_88, :user_id, :uid,
+    params.require(:pad_sp_bsb).permit(:sp_s_city,:report_path, :sp_s_1, :sp_s_2, :sp_s_3, :sp_s_4, :sp_s_5, :sp_s_6, :sp_s_7, :sp_s_8, :sp_s_9, :sp_s_10, :sp_s_11, :sp_s_12, :sp_s_13, :sp_s_14, :sp_n_15, :sp_s_16, :sp_s_17, :sp_s_18, :sp_s_19, :sp_s_20, :sp_s_21, :sp_d_22, :sp_s_23, :sp_s_24, :sp_s_25, :sp_s_26, :sp_s_27, :sp_d_28, :sp_n_29, :sp_s_30, :sp_n_31, :sp_n_32, :sp_s_33, :sp_s_34, :sp_s_35, :sp_s_36, :sp_s_37, :sp_d_38, :sp_s_39, :sp_s_40, :sp_s_41, :sp_s_42, :sp_s_43, :sp_s_44, :sp_s_45, :sp_d_46, :sp_d_47, :sp_s_48, :sp_s_49, :sp_s_50, :sp_s_51, :sp_s_52, :sp_s_53, :sp_s_54, :sp_s_55, :sp_s_56, :sp_s_57, :sp_s_58, :sp_s_59, :sp_s_60, :sp_s_61, :sp_s_62, :sp_s_63, :sp_s_64, :sp_s_65, :sp_s_66, :sp_s_67, :sp_s_68, :sp_s_69, :sp_s_70, :sp_s_71, :sp_s_72, :sp_s_73, :sp_s_74, :sp_s_75, :sp_s_76, :sp_s_77, :sp_s_78, :sp_s_79, :sp_s_80, :sp_s_81, :sp_s_82, :sp_s_83, :sp_s_84, :sp_s_85, :sp_d_86, :sp_s_87, :sp_s_88, :user_id, :uid,
                                        :sp_n_jcxcount,
 																			 :sp_s_37_user_id,
                                        :cyd_file, :cyjygzs_file,
