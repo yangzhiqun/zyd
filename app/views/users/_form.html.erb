@@ -71,10 +71,12 @@
 			if(window.location.pathname.indexOf("new") != -1){
 				$("#city").val("<%= current_user.prov_city %>").change();
 				$("#hidden_prov_city").val("<%= current_user.prov_city %>");
+				$("#hidden_prov_country").val("<%= current_user.prov_country %>");
 			}
     }, 'json');
 //
 //
+		var num = 0 //判断第一次加载
     $('#city').change(function () {
       var o = $(this);
       $('#lcity').empty();
@@ -86,8 +88,20 @@
         });
 				$("#lcity").val("<%= current_user.prov_country %>")
       }, 'json');
-      reload_jg_data();
+			if (num!=0) {
+      	reload_jg_data();
+			}
+			num = num+1;
    	});
+		
+		//给编辑状态下的下拉框赋值
+		<% if @user.id %>
+			$("#city").val("<%= @user.prov_city %>").change();
+			$("#hidden_prov_city").val("<%= @user.prov_city %>");
+			$("#lcity").val("<%= @user.prov_country %>");
+			$("#hidden_prov_country").val("<%= @user.prov_country %>")
+		<% end %>
+
     $('#submit').click(function () {
        if (($("#user_hccz_level").find("option:selected").val() == 0)&&($("#user_hcz_czbl").attr("checked"))) {
         alert("请选择核查处置领取级别");
@@ -192,8 +206,9 @@
               <%= f.select :user_s_province, '', {}, :class => 'hidden', :id => 'province' %>
               <%= f.select :prov_city, '', {}, :class => 'form-control input-sm', :id => 'city' %>
               <%= f.select :prov_country, '', {}, :class => 'form-control input-sm', :id => 'lcity' %>
-							<input type="hidden" name="user[:prov_city]" id="hidden_prov_city">
-							<input type="hidden" name="user[:prov_country]" id="hidden_prov_country">
+
+        			<%= f.text_field :prov_city, :id => "hidden_prov_city", :type => "hidden" %>
+        			<%= f.text_field :prov_country, :id => "hidden_prov_country", :type => "hidden" %>
             </div>
         <% else %>
             <%= "#{@user.user_s_province}/#{@user.prov_city}/#{@user.prov_country}" %>
