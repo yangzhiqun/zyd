@@ -998,7 +998,6 @@ class SpBsbsController < ApplicationController
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3 = ? or sp_bsbs.sp_s_202 = ?", current_user.user_s_province, current_user.user_s_province).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==7 #数据审核
           #@sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
-     logger.error "77 " 
      #if current_user.jg_bsb.jg_type ==1
      # logger.error "7 "
       #begin
@@ -1020,7 +1019,6 @@ class SpBsbsController < ApplicationController
       #end 
        elsif session[:change_js]==6 #数据填报
          # @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
-      logger.error "666 "
       #if current_user.jg_bsb.jg_type ==1
 			#logger.error "6 "
       #begin
@@ -1188,12 +1186,9 @@ class SpBsbsController < ApplicationController
     elsif (current_user.prov_city.blank? or current_user.prov_city.include?('请选择')) and (current_user.prov_country.blank? or current_user.prov_country.include?('请选择'))
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3	=?",current_user.user_s_province).paginate(page: params[:page], per_page: 10)
    end
-logger.error  params[:flag]!="tabs_4"
-    logger.error params[:flag]
      respond_to do |format|
       format.html {
         if @sp_bsbs.respond_to?(:total_pages)
-	logger.error "-"
           render action: "index"
         else
           render text: '账号存在异常，请联系系统维护方。'
