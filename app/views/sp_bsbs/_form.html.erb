@@ -526,6 +526,11 @@
             render_spec_list(data.items);
 						if(window.location.pathname.indexOf("new") != -1){
 							get_basis();
+						}else{
+							//针对老数据　如果老数据没有两项自动添加
+							if ($("#sp_bsb_inspection_basis").val()=="" || $("#sp_bsb_decision_basis").val()==""){
+								get_basis();
+							} 
 						}
           }
         }, 'json');
@@ -1661,7 +1666,13 @@
       $("#sp_bsb_inspection_basis").val(inspection_basis.slice(0,-1));
       $("#sp_bsb_decision_basis").val(decision_basis.slice(0,-1));
     }
-
+	
+		//如果状态不是主检人或者退休则不可以编辑	
+		<% unless [0,2,3].include?@sp_bsb.sp_i_state %>
+			$("#sp_bsb_inspection_basis").attr("readonly","readonly");
+			$("#sp_bsb_decision_basis").attr("readonly","readonly");
+		<% end %>
+		
   	// 模态框需要调用父级框架的显示
   	var modalShow = function(){
   	  //获取父级框架
