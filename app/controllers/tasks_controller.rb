@@ -50,10 +50,13 @@ class TasksController < ApplicationController
       end
 
       # 国家局任务部署
-      if current_user.is_admin?
+      if current_user.is_admin? || params[:tab].to_i == 2 ||is_sheng?
         # 取出省级Province
-        @provinces = SysProvince.level1
-
+        if  params[:tab].to_i == 2
+         @provinces = SysProvince.level3(current_user.prov_city)
+        else
+         @provinces = SysProvince.level1
+        end
         if @baosong_b.nil?
           @a_categories = []
         else
@@ -79,17 +82,25 @@ class TasksController < ApplicationController
           @count = count.first.count
         end
       else
-        # 省局任务部署
-        @province = SysProvince.level1.find_by_name(current_user.prov_city)
+         # 省局任务部署
+           #@province = SysProvince.level1.find_by_name(current_user.prov_city)
+           # if is_sheng?
+						#	@province = SysProvince.level1
+            if is_shi_deploy?
+              @province = SysProvince.level1.find_by_name(current_user.prov_city)
+           elsif is_xian_deploy?
+             @province = SysProvince.level3(current_user.prov_city).find_by_name(current_user.prov_country)
+          else
+           @province = SysProvince.level1 
+          end
+        #end
         tasks = @province.task_provinces
-
+	@jg_bsbs = JgBsb.where(status: 0)
         unless params[:baosong_a].blank?
           @baosong_a = BaosongA.find_by_name(params[:baosong_a])
           @baosong_bs = BaosongB.where(:baosong_a_id => @baosong_a.id)
 
           @baosong_b = @baosong_bs.where(name: params[:baosong_b]).last
-        #  if !current_user.is_admin?
-        #    @baosong_bs = @baosong_bs.where("prov = ? OR prov IS NULL OR prov = ''", current_user.user_s_province)
         #  end
         else
           @baosong_bs = []
@@ -106,12 +117,25 @@ class TasksController < ApplicationController
 
         ids = TaskProvince.where(sys_province_id: @province.id).map { |b| b.a_category_id }
         @a_categories = ACategory.where(id: ids)
-
+       if params[:tab].to_i ==2
+        @delegates = TaskJgBsb.select('distinct(jg_bsb_id)').where(:sys_province_id => @province.id,:status => 1)
+       else
         @delegates = TaskJgBsb.select('distinct(jg_bsb_id)').where(:sys_province_id => @province.id)
-        @count = @delegates.count
-
+        end
+      @count = @delegates.count
         # TODO: 如何精准筛选剩余部分
-        @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0)
+        #if current_user.is_admin?
+         # @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0)
+        #else
+       # if current_user.is_city?
+        #  @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0,:city => current_user.prov_city)
+        # elsif  current_user.is_county_level?
+        #  @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0,:city => current_user.prov_city,:country => current_user.prov_country)
+        # else
+        #  @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0)
+        # end
+        #end 
+         @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0)
         @jyjgs = JgBsb.where(:jg_detection => 1, status: 0)
       end
     end
@@ -123,7 +147,10 @@ class TasksController < ApplicationController
       render json: {status: 'ERR', msg: '请提供必要参数'}
     else
       @plan = TaskProvince.new(identifier: params[:identifier], sys_province_id: params[:prov], :a_category_id => params[:dl], :quota => params[:quota])
-
+     if current_user.is_city?
+      @plan.status=1
+     end
+     
       destroy_category_level = 'a_category_id'
 
       if params[:yl].to_i != 0
@@ -157,7 +184,17 @@ class TasksController < ApplicationController
     if params[:jg_id].blank? or params[:dl].blank? or params[:quota].blank?
       render json: {status: 'ERR', msg: '请提供必要参数'}
     else
-      @plan = TaskJgBsb.new(identifier: params[:identifier], sys_province_id: -1, is_national: true, test_jg_bsb_id: params[:test_jg_id], jg_bsb_id: params[:jg_id], :a_category_id => params[:dl], :quota => params[:quota])
+       if is_shi_deploy? # current_user.is_city?
+        sysProvince =SysProvince.level1.find_by_name(current_user.prov_city)
+        sys_province_id= sysProvince.id
+      elsif is_xian_deploy?# current_user.is_county_level?
+        sysProvince=SysProvince.level3(current_user.prov_city).find_by_name(current_user.prov_country)
+        sys_province_id= sysProvince.id
+      else
+        sys_province_id = -1 
+      end
+
+      @plan = TaskJgBsb.new(identifier: params[:identifier], sys_province_id: sys_province_id, is_national: true, test_jg_bsb_id: params[:test_jg_id], jg_bsb_id: params[:jg_id], :a_category_id => params[:dl], :quota => params[:quota])
 
       destroy_category_level = 'a_category_id'
 
@@ -177,7 +214,7 @@ class TasksController < ApplicationController
       end
 
       # 强制清除已经部署的与当前有冲突的任务
-      TaskJgBsb.where("identifier = ? and sys_province_id = -1 and jg_bsb_id = ? and (#{destroy_category_level} is NULL or #{destroy_category_level} = ?)", params[:identifier], params[:jg_id], @plan[destroy_category_level]).destroy_all
+      TaskJgBsb.where("identifier = ? and sys_province_id = #{sys_province_id} and jg_bsb_id = ? and (#{destroy_category_level} is NULL or #{destroy_category_level} = ?)", params[:identifier], params[:jg_id], @plan[destroy_category_level]).destroy_all
 
       if @plan.save
         render json: {status: 'OK', msg: '成功！'}
@@ -226,7 +263,13 @@ class TasksController < ApplicationController
       #  info = current_user.prov_country;
       #  @province = SysProvince.level2.find_by_name(info)
       #end
-      @province = SysProvince.level1.find_by_name(current_user.prov_city)
+      if is_shi_deploy?#  current_user.is_city?
+        @province =SysProvince.level1.find_by_name(current_user.prov_city)
+      elsif is_xian_deploy? # current_user.is_county_level?
+        @province =SysProvince.level3(current_user.prov_city).find_by_name(current_user.prov_country)
+      else
+        @province =SysProvince.level1.find_by_name(current_user.prov_city)
+      end
       @plan = TaskJgBsb.new(identifier: params[:identifier], sys_province_id: @province.id, jg_bsb_id: params[:jg_id], :a_category_id => params[:dl], :quota => params[:quota])
 
       destroy_category_level = 'a_category_id'
@@ -277,21 +320,43 @@ class TasksController < ApplicationController
 
     # 任务来源
     @rwly = []
+#begin    @tasks.joins('LEFT JOIN sys_provinces on sys_provinces.id=task_jg_bsbs.sys_province_id').select('distinct(task_jg_bsbs.sys_province_id), sys_provinces.name').each do |task|
+ #     if task.sys_province_id == -1
+  #      @rwly.unshift(["#{SysConfig.get(SysConfig::Key::PROV)}食品药品监督管理局", -1])
+   #   else
+    #    if  current_user.prov_country.nil? or current_user.prov_country.blank? or  %w{ -请选择- }.include?(current_user.prov_country)
+     #     info = current_user.prov_city;
+      #    if(info.nil? or info.blank? or %w{ -请选择- }.include?(info))
+       #   @province = SysProvince.level1_old.find_by_name(current_user.user_s_province)
+        #  @rwly.push(["#{current_user.user_s_province}食品药品监督管理局", @province.id])
+         # else
+          #@province = SysProvince.level1.find_by_name(task.name)
+          #@rwly.push(["#{@province.name}食品药品监督管理局", @province.id])
+         # end
+        #else
+         # info = current_user.prov_country;
+         # @province = SysProvince.level2.find_by_name(task.name)
+         # @rwly.push(["#{@province.name}食品药品监督管理局", @province.id])
+        #end
+        #@rwly.push(["#{task.name}食品药品监督管理局", task.sys_province_id])
+#end      end
     @tasks.joins('LEFT JOIN sys_provinces on sys_provinces.id=task_jg_bsbs.sys_province_id').select('distinct(task_jg_bsbs.sys_province_id), sys_provinces.name').each do |task|
-      if task.sys_province_id == -1
+      if  task.sys_province_id == -1 #current_user.is_admin? or
         @rwly.unshift(["#{SysConfig.get(SysConfig::Key::PROV)}食品药品监督管理局", -1])
       else
-        if  current_user.prov_country.nil? or current_user.prov_country.blank? or  %w{ -请选择- }.include?(current_user.prov_country)
-          info = current_user.prov_city;
+        if  is_shi_deploy?
+          info = current_user.prov_city
           @province = SysProvince.level1.find_by_name(info)
-          @rwly.push(["#{info}食品药品监督管理局", @province.id])
-        else
-          info = current_user.prov_country;
+          @rwly.push(["#{@province.name}食品药品监督管理局", @province.id])
+        elsif is_xian_deploy?
+          info = current_user.prov_country
           @province = SysProvince.level2.find_by_name(info)
-          @rwly.push(["#{info}食品药品监督管理局", @province.id])
+          @rwly.push(["#{@province.name}食品药品监督管理局", @province.id])
+        else
+          @rwly.push([current_user.user_s_province+"食品药品监督管理局", task.sys_province_id])
         end
-        #@rwly.push(["#{task.name}食品药品监督管理局", task.sys_province_id])
       end
+      @rwly.uniq!
     end
 
     if @baosong_b.nil?
@@ -305,8 +370,15 @@ class TasksController < ApplicationController
       @a_categories = ACategory.select('distinct(a_categories.id), a_categories.*').joins('RIGHT JOIN task_jg_bsbs AS ab ON ab.a_category_id=a_categories.id').where('a_categories.identifier = ? AND ab.jg_bsb_id = ?', @baosong_b.identifier, @jg_bsb.id)
 
       # Task
-      info_s = current_user.prov_city;
-      @province_s = SysProvince.level1.find_by_name(info_s)
+      info_s = current_user.user_s_province
+      if is_shi_deploy?
+     		 info_s = current_user.prov_city;
+					@province_s = SysProvince.level1.find_by_name(info_s)
+      elsif is_xian_deploy?
+      	info_s = current_user.prov_country
+				@province_s = SysProvince.level2.find_by_name(info_s)
+			end
+      
       if @province_s.nil? or @province_s.blank?
         @tasks = TaskJgBsb.where(:jg_bsb_id => @jg_bsb.id, :sys_province_id => params[:rwly]) #, identifier: @baosong_b.identifier)
       else
@@ -317,34 +389,77 @@ class TasksController < ApplicationController
         end
       end
       @delegate = @tasks.select('jg_bsb_id').first
-
       d_category_ids = []
       @tasks.each do |t|
         d_category_ids.concat DCategory.where(a_category_id: t.a_category_id, identifier: @baosong_b.identifier).map { |d| d.id }
       end
       d_category_ids.uniq!
-      @d_categories = DCategory.where(id: d_category_ids, identifier: @baosong_b.identifier).order("a_category_id, b_category_id, c_category_id")
+      #@d_categories = DCategory.where(id: d_category_ids, identifier: @baosong_b.identifier).order("a_category_id, b_category_id, c_category_id")
+      @d_categories = DCategory.where('id in (?) and identifier = ?', d_category_ids, @baosong_b.identifier).order("a_category_id, b_category_id, c_category_id")
     end
   end
 
   def check
     @jg_bsb = current_user.jg_bsb
+	if @jg_bsb.jg_type ==1
+    begin
+      super_jg = JgBsbSuper.where(super_jg_bsb_id: @jg_bsb.id ).group("jg_bsb_id")
+        jg_names=[]
+        jg_names.push(@jg_bsb.jg_name)
+        super_jg.each do |j|
+           jg_names.push(j.jg_bsb.jg_name)
+        end
+    rescue
+    end
+    elsif @jg_bsb.jg_type ==3
+        jg_names=[@jg_bsb.jg_name]
+    end
     case params[:tab].to_i
       when 0
-        if current_user.is_admin?
-          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::FINISHED)
+    if current_user.is_admin? 
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::TMP_SAVE)
         elsif session[:change_js]==10
-          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::FINISHED, :sp_s_43 => @jg_bsb.all_names)
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::TMP_SAVE, :sp_s_43 => jg_names)
+        elsif current_user.is_sheng?
+          @pad_sp_bsbs = PadSpBsb.where("sp_i_state =? ",::PadSpBsb::Step::TMP_SAVE)
+        elsif current_user.is_city?
+           @pad_sp_bsbs = PadSpBsb.where("sp_i_state =? and (sp_s_4= ? or sp_s_220 =?)",::PadSpBsb::Step::TMP_SAVE,current_user.prov_city,current_user.prov_city)
+        elsif current_user.is_county_level?
+          @pad_sp_bsbs = PadSpBsb.where("sp_i_state =? and (sp_s_5= ? or sp_s_221 =?)",::PadSpBsb::Step::TMP_SAVE,current_user.prov_country,current_user.prov_country)
         else
-          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::TMP_SAVE, :sp_s_43 => @jg_bsb.all_names)
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::TMP_SAVE, :sp_s_43 => jg_names)
         end
       when 1
-        @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED], :sp_s_43 => @jg_bsb.all_names)
+        if current_user.is_sheng? or current_user.is_admin?
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state =>[::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED])
+        elsif current_user.is_city?
+          @pad_sp_bsbs = PadSpBsb.where("sp_i_state in (?) and (sp_s_4= ? or sp_s_220 =?)",[::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED],current_user.prov_city,current_user.prov_city)
+        elsif current_user.is_county_level?
+          @pad_sp_bsbs = PadSpBsb.where("sp_i_state in (?) and (sp_s_5= ? or sp_s_221 =?)",[::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED],current_user.prov_country,current_user.prov_country)
+        else 
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED], :sp_s_43 => jg_names)
+        end
       when 2
-        @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED], :sp_s_43 => @jg_bsb.all_names)
+        if current_user.is_sheng? or current_user.is_admin?
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state =>[::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED])
+        elsif current_user.is_city?
+          @pad_sp_bsbs = PadSpBsb.where("sp_i_state in (?) and (sp_s_4= ? or sp_s_220 =?)",[::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED],current_user.prov_city,current_user.prov_city)
+        elsif current_user.is_county_level?
+          @pad_sp_bsbs = PadSpBsb.where("sp_i_state in (?) and (sp_s_5= ? or sp_s_221 =?)",[::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED],current_user.prov_country,current_user.prov_country)
+        else 
+        @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED], :sp_s_43 => jg_names)
+        end
       when 3
-        @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::SAMPLE_REFUSED, :sp_s_43 => @jg_bsb.all_names)
-    end
+        if current_user.is_sheng? or current_user.is_admin?
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state =>::PadSpBsb::Step::SAMPLE_REFUSED)
+        elsif current_user.is_city?
+          @pad_sp_bsbs = PadSpBsb.where("sp_i_state in (?) and (sp_s_4= ? or sp_s_220 =?)",::PadSpBsb::Step::SAMPLE_REFUSED,current_user.prov_city,current_user.prov_city)
+        elsif current_user.is_county_level?
+          @pad_sp_bsbs = PadSpBsb.where("sp_i_state in (?) and (sp_s_5= ? or sp_s_221 =?)",::PadSpBsb::Step::SAMPLE_REFUSED,current_user.prov_country,current_user.prov_country)
+        else 
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::SAMPLE_REFUSED, :sp_s_43 => jg_names)
+        end
+     end
 
     unless params[:begin_time].blank?
       @begin_time = DateTime.parse(params[:begin_time]).beginning_of_day

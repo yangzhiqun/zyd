@@ -10,6 +10,7 @@
 /public/assets
 .DS_Store
 bin/
+config/database.yml
 
 # Ignore the default SQLite database.
 /db/*.sqlite3
@@ -33,5 +34,5 @@ excel/*
 dump.rdb
 *.sql
 docker_database/data/
-database.yml
+*/database.yml
 access_token

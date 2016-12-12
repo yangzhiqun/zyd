@@ -11,6 +11,14 @@ class SysProvince < ActiveRecord::Base
     where('level LIKE ? or level LIKE ? or level LIKE ? or level LIKE ? or level LIKE ? or level LIKE ?', "#{prov.level}._._", "#{prov.level}.__._", "#{prov.level}.__.__", "#{prov.level}._.__","#{prov.level}._", "#{prov.level}.__")
   }
    scope :level1_old, -> { where("level LIKE '_' or level LIKE '__'") }
+  scope :level3,->(city_name) {
+  if true  
+    prov =SysProvince.find_by_name(city_name)
+   else
+    prov = SysProvince.where("level like '_' or level like '__'").find_by_name(SysConfig.get(SysConfig::Key::PROV))
+   end
+     where('level LIKE ? or level LIKE ? or level LIKE ? or level LIKE ? or level LIKE ? or level LIKE ?', "#{prov.level}._._", "#{prov.level}.__._", "#{prov.level}.__.__", "#{prov.level}._.__","#{prov.level}._", "#{prov.level}.__")
+  }
 
   validates_uniqueness_of :code, :message => '已存在该编号', allow_nil: true
   validates_uniqueness_of :level, :message => '已存在该省份'

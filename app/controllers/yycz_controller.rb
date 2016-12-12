@@ -92,17 +92,20 @@ class YyczController < ApplicationController
     @begin_at = params[:begin_at].blank? ? (Time.now - 1.year) : DateTime.parse(params[:begin_at]).beginning_of_day
     @end_at = params[:end_at].blank? ? Time.now : DateTime.parse(params[:end_at]).end_of_day
     @yyczs = SpYydjb.select("y.*").joins("as y left join sp_bsbs as s on y.cjbh = s.sp_s_16")
-
+  
+   if current_user.is_admin? || current_user.yyadmin == 1 || current_user.prov_city.blank? || current_user.prov_city =="-请选择-"
+     if params[:current_tab].to_i == 0
+        @yyczs = @yyczs.where("y.current_state = ? and (y.bcydwsf = ? or y.bsscqysf = ?)",SpYydjb::State::ASSIGNED, current_user.user_s_province, current_user.user_s_province)
+      else
+       @yyczs = @yyczs.where("y.current_state = ? and (y.bcydwsf = ? or y.bsscqysf = ?)",SpYydjb::State::FILLED, current_user.user_s_province, current_user.user_s_province)
+     end 
+  else
     if params[:current_tab].to_i == 0
-      @yyczs = @yyczs.where("y.current_state = ?", SpYydjb::State::ASSIGNED).order("y.created_at ASC")
+      @yyczs = @yyczs.where("y.current_state = ? and (bcydws =? or bsscqys =?)", SpYydjb::State::ASSIGNED,current_user.prov_city,current_user.prov_city).order("y.created_at ASC")
     else
-      @yyczs = @yyczs.where("y.current_state = ?", SpYydjb::State::FILLED).order("y.created_at ASC")
+      @yyczs = @yyczs.where("y.current_state = ? and (bcydws =? or bsscqys =?)", SpYydjb::State::FILLED,current_user.prov_city,current_user.prov_city).order("y.created_at ASC")
     end
-
-    if current_user.yyadmin != 1
-      @yyczs = @yyczs.where("y.bcydwsf = ? or y.bsscqysf = ?", current_user.user_s_province, current_user.user_s_province)
-    end
-
+   end
     # 样品名称
     unless params[:ypmc].blank?
       @yyczs = @yyczs.where("y.ypmc like ?", "%#{params[:ypmc]}%")
@@ -146,14 +149,19 @@ class YyczController < ApplicationController
     @end_at = params[:end_at].blank? ? Time.now : DateTime.parse(params[:end_at]).end_of_day
     @yyczs = SpYydjb.select("y.*").joins("as y left join sp_bsbs as s on y.cjbh = s.sp_s_16")
 
-    if params[:current_tab].to_i == 0
-      @yyczs = @yyczs.where("y.current_state = ?", SpYydjb::State::FILLED).order("y.created_at ASC")
+    if  current_user.is_admin? || current_user.yyadmin == 1 || current_user.prov_city.blank? || current_user.prov_city =="-请选择-"
+     if params[:current_tab].to_i == 0
+      @yyczs = @yyczs.where(" y.current_state = ? and(y.bcydwsf = ? or y.bsscqysf = ?)",SpYydjb::State::FILLED, current_user.user_s_province, current_user.user_s_province)
+      else
+      @yyczs = @yyczs.where(" y.current_state = ? and ( y.bcydwsf = ? or y.bsscqysf = ?)",SpYydjb::State::PASSED, current_user.user_s_province, current_user.user_s_province)
+     end
+     else
+      if params[:current_tab].to_i == 0
+      @yyczs = @yyczs.where("y.current_state = ? and (bcydws =? or bsscqys =?)", SpYydjb::State::FILLED,current_user.prov_city,current_user.prov_city).order("y.created_at ASC")
     else
-      @yyczs = @yyczs.where("y.current_state = ?", SpYydjb::State::PASSED).order("y.created_at ASC")
+      @yyczs = @yyczs.where("y.current_state = ? and (bcydws =? or bsscqys =?)", SpYydjb::State::PASSED,current_user.prov_city,current_user.prov_city).order("y.created_at ASC")
     end
 
-    if current_user.yyadmin != 1
-      @yyczs = @yyczs.where("y.bcydwsf = ? or y.bsscqysf = ?", current_user.user_s_province, current_user.user_s_province)
     end
     # 样品名称
     unless params[:ypmc].blank?
@@ -198,11 +206,16 @@ class YyczController < ApplicationController
       @sp_bsbs = []
     else
       @sp_bsbs = SpBsb.select("s.*").group('s.sp_s_16').order('s.updated_at DESC').joins("AS s LEFT JOIN sp_yydjbs AS y ON s.sp_s_16=y.cjbh").where("y.current_state NOT IN (1, 2, 3) OR y.cjbh IS NULL").where("(s.sp_s_71 LIKE ? OR s.sp_s_71 LIKE ?) AND s.sp_i_state = 9", "%问题样品%", "%不合格样品%")
-
-      if current_user.yyadmin != 1
-        @sp_bsbs = @sp_bsbs.where("s.sp_s_3 = ? OR s.sp_s_202 = ?", current_user.user_s_province, current_user.user_s_province)
+     if !current_user.is_admin?
+      if current_user.yyadmin !=1 
+       if is_shi_deploy?
+       # @sp_bsbs = @sp_bsbs.where("s.sp_s_4 = ? OR s.sp_s_220 = ?", current_user.user_s_province, current_user.user_s_province)
+       	@sp_bsbs = @sp_bsbs.where("s.sp_s_4 = ? OR s.sp_s_220 = ? ", current_user.prov_city,  current_user.prov_city)
+				elsif is_xian_deploy?
+         @sp_bsbs = @sp_bsbs.where("s.sp_s_5 = ? OR s.sp_s_221 = ? ", current_user.prov_country,  current_user.prov_country)
+       end
       end
-
+		end
       if !params[:cjbh].blank?
         @sp_bsbs = @sp_bsbs.where("s.sp_s_16 like ? ", "%#{params[:cjbh]}%")
       end
@@ -213,7 +226,7 @@ class YyczController < ApplicationController
   def show
     @djb = SpYydjb.find(params[:id])
     @spdata = SpYydjbSpdata.where(:sp_yydjb_id => @djb.id)
-
+    @sp_bsb =SpBsb.find_by_sp_s_16(@djb.cjbh)
     @attachments = Attachment.where("id in (?)", (@djb.attachments||"").split(","))
 
     respond_to do |format|
@@ -399,10 +412,10 @@ class YyczController < ApplicationController
 
   private
   def yydjb_params
-    params.require(:yycz).permit(:attachments, :attachment_file, :sp_bsb_id, :yyczqk, :yyczzt, :yyczjg, :fjzt, :fjsqqk, :bcydw, :bcydwsf, :cydw, :cydwsf, :bsscqy, :bsscqysf, :yysdsj, :yytcsj, :yyfl, :yyczbm, :yyczfzr, :cjbh, :ypmc, :ypgg, :ypph, :jyjl, :scrq, :yytcr, :yynr, :fjsqr, :fjsqsj, :fjslrq, :fjwcsj, :fjjg, :bljg, :djbm, :djr, :djsj, :blbm, :blr, :blsj, :tbbm, :tbr, :tbsj, :shbm, :shr, :shsj, :dj_delayed,:gzscqyrq,:gzbcydwrq)
+    params.require(:yycz).permit(:bcydws,:bsscqys,:attachments, :attachment_file, :sp_bsb_id, :yyczqk, :yyczzt, :yyczjg, :fjzt, :fjsqqk, :bcydw, :bcydwsf, :cydw, :cydwsf, :bsscqy, :bsscqysf, :yysdsj, :yytcsj, :yyfl, :yyczbm, :yyczfzr, :cjbh, :ypmc, :ypgg, :ypph, :jyjl, :scrq, :yytcr, :yynr, :fjsqr, :fjsqsj, :fjslrq, :fjwcsj, :fjjg, :bljg, :djbm, :djr, :djsj, :blbm, :blr, :blsj, :tbbm, :tbr, :tbsj, :shbm, :shr, :shsj, :dj_delayed,:gzscqyrq,:gzbcydwrq)
   end
 
   def djb_params
-    params.require(:djb).permit(:attachments, :attachment_file, :sp_bsb_id, :yyczqk, :yyczzt, :yyczjg, :fjzt, :fjsqqk, :bcydw, :bcydwsf, :cydw, :cydwsf, :bsscqy, :bsscqysf, :yysdsj, :yytcsj, :yyfl, :yyczbm, :yyczfzr, :cjbh, :ypmc, :ypgg, :ypph, :jyjl, :scrq, :yytcr, :yynr, :fjsqr, :fjsqsj, :fjslrq, :fjwcsj, :fjjg, :bljg, :djbm, :djr, :djsj, :blbm, :blr, :blsj, :tbbm, :tbr, :tbsj, :shbm, :shr, :shsj, :dj_delayed,:gzscqyrq,:gzbcydwrq)
+    params.require(:djb).permit(:bcydws,:bsscqys,:attachments, :attachment_file, :sp_bsb_id, :yyczqk, :yyczzt, :yyczjg, :fjzt, :fjsqqk, :bcydw, :bcydwsf, :cydw, :cydwsf, :bsscqy, :bsscqysf, :yysdsj, :yytcsj, :yyfl, :yyczbm, :yyczfzr, :cjbh, :ypmc, :ypgg, :ypph, :jyjl, :scrq, :yytcr, :yynr, :fjsqr, :fjsqsj, :fjslrq, :fjwcsj, :fjjg, :bljg, :djbm, :djr, :djsj, :blbm, :blr, :blsj, :tbbm, :tbr, :tbsj, :shbm, :shr, :shsj, :dj_delayed,:gzscqyrq,:gzbcydwrq)
   end
 end

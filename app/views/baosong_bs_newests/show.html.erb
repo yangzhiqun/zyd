@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>名称:</b>
+  <%= @baosong_b.name %>
+</p>
+
+<p>
+  <b>备注:</b>
+  <%= @baosong_b.note %>
+</p>
+
+<p>
+  <b>所在报送分类A:</b>
+  <%= @baosong_b.baosong_a_id %>
+</p>
+
+<p>
+  <b>所在区域:</b>
+  <%= @baosong_b.prov %>
+</p>
+
+<%= link_to '修改', edit_baosong_bs_newest_path(@baosong_b) %> |
+<%= link_to '详情', baosong_bs_newest_path %>

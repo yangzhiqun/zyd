@@ -55,6 +55,52 @@ class CategoryHelperController < ApplicationController
     end
   end
 
+	def batch_create
+    params.permit!
+    model = params[:category].constantize
+		identifier = params[:identifier]	
+		selected_name = params[:selected_name]	
+		@error_arr = []
+		if model == ACategory 
+			params[:names].split(',').each do |name|
+				@category = ACategory.new(name: name, identifier: identifier)
+				unless @category.save
+				  @error_arr << @category.errors.first.last
+				end
+			end
+		elsif model == BCategory
+			a_category = ACategory.where(name:selected_name["a_category_name"],identifier:identifier).first
+			params[:names].split(',').each do |name|
+				@category = BCategory.new(name: name, a_category_id: a_category.id, identifier: identifier)
+				unless @category.save
+				  @error_arr << @category.errors.first.last
+				end
+			end
+		end		
+		if @error_arr.empty?
+			render json: { status: 'OK', msg: 'create category succ'}
+		else
+			render json: { status: 'ERR', msg: @error_arr}
+		end
+	end
+
+	def query_categorys
+    params.permit!
+    model = params[:category]
+		identifier = params[:identifier]	
+		selected_name = params[:selected_name]
+		@names = []
+		case model
+			when "ACategory"
+				@categories = ACategory.where(identifier: identifier)
+			when "BCategory"	
+				a_category = ACategory.where(name:selected_name["a_category_name"],identifier:identifier).first		
+				@categories = BCategory.where(a_category_id: a_category.id,identifier: identifier)	
+		end
+		@categories.each{ |c| @names << c.name}
+    render json: {status: 'OK', msg: @names}
+	end
+
   def update
     params.permit!
     model = params[:category].constantize

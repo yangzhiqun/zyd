@@ -1,4 +1,4 @@
-  <%= wicked_pdf_stylesheet_link_tag 'print' %>
+﻿<%= wicked_pdf_stylesheet_link_tag 'print' %>
 <div class="book">
   <div class="page">
     <div class="subpage cover">
@@ -20,14 +20,18 @@
         </tr>
         <tr align="center">
           <td colspan="6">
-            <p style="font-size:42px; font-family: '宋体';"><strong>检&nbsp;验&nbsp;报&nbsp;告</strong></p>
+            <p style="font-size:48px; font-family: '宋体';"><strong>检　&nbsp;验　&nbsp;报　&nbsp;告</strong></p>
           </td>
         </tr>
         <tr>
           <td>&nbsp;</td>
         </tr>
         <tr>
-          <td align="center" colspan="2">№：<%= @spbsb.sp_s_45 %></td>
+          <% if @spbsb.sp_s_44.eql?('风险监测') %>
+              <td align="center" colspan="2">№：<%= @spbsb.sp_s_45 %>F</td>
+          <% else %>
+              <td align="center" colspan="2">№：<%= @spbsb.sp_s_45 %></td>
+          <% end %>
         </tr>
         <tr>
           <td>&nbsp;</td>
@@ -42,32 +46,50 @@
           <td>&nbsp;</td>
         </tr>
         <tr>
-          <td align="right" width="40%" height="60" style="word-spacing:16px;">食 品 名 称：</td>
-          <td align="left" height="60"><%= @spbsb.sp_s_14 %></td>
+          <td align="right" width="40%" height="60" style="word-spacing:16px;font-weight:bold;vertical-align:bottom">食 品
+            名 称：
+          </td>
+          <td align="left" height="60" style="border-bottom-style:solid;border-bottom-width: thin;border-bottom-color: #000;vertical-align:bottom"><%= @spbsb.sp_s_14 %></td>
         </tr>
         <tr>
-          <td align="right" width="40%" height="60" style="word-spacing:7px;">被 抽 样 单 位：</td>
-          <td align="left" height="60"><%= @spbsb.sp_s_1 %></td>
+          <td align="right" width="40%" height="60" style="word-spacing:7px;font-weight:bold;vertical-align:bottom">被 抽
+            样 单 位：
+          </td>
+          <td align="left" height="60" style="border-bottom-style:solid;border-bottom-width: thin;border-bottom-color: #000;vertical-align:bottom"><%= @spbsb.sp_s_1 %></td>
         </tr>
         <tr>
-          <td align="right" width="40%" height="60" style="word-spacing:7px;">标 称 生 产 者：</td>
-          <td align="left" height="60"><%= @spbsb.sp_s_64 %></td>
+          <td align="right" width="40%" height="60" style="word-spacing:7px;font-weight:bold;vertical-align:bottom">标 称
+            生 产 者：
+          </td>
+          <td align="left" height="60" style="border-bottom-style:solid;border-bottom-width: thin;border-bottom-color: #000;vertical-align:bottom"><%= @spbsb.sp_s_64 %></td>
         </tr>
         <tr>
-          <td align="right" width="40%" height="60" style="word-spacing:16px;">委 托 单 位：</td>
-          <td align="left" height="60"><%= @spbsb.sp_s_2_1 %></td>
+          <td align="right" width="40%" height="60" style="word-spacing:16px;font-weight:bold;vertical-align:bottom">委 托
+            单 位：
+          </td>
+          <td align="left" height="60" style="border-bottom-style:solid;border-bottom-width: thin;border-bottom-color: #000;vertical-align:bottom"><%= @spbsb.sp_s_2_1 %></td>
         </tr>
         <tr>
-          <td align="right" width="40%" height="60" style="word-spacing:16px;">检 验 类 别：</td>
-          <td align="left" height="60"><%= @spbsb.sp_s_44 %></td>
+          <td align="right" width="40%" height="60" style="word-spacing:16px;font-weight:bold;vertical-align:bottom">检 验
+            类 别：
+          </td>
+					<% if @spbsb.sp_s_44.eql?('风险监测') %>
+							<td align="left" height="60" style="border-bottom-style:solid;border-bottom-width: thin;border-bottom-color: #000;vertical-align:bottom">国家食品安全风险监测</td>
+					<% else %>
+							<td align="left" height="60" style="border-bottom-style:solid;border-bottom-width: thin;border-bottom-color: #000;vertical-align:bottom">国家食品安全监督抽检</td>
+					<% end %>
         </tr>
       </table>
       <br/>
       <br/>
       <br/>
-      <br/>
-
-      <p class="page-footer" align="center"><%= @spbsb.sp_s_43 %></p>
+      <% if @spbsb.sp_s_43 == '山西省食品质量安全监督检验研究院' %>
+          <p class="page-footer" align="center" style="font-weight:bold;">国家农副加工产品及白酒质量监督检验中心<br/><%= @spbsb.sp_s_43 %>
+          </p>
+      <% else %>
+          <br/>
+          <p class="page-footer" align="center" style="font-weight:bold;"><%= @spbsb.sp_s_43 %></p>
+      <% end %>
     </div>
   </div>
   <div class="page">
@@ -82,9 +104,11 @@
           <td colspan="6">
             <p style="line-height:15px;text-indent: 1cm;line-height:0.8cm;">1．报告无“检验报告专用章”或检验单位公章无效。</p>
 
-            <p style="line-height:15px;text-indent: 1cm;line-height:0.8cm;">2．报告无检验、审核、批准人签字无效。</p>
+            <p style="line-height:15px;text-indent: 1cm;line-height:0.8cm;">2．复印报告未重新加盖“检验专用章”无效。</p>
+            <p style="line-height:15px;text-indent: 1cm;line-height:0.8cm;">3．报告无检验、审核、批准人签字无效。</p>
 
-            <p style="line-height:15px;text-indent: 1cm;line-height:0.8cm;">3．报告涂改无效。</p>
+            <p style="line-height:15px;text-indent: 1cm;line-height:0.8cm;">4．报告涂改无效。</p>
+            <p style="line-height:15px;text-indent: 1cm;line-height:0.8cm;">5．对检验结果若有异议，请于收到之日起七个工作日内以书面形式提出，逾期不予受理。</p>
           </td>
         </tr>
         <tr>
@@ -97,254 +121,309 @@
           <th width="100" align="right">地&nbsp;址：</th>
           <td colspan="2"><%= @jg_bsb.jg_address %></td>
           <th width="100" align="right">电话(含区号)：</th>
-          <td colspan="2"><%= @spbsb.sp_s_41 %></td>
+          <td colspan="2"><%= @jg_bsb.jg_tel %></td>
         </tr>
         <tr>
           <th align="right">邮&nbsp;编：</th>
-          <td colspan="2"><%= @spbsb.sp_s_212 %></td>
+          <td colspan="2"><%= @jg_bsb.zipcode %></td>
           <th align="right">传真(含区号)：</th>
-          <td colspan="2"><%= @spbsb.sp_s_213 %></td>
+          <td colspan="2"><%= @jg_bsb.fax %></td>
         </tr>
         <tr>
           <th align="right">E-mail:</th>
-          <td colspan="5"><%= @spbsb.sp_s_42 %></td>
+          <td colspan="5"><%= @jg_bsb.jg_email %></td>
         </tr>
       </table>
       <p class="page-note">&nbsp;</p>
     </div>
   </div>
-  <div class="page">
-    <div class="subpage cover">
-      <p align="center" style="font-size:18pt"><%= @spbsb.sp_s_43 %></p>
-
-      <p align="center" style="font-size:24pt">食品安全监督抽检检验报告</p>
-      <table width="100%" cellspacing="0" cellpadding="0" border="0">
-        <tr>
-          <td align="left"><p style="font-size:14pt">№：<%= @spbsb.sp_s_45 %></p>
-          </td>
-          <td><p style="font-size:14pt; word-spacing:10px;" align="right">共<%= ((@cjx.count - 16).to_f / 16).ceil + 2 %>页 第1页</p>
-          </td>
-        </tr>
-      </table>
-      <table class="table-bordered" border="1" cellspacing="0" cellpadding="0">
-        <tr height="30">
-          <th colspan="2">食品名称</th>
-          <td align="left" colspan="2"><%= @spbsb.sp_s_14 %></td>
-          <th>商标</th>
-          <td><%= @spbsb.sp_s_74 %></td>
-          <th>规格型号</th>
-          <td align="left"><%= @spbsb.sp_s_26 %></td>
-        </tr>
-        <tr height="30">
-          <th colspan="2">生产日期</th>
-          <td align="left" colspan="4">
-            <% if @spbsb.sp_d_28.blank? %>
-                /
-            <% else %>
-                <%= @spbsb.sp_d_28 %>
-            <% end %>
-          </td>
-          <th>质量等级</th>
-          <td align="left"><%= @spbsb.sp_s_73 %></td>
-        </tr>
-        <tr height="30">
-          <th colspan="2">被抽样单位名称</th>
-          <td align="left" colspan="4"><%= @spbsb.sp_s_1 %></td>
-          <th>联系电话</th>
-          <td align="left"><%= @spbsb.sp_s_12 %></td>
-        </tr>
-        <tr height="30">
-          <th colspan="2">标称生产者名称</th>
-          <td align="left" colspan="4"><%= @spbsb.sp_s_64 %></td>
-          <th>联系电话</th>
-          <td align="left"><%= @spbsb.sp_s_76 %></td>
-        </tr>
-        <tr height="30">
-          <th colspan="2">任务来源</th>
-          <td align="left" colspan="4"><%= @spbsb.sp_s_2_1 %></td>
-          <th>抽样人员</th>
-          <td align="left"><%= @spbsb.sp_s_37 %></td>
-        </tr>
-        <tr height="30">
-          <th colspan="2">抽样日期</th>
-          <td align="left" colspan="2"><%= @spbsb.sp_d_38 %></td>
-          <th colspan="2">样品到达日期</th>
-          <td align="left" colspan="2"><%= @spbsb.sp_d_46 %></td>
-        </tr>
-        <tr height="30">
-          <th colspan="2">样品数量</th>
-         <!-- <td align="left" colspan="2"><%#= @spbsb.sp_s_207 %></td>-->
-          <td align="left" colspan="2">
-            <% if @spbsb.sp_n_15.to_s[@spbsb.sp_n_15.to_s.length-2, @spbsb.sp_n_15.to_s.length-1]=='.0' %><%= @spbsb.sp_n_15.to_s.chop.chop %>
-                <% else %><%= @spbsb.sp_n_15.to_s %>
-            <% end %>&nbsp;<%= @spbsb.sp_s_6 %></td>
-          <th colspan="2">抽样基数</th>
-          <td align="left" colspan="2"><%= @spbsb.sp_s_206 %></td>
-        </tr>
-        <tr height="30">
-          <th colspan="2">抽样单编号</th>
-          <td align="left" colspan="2"><%= @spbsb.sp_s_16 %></td>
-          <th colspan="2">检查封样人员</th>
-          <td align="left" colspan="2"><%= @jcfy %></td>
-        </tr>
-        <tr>
-          <th height="30" colspan="2">抽样地点</th>
-          <td align="left" colspan="2"><%= @spbsb.sp_s_68 %><%= @spbsb.sp_s_2 %></td>
-          <th colspan="2">封样状态</th>
-          <td align="left" colspan="2">完好</td>
-        </tr>
-        <tr>
-          <th height="30" colspan="2">检验项目</th>
-          <td align="left" colspan="6"  style="<%= auto_adjust_text_size(@jyxm_str, 10) %>"><%= @jyxm_str %></td>
-        </tr>
-        <tr>
-          <th height="50" colspan="2">检验依据</th>
-          <td align="left" colspan="6" style="<%= auto_adjust_text_size(@jyjy_struni, 20) %>"><%= @jyjy_struni %></td>
-        </tr>
-        <tr>
-          <th height="150" colspan="2">检验结论</th>
-              <% if @wtx.blank? 
-                  @jyjl_print = @jyyj_hgx_str4
-                 else 
-                  @jyjl_print =  '经抽样检验，'
-                   @wtx.each_with_index do |wtx, index| 
-                      @jyjl_print = @jyjl_print+wtx.spdata_0+'项目不符合'+wtx.spdata_4+'要求，'
-                   end 
-                  @jyjl_print = @jyjl_print+'检验结论为不合格。'
-                end %>
-          <td colspan="6">
-            <p align="left" style="<%= auto_adjust_text_size(@jyjl_print, 70) %>">
-              <%= @jyjl_print %>
-            </p>
-
-            <p align="center">&nbsp;</p>
-
-            <p style="text-indent: 8cm" ;>（检验报告专用章）</p>
-
-            <p style="text-indent: 6cm" ;> 签发日期：<%= @splog.created_at.strftime("%Y年%-m月%-d日") unless @splog.nil? %></p>
-          </td>
-        </tr>
-        <tr>
-          <th height="80" colspan="2">备注</th>
-          <td align="left" colspan="6"><%= @spbsb.sp_s_84 %></td>
-        </tr>
-      </table>
-      <p style="text-indent:1cm">批准：<%= @spbsb.user_sign_forpz(9) %>审核：<%= @spbsb.user_sign_for(5) %>
-        检验：<%= @spbsb.user_sign_for(4) %></p>
-    </div>
-  </div>
-  <div class="page">
-    <div class="subpage cover">
-      <p align="center" style="font-size:18pt"><%= @spbsb.sp_s_43 %></p>
-
-      <p align="center" style="font-size:24pt">食品安全监督抽检检验报告</p>
-      <table width="100%" cellspacing="0" cellpadding="0" border="0">
-        <tr>
-          <td align="left"><p style="font-size:14pt">№：<%= @spbsb.sp_s_45 %></p></td>
-          <td><p style="font-size:14pt; word-spacing:10px;" align="right">共<%= ((@cjx.count - 16).to_f / 16).ceil + 2 %>页 第2页</p></td>
-        </tr>
-      </table>
-      <table class="table-bordered" border="1" cellspacing="0" cellpadding="0" style="height:22cm">
-        <tr>
-          <th height="40" width="50">序号</th>
-          <th colspan="2" width="240">检验项目</th>
-          <th>标准指标</th>
-          <th>实测值</th>
-          <th width = "80">单项判定</th>
-        </tr>
-        <% @cjx.limit(16).each_with_index do |product, index| %>
-            <tr>
-              <td align="center" height="45"><%= index + 1 %></td>
-              <td colspan="2" style="<%= auto_adjust_text_size(product.spdata_0, 9) %>"><%= product.spdata_0 %>
-                <% if !['-', '/', '_'].include?(product.spdata_18) %>,<%= product.spdata_18 %>
-                <% end %></td>
-              <td style="<%= auto_adjust_text_size(product.spdata_11+product.spdata_15, 9) %>">
-                <% if ['0', '0.0'].include?(product.spdata_11) and ['0', '0.0'].include?(product.spdata_15) %>不得检出
-                <% elsif ['-','—', '/', '_', '0', '0.0'].include?(product.spdata_11) %>
-                <% if product.spdata_15[0,1] != "不" and product.spdata_15[0,1] != "n" %>≤<% end %>
-                <%= product.spdata_15 %>
-                <% elsif ['-','—', '/', '_'].include?(product.spdata_15) %>≥<%= product.spdata_11 %>
-                <% else %><%= product.spdata_11 %>～<%= product.spdata_15 %>
-                <% end %>
-              </td>
-              <% if product.spdata_1 == '未检出' %>
-                  <td style="<%= auto_adjust_text_size(product.spdata_1+product.spdata_7+product.spdata_8, 5) %>">
-                    <%= product.spdata_1 %><% if product.spdata_7 != '-' and product.spdata_7 != '/' %>(检出限:<%= product.spdata_7 %><%= product.spdata_8 %>)<% end %>
-                  </td>
-              <% else %>
-                  <td style="<%= auto_adjust_text_size(product.spdata_1, 9) %>">
-                    <%= product.spdata_1 %>
-                  </td>
-              <% end %>
-              <td><%= product.spdata_2 %></td>
-            </tr>
-        <% end %>
-        <% if 16 > @cjx.count %>
-            <tr>
-              <td align="center"></td>
-              <td colspan="2" valign="top">以下空白</td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-        <% end %>
-      </table>
-    </div>
-  </div>
-  <% products_print_pager @cjx.offset(16), 16, 17 do |products, start_index, current_page, is_last_page, total_page| %>
+  <% unless @spbsb.sp_s_44.eql?('风险监测') %>
       <div class="page">
-        <div class="subpage">
-          <table style="height:1cm" width="100%" cellspacing="0" cellpadding="0" border="0">
+        <div class="subpage cover">
+          <p align="center" style="font-size:18pt"><%= @spbsb.sp_s_43 %></p>
+
+          <p align="center" style="font-size:24pt">食品安全监督抽检检验报告</p>
+          <table width="100%" cellspacing="0" cellpadding="0" border="0">
             <tr>
-              <td align="left"><p style="font-size:14pt">№：<%= @spbsb.sp_s_45 %></p></td>
-              <td><p style="font-size:14pt; word-spacing:10px;" align="right">共<%= total_page + 2 %>页 第<%= current_page +3 %>页</p></td>
+              <td align="left"><p style="font-size:14pt">№：<%= @spbsb.sp_s_45 %></p>
+              </td>
+              <td>
+                <p style="font-size:14pt; word-spacing:10px;" align="right">共<%= ((@cjx.count - 16).to_f / 16).ceil + 2 %>
+                  页 第1页</p>
+              </td>
             </tr>
           </table>
           <table class="table-bordered" border="1" cellspacing="0" cellpadding="0">
+            <tr height="30">
+              <th colspan="2">食品名称</th>
+              <td align="left" colspan="2" style="<%= auto_adjust_text_size(@spbsb.sp_s_14, 8) %>"><%= @spbsb.sp_s_14 %></td>
+              <th>商标</th>
+              <td><%= @spbsb.sp_s_74 %></td>
+              <th>规格型号</th>
+              <td align="left"><%= @spbsb.sp_s_26 %></td>
+            </tr>
+            <tr height="30">
+              <th colspan="2">生产日期</th>
+              <td align="left" colspan="4">
+                <% if @spbsb.sp_d_28.blank? %>
+                    /
+                <% else %>
+                    <%= @spbsb.sp_d_28 %>
+                <% end %>
+              </td>
+              <th>质量等级</th>
+              <td align="left"><%= @spbsb.sp_s_73 %></td>
+            </tr>
+            <tr height="30">
+              <th colspan="2">被抽样单位名称</th>
+              <td align="left" colspan="4"><%= @spbsb.sp_s_1 %></td>
+              <th>联系电话</th>
+              <td align="left" style="<%= auto_adjust_text_size(@spbsb.sp_s_12, 5) %>"><%= @spbsb.sp_s_12 %></td>
+            </tr>
+            <tr height="30">
+              <th colspan="2">标称生产者名称</th>
+              <td align="left" colspan="4"><%= @spbsb.sp_s_64 %></td>
+              <th>联系电话</th>
+              <td align="left" style="<%= auto_adjust_text_size(@spbsb.sp_s_76, 5) %>"><%= @spbsb.sp_s_76 %></td>
+            </tr>
+            <tr height="30">
+              <th colspan="2">任务来源</th>
+              <td align="left" colspan="4"><%= @spbsb.sp_s_2_1 %></td>
+              <th>抽样人员</th>
+              <td align="left"><%= @spbsb.sp_s_37 %></td>
+            </tr>
+            <tr height="30">
+              <th colspan="2">抽样日期</th>
+              <td align="left" colspan="2"><%= @spbsb.sp_d_38 %></td>
+              <th colspan="2">样品到达日期</th>
+              <td align="left" colspan="2"><%= @spbsb.sp_d_46 %></td>
+            </tr>
+            <tr height="30">
+              <th colspan="2">样品数量</th>
+              <td align="left" colspan="2">
+                <% if @spbsb.sp_n_15.to_s[@spbsb.sp_n_15.to_s.length-2, @spbsb.sp_n_15.to_s.length-1]=='.0' %><%= @spbsb.sp_n_15.to_s.chop.chop %>
+                    <% else %><%= @spbsb.sp_n_15.to_s %>
+                <% end %>&nbsp;<%= @spbsb.sp_s_6 %></td>
+              <th colspan="2">抽样基数</th>
+              <td align="left" colspan="2"><%= @spbsb.sp_s_206 %></td>
+            </tr>
+            <tr height="30">
+              <th colspan="2">抽样单编号</th>
+              <td align="left" colspan="2"><%= @spbsb.sp_s_16 %></td>
+              <th colspan="2">检查封样人员</th>
+              <td align="left" colspan="2"><%= @jcfy %></td>
+            </tr>
             <tr>
-              <th height="45" width="50">序号</th>
+              <th height="45" colspan="2">抽样地点</th>
+              <td align="left" colspan="2"><%= @spbsb.sp_s_68 %><%= @spbsb.sp_s_2 %></td>
+              <th colspan="2">封样状态</th>
+              <td align="left" colspan="2">完好</td>
+            </tr>
+            <tr>
+              <th height="45" colspan="2">检验项目</th>
+              <td align="left" colspan="6"><%= @jyxm_str %></td>
+            </tr>
+            <tr>
+              <th height="45" colspan="2">检验依据</th>
+              <td align="left" colspan="6">详见附页
+              </td>
+            </tr>
+            <tr>
+              <th height="185" colspan="2">检验结论</th>
+              <%
+                if @wtx.blank?
+                  @jyjl_print = @jyyj_hgx_str4
+                else
+                  @jyjl_print = '经抽样检验，'
+                  @wtx.each_with_index do |wtx, index|
+                    @jyjl_print = @jyjl_print+wtx.spdata_0+'项目不符合'+wtx.spdata_4+'要求，'
+                  end
+                  @jyjl_print = @jyjl_print+'检验结论为不合格。'
+                end
+              %>
+              <td colspan="6">
+                <p align="left" style="<%= auto_adjust_text_size(@jyjl_print, 90) %>">
+                  　　<%= @jyjl_print %>
+                </p>
+
+                <p align="center">&nbsp;</p>
+
+                <p style="text-indent: 8cm" ;>（检验报告专用章）</p>
+
+                <p style="text-indent: 3.3cm" ;>
+                  签发日期：<%= @splog.created_at.strftime("%Y年%-m月%-d日") unless @splog.nil? %></p>
+              </td>
+            </tr>
+            <tr>
+              <th height="80" colspan="2">检验报告备注</th>
+              <td align="left" colspan="6">
+                <% if @spbsb.sp_s_84 != nil and @spbsb.sp_s_84 != '' %><%= @spbsb.sp_s_84 %>
+                <% else %>无
+                <% end %></td>
+            </tr>
+          </table>
+          <p style="text-indent:1cm">批准人：<%= @spbsb.user_sign_forpz(9) %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;审核人：<%= @spbsb.user_sign_for(5) %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 检验人：<%= @spbsb.user_sign_for(4) %></p>
+        </div>
+      </div>
+      <div class="page">
+        <div class="subpage cover">
+          <p align="center" style="font-size:18pt"><%= @spbsb.sp_s_43 %></p>
+
+          <p align="center" style="font-size:24pt">食品安全监督抽检检验报告</p>
+          <table width="100%" cellspacing="0" cellpadding="0" border="0">
+            <tr>
+              <td align="left"><p style="font-size:14pt">№：<%= @spbsb.sp_s_45 %></p></td>
+              <td>
+                <p style="font-size:14pt; word-spacing:10px;" align="right">共<%= ((@cjx.count - 16).to_f / 16).ceil + 2 %>
+                  页 第2页</p></td>
+            </tr>
+          </table>
+          <table class="table-bordered" border="1" cellspacing="0" cellpadding="0" style="height:22cm">
+            <tr>
+              <th height="40" width="50">序号</th>
               <th colspan="2" width="240">检验项目</th>
               <th>标准指标</th>
               <th>实测值</th>
               <th width="80">单项判定</th>
+              <th width="80">备注</th>
             </tr>
-            <% products.each_with_index do |product, index| %>
+            <% @cjx.limit(16).each_with_index do |product, index| %>
                 <tr>
-                  <td align="center" height="45"><%= index + start_index -1 %></td>
+                  <td align="center" height="45"><%= index + 1 %></td>
                   <td colspan="2" style="<%= auto_adjust_text_size(product.spdata_0, 9) %>"><%= product.spdata_0 %>
                     <% if !['-', '/', '_'].include?(product.spdata_18) %>,<%= product.spdata_18 %>
-                    <% end %></td>
-                  <td style="<%= auto_adjust_text_size(product.spdata_11+product.spdata_15, 9) %>">
-                    <% if ['0', '0.0'].include?(product.spdata_11) and ['0', '0.0'].include?(product.spdata_15) %>不得检出
-                    <% elsif ['-','—', '/', '_', '0', '0.0'].include?(product.spdata_11) %>
-                    <% if product.spdata_15[0,1] != "不" and product.spdata_15[0,1] != "n" %>≤<% end %>
-                    <%= product.spdata_15 %>
-                    <% elsif ['-','—', '/', '_'].include?(product.spdata_15) %>≥<%= product.spdata_11 %>
-                        <% else %><%= product.spdata_11 %>～
-                        <%= product.spdata_15 %>
                     <% end %>
                   </td>
-              <% if product.spdata_1 == '未检出' %>
-                  <td style="<%= auto_adjust_text_size(product.spdata_1+product.spdata_7+product.spdata_8, 5) %>">
-                    <%= product.spdata_1 %><% if product.spdata_7 != '-' and product.spdata_7 != '/' %>(检出限:<%= product.spdata_7 %><%= product.spdata_8 %>)<% end %>
+                  <td style="<%= auto_adjust_text_size(product.spdata_11+product.spdata_15, 9) %>">
+                    <% if ['0', '0.0'].include?(product.spdata_11) and ['0', '0.0'].include?(product.spdata_15) %>不得检出
+                    <% elsif ['-', '—', '/', '_', '0', '0.0'].include?(product.spdata_11) %>
+                        <% if ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].include?(product.spdata_15[0, 1]) %>≤
+                        <% end %>
+                        <%= product.spdata_15 %>
+                    <% elsif ['-', '—', '/', '_'].include?(product.spdata_15) %>≥<%= product.spdata_11 %>
+                        <% else %><%= product.spdata_11 %>～<%= product.spdata_15 %>
+                    <% end %>
                   </td>
-              <% else %>
-                  <td style="<%= auto_adjust_text_size(product.spdata_1, 9) %>">
-                    <%= product.spdata_1 %>
-                  </td>
-              <% end %>
-                  <td><%= product.spdata_2 %></td>
+                  <% if product.spdata_1 == '未检出' %>
+                      <td style="<%= auto_adjust_text_size(product.spdata_1+product.spdata_7+product.spdata_8, 5) %>">
+                        <%= product.spdata_1 %>
+                        <% if product.spdata_7 != '-' and product.spdata_7 != '/' %>
+                            (检出限:<%= product.spdata_7 %><%= product.spdata_8 %>)
+                        <% end %>
+                      </td>
+                  <% else %>
+                      <td style="<%= auto_adjust_text_size(product.spdata_1, 9) %>">
+                        <%= product.spdata_1 %>
+                      </td>
+                  <% end %>
+                  <td><%= product.spdata_2.delete("项") %></td>
+                  <td style="<%= auto_adjust_text_size(product.spdata_17, 5) %>">
+                    <% if product.spdata_17 != nil and product.spdata_17 != '' %><%= product.spdata_17 %>
+                    <% else %>/
+                    <% end %></td>
                 </tr>
             <% end %>
-            <% if 17 > products.count %>
+            <% if 16 > @cjx.count %>
                 <tr>
                   <td align="center"></td>
                   <td colspan="2" valign="top">以下空白</td>
                   <td></td>
                   <td></td>
                   <td></td>
+                  <td></td>
                 </tr>
             <% end %>
+          </table>
+        </div>
+      </div>
+      <% products_print_pager @cjx.offset(16), 16, 17 do |products, start_index, current_page, is_last_page, total_page| %>
+          <div class="page">
+            <div class="subpage">
+              <p align="center" style="font-size:18pt"><%= @spbsb.sp_s_43 %></p>
+              <p align="center" style="font-size:24pt">食品安全监督抽检检验报告</p>
+              <table style="height:1cm" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td align="left"><p style="font-size:14pt">№：<%= @spbsb.sp_s_45 %></p></td>
+                  <td><p style="font-size:14pt; word-spacing:10px;" align="right">共<%= total_page + 2 %>页
+                    第<%= current_page +3 %>页</p></td>
+                </tr>
+              </table>
+              <table class="table-bordered" border="1" cellspacing="0" cellpadding="0" style="height:21cm">
+                <tr>
+                  <th height="45" width="50">序号</th>
+                  <th colspan="2" width="240">检验项目</th>
+                  <th>标准指标</th>
+                  <th>实测值</th>
+                  <th width="80">单项判定</th>
+                  <th width="80">备注</th>
+                </tr>
+                <% products.each_with_index do |product, index| %>
+                    <tr>
+                      <td align="center" height="45"><%= index + start_index -1 %></td>
+                      <td colspan="2" style="<%= auto_adjust_text_size(product.spdata_0, 9) %>"><%= product.spdata_0 %>
+                        <% if !['-', '/', '_'].include?(product.spdata_18) %>,<%= product.spdata_18 %>
+                        <% end %></td>
+                      <td style="<%= auto_adjust_text_size(product.spdata_11+product.spdata_15, 9) %>">
+                        <% if ['0', '0.0'].include?(product.spdata_11) and ['0', '0.0'].include?(product.spdata_15) %>
+                            不得检出
+                        <% elsif ['-', '—', '/', '_', '0', '0.0'].include?(product.spdata_11) %>
+                            <% if ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].include?(product.spdata_15[0, 1]) %>
+                                ≤
+                            <% end %>
+                            <%= product.spdata_15 %>
+                        <% elsif ['-', '—', '/', '_'].include?(product.spdata_15) %>≥<%= product.spdata_11 %>
+                            <% else %><%= product.spdata_11 %>～
+                            <%= product.spdata_15 %>
+                        <% end %>
+                      </td>
+                      <% if product.spdata_1 == '未检出' %>
+                          <td style="<%= auto_adjust_text_size(product.spdata_1+product.spdata_7+product.spdata_8, 5) %>">
+                            <%= product.spdata_1 %>
+                            <% if product.spdata_7 != '-' and product.spdata_7 != '/' %>
+                                (检出限:<%= product.spdata_7 %><%= product.spdata_8 %>)
+                            <% end %>
+                          </td>
+                      <% else %>
+                          <td style="<%= auto_adjust_text_size(product.spdata_1, 9) %>">
+                            <%= product.spdata_1 %>
+                          </td>
+                      <% end %>
+                      <td><%= product.spdata_2.delete("项") %></td>
+                      <td style="<%= auto_adjust_text_size(product.spdata_17, 5) %>">
+                        <% if product.spdata_17 != nil and product.spdata_17 != '' %><%= product.spdata_17 %>
+                        <% else %>/
+                        <% end %></td>
+                    </tr>
+                <% end %>
+                <% if (17 > products.count) and ((total_page + 2) == (current_page +3)) %>
+                    <tr>
+                      <td align="center"></td>
+                      <td colspan="2" valign="top">以下空白</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                <% end %>
+              </table>
+            </div>
+          </div>
+      <% end %>
+      <div class="page">
+        <div class="subpage">
+          <p align="center" style="font-size:18pt"><%= @spbsb.sp_s_43 %></p>
+          <p align="center" style="font-size:24pt">食品安全监督抽检检验报告</p>
+          <table style="height:1cm" width="100%" cellspacing="0" cellpadding="0" border="0">
+            <tr>
+              <td align="left"><p style="font-size:14pt">附页：检验依据</p></td>
+              <td><p style="font-size:14pt; word-spacing:10px;" align="right"></td>
+            </tr>
+          </table>
+          <table class="table-bordered" border="1" cellspacing="0" cellpadding="0" style="height:21cm">
+            <tr>
+              <td align="left" valign="top"><%= @jyjy_FY %>。</td>
+            </tr>
+
           </table>
         </div>
       </div>
@@ -357,16 +436,18 @@
           <p align="center" style="font-size:24pt">食品安全风险监测检验报告</p>
           <table width="100%" cellspacing="0" cellpadding="0" border="0">
             <tr>
-              <td align="left"><p style="font-size:14pt">№：<%= @spbsb.sp_s_45 %></p>
+              <td align="left"><p style="font-size:14pt">№：<%= @spbsb.sp_s_45 %>F</p>
               </td>
-              <td><p style="font-size:14pt; word-spacing:10px;" align="right">共<%= ((@fxx.count - 17).to_f / 17).ceil + 2 %>页 第1页</p>
+              <td>
+                <p style="font-size:14pt; word-spacing:10px;" align="right">共<%= ((@fxx.count - 17).to_f / 17).ceil + 2 %>
+                  页 第1页</p>
               </td>
             </tr>
           </table>
           <table class="table-bordered" border="1" cellspacing="0" cellpadding="0" style="height:21cm">
             <tr>
               <th height="40">食品名称</th>
-              <td width="150"><%= @spbsb.sp_s_14 %></td>
+              <td width="150" style="<%= auto_adjust_text_size(@spbsb.sp_s_14, 8) %>"><%= @spbsb.sp_s_14 %></td>
               <th width="50">商标</th>
               <td width="100"><%= @spbsb.sp_s_74 %></td>
               <th width="90">规格型号</th>
@@ -388,13 +469,13 @@
               <th height="40">被抽样单位名称</th>
               <td colspan="3"><%= @spbsb.sp_s_1 %></td>
               <th>联系电话</th>
-              <td><%= @spbsb.sp_s_12 %></td>
+              <td style="<%= auto_adjust_text_size(@spbsb.sp_s_12, 8) %>"><%= @spbsb.sp_s_12 %></td>
             </tr>
             <tr>
               <th height="40" width="150">标称生产者名称</th>
               <td colspan="3"><%= @spbsb.sp_s_64 %></td>
               <th>联系电话</th>
-              <td><%= @spbsb.sp_s_76 %></td>
+              <td style="<%= auto_adjust_text_size(@spbsb.sp_s_76, 8) %>"><%= @spbsb.sp_s_76 %></td>
             </tr>
             <tr>
               <th height="40">任务来源</th>
@@ -402,13 +483,16 @@
             </tr>
             <tr>
               <th>检验依据</th>
-              <td colspan="5" style="vertical-align:top;"><%= @jyjy_str1 %></td>
+              <td colspan="5" style="vertical-align:top;"><%= @fxx_FY %></td>
             </tr>
             <tr>
               <th height="40">抽样日期</th>
               <td><%= @spbsb.sp_d_38 %></td>
               <th colspan="2">样品数量</th>
-              <td colspan="2"><%= @spbsb.sp_n_15 %>&nbsp;<%= @spbsb.sp_s_6 %></td>
+              <td colspan="2">
+                <% if @spbsb.sp_n_15.to_s[@spbsb.sp_n_15.to_s.length-2, @spbsb.sp_n_15.to_s.length-1]=='.0' %><%= @spbsb.sp_n_15.to_s.chop.chop %>
+                    <% else %><%= @spbsb.sp_n_15.to_s %>
+                <% end %>&nbsp;<%= @spbsb.sp_s_6 %></td>
             </tr>
             <tr>
               <th height="40">抽样单编号</th>
@@ -423,60 +507,95 @@
   <% products_print_pager @fxx, 17, 1 do |products, start_index, current_page, is_last_page, total_page| %>
       <div class="page">
         <div class="subpage">
-          <p style="font-size:14pt; margin: 5px 0; position: absolute; right:25pt; top: -15pt; word-spacing:10px;" align="right">共<%= total_page +1 %>页 第<%= current_page + 2 %>页</p>
-          <table class="table-bordered" border="1" cellspacing="0" cellpadding="0" style="height:25cm">
+          <p align="center" style="font-size:18pt"><%= @spbsb.sp_s_43 %></p>
+
+          <p align="center" style="font-size:24pt">食品安全风险监测检验报告</p>
+          <p style="font-size:14pt; margin: 5px 0; position: absolute; left:25pt; top: 122pt; word-spacing:10px;" align="left">№：<%= @spbsb.sp_s_45 %>F</p>
+          <p style="font-size:14pt; margin: 5px 0; position: absolute; right:25pt; top: 122pt; word-spacing:10px;" align="right">共<%= total_page +1 %>
+            页 第<%= current_page + 2 %>页</p>
+          <table class="table-bordered" border="1" cellspacing="0" cellpadding="0"
+                 <% if is_last_page %>style="height:20cm"
+                 <% else %>style="height:22cm"
+                 <% end %>>
             <tr>
               <th height="40" width="50">序号</th>
               <th colspan="2">项目名称</th>
               <th>单位</th>
               <th>参考值*</th>
               <th>检测数据</th>
+              <th width="40">备注</th>
             </tr>
             <% products.each_with_index do |product, index| %>
                 <tr>
                   <td align="center" height="40"><%= index + start_index -1 %></td>
                   <td colspan="2" style="<%= auto_adjust_text_size(product.spdata_0, 9) %>"><%= product.spdata_0 %></td>
                   <td><%= product.spdata_18 %></td>
-                  <td>
-                    <% if "-,/".include? product.spdata_11 and "-,/".include? product.spdata_15 %>/
-                    <% elsif "-,/".include? product.spdata_11 %>≤<%= product.spdata_15 %>
-                    <% elsif "-,/".include? product.spdata_15 %>≥<%= product.spdata_11 %>
+                  <!-- <td style="<%= auto_adjust_text_size(product.spdata_11+product.spdata_15, 9) %>">
+                    <% if "-,/\\".include? product.spdata_11 and "-,/\\".include? product.spdata_15 %>/
+                    <% elsif "-,/\\".include? product.spdata_11 %>
+                      <% if ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].include?(product.spdata_15[0, 1]) %>≤
+                          <% end %><%= product.spdata_15 %>
+                    <% elsif "-,/,\\".include? product.spdata_15 %>
+                      <% if ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].include?(product.spdata_11[0, 1]) %>≥
+                          <% end %><%= product.spdata_11 %>
                         <% else %><%= product.spdata_11 %>~<%= product.spdata_15 %>
                     <% end %>
+                  </td>-->
+                  <td style="<%= auto_adjust_text_size(product.spdata_11+product.spdata_15, 9) %>">
+                    <% if ['0', '0.0'].include?(product.spdata_11) and ['0', '0.0'].include?(product.spdata_15) %>不得检出
+                    <% elsif ['-', '—', '/', '_', '0', '0.0'].include?(product.spdata_11) %>
+                        <% if ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].include?(product.spdata_15[0, 1]) %>≤
+                        <% end %>
+                        <%= product.spdata_15 %>
+                    <% elsif ['-', '—', '/', '_'].include?(product.spdata_15) %>≥<%= product.spdata_11 %>
+                        <% else %><%= product.spdata_11 %>～
+                        <%= product.spdata_15 %>
+                    <% end %>
                   </td>
-              <% if product.spdata_1 == '未检出' %>
-                  <td style="<%= auto_adjust_text_size(product.spdata_1+product.spdata_7+product.spdata_8, 5) %>">
-                    <%= product.spdata_1 %><% if product.spdata_7 != '-' and product.spdata_7 != '/' %>(检出限:<%= product.spdata_7 %><%= product.spdata_8 %>)<% end %>
-                  </td>
-              <% else %>
-                  <td style="<%= auto_adjust_text_size(product.spdata_1, 9) %>">
-                    <%= product.spdata_1 %>
-                  </td>
-              <% end %>
+                  <% if product.spdata_1 == '未检出' %>
+                      <td style="<%= auto_adjust_text_size(product.spdata_1+product.spdata_7+product.spdata_8, 5) %>">
+                        <%= product.spdata_1 %>
+                        <% if product.spdata_7 != '-' and product.spdata_7 != '/' %>
+                            (检出限:<%= product.spdata_7 %><%= product.spdata_8 %>)
+                        <% end %>
+                      </td>
+                  <% else %>
+                      <td style="<%= auto_adjust_text_size(product.spdata_1, 9) %>">
+                        <%= product.spdata_1 %>
+                      </td>
+                  <% end %>
+                  <td style="<%= auto_adjust_text_size(product.spdata_17, 5) %>">
+                    <% if product.spdata_17 != nil and product.spdata_17 != '' %><%= product.spdata_17 %>
+                    <% else %>/
+                    <% end %></td>
                 </tr>
             <% end %>
             <% if is_last_page %>
                 <tr>
-                  <td height="40" colspan="6">问题项目：
+                  <td height="40">问题项目</td>
+                  <td height="40" colspan="6">
                     <% if @wtx_str.blank? %>
                         /
                     <% else %>
                         <%= @wtx_str %>
                     <% end %>
+                    <p></p>
+                    <p style="text-indent: 8cm" ;>（检验报告专用章）</p>
+                    <p style="text-indent: 3.3cm" ;>
+                      签发日期：<%= @splog.created_at.strftime("%Y年%-m月%-d日") unless @splog.nil? %></p>
                   </td>
                 </tr>
                 <tr>
-                  <td height="40">备注</td>
-                  <td height="40" colspan="5">*参考值仅用于对风险监测项目检验结果研判是否为问题样品时参考</td>
+                  <td height="40">检验报告备注</td>
+                  <td height="40" colspan="6">*参考值仅用于对风险监测项目检验结果研判是否为问题样品时参考</td>
                 </tr>
             <% end %>
           </table>
           <% if is_last_page %>
               <div id="footer">
-                <p style="text-indent:1cm">批准：<%= @spbsb.user_sign_forpz(9) %>审核：<%= @spbsb.user_sign_for(5) %>
-                  检验：<%= @spbsb.user_sign_for(4) %></p>
+                <p style="text-indent:1cm">批准人：<%= @spbsb.user_sign_forpz(9) %>审核人：<%= @spbsb.user_sign_for(5) %>
+                  检验人：<%= @spbsb.user_sign_for(4) %></p>
 
-                <p style="text-indent:1cm">签发日期:<%= @splog.created_at.strftime("%Y年%-m月%-d日") unless @splog.nil? %></p>
 
                 <p style="text-indent:1cm">注：对未提供参考值的风险监测项目，参考值列填“/”。</p>
               </div>

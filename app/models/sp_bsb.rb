@@ -1,4 +1,4 @@
-#encoding: utf-8
+﻿#encoding: utf-8
 class SpBsb < ActiveRecord::Base
   include ApplicationHelper
 
@@ -50,9 +50,17 @@ class SpBsb < ActiveRecord::Base
     end
   end
 
-  def absolute_report_path
-    return nil if self.report_path.blank?
-    return File.expand_path('../reports', Rails.root).to_s + self.report_path
+  def absolute_report_path(preview=false)
+     #if self.report_path.blank? and !preview
+      # return  Rails.root.join('tmp', "sp_bsbs_#{self.id}_print.pdf")
+     #else
+      # return nil
+     #end
+     logger.error self.report_path
+     logger.error self.report_path.blank?
+     return Rails.root.join('tmp', "sp_bsbs_#{self.id}_print.pdf")  if self.report_path.blank?
+    return File.expand_path('../reports', Rails.root).to_s + self.report_path unless preview
+    return Rails.root.join('tmp', 'report_preview').to_s + self.report_path if preview
   end
 
   PUSH_BASE_DATA_FIELDS = [
@@ -259,16 +267,17 @@ class SpBsb < ActiveRecord::Base
   end
 
   def user_sign_for(state)
-    @log = SpLog.where(sp_bsb_id: self.id, sp_i_state: state).last
+    @log = SpLog.where(sp_bsb_id: self.id, sp_i_state: state, ca_key_status: 0).last
     unless @log.nil?
       @user = User.find(@log.user_id)
-      if @user.user_sign.blank?
+      if !@user.tname.blank?
         return "-#{@user.tname}-".html_safe
       else
-        return "<img src='data:image/png;base64,#{@user.user_sign}'>".html_safe
-      end
+       # return "<img src='data:image/png;base64,#{@user.user_sign}'>".html_safe
+       return "<font color='#999'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>".html_safe
+	end
     else
-      return "<font color='#999'>未记录</font>".html_safe
+      return "<font color='#999'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>".html_safe
     end
   end
 
@@ -283,23 +292,24 @@ class SpBsb < ActiveRecord::Base
     else
       state = 6
     end
-    @logfive = SpLog.where(sp_bsb_id: self.id, sp_i_state: 5).order('id asc').last
+    @logfive = SpLog.where(sp_bsb_id: self.id, sp_i_state: 5,ca_key_status: 0).order('id asc').last
     if @logfive.nil?
-      return "<font color='#999'>未记录</font>".html_safe
+      return "<font color='#999'>&nbsp;&nbsp;&nbsp;</font>".html_safe
     else
       @log = SpLog.where("sp_bsb_id = ? and sp_i_state = ? and id > ?", self.id, state, @logfive.id).order('id asc').first
       if @log.nil?
-        @log = SpLog.where(sp_bsb_id: self.id, sp_i_state: 8).order('sp_i_state asc').last
+        @log = SpLog.where(sp_bsb_id: self.id, sp_i_state: 16,ca_key_status: 0).order('sp_i_state asc').last
       end
       unless @log.nil?
         @user = User.find(@log.user_id)
-        if @user.user_sign.blank?
+        if !@user.tname.blank?
           return "-#{@user.tname}-".html_safe
         else
-          return "<img src='data:image/png;base64,#{@user.user_sign}'>".html_safe
-        end
+          #return "<img src='data:image/png;base64,#{@user.user_sign}'>".html_safe
+         return "<font color='#999'>&nbsp;&nbsp;&nbsp;</font>".html_safe
+	end
       else
-        return "<font color='#999'>未记录</font>".html_safe
+        return "<font color='#999'>&nbsp;&nbsp;&nbsp;</font>".html_safe
       end
     end
   end
@@ -353,6 +363,7 @@ class SpBsb < ActiveRecord::Base
 
   has_many :spdata, :dependent => :delete_all
   has_many :api_exchange_pools, :dependent => :delete_all
+  has_many :sp_bsb_stamp_rules
   has_many :sp_logs
   has_many :wtyp_czb_parts
   has_one :published_sp_bsb, foreign_key: 'cjbh', primary_key: 'sp_s_16'
@@ -372,21 +383,21 @@ class SpBsb < ActiveRecord::Base
   # 4. 不看QS号,同一生产企业,一个季度(90天), 同一食品大类最多抽取3批
   def check_bsb_validity
     #return true #if self.sp_s_215.blank? or self.sp_s_13.blank? or %w{抽检监测（总局本级一司） 抽检监测（总局本级三司） 抽检监测（三司专项）}.include?(self.sp_s_70)
-    return true if self.sp_s_215.blank? or self.sp_s_13.blank? or %w{抽检监测（总局本级一司）}.include?(self.sp_s_70) or self.sp_s_64.blank? or self.sp_i_state == 18 or self.sp_s_2 == '网购' or %w{GC1600243697 GC1600243696}.include?(self.sp_s_16)
+    return true if self.sp_s_215.blank? or self.sp_s_13.blank? or %w{抽检监测（总局本级一司）}.include?(self.sp_s_70) or self.sp_s_64.blank? or self.sp_i_state == 18 or self.sp_s_2 == '网购' or %w{GC1600243697 GC1600243696 SC1622590001 SC1622590003 SC1622590004 SC1622590015 SC1622590016}.include?(self.sp_s_16)
     #return true if self.sp_s_215.blank? or self.sp_s_13.blank? or self.sp_s_64.blank? or self.sp_i_state == 18 or self.sp_s_2 == '网购' or %w{GC1600333159 GC1600153105 GC1600153106 GC1600153103 GC1600153066 GC1600153070 GC1600333182 GC1600333183 GC1600333160 GC1600333179 GC1600333247 GC1600333202 GC1600333240 GC1600333249 GC1600333181 GC1600333034 GC1600333033 GC1600333180 GC1551022141 GC1500162095 GC1600153104 GC1600183151 GC1600183035 GC1600153104 GC1600153177 GC1600153037 GC1600153042 GC1600153044 GC1600153119 GC1600153118 GC1600183151 GC1600183035 GC1600333262 GC1600333261 GC1600333263 GC1600333239 GC1600333238 GC1600333237 GC1600333227 GC1600333270 GC1600333271 GC1600333272 GC160033145 GC1600333146 GC1600333147 GC1600333148 GC1600333151 GC1600333191 GC1600333195 GC1600333194 GC1600333193 GC1600333192 GC1600153045 GC1600153041 GC1600153075 GC1600183136 GC1600183137 GC1600183138 GC1600183139 GC1600183141 GC1600183142 GC1600183143 GC1600183144 GC1600183145 GC1600183146 GC1600183159 GC1600183160 GC1600183108 GC1600183109 GC1600183110 GC1600183111 GC1600183112 GC1600183113 GC1600183114 GC1600183116 GC1600183120 GC1600183121 GC1600181114 GC1600181115 GC1600153060 GC1600153059 GC1600153043 GC1600153041 GC1600153075 GC1600153151 GC1600153152 GC1600333040 GC1600333041 GC1600333043 GC1600333044 GC1600333049 GC1600333050 GC1600333051 GC1600333052 GC1600333053 GC1600333042 GC1600333080 GC1600333081 GC1600333082 GC1600333083 GC1600333084 GC1600333085 GC1600333086 GC1600333087 GC1600333088 GC1600333089 GC1642010066 GC1600333015 GC1600333016 GC1600333018 GC1600333019 GC1600333020 GC1600333024 GC1600333025 GC1600333026 GC1600333039 GC1600333017 GC1600333054 GC1600333055 GC1600333064 GC1600333065 GC1600333066 GC1600333067 GC1600333068 GC1600333069 GC1600333070 GC1600333071 GC1600333130 GC1600333131 GC1600333090 GC1600333091 GC1600333092 GC1600333093 GC1600333094 GC1600333095 GC1600333117 GC1600333128 GC1600333129 GC1600333184 GC1600333187 GC1600333210 GC1600333110 GC1600433038 GC1600433035 GC1600433045 GC1600433046 GC1600433041 GC1600433040 GC1600433036 GC1600433037 GC1600433039 GC1600433044 GC1600433043 GC1600433042 GC1600363243 GC1600363244 GC1600363211 GC1600153034 GC1600153052 GC1600153208 GC1600153210 GC1600153243 GC1600153074 GC1600153028 GC1600153010 GC1600153032 GC1600153033 GC1600153046 GC1600153038 GC1600153051 GC1637088004 GC1600343052 GC1600343075 GC1600343073 GC1600343072 GC1600343043 GC1600343068 GC1600153261 GC1600153262 GC1600153260 GC1600153027 GC1622014039 GC1622014040 GC1622014041 GC1622014042 GC1622014043 GC1622014044 GC1622014005 GC1622014006 GC1622014012 GC1622013979 GC1622014023 GC1600153006 GC1600153083 GC1600153242 GC1600153239 GC1600153017 GC1600153211 GC1622014236 GC1622013985 GC1661033016 GC1661033025 GC1661033027 GC1661013020 GC1661013023 GC1661013019}.include?(self.sp_s_16)
     return true if self.sp_s_reason.present?
     if self.changes[:sp_i_state].present? and [0, 1].include?(self.changes['sp_i_state'][0]) and self.changes['sp_i_state'][1] == 2
       now = Time.now
 
       # 条件: 1
-      if !%w{餐饮 生产}.include?(self.sp_s_68.strip) and !%w{/ 、 - \ 无 ／}.include?(self.sp_s_215.strip)
+      if !%w{餐饮 生产}.include?(self.sp_s_68.strip) and !%w{/ 、 - \ 无　／}.include?(self.sp_s_215.strip)
         pad_sp_bsbs = PadSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND sp_i_state NOT IN (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_215).where(created_at: now.all_quarter)
 
         sp_bsb_count = SpBsb.where("sp_s_16 NOT IN (?) AND sp_s_215 = ? AND sp_s_68 = '流通' AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_215).where(created_at: now.all_quarter).count
-        if sp_bsb_count + pad_sp_bsbs.count > 10 and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
-          errors.add(:base, '同一被抽样单位，当前季度内，流通环节，最多抽取10批')
-          return false
-        end
+    #    if sp_bsb_count + pad_sp_bsbs.count > 10 and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
+     #     errors.add(:base, '同一被抽样单位，当前季度内，流通环节，最多抽取10批')
+      #    return false
+      #  end
       end
 
       # 条件: 2
@@ -395,10 +406,7 @@ class SpBsb < ActiveRecord::Base
         pad_sp_bsbs = PadSpBsb.where("sp_s_13 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_13, self.sp_s_64).where(created_at: now.all_quarter)
 
         sp_bsb_count = SpBsb.where("sp_s_16 NOT IN (?) AND sp_s_13 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_13, self.sp_s_64).where(created_at: now.all_quarter).count
-        if sp_bsb_count + pad_sp_bsbs.count > 5 and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
-          errors.add(:base, '同一生产企业，同一个抽样周期内, 无论环节，不同产品，最多抽取5批')
-          return false
-        end
+       # end
       end
 =end
 
@@ -414,14 +422,13 @@ class SpBsb < ActiveRecord::Base
     #  end
 
       # 条件: 3
-      unless %w{/ 、 - \ 无 ／}.include?(self.sp_s_13)
+      unless %w{/ 、 - \ 无　／}.include?(self.sp_s_13)
         pad_sp_bsbs = PadSpBsb.where("sp_s_14 = ? AND sp_s_13 = ? AND sp_d_28 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_14, self.sp_s_13, self.sp_d_28).where(created_at: now.all_quarter)
         sp_bsb_count = SpBsb.where("sp_s_16 NOT IN (?) AND sp_s_14 = ? AND sp_s_13 = ? AND sp_d_28 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_14, self.sp_s_13, self.sp_d_28).where(created_at: now.all_quarter).count
 
-        if (sp_bsb_count + pad_sp_bsbs.count > 0) and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
-          errors.add(:base, '同一生产企业，当前季度内, 同一样品名称，同一生产日期，最多抽取1批')
-          return false
-        end
+        #if (sp_bsb_count + pad_sp_bsbs.count > 0) and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
+         # errors.add(:base, '同一生产企业，当前季度内, 同一样品名称，同一生产日期，最多抽取1批')
+       # end
       end
 
       # --> 条件: 4
@@ -437,14 +444,14 @@ class SpBsb < ActiveRecord::Base
       # <-- 条件: 4
 
       # --> 条件: 4
-      unless %w{/ 、 - \ 无 ／}.include?(self.sp_s_13)
+      unless %w{/ 、 - \ 无　／}.include?(self.sp_s_13)
         pad_sp_bsbs = PadSpBsb.where("sp_s_17 = ? AND sp_s_13 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_17, self.sp_s_13).where(created_at: now.all_quarter)
         sp_bsb_count = SpBsb.where("sp_s_16 NOT IN (?) AND sp_s_17 = ? AND sp_s_13 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_17, self.sp_s_13).where(created_at: now.all_quarter).count
 
-        if (sp_bsb_count + pad_sp_bsbs.count > 3) and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
-          errors.add(:base, '同一生产企业, 当前季度内, 同一食品大类最多抽取3批')
-          return false
-        end
+        #if (sp_bsb_count + pad_sp_bsbs.count > 3) and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
+         # errors.add(:base, '同一生产企业, 当前季度内, 同一食品大类最多抽取3批')
+         # return false
+       # end
       end
       # <-- 条件: 4
     end
@@ -625,6 +632,146 @@ class SpBsb < ActiveRecord::Base
         @part_lt_cy.SPXL = self.sp_s_20
         @part_lt_cy.save
       end
+    end
+  end
+  # 生成检验报告
+  def generate_bsb_report_pdf(pdf_rules, preview=true, user_id=nil, force_generate=false)
+   
+    if force_generate or preview  or (self.report_path.blank? and self.ca_key_status ==0) or !File.exists?(self.absolute_report_path)
+      @jg_bsb = JgBsb.find_by_jg_name(self.sp_s_43)
+      @jyxm_str = Spdatum.where('sp_bsb_id= ? and (spdata_2 = ? or spdata_2 = ?)', self.id, '合格项', '不合格项').limit(3).map { |s| s.spdata_0 }.join(",") + "等#{Spdatum.where("sp_bsb_id= ? and (spdata_2 = ? or spdata_2 = ?)", self.id, '合格项', '不合格项').count}项。"
+     logger.error @jyxm_str      
+@jyjy_str = Spdatum.where('sp_bsb_id= ? and spdata_4 <> ?', self.id, '/').limit(2).map { |s| s.spdata_3 }.join(",")
+      @jyjy_str4 = Spdatum.where('sp_bsb_id= ? and spdata_4 <> ?', self.id, '/').limit(2).map { |s| s.spdata_4 }.join(",")
+      @jyjy_str1 = Spdatum.where('sp_bsb_id = ? and (spdata_4 = ? OR spdata_4 = ?)', self.id, '/', '-').map { |s| s.spdata_3 }.uniq.join(",")
+      @splog = SpLog.where('sp_bsb_id = ? AND (sp_i_state = ? or sp_i_state =?)', self.id, '2','4').last
+      #抽检项
+      @cjx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE '%合格项%' OR spdata_2 LIKE '%不合格项%')", self.id)
+     logger.error @cjx
+      @jyjy_struni = (@cjx.where('sp_bsb_id= ? and spdata_4 <> ?', self.id, '/').select('distinct spdata_4').limit(2).map { |s| s.spdata_4 }).uniq.join(",")
+      @jyjy_FY = self.inspection_basis
+      #风险项
+      @fxx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE '%不判定项%' OR spdata_2 LIKE '%问题项%')", self.id)
+      @fxx_FY = (@fxx.where('sp_bsb_id= ?', self.id).select('distinct spdata_3').map { |s| s.spdata_3 }).uniq.join(';')
+
+      #问题项
+      @wtx = Spdatum.where('sp_bsb_id = ? AND spdata_2 LIKE ?', self.id, '%不合格%')
+      @jyyj_hgx_str4 = '经抽样检验，所检项目符合' + Spdatum.where('sp_bsb_id= ? and spdata_4 <> ? and spdata_2 like ?', self.id, '/', '%合格项%').map { |s| s.spdata_4 }.uniq.join(',')+'要求。'
+
+      #问题项字符串
+      @wtx_str = Spdatum.where('sp_bsb_id = ? AND spdata_2 LIKE ?', self.id, '%问题%').map { |s| s.spdata_0 }.join(',')
+      #检查封样人员      @padsplog_jcfy = PadSpLogs.where('sp_s_16 = ? AND remark = ?', self.sp_s_16, '接收样品').last
+
+      @padsplog_jcfy = PadSpLogs.where('sp_s_16 = ? AND remark = ?', self.sp_s_16, '接收样品').last
+     # @splog_jcfy = SpLog.with_deleted.where('sp_bsb_id = ? AND sp_i_state = ?', self.id, 2).first
+      @splog_jcfy = SpLog.where('sp_bsb_id = ? AND sp_i_state = ?', self.id, 2).first
+      @jcfy = '/'
+
+      if !@splog_jcfy.nil?
+        @jcfy = User.where('id = ?', @splog_jcfy.user_id).last.tname
+      end
+
+      if !@padsplog_jcfy.nil?
+        u = User.where('id = ?', @padsplog_jcfy.user_id).last
+        if !u.nil?
+          @jcfy = u.tname
+        end
+      end
+
+      tmp_file = Rails.root.join('tmp', "sp_bsbs_#{self.id}_print.pdf")
+      ApplicationController.new.render template: 'sp_bsbs/1.html.erb',
+                                       save_to_file: tmp_file,
+                                       save_only: true,
+                                       pdf: 'home',
+                                       wkhtmltopdf: '/usr/local/bin/wkhtmltopdf',
+                                       encoding: 'utf-8',
+                                       disable_javascript: true,
+                                       print_media_type: true,
+                                       lowquality: false,
+                                       locals: {:@spbsb => self, :@splog_jcfy => @splog_jcfy, :@jcfy => @jcfy, :@padsplog_jcfy => @padsplog_jcfy, :@fxx => @fxx, :@fxx_FY => @fxx_FY, :@wtx => @wtx, :@jyyj_hgx_str4 => @jyyj_hgx_str4, :@wtx_str => @wtx_str, :@jyjy_FY => @jyjy_FY, :@splog => @splog, :@cjx => @cjx, :@jyjy_struni => @jyjy_struni, :@jg_bsb => @jg_bsb, :@jyxm_str => @jyxm_str, :@jyjy_str => @jyjy_str, :@jyjy_str4 => @jyjy_str4, :@jyjy_str1 => @jyjy_str1}
+
+      target_path = "#{Time.now.strftime('/%Y/%m/%d')}"
+
+      if preview and !force_generate
+        abs_target_path = Rails.root.join('tmp', 'report_preview').to_s + target_path
+        # if pdf_rules.blank?
+        #   return tmp_file
+        # end
+      	logger.error "这应该是打印的"
+	logger.error abs_target_path
+	else
+        abs_target_path = File.expand_path('../reports', Rails.root).to_s + target_path
+      	logger.error "这应该是浏览的"
+        logger.error abs_target_path
+	end
+
+      if pdf_rules.blank?
+         if !self.sp_s_69.blank?
+            pdf_rules =self.sp_s_69 
+       else
+         if @jg_bsb.jg_bsb_stamps.count > 0
+            pdf_rules = @jg_bsb.jg_bsb_stamps.pluck(:stamp_no).join(',')
+          else
+	     Rails.logger.error '机构未进行数字签名认证，无法查看报告'
+              self.report_path = "#{target_path}/#{self.id}.pdf"
+		 if preview and !force_generate 
+                 #SpBsb.record_timestamps = false
+                  #self.save
+                 #SpBsb.record_timestamps = true
+              return tmp_file
+            end
+            return nil
+         end
+	 end
+      end
+
+      FileUtils.mkdir_p abs_target_path unless Dir.exists? abs_target_path
+
+      self.report_path = "#{target_path}/#{self.id}.pdf"
+      # create stamp record
+      userinfo = {userName: '吉林省食品药品监督局', channelId: 'CHN_7F22C8E7F35AF46', creditCodes: {ORG: @jg_bsb.ca_org}}
+      documentInfo = {docuName: '云签章', fileDesc: '云签章'}
+      content = []
+      pdf_rules.split(',').each do |rule|
+        content.push({ruleNum: rule, appId: '9ff70fce51874b62a5f136fdda43c4b7', userinfo: userinfo, documentInfo: documentInfo})
+      end
+      # logger.error content.to_json
+
+      content = Base64.strict_encode64(content.to_json)
+      cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')} 111.26.194.57 8081 105 #{content} #{tmp_file} #{self.absolute_report_path(preview && !force_generate)}"
+      logger.error cmd
+
+      result = `#{cmd}`
+
+  logger.error "result"
+
+  logger.error result
+    logger.error tmp_file
+    logger.error self.absolute_report_path(preview && !force_generate)
+      #cmd = "/usr/local/java-ppc64-80/jre/bin/java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 1 #{pdf_rules.split(',').join('#')} #{tmp_file} #{self.absolute_report_path(preview && !force_generate)}"
+      Rails.logger.error cmd
+      # cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.0.0-SNAPSHOT-client.jar')} 172.16.88.126 80 105 #{content} #{tmp_file} #{@spbsb.absolute_report_path}"
+      # logger.error cmd
+      #
+      # result = `#{cmd}`
+      Rails.logger.error result
+
+      FileUtils.rm_f(tmp_file)
+
+      if result.strip.include?('200')
+        if !preview or force_generate
+          SpBsb.record_timestamps = false
+          self.save
+          SpBsb.record_timestamps = true
+        end
+        return self.absolute_report_path(preview && !force_generate)
+      else
+        self.report_path = nil
+        return nil
+      end
+
+    else
+      self.absolute_report_path
     end
   end
 end

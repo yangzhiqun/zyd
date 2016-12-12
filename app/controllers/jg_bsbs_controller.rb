@@ -12,6 +12,13 @@ class JgBsbsController < ApplicationController
       @jg_bsbs = @jg_bsbs.where(id: current_user.jg_bsb_id)
     end
 
+		if is_city?
+			@jg_bsbs = @jg_bsbs.where(city: current_user.prov_city)
+    elsif is_county_level?
+     @jg_bsbs = @jg_bsbs.where(city: current_user.prov_city,country: current_user.prov_country)
+		end
+ 
+
     unless params[:name].blank?
       @jg_bsbs = @jg_bsbs.where(id: JgBsbName.where('name LIKE ?', "%#{params[:name]}%").pluck('jg_bsb_id'))
     end
@@ -41,7 +48,7 @@ class JgBsbsController < ApplicationController
     if  !params[:city].blank? and params[:city] != "-请选择-"
       @jg_bsbs = @jg_bsbs.where(city: params[:city])
     end
-    render json: {status: 'OK', msg: @jg_bsbs.map { |j| [j.jg_name, j.id] }}
+    render json: {status: 'OK', msg: @jg_bsbs.map { |j| [j.jg_name, j.id, j.jg_type] }}
   end
   # GET /jg_bsbs/1
   # GET /jg_bsbs/1.json
@@ -259,7 +266,7 @@ class JgBsbsController < ApplicationController
 
   def jg_bsb_params
     params.require(:jg_bsb).permit(
-        :zipcode, :fax, :jg_type, :city, :country, :status, :pdf_sign_rules, :attachment_path_file, :gpsname, :gpspassword, :api_ip_address, :code, :jg_address, :jg_administrion, :jg_bjp_permission, :jg_certification, :jg_contacts, :jg_detection, :jg_enable, :jg_group, :jg_group_category, :jg_higher_level, :jg_hzp_permission, :jg_leader, :jg_name, :jg_sampling, :jg_sp_permission, :jg_tel, :jg_word_area, :jg_province, :jg_email, super_jg_bsbs: []
+        :zipcode, :fax, :jg_type, :city, :country, :status, :pdf_sign_rules, :attachment_path_file, :gpsname, :gpspassword, :api_ip_address, :code, :jg_address, :jg_administrion, :jg_bjp_permission, :jg_certification, :jg_contacts, :jg_detection, :jg_enable, :jg_group, :jg_group_category, :jg_higher_level, :jg_hzp_permission, :jg_leader, :jg_name, :jg_sampling, :jg_sp_permission, :jg_tel, :jg_word_area, :jg_province, :jg_email,:ca_org, super_jg_bsbs: []
     )
   end
 end

@@ -64,7 +64,7 @@ gem 'activerecord-session_store'
 
 gem 'hairtrigger'
 
-gem 'newrelic_rpm'
+#gem 'newrelic_rpm'
 #gem 'oneapm_rpm'
 
 gem 'useragent'

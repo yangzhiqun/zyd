@@ -74,10 +74,22 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :baosong_as_newests
+  resources :baosong_bs_newests do
+    collection do
+      get "by_name" => "baosong_bs_newests#baosong_bs_by_name"
+      get "by_cityname" => "baosong_bs_newests#baosong_bs_by_cityname"
+      get "categories"
+			get "check_items"
+    end
+  end
+
   # Category Helper Controller
   post 'category_batch_delete/:category' => 'category_helper#batch_delete'
   post 'create_category/:category' => 'category_helper#create'
   post 'update_category/:category' => 'category_helper#update'
+	post  'create_categorys/:category'=> 'category_helper#batch_create'
+	get  'query_category/:category'  => 'category_helper#query_categorys'
 
   resources :a_categories do
     collection do
@@ -209,9 +221,12 @@ Rails.application.routes.draw do
       get "cyjygzs"
     end
 
-		collection do
-			get 'no_available_pdf_found'
-		end
+    collection do
+     get 'no_available_pdf_found'
+     get 'by_ca_info'
+     get 'print_pdf'
+     get 'super_jg'
+    end
   end
 
   resources :pad_sp_bsbs do
@@ -252,6 +267,7 @@ Rails.application.routes.draw do
       get 'hccz/:cjbh/report' => 'hccz#report'
 			post "sp_bsbs/sync_sp_bsb"
 			post "spdata/sync_spdaum"
+			post "spdata/transfer"
     end
   end
 

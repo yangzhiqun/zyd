@@ -4,7 +4,7 @@
   window.current_tab = <%= params[:tab] %>;
 </script>
 
-<% if current_user.is_admin? %>
+<% if current_user.is_admin? || current_user.is_sheng? %>
     <% #如果当前账户为admin 则 显示 【总局本级】和【转移地方】的任务 %>
     <ul class="nav nav-tabs" role="tablist">
       <li role="presentation" class="<%= 'active' if params[:tab].to_i == 0 %>"><a href="?tab=0">总局任务</a></li>
@@ -24,7 +24,25 @@
       <% # /委托地方 %>
     </div>
 <% else %>
-    <% #省局下达 %>
-    <%= render 'tasks/deploy/prov' %>
-    <% #/省局下达 %>
+ <% if is_city? or (!current_user.prov_city.blank? and (current_user.prov_country.blank? or current_user.prov_country.include?("请选择"))) %>  
+    <ul class="nav nav-tabs" role="tablist">
+       <li role="presentation" class="<%= 'active' if params[:tab].to_i == 0 %>"><a href="?tab=0">市级任务</a></li>
+       <li role="presentation" class="<%= 'active' if params[:tab].to_i == 2 %>"><a href="?tab=2">县级分配</a></li>
+    </ul>
+  <div class="tab-content">
+      <% if params[:tab].to_i == 0 %>
+          <%= render 'tasks/deploy/prov' %>
+      <% end %>
+      <% if params[:tab].to_i == 2 %>
+          <%= render 'tasks/deploy/transfer' %>
+      <% end %>
+ </div>
+ <% elsif is_county_level? or (!current_user.prov_city.blank? and (!current_user.prov_country.blank? and !current_user.prov_country.include?("请选择"))) %>
+      <ul class="nav nav-tabs" role="tablist">
+      <li role="presentation" class="<%= 'active' if params[:tab].to_i == 0 %>"><a href="?tab=0">县级任务</a></li>
+    </ul>
+   <div class="tab-content">
+          <%= render 'tasks/deploy/prov' %>
+  </div>
+<% end %>
 <% end %>
