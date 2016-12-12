@@ -1668,7 +1668,7 @@
     }
 	
 		//如果状态不是主检人或者退休则不可以编辑	
-		<% unless [0,3,4].include?@sp_bsb.sp_i_state %>
+		<% unless [0,2,3,4].include?@sp_bsb.sp_i_state %>
 			$("#sp_bsb_inspection_basis").attr("readonly","readonly");
 			$("#sp_bsb_decision_basis").attr("readonly","readonly");
 		<% end %>
