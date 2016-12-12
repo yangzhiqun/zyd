@@ -76,6 +76,7 @@
     }, 'json');
 //
 //
+		var num = 0 //判断第一次加载
     $('#city').change(function () {
       var o = $(this);
       $('#lcity').empty();
@@ -87,14 +88,16 @@
         });
 				$("#lcity").val("<%= current_user.prov_country %>")
       }, 'json');
-      reload_jg_data();
+			if (num!=0) {
+      	reload_jg_data();
+			}
+			num = num+1;
    	});
 		
 		//给编辑状态下的下拉框赋值
 		<% if @user.id %>
 			$("#city").val("<%= @user.prov_city %>").change();
 			$("#hidden_prov_city").val("<%= @user.prov_city %>");
-			
 			$("#lcity").val("<%= @user.prov_country %>");
 			$("#hidden_prov_country").val("<%= @user.prov_country %>")
 		<% end %>
