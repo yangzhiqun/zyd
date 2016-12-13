@@ -199,10 +199,10 @@ $(function(){
               <td><%= (yycz.scrq + 8.hours).strftime("%Y-%m-%d") if !yycz.scrq.blank?%></td>
               <td><%= yycz.bsscqy %></td>
               <td><%= yycz.bsscqysf %></td>
-              <td><%= SpBsb.find_by_sp_s_16(yycz.cjbh).sp_s_220 %></td>
+              <td><%= SpBsb.find_by_sp_s_16(yycz.cjbh).blank? ? "" : SpBsb.find_by_sp_s_16(yycz.cjbh).sp_s_220 %></td>
               <td><%= yycz.bcydw %></td>
               <td><%= yycz.bcydwsf %></td>
-              <td><%= SpBsb.find_by_sp_s_16(yycz.cjbh).sp_s_4 %></td>
+              <td><%= SpBsb.find_by_sp_s_16(yycz.cjbh).blank? ? "" : SpBsb.find_by_sp_s_16(yycz.cjbh).sp_s_4 %></td>
               <td>-</td>
               <td><%= yycz.jyjl %></td>
               <td><%= yycz.yyczbm%></td>
