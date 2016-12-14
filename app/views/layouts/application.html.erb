@@ -485,13 +485,16 @@
       <a target="_blank"  href="http://www.cfda.gov.cn/WS01/CL1689/"><img src="<%= asset_path('icon03.png') %>" title="抽检公示"/>
         <h2>抽检公示</h2></a></li>
     <li>
-      <a target="_blank" href="http://61.158.162.77:9091/app/doc/shuoming.pdf"><img src="<%= asset_path('icon04.png') %>" title="系统说明"/>
+      <a target="_blank" href="http://bbs.cfda.pub:8080/app/doc/shuoming.pdf"><img src="<%= asset_path('icon04.png') %>" title="系统说明"/>
         <h2>系统说明</h2></a></li>
-    <li>
+  <!--  <li>
       <a href="#"><img src="<%= asset_path('icon02.png') %>" title="常见问题"/>
-        <h2>常见问题</h2></a></li>
-    <li><a target="_blank" href="http://61.158.162.77:9091/app/?name=<%=SysConfig.get(SysConfig::Key::PROV)%>"><img src="<%= asset_path('icon05.png') %>" title="终端下载"/>
+        <h2>常见问题</h2></a></li>-->
+    <li><a target="_blank" href="http://bbs.cfda.pub:8080/app/?name=<%=SysConfig.get(SysConfig::Key::PROV)%>"><img src="<%= asset_path('icon05.png') %>" title="终端下载"/>
       <h2>终端下载</h2></a></li>
+   <!-- <li>
+      <a href="http://bbs.cfda.pub:8080/lims_buttjoint/" target="_blank"><img src="<%= asset_path('icon06.png') %>" title="lims对接"/>
+        <h2>lims对接</h2></a></li>-->
   </ul>
   <div class="topright">
     <div class="user">
@@ -511,7 +514,7 @@
   <div class="main_left" style="background:#f0f9fd; width:15%;">
     <div class="lefttop"><span></span>操作列表</div>
     <dl class="leftmenu">
-      <% if current_user.pad_permission.to_i > 0 || current_user.is_admin? %>
+      <% if current_user.pad_permission.to_i > 0 || current_user.is_admin? || is_shengshi? %>
           <dd>
             <div class="title">
               <span><img src="<%= asset_path('leftico05.png') %>"/></span>样品采集
@@ -543,40 +546,41 @@
                   <li class="<%= "active" if action?("new") %>"><cite></cite><a href="/sp_bsbs/new">食品检验数据录入</a><i></i>
                   </li>
               <% end %>
-              <% if current_user.user_d_authority_5 == 1 or current_user.user_i_switch == 1 or current_user.user_d_authority == 1 or current_user.user_d_authority_1 == 1 or current_user.user_d_authority_2 == 1 or current_user.user_d_authority_3 == 1 %>
+              <% if current_user.user_d_authority_5 == 1 or current_user.user_i_switch == 1 or current_user.user_d_authority == 1 or current_user.user_d_authority_1 == 1 or current_user.user_d_authority_2 == 1 or current_user.user_d_authority_3 == 1 or is_shengshi? %>
                   <li class="<%= "active" if controller?("sp_bsbs") and action?('spsearch') %>">
                     <cite></cite><a href="/sp_bsbs_spsearch?<%= session[:query] %>">食品检验数据查看</a><i></i>
                   </li>
               <% end %>
             </ul>
           </dd>
-          <% if current_user.hcz_permission.to_i > 0 || current_user.yycz_permission.to_i > 0 %>
+          <% if current_user.hcz_permission.to_i > 0 || current_user.yycz_permission.to_i > 0 || is_shengshi?%>
               <dd>
                 <div class="title">
                   <span><img src="<%= asset_path('leftico04.png') %>"/></span>核查处置
                 </div>
                 <ul class="menuson" style="<%= "display: block;" if controller?("wtyp_czbs") or controller?("yycz") %>">
-
                   <%# if current_user.yycz_permission.to_i > 0 || current_user.is_admin? %>
-                  <% if current_user.yyadmin == 1 or current_user.yysl == 1 %>
+                  <% if current_user.yyadmin == 1 or current_user.yysl == 1 or is_shengshi? %>
                       <li class="<%= "active" if action?("dj") %>"><cite></cite><a href="/yycz/dj">异议登记</a><i></i>
                       </li>
                   <% end %>
-                  <% if current_user.yyadmin == 1 %>
+                  <% if current_user.yyadmin == 1 or (is_sheng? or current_user.is_admin? )%>
+										<%# if !is_city? and !is_county_level? %>
                       <li class="<%= "active" if action?("renew") %>">
                         <cite></cite><a href="/yycz/renew">异议延期登记</a><i></i>
                       </li>
+										<%# end %>
                   <% end %>
                   <% if false and current_user.zhxt == 1 %>
                       <li class="<%= "active" if action?("gzap") %>"><cite></cite><a href="/yycz/gzap">异议工作安排</a><i></i>
                       </li>
                   <% end %>
-                  <% if current_user.yyadmin == 1 or current_user.yybl == 1 %>
+                  <% if current_user.yyadmin == 1 or current_user.yybl == 1 or is_shengshi? %>
                       <li class="<%= "active" if action?("cztb") %>">
                         <cite></cite><a href="/yycz/cztb">异议填报</a><i></i>
                       </li>
                   <% end %>
-                  <% if current_user.yyadmin == 1 or current_user.yysh == 1 %>
+                  <% if current_user.yyadmin == 1 or current_user.yysh == 1 or is_shengshi? %>
                       <li class="<%= "active" if action?("czsh") %>">
                         <cite></cite><a href="/yycz/czsh">异议审核</a><i></i>
                       </li>
@@ -584,15 +588,15 @@
 
                   <%# end %>
 
-                  <% if current_user.hcz_czap == 1 or current_user.hcz_admin == 1 %>
+                  <% if current_user.hcz_czap == 1 or current_user.hcz_admin == 1   %>
                       <li class="<%= 'active' if controller?('wtyp_czbs') and action?('index') and params[:state].to_i == 0 %>">
                         <cite></cite><a href="/wtyp_czbs?current_tab=DBL">核查处置领取</a><i></i></li>
                   <% end %>
-                  <% if current_user.hcz_czbl == 1 or current_user.hcz_admin == 1 %>
+                  <% if current_user.hcz_czbl == 1 or current_user.hcz_admin == 1   %>
                       <li class="<%= 'active' if controller?('wtyp_czbs') and action?('index') and params[:state].to_i == 1 %>">
                         <cite></cite><a href="/wtyp_czbs_by_state/1?current_tab=DBL">核查处置办理</a><i></i></li>
                   <% end %>
-                  <% if current_user.hcz_czsh == 1 or current_user.hcz_admin == 1 %>
+                  <% if current_user.hcz_czsh == 1 or current_user.hcz_admin == 1   %>
                       <li class="<%= 'active' if controller?('wtyp_czbs') and action?('index') and params[:state].to_i == 2 %>">
                         <cite></cite><a href="/wtyp_czbs_by_state/2?current_tab=DSH">核查处置审核</a><i></i></li>
                   <% end %>
@@ -605,7 +609,7 @@
           <span><img src="<%= asset_path('leftico13.png') %>"/></span><a href="/users_changeauthority">用户角色切换</a>
         </div>
       </dd>
-      <% if current_user.pub_xxfb_sh == 1 or current_user.pub_xxfb == 1 %>
+      <% if (current_user.pub_xxfb_sh == 1 or current_user.pub_xxfb == 1) and is_shengshi? %>
           <!--<dd>
             <div class="title">
               <span><img src="<%#= asset_path('leftico05.png') %>"/></span>抽检结果发布
@@ -632,21 +636,21 @@
               <li><cite></cite><a href="">发布数据查询</a><i></i></li>
             </ul>
           </dd>-->
-          <dd>
+         <!-- <dd>
             <div class="title">
-              <span><img src="<%= asset_path('leftico05.png') %>"/></span>抽检信息公示
+              <span><img src="<%#= asset_path('leftico05.png') %>"/></span>抽检信息公示
             </div>
             <ul class="menuson" style="<%= "display: block;" if controller?("sp_bsb_publications") %>">
-              <li class="<%= 'active' if action?('unpublished') %>">
+              <li class="<%#= 'active' if action?('unpublished') %>">
                 <cite></cite><a href="/sp_bsb_publications/unpublished">未发布信息</a><i></i>
               </li>
-              <li class="<%= 'active' if action?('published') %>">
+              <li class="<%#= 'active' if action?('published') %>">
                 <cite></cite><a href="/sp_bsb_publications/published">已发布信息</a><i></i>
               </li>
             </ul>
-          </dd>
+          </dd>-->
       <% end %>
-      <% if !current_user.is_admin? and current_user.is_jg_manager?  %>
+      <% if (!current_user.is_admin? and current_user.is_jg_manager?) or(is_shengshi?)  %>
           <dd>
             <div class="title">
               <span><img src="<%= asset_path('leftico06.png') %>"/></span>机构信息维护
@@ -658,7 +662,7 @@
             </ul>
           </dd>
       <% end%>
-      <% if current_user.is_admin?  %>
+			<% if current_user.is_admin?  %>
           <% if current_user.is_super? %>
               <dd>
                 <div class="title">
@@ -672,6 +676,7 @@
                     <cite></cite><a href="/jg_bsbs/merge_request">机构合并</a><i></i></li>-->
                 </ul>
               </dd>
+        <% if !is_shengshi? %>
               <dd>
                 <div class="title not-expand">
                   <span><img src="<%= asset_path('leftico07.png') %>"/></span><a href="/sp_production_infos">生产企业库维护</a>
@@ -684,22 +689,33 @@
               </dd>
           <% end %>
           <dd>
-            <div class="title not-expand">
-              <span><img src="<%= asset_path('leftico09.png') %>"/></span><a href="/baosong_as">报送分类维护</a>
+            <div class="title">
+              <span><img src="<%= asset_path('leftico09.png') %>"/></span>报送分类维护
             </div>
+						<ul class="menuson" style="<%= "display: block;" if controller?("baosong_as") or controller?("baosong_as_newests") %>">
+            	<li class="<%= "active" if controller?("baosong_as") and action?("index") %>">
+              	<cite></cite><a href="/baosong_as">报送分类维护</a><i></i>
+               </li>
+            	<!--<li class="<%#= "active" if controller?("baosong_as_newests") and action?("index") %>">
+              	<cite></cite><a href="/baosong_as_newests">报送分类生成</a><i></i>
+               </li>-->
+            </ul>
           </dd>
-      <% end %>
-      <dd>
+       <% end %>
+			<% end %>
+         <dd>
         <div class="title not-expand">
           <span><img src="<%= asset_path('leftico12.png') %>"/></span><a href="/users">登录用户管理</a>
         </div>
       </dd>
       <% if current_user.is_super? or ((current_user.user_i_js == 1) and (current_user.is_account_manager)) %>
-      <dd>
-        <div class="title not-expand">
-          <span><img src="<%= asset_path('leftico10.png') %>"/></span><a href="/sys_provinces">区域维护</a>
-        </div>
-      </dd>
+				<% if !is_city? and  !is_county_level? %>
+      		<dd>
+      		  <div class="title not-expand">
+      		    <span><img src="<%= asset_path('leftico10.png') %>"/></span><a href="/sys_provinces">区域维护</a>
+      		  </div>
+      		</dd>
+      	<% end %>
       <% end %>
       <% if current_user.is_account_manager %>
           <dd>
@@ -709,20 +725,24 @@
           </dd>
       <% end %>
       <% if current_user.user_i_js == 1 %>
-          <dd>
-            <div class="title not-expand">
-              <span><img src="<%= asset_path('leftico12.png') %>"/></span><a href="/sample_members">人员信息查看</a>
-            </div>
-          </dd>
+				<% if !is_city?  and !is_county_level?  %>
+        	<dd>
+        	  <div class="title not-expand">
+        	    <span><img src="<%= asset_path('leftico12.png') %>"/></span><a href="/sample_members">人员信息查看</a>
+        	  </div>
+        	</dd>
+      	<% end %>
       <% end %>
       <% if current_user.user_d_authority_1 == 1 or current_user.is_super? %>
+				<% if !is_city? %>
           <dd>
             <div class="title not-expand">
               <span><img src="<%= asset_path('leftico10.png') %>"/></span><a href="/company_standards">企业标准库维护</a>
             </div>
           </dd>
+      	<% end %>
       <% end %>
-      <% if current_user.is_admin? %>
+      <% if current_user.is_admin? or is_shengshi? %>
           <dd>
             <div class="title not-expand">
               <span><img src="<%= asset_path('leftico11.png') %>"/></span><a target="_blank" href="http://121.52.214.78:88/ExternalPage/BiaoZhunPage/BiaoZhun.aspx">标准查询</a>

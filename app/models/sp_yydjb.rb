@@ -4,7 +4,7 @@ class SpYydjb < ActiveRecord::Base
 	validates_presence_of :cjbh, message: "抽样单号务必填写"
 
 	validates_presence_of :cjbh, message: "抽样单号务必填写"
-
+ belongs_to :sp_bsb,class_name: SpBsb, foreign_key: "id"
   module State
     # 问题样品处置流程结束，终止异议处置流程
     HALTED_1 = -2
@@ -179,6 +179,13 @@ class SpYydjb < ActiveRecord::Base
     end
   end
 
+ def tbr_city
+  if self.djr_user_id.blank?
+   ""
+  else
+   User.find(self.djr_user_id).prov_city
+  end
+ end
   # 日志记录
   def callback_when_saved
     content_tmp = ''
