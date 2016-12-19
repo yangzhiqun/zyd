@@ -650,7 +650,7 @@
             </ul>
           </dd>-->
       <% end %>
-      <% if (!current_user.is_admin? and current_user.is_jg_manager?) or(is_shengshi?)  %>
+      <% if (!current_user.is_admin? and current_user.is_jg_manager?) or(is_shengshi? and !current_user.is_admin?)  %>
           <dd>
             <div class="title">
               <span><img src="<%= asset_path('leftico06.png') %>"/></span>机构信息维护
