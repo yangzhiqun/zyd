@@ -1,3 +1,12 @@
+<script type="text/javascript">
+  $(function () {
+    $("#region").CfdaProvince({
+      level1: "<%= @baosong_a.sheng %>",
+      level2: "<%= @baosong_a.shi %>",
+      level3: "<%= @baosong_a.xian %>"
+    });
+  });
+</script>
 <div class="panel panel-default">
   <div class="panel-body">
     <%= form_for(@baosong_a) do |f| %>
@@ -11,6 +20,7 @@
           <label>备注：</label>
           <br>
           <%= f.text_field :note, :class => "form-control input-sm" %>
+          <%#= f.hidden_field  :note, :class => "form-control input-sm", :value => nil %>
         </div>
         <br>
         <div class="field">
@@ -22,7 +32,12 @@
         <div class="field">
           <label>市/区</label>
           <br>
-          <%= f.select :prov, options_for_select(SysProvince.level1.map { |p| [p.name, p.name] }.unshift(['不限制', nil]), @baosong_a.prov), {}, :class => 'form-control input-sm' %>
+       <!--   <%#= f.select :prov, options_for_select(SysProvince.level1.map { |p| [p.name, p.name] }.unshift(['不限制', nil]), @baosong_a.prov), {}, :class => 'form-control input-sm' %>-->
+          <div colspan="15" style="border-right:none;" class="region" id="region">
+            <%= f.select :sheng, {}, class: 'form-control input-sm'%>
+            <%= f.select :shi, {}, class: 'form-control input-sm' %>
+            <%= f.select :xian, {}, class: 'form-control input-sm' %>
+          </div>
         </div>
         <br>
         <div class="actions">

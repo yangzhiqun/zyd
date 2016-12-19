@@ -2,8 +2,10 @@ class BaosongAsController < ApplicationController
   # GET /baosong_as
   # GET /baosong_as.json
   def index
+    if current_user.is_admin?
     @baosong_as = BaosongA.order("created_at desc")
 
+    end
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @baosong_as }
@@ -86,6 +88,6 @@ class BaosongAsController < ApplicationController
 
   private
   def baosong_a_params
-    params.require(:baosong_a).permit(:name, :note, :rwlylx, :prov)
+    params.require(:baosong_a).permit(:name, :note, :rwlylx, :prov,:sheng,:shi,:xian)
   end
 end
