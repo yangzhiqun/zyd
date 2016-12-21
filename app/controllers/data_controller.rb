@@ -58,11 +58,11 @@ class DataController < ApplicationController
           @wtyp.delete_all
         end
         #异议登记
-        @yydj = SpYydjb.where("cjbh = ?",@sp_bsbs.sp_s_16)
+        @yydj = SpYydjb.where("cjbh = ?",@sp_bsbs.sp_s_16).last#.find_by_sql("select * from sp_yydjbs where cjbh = '"+@sp_bsbs.sp_s_16+"'")#.where("cjbh = ?",@sp_bsbs.sp_s_16)
         if !@yydj.blank? and !@yydj.nil?
           #异议登记数据
         @yydj_data = SpYydjbSpdata.where("sp_yydjb_id = ?",@yydj.id)
-        @yydj.delete_all
+        @yydj.delete
           if !@yydj_data.blank? and !@yydj_data.nil?
             @yydj_data.delete_all
           end
