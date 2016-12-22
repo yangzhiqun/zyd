@@ -1987,7 +1987,7 @@ function pass_ca(){
           <td colspan="30" style="background: #FFFF99;"><span style="font-family:宋体">△――样品信息登记部分</span></td>
         </tr>
         <td colspan="5">任务来源*</td>
-        <td colspan="8"><%= f.text_field :sp_s_2_1, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        <td colspan="8"><%= f.select :sp_s_2_1, options_for_select(all_super_departments.map { |name| [name,name, {'parentid' => name}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_2_1), {}, {:style => "width: 260px; height: 19px"} %></td>
         <td colspan="3">报送分类*</td>
         <td colspan="14">
           <%= f.select :sp_s_70, options_for_select(BaosongA.where("prov = ? or prov is null or prov = ''", current_user.user_s_province).map { |b| [b.name, b.name, {'parentid' => b.rwlylx}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_70), {}, {:style => "width: 167px;"} %>
