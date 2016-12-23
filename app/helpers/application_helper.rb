@@ -131,7 +131,7 @@ module ApplicationHelper
 	#是否是县级管理员
 	def is_county_level?
 		jg_type = current_user.jg_bsb.jg_type
-		result  = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 3 && jg_type == 1 && jg_is_country?
+		result  = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 3 && jg_type == 1
 		return result
 	end
 
@@ -175,11 +175,11 @@ module ApplicationHelper
 	end
 
   def is_shi_deploy?
-    is_city? || jg_is_city?
+    (is_city?&&jg_is_city?) || jg_is_city?
   end
 
   def is_xian_deploy?
-    is_county_level? || jg_is_country?
+    (is_county_level?&&jg_is_country?) || jg_is_country?
   end
  def is_level?
      return "省级"  if  is_sheng?
