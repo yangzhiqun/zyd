@@ -675,18 +675,16 @@
               <cite></cite><a href="/jg_bsbs/merge_request">机构合并</a><i></i></li>-->
           </ul>
         </dd>
-        <% if !is_shengshi? %>
-          <dd>
-            <div class="title not-expand">
-              <span><img src="<%= asset_path('leftico07.png') %>"/></span><a href="/sp_production_infos">生产企业库维护</a>
-            </div>
-          </dd>
-          <dd>
-            <div class="title not-expand">
-              <span><img src="<%= asset_path('leftico08.png') %>"/></span><a href="/sp_company_infos">被抽样单位库维护</a>
-            </div>
-          </dd>
-        <% end %>
+        <dd>
+          <div class="title not-expand">
+            <span><img src="<%= asset_path('leftico07.png') %>"/></span><a href="/sp_production_infos">生产企业库维护</a>
+          </div>
+        </dd>
+        <dd>
+          <div class="title not-expand">
+            <span><img src="<%= asset_path('leftico08.png') %>"/></span><a href="/sp_company_infos">被抽样单位库维护</a>
+          </div>
+        </dd>
 			<% end %>
         <% if is_shengshi? || current_user.is_admin? %>
           <dd>
