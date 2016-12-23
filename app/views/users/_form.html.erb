@@ -114,22 +114,6 @@
 		$('#lcity').change(function () {
 			$('#hidden_prov_country').val($('#lcity').val());
 		});
-		$(".btn-success").click(function () {
-			var level_num = $("#user_admin_level").val();
-			var shi   = $("#city").val() == "-请选择-" || $("#city").val() == "";
-			var xian  = $("#lcity").val() == "-请选择-" || $("#lcity").val() == "";
-			if ($(".admin_level input[type='checkbox']").is(':checked')) {
-				if (level_num == 2 && shi){
-					alert("请选择所在市");
-					$("#city").focus();
-					return false;
-				} else if (level_num == 3 && xian) {
-					alert("请选择所在区/县");
-					$("#lcity").focus();
-					return false;
-				}
-			}
-		});
 
   	function reload_jg_data() {
   	  $.get('/jg_bsbs/by_jg_name.json', {
