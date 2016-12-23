@@ -11,10 +11,7 @@ class SpBsbsController < ApplicationController
     @spbsb = SpBsb.find(params[:id])
     respond_to do |format|
       format.pdf {
-				logger.error params[:pdf_rules]
         filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], false, current_user.id,false)
-       logger.error "filepath_pdf"
-       logger.error filepath    
        if filepath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
@@ -24,14 +21,10 @@ class SpBsbsController < ApplicationController
       }
       format.html {
         filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], true, current_user.id,false)
-       logger.error "filepath_html"
-       logger.error filepath 
         if filepath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
         else
-	logger.error "filepath"
-	logger.error filepath
           send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
         end
       }
@@ -40,8 +33,6 @@ class SpBsbsController < ApplicationController
 
   def by_ca_info
     @spbsb = SpBsb.find(params[:id])
-    logger.error " @spbsb.report_path"
-    logger.error  @spbsb.report_path
     preview = false
    if !params[:pr_status].blank?
        preview =  params[:pr_status]
@@ -64,7 +55,6 @@ class SpBsbsController < ApplicationController
     clientSignMessages.push(clientSignMessage)
     reqMessage ={appId: '9ff70fce51874b62a5f136fdda43c4b7',sealImg: sealImg, signCert: signCert,
                     sealWidth: 0,sealHeight: 0, clientSignMessages: clientSignMessages}
-    logger.error reqMessage
     reqMessage = Base64.strict_encode64(reqMessage.to_json)
     #tmp_file = Rails.root.join('tmp', "jilin.pdf")
     filename = Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}.txt")
@@ -848,7 +838,6 @@ class SpBsbsController < ApplicationController
         super_jg.each do |j|
            jg_names.push(j.jg_bsb.jg_name)
         end
-        logger.error "jg_names "
        @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",jg_names).paginate(page: params[:page], per_page: 10)
       rescue
 
@@ -857,7 +846,7 @@ class SpBsbsController < ApplicationController
       @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
       end
     end
-    if current_user.is_admin? || session[:change_js]==10
+    if current_user.is_admin? || session[:change_js]==10 || is_sheng?
       case params[:s8].to_i
         when 1
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state between 0 and 16")
@@ -933,7 +922,7 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:s8]=='10'
-      if current_user.is_admin?||session[:change_js]==10
+      if current_user.is_admin?||session[:change_js]==10||is_sheng?
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 = '抽检监测(总局本级)'").paginate(page: params[:page], per_page: 10)
 
         respond_to do |format|
@@ -945,7 +934,7 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:s8]=='11'
-      if current_user.is_admin?||session[:change_js]==10
+      if current_user.is_admin?||session[:change_js]==10||is_sheng?
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 = '抽检监测（地方）'").paginate(page: params[:page], per_page: 10)
 
         respond_to do |format|
@@ -957,7 +946,7 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:s8]=='12'
-      if current_user.is_admin?||session[:change_js]==10
+      if current_user.is_admin?||session[:change_js]==10||is_sheng?
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 = '三司专项检验'").paginate(page: params[:page], per_page: 10)
         respond_to do |format|
           format.html { render action: "index" }
@@ -968,7 +957,7 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:s8]=='13'
-      if current_user.is_admin?||session[:change_js]==10
+      if current_user.is_admin?||session[:change_js]==10||is_sheng?
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 = '网络专项检验'").paginate(page: params[:page], per_page: 10)
         respond_to do |format|
           format.html { render action: "index" }
@@ -979,7 +968,7 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:s8]=='14'
-      if current_user.is_admin? || session[:change_js] == 10
+      if current_user.is_admin? || session[:change_js] == 10||is_sheng?
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.synced = false and sp_bsbs.sp_i_state = 2").paginate(page: params[:page], per_page: 10)
 
         respond_to do |format|
@@ -991,7 +980,7 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:s8]=='9'
-      if current_user.is_admin? || session[:change_js]==10
+      if current_user.is_admin? || session[:change_js]==10||is_sheng?
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
       else
         if session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
@@ -1075,7 +1064,7 @@ class SpBsbsController < ApplicationController
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 AND sp_bsbs.sp_s_70 NOT LIKE '%一司%' AND sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         end
       end
-    elsif current_user.is_admin?||session[:change_js]==10
+    elsif current_user.is_admin?||session[:change_js]==10||is_sheng?
       @sp_bsbs = @sp_bsbs.paginate(page: params[:page], per_page: 10)
     else
       if session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
@@ -1178,15 +1167,15 @@ class SpBsbsController < ApplicationController
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 and sp_bsbs.sp_s_70 NOT LIKE '%一司%'").paginate(page: params[:page], per_page: 10)
       end
     end
+   
+    @rwly = all_super_departments
+    if is_city? and (!current_user.is_super? or !current_user.is_admin?)
+      @sp_bsbs = @sp_bsbs.where(sp_s_2_1: @rwly).paginate(page: params[:page], per_page: 10)
+    elsif is_county_level? and (!current_user.is_super? or !current_user.is_admin?)
+      @sp_bsbs = @sp_bsbs.where(sp_s_2_1: @rwly).paginate(page: params[:page], per_page: 10)
+    end
     
-    if  current_user.is_city? and (!current_user.is_super? or !current_user.is_admin?)
-      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_4 = ? or sp_bsbs.sp_s_220 =?",current_user.prov_city,current_user.prov_city).paginate(page: params[:page], per_page: 10)
-    elsif current_user.is_county_level? and (!current_user.is_super? or !current_user.is_admin?)
-      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_5 = ? or sp_bsbs.sp_s_221 =?",current_user.prov_country,current_user.prov_country).paginate(page: params[:page], per_page: 10)
-    elsif (current_user.prov_city.blank? or current_user.prov_city.include?('请选择')) and (current_user.prov_country.blank? or current_user.prov_country.include?('请选择'))
-      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3	=?",current_user.user_s_province).paginate(page: params[:page], per_page: 10)
-   end
-     respond_to do |format|
+    respond_to do |format|
       format.html {
         if @sp_bsbs.respond_to?(:total_pages)
           render action: "index"
@@ -1599,21 +1588,14 @@ class SpBsbsController < ApplicationController
       super_jg_bsb_id = params[:super_jg_bsb_id]
       @jg_bsbsuper=JgBsbSuper.where(super_jg_bsb_id: super_jg_bsb_id ).group("jg_bsb_id")
       jg_ids=[]
-      logger.error "===================="
-     logger.error  @jg_bsbsuper
     if !@jg_bsbsuper.blank?
       jg_ids.push(super_jg_bsb_id)
       @jg_bsbsuper.each do |j|
          jg_ids.push(j.jg_bsb_id)
       end
-        logger.error "----------------"
-       logger.error jg_ids
        @jg=JgBsb.where("jg_bsbs.jg_detection=? and jg_bsbs.id in(?)",1,jg_ids)
-      logger.error "---------1111-------"
       else
-      logger.error "-------2---------"
        @jg= JgBsb.where("jg_bsbs.jg_detection=? and jg_bsbs.id in(?)",1,super_jg_bsb_id)
-       logger.error "=========----===="
     end
         render json: {status: 'OK', msg: @jg }
    # rescue

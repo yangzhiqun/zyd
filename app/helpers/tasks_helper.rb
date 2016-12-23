@@ -75,8 +75,8 @@ module TasksHelper
   # 国家局下达的局本级抽验任务
   def grid4(task, xl)
     @result = [] if @result.blank?
-
-    @query = TaskJgBsb.where("sys_province_id = -1 AND jg_bsb_id = ? AND a_category_id = ? AND identifier = ?", task.jg_bsb_id, xl.a_category_id, xl.identifier)
+    logger.error task.to_json
+    @query = TaskJgBsb.where("sys_province_id = ? AND jg_bsb_id = ? AND a_category_id = ? AND identifier = ?",task.sys_province_id,task.jg_bsb_id, xl.a_category_id, xl.identifier)
     # A
     if (@count = @query.sum("quota")) > 0 and @query.where("b_category_id IS NULL AND c_category_id IS NULL AND d_category_id IS NULL").sum("quota") == @count
       tag = "#{xl.a_category_id}_#_#_#_#{task.jg_bsb_id}"
@@ -108,7 +108,7 @@ module TasksHelper
         html.html_safe
       end
     # D
-    elsif (@count = TaskJgBsb.where("sys_province_id = -1 AND jg_bsb_id = ? AND a_category_id = ? AND b_category_id = ? AND c_category_id = ? AND d_category_id = ? AND identifier = ?", task.jg_bsb_id, xl.a_category_id, xl.b_category_id, xl.c_category_id, xl.id, xl.identifier).sum('quota')) > 0
+    elsif (@count = TaskJgBsb.where("sys_province_id = ? AND jg_bsb_id = ? AND a_category_id = ? AND b_category_id = ? AND c_category_id = ? AND d_category_id = ? AND identifier = ?",task.sys_province_id ,task.jg_bsb_id, xl.a_category_id, xl.b_category_id, xl.c_category_id, xl.id, xl.identifier).sum('quota')) > 0
       tag = "#{xl.a_category_id}_#{xl.b_category_id}_#{xl.c_category_id}_#{xl.id}_#{task.jg_bsb_id}"
       unless @result.include?(tag)
         @result.push(tag)
