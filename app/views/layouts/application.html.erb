@@ -663,32 +663,30 @@
           </dd>
       <% end%>
 			<% if current_user.is_admin?  %>
-          <% if current_user.is_super? %>
-              <dd>
-                <div class="title">
-                  <span><img src="<%= asset_path('leftico06.png') %>"/></span>机构信息维护
-                </div>
-                <ul class="menuson" style="<%= "display: block;" if controller?("jg_bsbs") %>">
-                  <li class="<%= "active" if controller?("jg_bsbs") and action?("index") %>">
-                    <cite></cite><a href="/jg_bsbs">机构信息录入</a><i></i>
-                  </li>
-                  <!--<li class="<%#= "active" if controller?("jg_bsbs") and action?("merge_request") %>">
-                    <cite></cite><a href="/jg_bsbs/merge_request">机构合并</a><i></i></li>-->
-                </ul>
-              </dd>
+        <dd>
+          <div class="title">
+            <span><img src="<%= asset_path('leftico06.png') %>"/></span>机构信息维护
+          </div>
+          <ul class="menuson" style="<%= "display: block;" if controller?("jg_bsbs") %>">
+            <li class="<%= "active" if controller?("jg_bsbs") and action?("index") %>">
+              <cite></cite><a href="/jg_bsbs">机构信息录入</a><i></i>
+            </li>
+            <!--<li class="<%#= "active" if controller?("jg_bsbs") and action?("merge_request") %>">
+              <cite></cite><a href="/jg_bsbs/merge_request">机构合并</a><i></i></li>-->
+          </ul>
+        </dd>
         <% if !is_shengshi? %>
-              <dd>
-                <div class="title not-expand">
-                  <span><img src="<%= asset_path('leftico07.png') %>"/></span><a href="/sp_production_infos">生产企业库维护</a>
-                </div>
-              </dd>
-              <dd>
-                <div class="title not-expand">
-                  <span><img src="<%= asset_path('leftico08.png') %>"/></span><a href="/sp_company_infos">被抽样单位库维护</a>
-                </div>
-              </dd>
-          <% end %>
-       <% end %>
+          <dd>
+            <div class="title not-expand">
+              <span><img src="<%= asset_path('leftico07.png') %>"/></span><a href="/sp_production_infos">生产企业库维护</a>
+            </div>
+          </dd>
+          <dd>
+            <div class="title not-expand">
+              <span><img src="<%= asset_path('leftico08.png') %>"/></span><a href="/sp_company_infos">被抽样单位库维护</a>
+            </div>
+          </dd>
+        <% end %>
 			<% end %>
         <% if is_shengshi? || current_user.is_admin? %>
           <dd>
@@ -710,14 +708,12 @@
           <span><img src="<%= asset_path('leftico12.png') %>"/></span><a href="/users">登录用户管理</a>
         </div>
       </dd>
-      <% if current_user.is_super? or ((current_user.user_i_js == 1) and (current_user.is_account_manager)) %>
-				<% if !is_city? and  !is_county_level? %>
-      		<dd>
-      		  <div class="title not-expand">
-      		    <span><img src="<%= asset_path('leftico10.png') %>"/></span><a href="/sys_provinces">区域维护</a>
-      		  </div>
-      		</dd>
-      	<% end %>
+      <% if current_user.is_super? or is_sheng? %>
+      	<dd>
+      	  <div class="title not-expand">
+      	    <span><img src="<%= asset_path('leftico10.png') %>"/></span><a href="/sys_provinces">区域维护</a>
+      	  </div>
+      	</dd>
       <% end %>
       <% if current_user.is_account_manager %>
           <dd>
