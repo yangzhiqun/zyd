@@ -14,7 +14,7 @@ class JgBsb < ActiveRecord::Base
   has_many :jg_bsb_supers
   has_many  :jg_names, class_name: "JgBsbName", foreign_key: "jg_bsb_id"
   attr_accessor :super_jg_bsbs
-
+  belongs_to :super_jg_bsb
   JG_TYPE = [{
                  name: '监管部门',
                  code: 1
