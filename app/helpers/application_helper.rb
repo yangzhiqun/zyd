@@ -131,49 +131,29 @@ module ApplicationHelper
 	
 	#是否是县级管理员
 	def is_county_level?
-<<<<<<< HEAD
-    jg_type = current_user.jg_bsb.jg_type
-		result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 3
-    result  = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 3 && jg_type == 1 && jg_is_country?
-=======
 		jg_type = current_user.jg_bsb.jg_type
 		result  = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 3 && jg_type == 1 && jg_is_country?
->>>>>>> 22677d4c828f1ff1053ef7b607a7130477967548
 		return result
 	end
 
 	#是否是市级管理员
 	def is_city?
-<<<<<<< HEAD
-     jg_type = current_user.jg_bsb.jg_type
-     result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 2 && jg_type == 1 && jg_is_city?
-=======
 		jg_type = current_user.jg_bsb.jg_type
 		result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 2 && jg_type == 1 && jg_is_city?
->>>>>>> 22677d4c828f1ff1053ef7b607a7130477967548
 		return result
 	end
 	
 	#是否市省级管理员
   def is_sheng?
-<<<<<<< HEAD
-    jg_type = current_user.jg_bsb.jg_type
-=======
 		jg_type = current_user.jg_bsb.jg_type
->>>>>>> 22677d4c828f1ff1053ef7b607a7130477967548
     result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 1 && jg_type == 1 && jg_is_province?
     return result
   end	
 
 	#是否是省市县管理员
 	def is_shengshi?
-<<<<<<< HEAD
     jg_type = current_user.jg_bsb.jg_type
-    result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level > 0 && jg_type == 1 && (jg_is_province? || jg_is_city? || jg_is_country?)
-=======
-		jg_type = current_user.jg_bsb.jg_type
-		result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level > 0 && jg_type == 1 && (jg_is_province? || jg_is_city? || jg_is_country?)
->>>>>>> 22677d4c828f1ff1053ef7b607a7130477967548
+		result = current_user.is_account_manager && current_user.user_i_js == 1 && jg_type == 1 && (jg_is_province? || jg_is_city? || jg_is_country?)
 		return result
 	end
 
