@@ -8,14 +8,15 @@ class JgBsbsController < ApplicationController
   # GET /jg_bsbs.json
   def index
     @jg_bsbs = JgBsb.where(status: 0).order('created_at desc')
-    if current_user.is_jg_manager? and !current_user.is_admin? and !current_user.is_super?
+    if current_user.is_jg_manager? and !current_user.is_admin? and !current_user.is_super? and !is_sheng?
       @jg_bsbs = @jg_bsbs.where(id: current_user.jg_bsb_id)
     end
 
+    @xiaji = all_own_subordinate 
 		if is_city?
-			@jg_bsbs = @jg_bsbs.where(city: current_user.prov_city)
+			@jg_bsbs = @jg_bsbs.where(id: @xiaji)
     elsif is_county_level?
-     @jg_bsbs = @jg_bsbs.where(city: current_user.prov_city,country: current_user.prov_country)
+      @jg_bsbs = @jg_bsbs.where(id: @xiaji)
 		end
  
 

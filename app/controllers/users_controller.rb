@@ -38,7 +38,7 @@ class UsersController < ApplicationController
   end
 
   def index
-    if current_user.is_super? or current_user.is_account_manager
+    if current_user.is_super? or current_user.is_account_manager or is_sheng? 
       if params[:user_user_search_form].present?
         @search_form = User::UserSearchForm.new(params.require(:user_user_search_form).permit(:qtjg, :uid, :hcl_gly, :hcl_czap, :hcl_czbl, :hcl_czsh, :pad_rwbs, :pad_jsyp, :pad_rwxd, :pad_zxcy, :tname, :prov, :jg_id, :tbjbxx, :jbjcsj, :sbsh, :sbpz, :yy_gly, :yy_yysl, :yy_zhxt, :yy_yybl, :yy_yysh,:jbxxsh))
       else
@@ -98,11 +98,12 @@ class UsersController < ApplicationController
       @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::ZXCY) if @search_form.pad_zxcy.to_i == 1
       @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::RWXD) if @search_form.pad_rwxd.to_i == 1
       @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::JSYP) if @search_form.pad_jsyp.to_i == 1
-     if current_user.is_city? and (!current_user.is_super? or !current_user.is_admin?)
-      @users = @users.where(" prov_city = ?",current_user.prov_city)
-     elsif current_user.is_county_level? and (!current_user.is_super? or !current_user.is_admin?)
-      @users = @users.where(" prov_country = ?",current_user.prov_country)
-     end
+      @xiaji = all_own_subordinate
+    if is_city? and (!current_user.is_super? or !current_user.is_admin?)
+      @users = @users.where(:jg_bsb_id => @xiaji)
+    elsif is_county_level? and (!current_user.is_super? or !current_user.is_admin?)
+      @users = @users.where(:jg_bsb_id => @xiaji)
+    end
       @users = @users.paginate(page: params[:page], per_page: 20)
     else
       @users = User.where(id: current_user.id)
@@ -444,15 +445,16 @@ class UsersController < ApplicationController
 
   def pending
     return not_found unless current_user.is_account_manager
+    @xiaji = all_own_subordinate
     if current_user.user_i_js == 1
      # @pending_users = User.where('state = ? and user_s_province = ? and prov_city = ?', User::State::ReviewSJ, current_user.user_s_province, current_user.prov_city)
      # @pending_users = User.where('state = ? and user_s_province = ? ', User::State::ReviewSJ, current_user.user_s_province)
       if is_sheng?
         @pending_users = User.where('state = ?', User::State::ReviewSJ)
       elsif is_city?
-        @pending_users = User.where('state = ? and user_s_province = ? and prov_city = ? ', User::State::ReviewSJ, current_user.user_s_province, current_user.prov_city)
+        @pending_users = User.where(state: User::State::ReviewSJ, jg_bsb_id: @xiaji)
       elsif is_county_level?
-        @pending_users = User.where('state = ? and user_s_province = ? and prov_city = ? and prov_country = ?', User::State::ReviewSJ, current_user.user_s_province, current_user.prov_city,current_user.prov_country)
+        @pending_users = User.where(state: User::State::ReviewSJ, jg_bsb_id: @xiaji)
       end
     else
       @pending_users = User.where('state = ? and jg_bsb_id = ?', User::State::ReviewJG, current_user.jg_bsb_id)
