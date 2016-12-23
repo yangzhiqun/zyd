@@ -1,7 +1,7 @@
 #encoding: utf-8
 class TasksController < ApplicationController
   include ApplicationHelper
-
+   skip_before_filter :check_quota_amount, :only => [:create_direct_plan]
   # 
   def deploy
     if request.post?
@@ -50,7 +50,9 @@ class TasksController < ApplicationController
       end
 
       # 国家局任务部署
-      if current_user.is_admin? || params[:tab].to_i == 2 ||is_sheng?
+      logger.error "params[:tab].to_i"
+      logger.error params[:tab].to_i
+      if current_user.is_admin? || params[:tab].to_i == 2 ||is_sheng? || params[:tab].to_i ==0
         # 取出省级Province
         if  params[:tab].to_i == 2
          @provinces = SysProvince.level3(current_user.prov_city)
@@ -69,10 +71,13 @@ class TasksController < ApplicationController
           @jg_bsbs = JgBsb.where(status: 0)
 
           # 如果没有选择报送分类B，则不显示
+          logger.error "@baosong_b"
+          logger.error @baosong_b
+          @province = get_province?
           if @baosong_b.nil?
             @tasks = []
           else
-            @tasks = TaskJgBsb.where(sys_province_id: -1, identifier: @baosong_b.identifier)
+            @tasks = TaskJgBsb.where(sys_province_id: @province.id, identifier: @baosong_b.identifier)
           end
 
           count = TaskJgBsb.select('count(distinct(jg_bsb_id)) as count').where(:sys_province_id => -1)
@@ -86,16 +91,10 @@ class TasksController < ApplicationController
            #@province = SysProvince.level1.find_by_name(current_user.prov_city)
            # if is_sheng?
 						#	@province = SysProvince.level1
-            if is_shi_deploy?
-              @province = SysProvince.level1.find_by_name(current_user.prov_city)
-           elsif is_xian_deploy?
-             @province = SysProvince.level3(current_user.prov_city).find_by_name(current_user.prov_country)
-          else
-           @province = SysProvince.level1 
-          end
+          @province = get_province?
         #end
         tasks = @province.task_provinces
-	@jg_bsbs = JgBsb.where(status: 0)
+	      @jg_bsbs = JgBsb.where(status: 0)
         unless params[:baosong_a].blank?
           @baosong_a = BaosongA.find_by_name(params[:baosong_a])
           @baosong_bs = BaosongB.where(:baosong_a_id => @baosong_a.id)
@@ -118,9 +117,9 @@ class TasksController < ApplicationController
         ids = TaskProvince.where(sys_province_id: @province.id).map { |b| b.a_category_id }
         @a_categories = ACategory.where(id: ids)
        if params[:tab].to_i ==2
-        @delegates = TaskJgBsb.select('distinct(jg_bsb_id)').where(:sys_province_id => @province.id,:status => 1)
+        @delegates = TaskJgBsb.select('distinct(jg_bsb_id),sys_province_id').where(:sys_province_id => @province.id,:status => 1)
        else
-        @delegates = TaskJgBsb.select('distinct(jg_bsb_id)').where(:sys_province_id => @province.id)
+        @delegates = TaskJgBsb.select('distinct(jg_bsb_id),sys_province_id').where(:sys_province_id => @province.id)
         end
       @count = @delegates.count
         # TODO: 如何精准筛选剩余部分
@@ -185,10 +184,10 @@ class TasksController < ApplicationController
       render json: {status: 'ERR', msg: '请提供必要参数'}
     else
        if is_shi_deploy? # current_user.is_city?
-        sysProvince =SysProvince.level1.find_by_name(current_user.prov_city)
+        sysProvince =SysProvince.level1.find_by_name(current_user.jg_bsb.city)
         sys_province_id= sysProvince.id
       elsif is_xian_deploy?# current_user.is_county_level?
-        sysProvince=SysProvince.level3(current_user.prov_city).find_by_name(current_user.prov_country)
+        sysProvince=SysProvince.level3(current_user.jg_bsb.city).find_by_name(current_user.jg_bsb.country)
         sys_province_id= sysProvince.id
       else
         sys_province_id = -1 
@@ -263,13 +262,7 @@ class TasksController < ApplicationController
       #  info = current_user.prov_country;
       #  @province = SysProvince.level2.find_by_name(info)
       #end
-      if is_shi_deploy?#  current_user.is_city?
-        @province =SysProvince.level1.find_by_name(current_user.prov_city)
-      elsif is_xian_deploy? # current_user.is_county_level?
-        @province =SysProvince.level3(current_user.prov_city).find_by_name(current_user.prov_country)
-      else
-        @province =SysProvince.level1.find_by_name(current_user.prov_city)
-      end
+      @province = get_province?
       @plan = TaskJgBsb.new(identifier: params[:identifier], sys_province_id: @province.id, jg_bsb_id: params[:jg_id], :a_category_id => params[:dl], :quota => params[:quota])
 
       destroy_category_level = 'a_category_id'
@@ -319,7 +312,8 @@ class TasksController < ApplicationController
     @tasks = TaskJgBsb.where(:jg_bsb_id => @jg_bsb.id)
 
     # 任务来源
-    @rwly = []
+    @rwly = all_super_departments
+    logger.error @rwly.to_json
 #begin    @tasks.joins('LEFT JOIN sys_provinces on sys_provinces.id=task_jg_bsbs.sys_province_id').select('distinct(task_jg_bsbs.sys_province_id), sys_provinces.name').each do |task|
  #     if task.sys_province_id == -1
   #      @rwly.unshift(["#{SysConfig.get(SysConfig::Key::PROV)}食品药品监督管理局", -1])
@@ -340,25 +334,25 @@ class TasksController < ApplicationController
         #end
         #@rwly.push(["#{task.name}食品药品监督管理局", task.sys_province_id])
 #end      end
-    @tasks.joins('LEFT JOIN sys_provinces on sys_provinces.id=task_jg_bsbs.sys_province_id').select('distinct(task_jg_bsbs.sys_province_id), sys_provinces.name').each do |task|
-      if  task.sys_province_id == -1 #current_user.is_admin? or
-        @rwly.unshift(["#{SysConfig.get(SysConfig::Key::PROV)}食品药品监督管理局", -1])
-      else
-        if  is_shi_deploy?
-          info = current_user.prov_city
-          @province = SysProvince.level1.find_by_name(info)
-          @rwly.push(["#{@province.name}食品药品监督管理局", @province.id])
-        elsif is_xian_deploy?
-          info = current_user.prov_country
-          @province = SysProvince.level2.find_by_name(info)
-          @rwly.push(["#{@province.name}食品药品监督管理局", @province.id])
-        else
-          @rwly.push([current_user.user_s_province+"食品药品监督管理局", task.sys_province_id])
-        end
-      end
-      @rwly.uniq!
-    end
-
+    # @tasks.joins('LEFT JOIN sys_provinces on sys_provinces.id=task_jg_bsbs.sys_province_id').select('distinct(task_jg_bsbs.sys_province_id), sys_provinces.name').each do |task|
+    #   if  task.sys_province_id == -1 #current_user.is_admin? or
+    #     @rwly.unshift(["#{SysConfig.get(SysConfig::Key::PROV)}食品药品监督管理局", -1])
+    #   else
+    #     if  is_shi_deploy?
+    #       info = current_user.prov_city
+    #       @province = SysProvince.level1.find_by_name(info)
+    #       @rwly.push(["#{@province.name}食品药品监督管理局", @province.id])
+    #     elsif is_xian_deploy?
+    #       info = current_user.prov_country
+    #       @province = SysProvince.level2.find_by_name(info)
+    #       @rwly.push(["#{@province.name}食品药品监督管理局", @province.id])
+    #     else
+    #       @rwly.push([current_user.user_s_province+"食品药品监督管理局", task.sys_province_id])
+    #     end
+    #   end
+    #   @rwly.uniq!
+    # end
+    
     if @baosong_b.nil?
       @d_categories = []
       @tasks = []

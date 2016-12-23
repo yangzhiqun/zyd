@@ -24,25 +24,37 @@
       <% # /委托地方 %>
     </div>
 <% else %>
- <% if is_city? or (!current_user.prov_city.blank? and (current_user.prov_country.blank? or current_user.prov_country.include?("请选择"))) %>  
+ <% if is_shi_deploy? %>  
     <ul class="nav nav-tabs" role="tablist">
-       <li role="presentation" class="<%= 'active' if params[:tab].to_i == 0 %>"><a href="?tab=0">市级任务</a></li>
+       
+       <li role="presentation" class="<%= 'active' if params[:tab].to_i == 0 %>"><a href="?tab=0">市本级任务</a></li>
+       <li role="presentation" class="<%= 'active' if params[:tab].to_i == 1 %>"><a href="?tab=1">市级任务</a></li>
        <li role="presentation" class="<%= 'active' if params[:tab].to_i == 2 %>"><a href="?tab=2">县级分配</a></li>
     </ul>
   <div class="tab-content">
-      <% if params[:tab].to_i == 0 %>
+       <% if params[:tab].to_i == 0 %>
+          <%= render 'tasks/deploy/benji' %>
+      <% end %>
+       <% if params[:tab].to_i == 1 %>
           <%= render 'tasks/deploy/prov' %>
       <% end %>
       <% if params[:tab].to_i == 2 %>
           <%= render 'tasks/deploy/transfer' %>
       <% end %>
  </div>
- <% elsif is_county_level? or (!current_user.prov_city.blank? and (!current_user.prov_country.blank? and !current_user.prov_country.include?("请选择"))) %>
+ <% elsif is_xian_deploy? %>
       <ul class="nav nav-tabs" role="tablist">
-      <li role="presentation" class="<%= 'active' if params[:tab].to_i == 0 %>"><a href="?tab=0">县级任务</a></li>
+       <li role="presentation" class="<%= 'active' if params[:tab].to_i == 0 %>"><a href="?tab=0">县本级任务</a></li>
+       <li role="presentation" class="<%= 'active' if params[:tab].to_i == 1 %>"><a href="?tab=1">县级任务</a></li>
     </ul>
    <div class="tab-content">
-          <%= render 'tasks/deploy/prov' %>
+   
+    <% if params[:tab].to_i == 0 %>
+      <%= render 'tasks/deploy/benji' %>
+    <% end %>
+    <% if params[:tab].to_i == 1 %>
+      <%= render 'tasks/deploy/prov' %>
+    <% end %>  
   </div>
 <% end %>
 <% end %>
