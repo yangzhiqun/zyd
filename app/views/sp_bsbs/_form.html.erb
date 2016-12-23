@@ -445,7 +445,7 @@
     $('#sp_bsb_sp_s_70').change(function () {
       var o = $(this);
       if (o.val() != '') {
-        $.get('/baosong_bs/by_cityname.json', {a_name: o.val()}, function (data) {
+        $.get('/baosong_bs/by_name.json', {a_name: o.val()}, function (data) {
           if (data.status == 'OK') {
             $('#sp_bsb_sp_s_17, #sp_bsb_sp_s_18, #sp_bsb_sp_s_19, #sp_bsb_sp_s_20').empty();
             render_spec_list([]);
