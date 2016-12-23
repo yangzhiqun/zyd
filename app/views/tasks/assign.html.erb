@@ -234,7 +234,7 @@
       <div class="panel-body">
         <label for="">任务来源：</label>
         <br>
-        <%= select_tag "rwly", options_for_select(@rwly, params[:rwly]), {:class => "form-control input-sm"} %>
+        <%= select_tag "rwly", options_for_select(@rwly.map{|r| [r.jg_name,r.id]}, params[:rwly]), {:class => "form-control input-sm"} %>
         <br>
         <label for="">报送分类：</label>
         <br>
