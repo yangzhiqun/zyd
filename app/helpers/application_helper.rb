@@ -116,6 +116,18 @@ module ApplicationHelper
 		end 
 		return jg_arr
 	end
+
+  #市县管理员获取本机构及下级业务部门
+  def all_own_subordinate 
+    jg_arr  = []
+    if is_city? || is_county_level?
+      jg_arr << current_user.jg_bsb.id
+      subordinate_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id)  
+      subordinate_jg.each{ |jg| jg_arr << jg.jg_bsb.id} 
+    end
+    jg_arr = jg_arr.uniq
+    return jg_arr
+  end
 	
 	#是否是县级管理员
 	def is_county_level?
