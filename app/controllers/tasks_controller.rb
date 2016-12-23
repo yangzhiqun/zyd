@@ -314,45 +314,7 @@ class TasksController < ApplicationController
     # 任务来源
     @rwly = all_super_departments
     logger.error @rwly.to_json
-#begin    @tasks.joins('LEFT JOIN sys_provinces on sys_provinces.id=task_jg_bsbs.sys_province_id').select('distinct(task_jg_bsbs.sys_province_id), sys_provinces.name').each do |task|
- #     if task.sys_province_id == -1
-  #      @rwly.unshift(["#{SysConfig.get(SysConfig::Key::PROV)}食品药品监督管理局", -1])
-   #   else
-    #    if  current_user.prov_country.nil? or current_user.prov_country.blank? or  %w{ -请选择- }.include?(current_user.prov_country)
-     #     info = current_user.prov_city;
-      #    if(info.nil? or info.blank? or %w{ -请选择- }.include?(info))
-       #   @province = SysProvince.level1_old.find_by_name(current_user.user_s_province)
-        #  @rwly.push(["#{current_user.user_s_province}食品药品监督管理局", @province.id])
-         # else
-          #@province = SysProvince.level1.find_by_name(task.name)
-          #@rwly.push(["#{@province.name}食品药品监督管理局", @province.id])
-         # end
-        #else
-         # info = current_user.prov_country;
-         # @province = SysProvince.level2.find_by_name(task.name)
-         # @rwly.push(["#{@province.name}食品药品监督管理局", @province.id])
-        #end
-        #@rwly.push(["#{task.name}食品药品监督管理局", task.sys_province_id])
-#end      end
-    # @tasks.joins('LEFT JOIN sys_provinces on sys_provinces.id=task_jg_bsbs.sys_province_id').select('distinct(task_jg_bsbs.sys_province_id), sys_provinces.name').each do |task|
-    #   if  task.sys_province_id == -1 #current_user.is_admin? or
-    #     @rwly.unshift(["#{SysConfig.get(SysConfig::Key::PROV)}食品药品监督管理局", -1])
-    #   else
-    #     if  is_shi_deploy?
-    #       info = current_user.prov_city
-    #       @province = SysProvince.level1.find_by_name(info)
-    #       @rwly.push(["#{@province.name}食品药品监督管理局", @province.id])
-    #     elsif is_xian_deploy?
-    #       info = current_user.prov_country
-    #       @province = SysProvince.level2.find_by_name(info)
-    #       @rwly.push(["#{@province.name}食品药品监督管理局", @province.id])
-    #     else
-    #       @rwly.push([current_user.user_s_province+"食品药品监督管理局", task.sys_province_id])
-    #     end
-    #   end
-    #   @rwly.uniq!
-    # end
-    
+
     if @baosong_b.nil?
       @d_categories = []
       @tasks = []

@@ -107,7 +107,7 @@ module ApplicationHelper
 			all_jg.each{ |a| jg_arr << a.jg_name}
 		else
 			jg_type = current_user.jg_bsb.jg_type
-			super_jg = current_user.jg_bsb.jg_bsb_supers		
+			super_jg = current_user.jg_bsb.jg_bsb_supers
 			super_jg.each{ |jg| jg_arr << jg.super_jg_bsb.jg_name}	
 			# 如果是监管部门显示自己跟上级
 			if jg_type == 1
@@ -116,7 +116,6 @@ module ApplicationHelper
 		end 
 		return jg_arr
 	end
-
   #市县管理员获取本机构及下级业务部门
   def all_own_subordinate 
     jg_arr  = []
@@ -145,10 +144,6 @@ module ApplicationHelper
 	
 	#是否市省级管理员
   def is_sheng?
-<<<<<<< HEAD
-
-=======
->>>>>>> 2e2c102576d9088ffe1359af535e761a1fd23b8f
 		jg_type = current_user.jg_bsb.jg_type
     result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 1 && jg_type == 1 && jg_is_province?
     return result
@@ -156,13 +151,8 @@ module ApplicationHelper
 
 	#是否是省市县管理员
 	def is_shengshi?
-<<<<<<< HEAD
-		jg_type = current_user.jg_bsb.jg_type
-		result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level > 0 && jg_type == 1 && (jg_is_province? || jg_is_city? || jg_is_country?)
-=======
     jg_type = current_user.jg_bsb.jg_type
 		result = current_user.is_account_manager && current_user.user_i_js == 1 && jg_type == 1 && (jg_is_province? || jg_is_city? || jg_is_country?)
->>>>>>> 2e2c102576d9088ffe1359af535e761a1fd23b8f
 		return result
 	end
 
