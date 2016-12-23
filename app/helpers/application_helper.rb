@@ -108,7 +108,7 @@ module ApplicationHelper
 		else
 			jg_type = current_user.jg_bsb.jg_type
 			super_jg = current_user.jg_bsb.jg_bsb_supers		
-			super_jg.each{ |jg| jg_arr << jg.super_jg_bsb.jg_name if jg.super_jg_bsb.jg_type == jg_type}	
+			super_jg.each{ |jg| jg_arr << jg.super_jg_bsb.jg_name}	
 			# 如果是监管部门显示自己跟上级
 			if jg_type == 1
 				jg_arr << current_user.jg_bsb.jg_name
@@ -215,26 +215,6 @@ module ApplicationHelper
      end
      return @province
   end
-
-#获取全部业务部门
- def all_super_departments
-   #jg_type : 1 => 监管部门, 2 => 检验机构
-     jg_arr  = []
-    if is_sheng? || current_user.is_admin? #如果是省级管理员和最高全选显示全部机构
-     all_jg = JgBsb.where(jg_type: 1)
-     all_jg.each{ |a| jg_arr << a}
-    else
-     jg_type = current_user.jg_bsb.jg_type
-     super_jg = current_user.jg_bsb.jg_bsb_supers
-     super_jg.each{ |jg| jg_arr << jg.super_jg_bsb if jg.super_jg_bsb.jg_type == jg_type}
-      # 如果是监管部门显示自己跟上级
-    if jg_type == 1
-      jg_arr << current_user.jg_bsb
-    end
-   end
-    return jg_arr
-  end
-
 
   def generate_tab_params(tab)
     p = request.GET
