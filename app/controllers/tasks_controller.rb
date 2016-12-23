@@ -395,61 +395,61 @@ class TasksController < ApplicationController
 
   def check
     @jg_bsb = current_user.jg_bsb
-	if @jg_bsb.jg_type ==1
-    begin
-      super_jg = JgBsbSuper.where(super_jg_bsb_id: @jg_bsb.id ).group("jg_bsb_id")
+	  if @jg_bsb.jg_type ==1
+      begin
+        super_jg = JgBsbSuper.where(super_jg_bsb_id: @jg_bsb.id ).group("jg_bsb_id")
         jg_names=[]
         jg_names.push(@jg_bsb.jg_name)
         super_jg.each do |j|
            jg_names.push(j.jg_bsb.jg_name)
         end
-    rescue
-    end
+      rescue
+      end
     elsif @jg_bsb.jg_type ==3
-        jg_names=[@jg_bsb.jg_name]
+      jg_names=[@jg_bsb.jg_name]
     end
+
+    @rwly = all_super_departments 
     case params[:tab].to_i
       when 0
-    if current_user.is_admin? 
+        if current_user.is_admin? || is_sheng? 
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::TMP_SAVE)
         elsif session[:change_js]==10
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::TMP_SAVE, :sp_s_43 => jg_names)
-        elsif current_user.is_sheng?
-          @pad_sp_bsbs = PadSpBsb.where("sp_i_state =? ",::PadSpBsb::Step::TMP_SAVE)
-        elsif current_user.is_city?
-           @pad_sp_bsbs = PadSpBsb.where("sp_i_state =? and (sp_s_4= ? or sp_s_220 =?)",::PadSpBsb::Step::TMP_SAVE,current_user.prov_city,current_user.prov_city)
-        elsif current_user.is_county_level?
-          @pad_sp_bsbs = PadSpBsb.where("sp_i_state =? and (sp_s_5= ? or sp_s_221 =?)",::PadSpBsb::Step::TMP_SAVE,current_user.prov_country,current_user.prov_country)
+        elsif is_city?
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::TMP_SAVE, :sp_s_2_1 => @rwly)
+        elsif is_county_level?
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::TMP_SAVE, :sp_s_2_1 => @rwly)
         else
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::TMP_SAVE, :sp_s_43 => jg_names)
         end
       when 1
-        if current_user.is_sheng? or current_user.is_admin?
-          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state =>[::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED])
-        elsif current_user.is_city?
-          @pad_sp_bsbs = PadSpBsb.where("sp_i_state in (?) and (sp_s_4= ? or sp_s_220 =?)",[::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED],current_user.prov_city,current_user.prov_city)
-        elsif current_user.is_county_level?
-          @pad_sp_bsbs = PadSpBsb.where("sp_i_state in (?) and (sp_s_5= ? or sp_s_221 =?)",[::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED],current_user.prov_country,current_user.prov_country)
+        if current_user.is_admin? || is_sheng?
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED])
+        elsif is_city?
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED], :sp_s_2_1 => @rwly)
+        elsif is_county_level?
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED], :sp_s_2_1 => @rwly)
         else 
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED], :sp_s_43 => jg_names)
         end
       when 2
-        if current_user.is_sheng? or current_user.is_admin?
-          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state =>[::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED])
-        elsif current_user.is_city?
-          @pad_sp_bsbs = PadSpBsb.where("sp_i_state in (?) and (sp_s_4= ? or sp_s_220 =?)",[::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED],current_user.prov_city,current_user.prov_city)
-        elsif current_user.is_county_level?
-          @pad_sp_bsbs = PadSpBsb.where("sp_i_state in (?) and (sp_s_5= ? or sp_s_221 =?)",[::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED],current_user.prov_country,current_user.prov_country)
+        if current_user.is_admin? || is_sheng?
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED])
+        elsif is_city?
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED], :sp_s_2_1 => @rwly)
+        elsif is_county_level?
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED], :sp_s_2_1 => @rwly)
         else 
         @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED], :sp_s_43 => jg_names)
         end
       when 3
-        if current_user.is_sheng? or current_user.is_admin?
-          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state =>::PadSpBsb::Step::SAMPLE_REFUSED)
-        elsif current_user.is_city?
-          @pad_sp_bsbs = PadSpBsb.where("sp_i_state in (?) and (sp_s_4= ? or sp_s_220 =?)",::PadSpBsb::Step::SAMPLE_REFUSED,current_user.prov_city,current_user.prov_city)
-        elsif current_user.is_county_level?
-          @pad_sp_bsbs = PadSpBsb.where("sp_i_state in (?) and (sp_s_5= ? or sp_s_221 =?)",::PadSpBsb::Step::SAMPLE_REFUSED,current_user.prov_country,current_user.prov_country)
+        if current_user.is_admin? || is_sheng?
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::SAMPLE_REFUSED)
+        elsif is_city?
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::SAMPLE_REFUSED, :sp_s_2_1 => @rwly)
+        elsif is_county_level?
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::SAMPLE_REFUSED, :sp_s_2_1 => @rwly)
         else 
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::SAMPLE_REFUSED, :sp_s_43 => jg_names)
         end
@@ -466,12 +466,10 @@ class TasksController < ApplicationController
     else
       @end_time = Time.now.end_of_day
     end
-    unless params[:rwly].blank?
-        if params[:rwly].to_i != -1
-          @sysProvince  =   SysProvince.find(params[:rwly].to_i)
-          @pad_sp_bsbs = @pad_sp_bsbs.where('sp_s_4 LIKE ?',"%#{@sysProvince.name}%" )
-        end
-      # TODO: 完善取数据逻辑
+
+		# 任务来源	
+		unless params[:rwly].blank?	
+			@pad_sp_bsbs = @pad_sp_bsbs.where("sp_s_2_1 LIKE ?", "%#{params[:rwly]}%")	
     end
 
     unless params[:sp_s_35].blank?

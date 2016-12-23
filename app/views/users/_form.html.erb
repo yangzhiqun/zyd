@@ -86,7 +86,9 @@
         $.each(data.msg, function (i, item) {
           $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#lcity'));
         });
-				$("#lcity").val("<%= current_user.prov_country %>")
+				if (num == 0) {
+					$("#lcity").val("<%= current_user.prov_country %>");
+				}
       }, 'json');
 			if (num!=0) {
       	reload_jg_data();

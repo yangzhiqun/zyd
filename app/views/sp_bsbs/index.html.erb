@@ -190,7 +190,7 @@
             <td colspan="6">
               <select id="s8" name="s8" class="form-control input-sm">
                 <option value=1>全部数据</option>
-                <% if current_user.is_admin?||session[:change_js]==10 %>
+                <% if current_user.is_admin?||session[:change_js]==10||is_shengshi? %>
                     <option value=2>批量导入数据</option>
                     <option value=3>基本信息(填报中)</option>
                     <option value=4>检测数据(填报)</option>
@@ -214,7 +214,9 @@
           <tr>
             <td colspan="4">任务来源</td>
             <td colspan="6">
-              <input class="form-control input-sm" type="text" id="s13" value="<%= params[:s13] %>" name="s13"></td>
+              <!--<input class="form-control input-sm" type="text" id="s13" value="<%#= params[:s13] %>" name="s13"></td>-->
+							<%= select_tag "s13", options_for_select(all_super_departments.map { |name| [name,name, {'parentid' => name}] }.unshift(["请选择", ""])), :style => "width: 185px;",:class => 'form-control input-sm' %>
+						</td>	
             <td colspan="4">采样单位名称</td>
             <td colspan="6">
               <input class="form-control input-sm" type="text" id="s1" value="<%= params[:s1] %>" name="s1"></td>

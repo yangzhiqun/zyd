@@ -13,7 +13,10 @@
       <b>任务来源类型:</b>
       <%= @baosong_a.rwlylx %>
     </p>
-
+    <p>
+      <b>省/市/区:</b>
+      <%= @baosong_a.sheng.to_s+"-"+@baosong_a.shi.to_s+"-"+@baosong_a.xian.to_s %>
+    </p>
     <%= link_to '编辑', edit_baosong_a_path(@baosong_a) %> |
     <%= link_to '返回', baosong_as_path %>
   </div>

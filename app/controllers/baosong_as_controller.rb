@@ -1,10 +1,16 @@
 class BaosongAsController < ApplicationController
   # GET /baosong_as
   # GET /baosong_as.json
-  def index
-    if current_user.is_admin?
-    @baosong_as = BaosongA.order("created_at desc")
+ 	before_action :find_province, only: [:new,:create,:edit,:show,:update] 
 
+  def index
+    @jg = current_user.jg_bsb 
+    if current_user.is_admin?
+    	@baosong_as = BaosongA.order("created_at desc")
+    elsif jg_is_city?
+      @baosong_as = BaosongA.where(shi: @jg.city).order("created_at desc")
+    elsif jg_is_country?
+      @baosong_as = BaosongA.where(xian: @jg.country).order("created_at desc")
     end
     respond_to do |format|
       format.html # index.html.erb
@@ -46,7 +52,7 @@ class BaosongAsController < ApplicationController
   # POST /baosong_as.json
   def create
     @baosong_a = BaosongA.new(baosong_a_params)
-
+		@baosong_a.sheng = SysConfig.get(SysConfig::Key::PROV) 
     respond_to do |format|
       if @baosong_a.save
         format.html { redirect_to @baosong_a, notice: 'Baosong a was successfully created.' }
@@ -89,5 +95,9 @@ class BaosongAsController < ApplicationController
   private
   def baosong_a_params
     params.require(:baosong_a).permit(:name, :note, :rwlylx, :prov,:sheng,:shi,:xian)
+  end
+
+  def find_province
+    @province = SysProvince.where("level like '_' or level like '__'").where(name: SysConfig.get(SysConfig::Key::PROV)).last
   end
 end
