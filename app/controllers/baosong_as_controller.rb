@@ -5,12 +5,12 @@ class BaosongAsController < ApplicationController
 
   def index
     @jg = current_user.jg_bsb 
-    if current_user.is_admin?
+    if current_user.is_admin? or is_sheng? 
     	@baosong_as = BaosongA.order("created_at desc")
     elsif jg_is_city?
-      @baosong_as = BaosongA.where(shi: @jg.city).order("created_at desc")
+      @baosong_as = BaosongA.where(shi: @jg.city, rwlylx: "市/区局").order("created_at desc")
     elsif jg_is_country?
-      @baosong_as = BaosongA.where(xian: @jg.country).order("created_at desc")
+      @baosong_as = BaosongA.where(xian: @jg.country, rwlylx: "县").order("created_at desc")
     end
     respond_to do |format|
       format.html # index.html.erb
