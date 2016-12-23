@@ -139,21 +139,21 @@ module ApplicationHelper
 	#是否是市级管理员
 	def is_city?
 		jg_type = current_user.jg_bsb.jg_type
-		result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 2 && jg_type == 1 && jg_is_city?
+		result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 2 && jg_type == 1
 		return result
 	end
 	
 	#是否市省级管理员
   def is_sheng?
 		jg_type = current_user.jg_bsb.jg_type
-    result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 1 && jg_type == 1 && jg_is_province?
+    result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level == 1 && jg_type == 1
     return result
   end	
 
 	#是否是省市县管理员
 	def is_shengshi?
     jg_type = current_user.jg_bsb.jg_type
-		result = current_user.is_account_manager && current_user.user_i_js == 1 && jg_type == 1 && (jg_is_province? || jg_is_city? || jg_is_country?)
+		result = current_user.is_account_manager && current_user.user_i_js == 1 && jg_type == 1
 		return result
 	end
 
