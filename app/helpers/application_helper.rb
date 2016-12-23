@@ -107,7 +107,7 @@ module ApplicationHelper
 			all_jg.each{ |a| jg_arr << a.jg_name}
 		else
 			jg_type = current_user.jg_bsb.jg_type
-			super_jg = current_user.jg_bsb.jg_bsb_supers		
+			super_jg = current_user.jg_bsb.jg_bsb_supers
 			super_jg.each{ |jg| jg_arr << jg.super_jg_bsb.jg_name}	
 			# 如果是监管部门显示自己跟上级
 			if jg_type == 1
@@ -116,7 +116,6 @@ module ApplicationHelper
 		end 
 		return jg_arr
 	end
-
   #市县管理员获取本机构及下级业务部门
   def all_own_subordinate 
     jg_arr  = []
