@@ -830,7 +830,7 @@ class SpBsbsController < ApplicationController
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_4 LIKE ? ",  "%#{params[:sp_sf]}%")
     end
     if params[:flag]=="tabs_4" #只判断完全提交的数据
-        if current_user.jg_bsb.jg_type ==1
+      #  if current_user.jg_bsb.jg_type ==1
       #  begin
       # super_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
       #  jg_names=[]
@@ -838,13 +838,13 @@ class SpBsbsController < ApplicationController
       #  super_jg.each do |j|
       #     jg_names.push(j.jg_bsb.jg_name)
       #  end
-          @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",jg_names).paginate(page: params[:page], per_page: 10)
+      #    @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
       #rescue
 
       #end
-      elsif current_user.jg_bsb.jg_type ==3
+      #elsif current_user.jg_bsb.jg_type ==3
       @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
-      end
+      #end
     end
     if current_user.is_admin? || session[:change_js]==10 || is_sheng?
       case params[:s8].to_i
