@@ -88,12 +88,11 @@
         });
 				if (num == 0) {
 					$("#lcity").val("<%= current_user.prov_country %>");
-				}
+				}else{
+      	  reload_jg_data();
+        }
+			  num = num+1;
       }, 'json');
-			if (num!=0) {
-      	reload_jg_data();
-			}
-			num = num+1;
    	});
 		
 		//给编辑状态下的下拉框赋值
