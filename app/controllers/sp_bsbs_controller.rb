@@ -718,7 +718,7 @@ class SpBsbsController < ApplicationController
       end
     end
 
-    @sp_bsbs = SpBsb.select("sp_bsbs.ca_key_status,sp_bsbs.report_path,sp_bsbs.id, sp_bsbs.updated_at, sp_bsbs.sp_s_3, sp_bsbs.sp_s_4, sp_bsbs.sp_s_14, sp_bsbs.sp_s_16, sp_bsbs.sp_s_43, sp_bsbs.sp_s_214, sp_bsbs.sp_s_35, sp_bsbs.sp_s_71, sp_bsbs.sp_s_202, sp_bsbs.sp_i_state, sp_bsbs.fail_report_path, sp_bsbs.czb_reverted_flag")
+    @sp_bsbs = SpBsb.select("sp_bsbs.ca_key_status,sp_bsbs.report_path,sp_bsbs.id, sp_bsbs.updated_at, sp_bsbs.sp_s_3, sp_bsbs.sp_s_4, sp_bsbs.sp_s_14, sp_bsbs.sp_s_16, sp_bsbs.sp_s_43, sp_bsbs.sp_s_214, sp_bsbs.sp_s_35, sp_bsbs.sp_s_71, sp_bsbs.sp_s_202, sp_bsbs.sp_i_state, sp_bsbs.fail_report_path, sp_bsbs.czb_reverted_flag,sp_bsbs.sp_s_2_1")
     
     if params[:r1]
       session[:change_js]=params[:r1].to_i
@@ -830,21 +830,21 @@ class SpBsbsController < ApplicationController
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_4 LIKE ? ",  "%#{params[:sp_sf]}%")
     end
     if params[:flag]=="tabs_4" #只判断完全提交的数据
-        if current_user.jg_bsb.jg_type ==1
-        begin
-       super_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
-        jg_names=[]
-        jg_names.push(current_user.jg_bsb.jg_name)
-        super_jg.each do |j|
-           jg_names.push(j.jg_bsb.jg_name)
-        end
-       @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",jg_names).paginate(page: params[:page], per_page: 10)
-      rescue
+      #  if current_user.jg_bsb.jg_type ==1
+      #  begin
+      # super_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
+      #  jg_names=[]
+      #  jg_names.push(current_user.jg_bsb.jg_name)
+      #  super_jg.each do |j|
+      #     jg_names.push(j.jg_bsb.jg_name)
+      #  end
+      #    @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
+      #rescue
 
-      end
-      elsif current_user.jg_bsb.jg_type ==3
+      #end
+      #elsif current_user.jg_bsb.jg_type ==3
       @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
-      end
+      #end
     end
     if current_user.is_admin? || session[:change_js]==10 || is_sheng?
       case params[:s8].to_i
