@@ -21,6 +21,8 @@ module TasksHelper
 
   # 国家局下达的省局抽验任务
   def grid3(prov, xl)
+    logger.error "prov==============="
+    logger.error prov.to_json
     @result = [] if @result.blank?
 
     @query = TaskProvince.where("sys_province_id = ? AND a_category_id = ?", prov.id, xl.a_category_id)
@@ -161,7 +163,7 @@ module TasksHelper
         html.html_safe
       end
     # D
-    elsif (@count = TaskJgBsb.where("sys_province_id = ? AND jg_bsb_id = ? AND a_category_id = ? AND b_category_id = ? AND c_category_id = ? AND d_category_id = ?", @province.id, task.jg_bsb_id, xl.a_category_id, xl.b_category_id, xl.c_category_id, xl.id).sum('quota')) > 0
+    elsif (@count = TaskJgBsb.where("sys_province_id = ? AND jg_bsb_id = ? AND a_category_id = ? AND b_category_id = ? AND c_category_id = ? AND d_category_id = ? AND is_national = 0", @province.id, task.jg_bsb_id, xl.a_category_id, xl.b_category_id, xl.c_category_id, xl.id).sum('quota')) > 0
       tag = "#{xl.a_category_id}_#{xl.b_category_id}_#{xl.c_category_id}_#{xl.id}_#{task.jg_bsb_id}"
       unless @result.include?(tag)
         @result.push(tag)
