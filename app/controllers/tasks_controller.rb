@@ -77,14 +77,19 @@ class TasksController < ApplicationController
           if @baosong_b.nil?
             @tasks = []
           else
-            @tasks = TaskJgBsb.where(sys_province_id: @province.id, identifier: @baosong_b.identifier)
+            if current_user.is_admin? || (is_shengshi?&&jg_is_province?) || jg_is_province?
+              @tasks = TaskJgBsb.where(identifier: @baosong_b.identifier)
+            else
+              @tasks = TaskJgBsb.where(sys_province_id: @province.id, identifier: @baosong_b.identifier)
+            end
+            
           end
 
           count = TaskJgBsb.select('count(distinct(jg_bsb_id)) as count').where(:sys_province_id => -1)
           if @baosong_b.present?
             count = count.where(identifier: @baosong_b.identifier)
           end
-          @count = count.first.count
+            @count = count.first.count
         end
       else
          # 省局任务部署
@@ -119,7 +124,7 @@ class TasksController < ApplicationController
        if params[:tab].to_i ==2
         @delegates = TaskJgBsb.select('distinct(jg_bsb_id),sys_province_id').where(:sys_province_id => @province.id,:status => 1)
        else
-        @delegates = TaskJgBsb.select('distinct(jg_bsb_id),sys_province_id').where(:sys_province_id => @province.id)
+        @delegates = TaskJgBsb.select('distinct(jg_bsb_id),sys_province_id').where(:sys_province_id => @province.id,:is_national =>0)
         end
       @count = @delegates.count
         # TODO: 如何精准筛选剩余部分
