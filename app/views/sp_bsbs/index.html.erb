@@ -336,6 +336,11 @@
         <li>
           <a class="<%= (params[:flag].eql?('tabs_4') ? "active" : "") %>" style="cursor: pointer;" id="tabs_4">完全提交数据</a>
         </li>
+        <% if current_user.jg_bsb.jg_type == 1 && current_user.user_i_js==1 && (current_user.user_d_authority==1 || current_user.user_d_authority_2==1 || current_user.user_d_authority_3==1 || current_user.user_d_authority_4==1) %>
+          <li>
+            <a class="<%= (params[:flag].eql?('tabs_1') ? "active" : "") %>" style="cursor: pointer;" id="tabs_1">结果数据</a>
+          </li>
+        <% end %>
     <% end %>
    <!--
     <li>

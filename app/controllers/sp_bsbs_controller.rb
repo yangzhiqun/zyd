@@ -831,17 +831,17 @@ class SpBsbsController < ApplicationController
     end
     if params[:flag]=="tabs_4" #只判断完全提交的数据
         if current_user.jg_bsb.jg_type ==1
-        begin
-       super_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
-        jg_names=[]
-        jg_names.push(current_user.jg_bsb.jg_name)
-        super_jg.each do |j|
-           jg_names.push(j.jg_bsb.jg_name)
-        end
-       @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",jg_names).paginate(page: params[:page], per_page: 10)
-      rescue
+      #  begin
+      # super_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
+      #  jg_names=[]
+      #  jg_names.push(current_user.jg_bsb.jg_name)
+      #  super_jg.each do |j|
+      #     jg_names.push(j.jg_bsb.jg_name)
+      #  end
+          @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",jg_names).paginate(page: params[:page], per_page: 10)
+      #rescue
 
-      end
+      #end
       elsif current_user.jg_bsb.jg_type ==3
       @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
       end
