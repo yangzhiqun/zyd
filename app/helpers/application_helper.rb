@@ -155,7 +155,12 @@ module ApplicationHelper
 		result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level > 0 && jg_type == 1
 		return result
 	end
-
+  #是否是省市县管理员(除账号管理员，用于监管用户的管理角色可视权限)
+  def is_shengshi_noam?
+    jg_type = current_user.jg_bsb.jg_type
+    result =  current_user.user_i_js == 1 && current_user.admin_level > 0 && jg_type == 1
+    return result
+  end
 	#机构是否是省
 	def jg_is_province?
 		jg = current_user.jg_bsb	
