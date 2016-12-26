@@ -109,6 +109,12 @@
       $('#flag').val('tabs_6');
       $('#sp_submit').trigger("click");
     });
+    $("#tabs_7").click(function () {
+      <%=params[:page]=1%>
+      <%=session[:sp_page] = 1%>
+      $('#flag').val('tabs_7');
+      $('#sp_submit').trigger("click");
+    });
     $('#s8').val('<%= params[:s8]%>');
 
    // $('#sp_dl').select2({theme: 'bootstrap', placeholder: '食品大类'});
@@ -338,7 +344,7 @@
         </li>
         <% if current_user.jg_bsb.jg_type == 1 && current_user.user_i_js==1 && (current_user.user_d_authority==1 || current_user.user_d_authority_2==1 || current_user.user_d_authority_3==1 || current_user.user_d_authority_4==1) %>
           <li>
-            <a class="<%= (params[:flag].eql?('tabs_1') ? "active" : "") %>" style="cursor: pointer;" id="tabs_1">结果数据</a>
+            <a class="<%= (params[:flag].eql?('tabs_7') ? "active" : "") %>" style="cursor: pointer;" id="tabs_7">结果数据</a>
           </li>
         <% end %>
     <% end %>
