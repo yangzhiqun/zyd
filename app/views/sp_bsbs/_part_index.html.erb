@@ -69,7 +69,7 @@
     <% if current_user.jsyp == 1 %>
     <!-- 只有样品接收人员拥有该权限 -->
     <tr>
-      <td colspan="11">
+      <td colspan="12">
         <a href="javascript:void(0);" class="push-all btn btn-xs btn-success"><i class="glyphicon glyphicon-download"></i>批量推送基本信息</a>
       </td>
     </tr>
@@ -92,6 +92,9 @@
         <% if params[:sp_order] == "sp_s_4" %>
         <i class="glyphicon glyphicon-sort-by-attributes<%= params[:sp_order_seq] == "DESC" ? "-alt" : ""%> text-success"></i>
         <% end %>
+      </th>
+      <th width="120">
+        任务来源
       </th>
       <th width="120" data-field="sp_s_16" class="<%= 'up' if (params[:sp_order_seq] == "ASC" and params[:sp_order] == 'sp_s_16')%>">
         抽样编号
@@ -138,6 +141,7 @@
       <% else%>
           <td><%= sp_bsb.sp_s_4.include?("请选择") ? "":sp_bsb.sp_s_4 %></td>
       <%end%>
+      <td style="word-break:break-all"><%= sp_bsb.sp_s_2_1 %></td>
       <td style="word-break:break-all"><%= sp_bsb.sp_s_16 %></td>
       <td><%= sp_bsb.sp_s_14 %></td>
       <td valign="top"><%= sp_bsb.sp_s_35 %></td>
