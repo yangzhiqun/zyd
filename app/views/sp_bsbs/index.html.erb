@@ -221,7 +221,7 @@
             <td colspan="4">任务来源</td>
             <td colspan="6">
               <!--<input class="form-control input-sm" type="text" id="s13" value="<%#= params[:s13] %>" name="s13"></td>-->
-							<%= select_tag "s13", options_for_select(all_super_departments.map { |name| [name,name, {'parentid' => name}] }.unshift(["请选择", ""])), :style => "width: 185px;",:class => 'form-control input-sm' %>
+							<%= select_tag "s13", options_for_select(all_super_departments.map { |name| [name,name, {'parentid' => name}] }.unshift(["请选择", ""]), params[:s13]), :style => "width: 185px;",:class => 'form-control input-sm' %>
 						</td>	
             <td colspan="4">采样单位名称</td>
             <td colspan="6">
