@@ -109,6 +109,12 @@
       $('#flag').val('tabs_6');
       $('#sp_submit').trigger("click");
     });
+    $("#tabs_7").click(function () {
+      <%=params[:page]=1%>
+      <%=session[:sp_page] = 1%>
+      $('#flag').val('tabs_7');
+      $('#sp_submit').trigger("click");
+    });
     $('#s8').val('<%= params[:s8]%>');
 
    // $('#sp_dl').select2({theme: 'bootstrap', placeholder: '食品大类'});
@@ -215,7 +221,7 @@
             <td colspan="4">任务来源</td>
             <td colspan="6">
               <!--<input class="form-control input-sm" type="text" id="s13" value="<%#= params[:s13] %>" name="s13"></td>-->
-							<%= select_tag "s13", options_for_select(all_super_departments.map { |name| [name,name, {'parentid' => name}] }.unshift(["请选择", ""])), :style => "width: 185px;",:class => 'form-control input-sm' %>
+							<%= select_tag "s13", options_for_select(all_super_departments.map { |name| [name,name, {'parentid' => name}] }.unshift(["请选择", ""]), params[:s13]), :style => "width: 185px;",:class => 'form-control input-sm' %>
 						</td>	
             <td colspan="4">采样单位名称</td>
             <td colspan="6">
@@ -338,7 +344,7 @@
         </li>
         <% if current_user.jg_bsb.jg_type == 1 && current_user.user_i_js==1 && (current_user.user_d_authority==1 || current_user.user_d_authority_2==1 || current_user.user_d_authority_3==1 || current_user.user_d_authority_4==1) %>
           <li>
-            <a class="<%= (params[:flag].eql?('tabs_1') ? "active" : "") %>" style="cursor: pointer;" id="tabs_1">结果数据</a>
+            <a class="<%= (params[:flag].eql?('tabs_7') ? "active" : "") %>" style="cursor: pointer;" id="tabs_7">结果数据</a>
           </li>
         <% end %>
     <% end %>

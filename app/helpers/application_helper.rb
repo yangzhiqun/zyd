@@ -116,13 +116,14 @@ module ApplicationHelper
 		end 
 		return jg_arr
 	end
+
   #市县管理员获取本机构及下级业务部门
   def all_own_subordinate 
     jg_arr  = []
     if is_city? || is_county_level?
       jg_arr << current_user.jg_bsb.id
       subordinate_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id)  
-      subordinate_jg.each{ |jg| jg_arr << jg.jg_bsb.id} 
+      subordinate_jg.each{ |jg| jg_arr << jg.jg_bsb.id if jg.jg_bsb.present?} 
     end
     jg_arr = jg_arr.uniq
     return jg_arr
@@ -152,10 +153,15 @@ module ApplicationHelper
 	#是否是省市县管理员
 	def is_shengshi?
     jg_type = current_user.jg_bsb.jg_type
-		result = current_user.is_account_manager && current_user.user_i_js == 1 && jg_type == 1
+		result = current_user.is_account_manager && current_user.user_i_js == 1 && current_user.admin_level > 0 && jg_type == 1
 		return result
 	end
-
+  #是否是省市县管理员(除账号管理员，用于监管用户的管理角色可视权限)
+  def is_shengshi_noam?
+    jg_type = current_user.jg_bsb.jg_type
+    result =  current_user.user_i_js == 1 && current_user.admin_level > 0 && jg_type == 1
+    return result
+  end
 	#机构是否是省
 	def jg_is_province?
 		jg = current_user.jg_bsb	
