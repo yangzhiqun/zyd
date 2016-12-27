@@ -498,7 +498,11 @@
   </ul>
   <div class="topright">
     <div class="user">
-      <span> <%= current_user.tname if current_user.present? %> / <%= current_user.jgname.name if current_user.present? %></span>
+      <span> <%= current_user.tname if current_user.present? %>
+        <%if !current_user.jgname.blank?%>
+      / <%= current_user.jgname.blank.name if current_user.present? %>
+     <%end%>
+     </span>
       <%= link_to '退出', '/users/sign_out', 'data-method' => :delete, 'data-confirm' => '确定退出吗？' %>
     </div>
     <div class="time"><%= (current_user.current_sign_in_at).strftime("登录时间%m月%d日 %H:%M:%S") %></div>
