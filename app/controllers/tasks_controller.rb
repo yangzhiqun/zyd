@@ -337,7 +337,7 @@ class TasksController < ApplicationController
 				@province_s = SysProvince.level1.find_by_name(info_s)
         @tasks = TaskJgBsb.where(:jg_bsb_id => @jg_bsb.id, :sys_province_id => [@province_s.id,-1])
       elsif is_xian_deploy?
-      	info_s = current_user.jg_bsb.city
+      	info_s = current_user.jg_bsb.country
 				@province_s = SysProvince.level2.find_by_name(info_s)
         @tasks = TaskJgBsb.where(:jg_bsb_id => @jg_bsb.id, :sys_province_id => [@province_s.id,-1])
       else
