@@ -1153,9 +1153,9 @@ class SpBsbsController < ApplicationController
        #  end
        # @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==1||session[:change_js]==5 #填报
-       # if params[:flag]!="tabs_7"
+        if params[:flag]!="tabs_7"
         @sp_bsbs = @sp_bsbs.where('sp_bsbs.user_id = ?', current_user.id).paginate(page: params[:page], per_page: 10)
-       # end
+        end
      # elsif session[:change_js]==8 #牵头
       #  if session[:user_dl]=='乳制品'&&current_user.jg_bsb_id == JgBsb.find_by_history_name('上海市质量监督检验技术研究院').id
       #    @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_17=? or (sp_bsbs.sp_s_18='婴幼儿配方食品' and sp_bsbs.sp_s_70 LIKE '%一司%')", session[:user_dl]).paginate(page: params[:page], per_page: 10)
