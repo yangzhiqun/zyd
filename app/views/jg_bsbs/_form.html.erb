@@ -78,6 +78,13 @@
       $('#hidden_jg_province').val(edit_sheng);
       $('#hidden_city').val(edit_shi);
       $('#hidden_country').val(edit_xian);
+    }else{
+      $('<option>-请选择-</option>').appendTo($('#jg_bsb_jg_province'));
+      $('<option>-请选择-</option>').appendTo($('#jg_bsb_city'));
+      $('<option>-请选择-</option>').appendTo($('#jg_bsb_country'));
+      $('#hidden_jg_province').val("-请选择-");
+      $('#hidden_city').val("-请选择-");
+      $('#hidden_country').val("-请选择-");
     }
     //下拉框自动锁死
     if (<%= is_sheng? %>){
@@ -102,6 +109,7 @@
       $.get('/prov.json', {prov: o.find('option:selected').attr('data-id')}, function (data) {
 				$('#jg_bsb_city').empty();
         $('<option>-请选择-</option>').appendTo($('#jg_bsb_city'));
+        $('<option>-请选择-</option>').appendTo($('#jg_bsb_country'));
         $.each(data.msg, function (i, item) {
           $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#jg_bsb_city'));
         });
@@ -119,7 +127,6 @@
     var num_two = 0;
     $('#jg_bsb_city').change(function () {
       var o = $(this);
-
       $('#jg_bsb_country').empty();
       $('<option>-请选择-</option>').appendTo($('#jg_bsb_country'));
 			$('#hidden_city').val($('#jg_bsb_city').val());
@@ -129,13 +136,14 @@
         $.each(data.msg, function (i, item) {
           $('<option>').attr('value', item.name).text(item.name).appendTo($('#jg_bsb_country'));
         });
-        if (num_two == 0){
+        if (num_two == 0 && <%= !current_user.is_admin? %>){
           if (is_edit){
             $('#jg_bsb_country').val(edit_xian);
           } else{
             $('#jg_bsb_country').val(new_xian);
           }
         }
+        num_two += 1;
       }, 'json');
     });
 		
