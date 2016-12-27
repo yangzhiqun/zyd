@@ -98,12 +98,12 @@ class UsersController < ApplicationController
     @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::RWXD) if @search_form.pad_rwxd.to_i == 1
     @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::JSYP) if @search_form.pad_jsyp.to_i == 1
     @xiaji = all_own_subordinate
-    if current_user.is_admin? or is_shengshi?  
-      if is_city? and (!current_user.is_super? or !current_user.is_admin?)
-        @users = @users.where(:jg_bsb_id => @xiaji)
-      elsif is_county_level? and (!current_user.is_super? or !current_user.is_admin?)
-        @users = @users.where(:jg_bsb_id => @xiaji)
-      end
+    if current_user.is_admin? or is_sheng?
+      @users
+    elsif is_city? or is_county_level?
+      @users = @users.where(:jg_bsb_id => @xiaji)
+    elsif current_user.is_account_manager
+      @users = @users.where(:jg_bsb_id => current_user.jg_bsb.id)
     else
       @users = User.where(id: current_user.id)
     end
