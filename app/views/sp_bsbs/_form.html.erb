@@ -445,7 +445,7 @@
     $('#sp_bsb_sp_s_70').change(function () {
       var o = $(this);
       if (o.val() != '') {
-        $.get('/baosong_bs/by_cityname.json', {a_name: o.val()}, function (data) {
+        $.get('/baosong_bs/by_name.json', {a_name: o.val()}, function (data) {
           if (data.status == 'OK') {
             $('#sp_bsb_sp_s_17, #sp_bsb_sp_s_18, #sp_bsb_sp_s_19, #sp_bsb_sp_s_20').empty();
             render_spec_list([]);
@@ -1987,7 +1987,7 @@ function pass_ca(){
           <td colspan="30" style="background: #FFFF99;"><span style="font-family:宋体">△――样品信息登记部分</span></td>
         </tr>
         <td colspan="5">任务来源*</td>
-        <td colspan="8"><%= f.text_field :sp_s_2_1, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        <td colspan="8"><%= f.select :sp_s_2_1, options_for_select(all_super_departments.map { |name| [name,name, {'parentid' => name}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_2_1), {}, {:style => "width: 260px; height: 19px"} %></td>
         <td colspan="3">报送分类*</td>
         <td colspan="14">
           <%= f.select :sp_s_70, options_for_select(BaosongA.where("prov = ? or prov is null or prov = ''", current_user.user_s_province).map { |b| [b.name, b.name, {'parentid' => b.rwlylx}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_70), {}, {:style => "width: 167px;"} %>
@@ -2296,7 +2296,7 @@ function pass_ca(){
           <% end %>
         </tr>
         <tr>
-          <% if @sp_bsb["sp_i_state"] == 2 or (@sp_bsb["sp_i_state"]>=4&&@sp_bsb["sp_i_state"]<=9) %>
+          <% if @sp_bsb["sp_i_state"] == 2 or (@sp_bsb["sp_i_state"]>=4&&@sp_bsb["sp_i_state"]<=9) or @sp_bsb["sp_i_state"] == 16%>
               <td colspan="4">填写退回原因</td>
               <td colspan="26"><%= f.text_field :sp_s_55, :class => "inputText", :style => "width: 600px;height: 19px;margin:8px" %></td>
           <% end %>
@@ -2521,7 +2521,8 @@ function pass_ca(){
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
          <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default kk">检验报告</a>
      <% elsif @sp_bsb["sp_i_state"]==16&&session[:change_js]==16 %>
-          <%= f.submit(vaule="确定通过", options={"id" => "save_16", :class => "btn btn-xs btn-success"}) %>
+        <%= f.submit(vaule="确定通过", options={"id" => "save_16", :class => "btn btn-xs btn-success"}) %>
+        <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
 	      <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default kk">检验报告</a>
       <% elsif @sp_bsb["sp_i_state"]==6&&session[:change_js]==2 %>
           <%= f.submit(vaule="药监局审核通过", options={"id" => "save_3", :class => "btn btn-xs btn-success"}) %>

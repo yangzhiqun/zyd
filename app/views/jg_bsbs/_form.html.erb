@@ -26,36 +26,80 @@
     $('input:text:first').focus();
 
     <% unless @jg_bsb.new_record? %>
-    $('#btn-modify').click(function () {
-      $(this).addClass('hidden');
-      $('.modify-name-ctner').removeClass('hidden');
-      return false;
-    });
-
-    $('#do-modify-jg-name').click(function () {
-      var name = $('#new_name').val();
-      if (name == '') {
-        alert('请填写名称');
-        $('#new_name').focus();
+      $('#btn-modify').click(function () {
+        $(this).addClass('hidden');
+        $('.modify-name-ctner').removeClass('hidden');
         return false;
-      }
-      if (confirm('确定进行机构改名操作吗？')) {
-        $.post('/jg_bsbs/<%= @jg_bsb.id %>/rename.json', {
-          jg_bsb_id: <%= @jg_bsb.id %>,
-          name: name,
-          note: $('#note').val()
-        }, function (res) {
-          if (res.status == 'OK') {
-            location.reload();
-          } else {
-            alert(res.msg);
-          }
-        });
-      }
-      return false;
-    });
-    <% end %>
+      });
 
+      $('#do-modify-jg-name').click(function () {
+        var name = $('#new_name').val();
+        if (name == '') {
+          alert('请填写名称');
+          $('#new_name').focus();
+          return false;
+        }
+        if (confirm('确定进行机构改名操作吗？')) {
+          $.post('/jg_bsbs/<%= @jg_bsb.id %>/rename.json', {
+            jg_bsb_id: <%= @jg_bsb.id %>,
+            name: name,
+            note: $('#note').val()
+          }, function (res) {
+            if (res.status == 'OK') {
+              location.reload();
+            } else {
+              alert(res.msg);
+            }
+          });
+        }
+        return false;
+      });
+    <% end %>
+    
+    //******************************************************
+    //编辑状态下的省市县
+    var edit_sheng  = "<%= @jg_bsb.jg_province %>";
+    var edit_shi    = "<%= @jg_bsb.city %>";
+    var edit_xian   = "<%= @jg_bsb.country %>";
+    //新建状态下默认省市县
+    var new_sheng   = "<%= current_user.user_s_province %>";
+    var new_shi     = "<%= current_user.prov_city %>";
+    var new_xian    = "<%= current_user.prov_country %>";
+    //判断是否是编辑状态
+    var is_edit = <%= action?("edit") %>;
+    //自动补齐省市县
+    if (!is_edit && <%= is_shengshi? %>){
+      $('#jg_bsb_jg_province').val(new_sheng).change();
+      $('#hidden_jg_province').val(new_sheng);
+      $('#hidden_city').val(new_shi);
+      $('#hidden_country').val(new_xian);
+    }else if(is_edit && <%= is_shengshi? %>){
+      $('#jg_bsb_jg_province').val(edit_sheng).change();
+      $('#hidden_jg_province').val(edit_sheng);
+      $('#hidden_city').val(edit_shi);
+      $('#hidden_country').val(edit_xian);
+    }else{
+      $('<option>-请选择-</option>').appendTo($('#jg_bsb_jg_province'));
+      $('<option>-请选择-</option>').appendTo($('#jg_bsb_city'));
+      $('<option>-请选择-</option>').appendTo($('#jg_bsb_country'));
+      $('#hidden_jg_province').val("-请选择-");
+      $('#hidden_city').val("-请选择-");
+      $('#hidden_country').val("-请选择-");
+    }
+    //下拉框自动锁死
+    if (<%= is_sheng? %>){
+      $('#jg_bsb_jg_province').attr("disabled","disabled");
+    }else if(<%= is_city? %>){
+      $('#jg_bsb_jg_province').attr("disabled","disabled");
+      $('#jg_bsb_city').attr("disabled","disabled");
+    }else if(<%= is_county_level? %>){
+      $('#jg_bsb_jg_province').attr("disabled","disabled");
+      $('#jg_bsb_city').attr("disabled","disabled");
+      $('#jg_bsb_country').attr("disabled","disabled");
+    }
+    //******************************************************
+
+    var num_one = 0;
     $('#jg_bsb_jg_province').change(function () {
       var o = $(this);
       if (o.val() == '') return false;
@@ -65,42 +109,24 @@
       $.get('/prov.json', {prov: o.find('option:selected').attr('data-id')}, function (data) {
 				$('#jg_bsb_city').empty();
         $('<option>-请选择-</option>').appendTo($('#jg_bsb_city'));
+        $('<option>-请选择-</option>').appendTo($('#jg_bsb_country'));
         $.each(data.msg, function (i, item) {
           $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#jg_bsb_city'));
         });
-				<% if (is_city? || is_county_level?) && !@jg_bsb.id %>
-					$('#jg_bsb_city').val("<%= current_user.prov_city %>").change().attr("disabled","disabled");	
-					$('#hidden_city').val("<%= current_user.prov_city %>");
-				<% elsif @jg_bsb.id %>
-					$('#jg_bsb_city').val("<%= @jg_bsb.city %>").change();
-					$('#hidden_city').val("<%= @jg_bsb.city %>");
-				<% end %>
+        if (num_one == 0){
+          if (is_edit){
+            $('#jg_bsb_city').val(edit_shi).change();
+          } else{
+            $('#jg_bsb_city').val(new_shi).change();
+          }
+        }
+        num_one += 1;
       }, 'json');
     }).trigger('change');
 
-		<% if is_county_level? && @jg_bsb.id %>		
-			$('#jg_bsb_jg_province').attr("disabled","disabled");
-			$('#jg_bsb_city').attr("disabled","disabled");
-			$('#jg_bsb_country').attr("disabled","disabled");
-		<% elsif is_city? && @jg_bsb.id%>
-			$('#jg_bsb_jg_province').attr("disabled","disabled");
-			$('#jg_bsb_city').attr("disabled","disabled");
-		<% elsif is_sheng?  && @jg_bsb.id%>
-			$('#jg_bsb_jg_province').attr("disabled","disabled");
-		<% end %>
-
-
-    <% if (is_sheng? || is_city? || is_county_level?) && !@jg_bsb.id %>
-      $('#jg_bsb_jg_province').val("<%= current_user.user_s_province %>").change().attr("disabled","disabled");
-			$('#hidden_jg_province').val("<%= current_user.user_s_province %>");
-		<% elsif @jg_bsb.id %>
-			$('#jg_bsb_jg_province').val("<%= @jg_bsb.jg_province %>").change();
-			$('#hidden_jg_province').val("<%= @jg_bsb.jg_province %>");
-    <% end %>
-
+    var num_two = 0;
     $('#jg_bsb_city').change(function () {
       var o = $(this);
-
       $('#jg_bsb_country').empty();
       $('<option>-请选择-</option>').appendTo($('#jg_bsb_country'));
 			$('#hidden_city').val($('#jg_bsb_city').val());
@@ -110,26 +136,20 @@
         $.each(data.msg, function (i, item) {
           $('<option>').attr('value', item.name).text(item.name).appendTo($('#jg_bsb_country'));
         });
-				<% if is_county_level? && !@jg_bsb.id %>
-					$('#jg_bsb_country').val("<%= current_user.prov_country %>").attr("disabled","disabled");
-					$('#hidden_country').val("<%= current_user.prov_country %>")
-				<% elsif @jg_bsb.id %>
-					$('#jg_bsb_country').val("<%= @jg_bsb.country %>");
-					$('#hidden_country').val("<%= @jg_bsb.country %>")
-				<% end %>
+        if (num_two == 0 && <%= !current_user.is_admin? %>){
+          if (is_edit){
+            $('#jg_bsb_country').val(edit_xian);
+          } else{
+            $('#jg_bsb_country').val(new_xian);
+          }
+        }
+        num_two += 1;
       }, 'json');
     });
 		
 		$('#jg_bsb_country').change(function () {
 			$("#hidden_country").val($("#jg_bsb_country").val());
 		});
-
-    //setTimeout(function () {
-    //  $('#jg_bsb_city').val('<%= @jg_bsb.city %>').trigger('change');
-    //  setTimeout(function () {
-    //    $('#jg_bsb_country').val('<%= @jg_bsb.country %>');
-    //  }, 1000);
-    //}, 1000);
 
     $('#jg_bsb_super_jg_bsbs').select2({theme: 'bootstrap', placeholder: '请选择上级业务部门'});
   });
