@@ -1029,7 +1029,7 @@ class SpBsbsController < ApplicationController
     end
    
     @rwly = all_super_departments
-    if is_city? || is_county_level? || (current_user.is_account_manager && current_user.user_i_js == 1 && current_user.jg_bsb.jg_type==1) && !current_user.is_admin?
+    if is_city? || is_county_level? || is_shengshi_noam? ||(current_user.is_account_manager && current_user.user_i_js == 1 && current_user.jg_bsb.jg_type==1) && !current_user.is_admin?
       @sp_bsbs = @sp_bsbs.where(sp_s_2_1: @rwly).paginate(page: params[:page], per_page: 10)
     end
 
