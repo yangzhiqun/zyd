@@ -990,9 +990,11 @@ class SpBsbsController < ApplicationController
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
        elsif session[:change_js]==6 #数据填报
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
-      elsif session[:change_js]==1||session[:change_js]==5 #填报
-          @sp_bsbs = @sp_bsbs.where('sp_bsbs.user_id = ?', current_user.id).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
-      elsif session[:change_js]==16 #数据填报
+        elsif session[:change_js]==1||session[:change_js]==5 #填报
+          if params[:flag]!="tabs_7"
+            @sp_bsbs = @sp_bsbs.where('sp_bsbs.user_id = ?', current_user.id).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+          end
+        elsif session[:change_js]==16 #数据填报
          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==9
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 AND sp_bsbs.sp_s_70 LIKE '%一司%' AND sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
@@ -1016,7 +1018,9 @@ class SpBsbsController < ApplicationController
        #  end
        # @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==1||session[:change_js]==5 #填报
-        @sp_bsbs = @sp_bsbs.where('sp_bsbs.user_id  in (?)', current_user.id).paginate(page: params[:page], per_page: 10)
+        if params[:flag]!="tabs_7"
+          @sp_bsbs = @sp_bsbs.where('sp_bsbs.user_id  in (?)', current_user.id).paginate(page: params[:page], per_page: 10)
+        end
       elsif session[:change_js]==9
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 and sp_bsbs.sp_s_70 LIKE '%一司%'").paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==10
