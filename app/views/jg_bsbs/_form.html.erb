@@ -141,6 +141,10 @@
             $('#jg_bsb_country').val(edit_xian);
           } else{
             $('#jg_bsb_country').val(new_xian);
+            if ($('#jg_bsb_country').val() == null){
+              $('#jg_bsb_country').val("-请选择-");
+              $('#hidden_country').val("-请选择-");
+            }
           }
         }
         num_two += 1;
