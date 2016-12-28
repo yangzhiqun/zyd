@@ -88,6 +88,10 @@
         });
 				if (num == 0) {
 					$("#lcity").val("<%= current_user.prov_country %>");
+          if ($("#lcity").val() == null){
+            $("#lcity").val("-请选择-"); 
+            $("#hidden_prov_country").val("-请选择-"); 
+          }
 				}else{
       	  reload_jg_data();
         }
