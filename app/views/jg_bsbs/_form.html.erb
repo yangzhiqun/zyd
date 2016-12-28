@@ -136,7 +136,7 @@
         $.each(data.msg, function (i, item) {
           $('<option>').attr('value', item.name).text(item.name).appendTo($('#jg_bsb_country'));
         });
-        if (num_two == 0 && <%= !current_user.is_admin? %>){
+        if (num_two == 0){
           if (is_edit){
             $('#jg_bsb_country').val(edit_xian);
           } else{
