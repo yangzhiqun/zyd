@@ -984,7 +984,7 @@ class SpBsbsController < ApplicationController
       if current_user.is_admin? || session[:change_js]==10||is_sheng?
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
       else
-        if session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
+        if (session[:change_js]==1&&params[:flag]=="tabs_7")||session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3 = ? or sp_bsbs.sp_s_202 = ?", current_user.user_s_province, current_user.user_s_province).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==7 #数据审核
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
@@ -1000,12 +1000,14 @@ class SpBsbsController < ApplicationController
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 AND sp_bsbs.sp_s_70 LIKE '%一司%' AND sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==10
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 AND sp_bsbs.sp_s_70 NOT LIKE '%一司%' AND sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+        elsif session[:change_js].nil? && params[:s8].present?
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         end
       end
     elsif current_user.is_admin?||session[:change_js]==10||is_sheng?
       @sp_bsbs = @sp_bsbs.paginate(page: params[:page], per_page: 10)
     else
-      if session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
+      if (session[:change_js]==2||session[:change_js]==3||session[:change_js]==4)&&params[:s8].present? #药监局数据审核
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3=? or (sp_bsbs.sp_s_202=? and (sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'))", current_user.user_s_province, current_user.user_s_province).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==7 #数据审核
          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
@@ -1027,7 +1029,9 @@ class SpBsbsController < ApplicationController
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 and sp_bsbs.sp_s_70 NOT LIKE '%一司%'").paginate(page: params[:page], per_page: 10)
       end
     end
-   
+
+    @sp_bsbs = @sp_bsbs.paginate(page: params[:page], per_page: 10)
+
     @rwly = all_super_departments
     if params[:flag]=="tabs_7"
       @sp_bsbs = @sp_bsbs.where(sp_s_2_1: @rwly).paginate(page: params[:page], per_page: 10)
