@@ -837,6 +837,12 @@
  				}
  			})			
 
+      if ($.trim($("#jg_jg_id").val()).length == 0){
+        alert("请填写送检机构并选择");
+        $("#jg_jg_id").focus();
+        return false;
+      }
+
 			var file1 = $.trim($("#sp_bsb_cyd_file").val());
       var file2 = $.trim($("#sp_bsb_cyjygzs_file").val());
       var pdf_length = $("a.btn.btn-default.btn-xs").length;
@@ -995,7 +1001,7 @@
         return false;
       }
 
-      <%@check=[1,2,3,4,5,6,7,11,12,14,16,21,24,30,33,35,36,37,39,40,41,42,61,62,63,70]%>
+      <%@check=[1,2,3,4,5,6,7,11,12,14,16,21,24,30,33,35,36,37,39,40,41,42,61,62,63,70,220,221]%>
       <%@check.each do |i|%>
       if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
         var info = "";
@@ -1078,6 +1084,12 @@
         if(info==63){
           info = "包装分类";
         }
+        if(info==220){
+          info = "标识生产企业地址,市级";
+        }
+        if(info==221){
+          info = "标识生产企业地址,县级";
+        }
 				modalHide();
         alert(info + " ,该项为必填项");
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
@@ -1128,6 +1140,11 @@
       }
       <%end%>
 
+      if ($.trim($("#jg_jg_id").val()).length == 0){
+        alert("请填写送检机构并选择");
+        $("#jg_jg_id").focus();
+        return false;
+      }
 
       <%@check=[43,44,45,49,50,51,85,87,88]%>
       <%@check.each do |i|%>
@@ -1674,7 +1691,7 @@
 		<% end %>
 		
   	// 模态框需要调用父级框架的显示
-  	var modalShow = function(){
+  	function modalShow() {
   	  //获取父级框架
   	  var parentFrame = $(document),
   	  parentHtml = parentFrame.find('html').addClass('box-overhide'),
@@ -1692,11 +1709,11 @@
   	  });
   	  
   	  //测试定时器，两秒钟
-  	  setTimeout(modalHide,4000);
+  	  setTimeout(modalHide(),4000);
     }
 
   	// 关闭模态框
-  	var modalHide = function(){
+  	function modalHide() {
   	  //获取父级框架
   	  var parentFrame = $(document);
   	  parentFrame.find('html,body').removeClass('box-overhide');

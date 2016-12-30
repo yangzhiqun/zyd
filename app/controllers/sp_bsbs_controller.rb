@@ -819,7 +819,7 @@ class SpBsbsController < ApplicationController
 
     # 任务来源
     unless params[:s13].blank?
-      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_2_1 LIKE ?", "%#{params[:s13]}%")
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_2_1 = ?", "#{params[:s13]}".gsub(/\s/,""))
     end
 
     if params[:sp_dl] != '请选择' && !params[:sp_dl].blank?
@@ -1031,9 +1031,11 @@ class SpBsbsController < ApplicationController
     @rwly = all_super_departments
     if params[:flag]=="tabs_7"
       @sp_bsbs = @sp_bsbs.where(sp_s_2_1: @rwly).paginate(page: params[:page], per_page: 10)
-    else
-      if is_city? || is_county_level? || (current_user.is_account_manager && current_user.user_i_js == 1 && current_user.jg_bsb.jg_type==1) && !current_user.is_admin?
+    elsif is_city? || is_county_level? || (current_user.is_account_manager && current_user.user_i_js == 1 && current_user.jg_bsb.jg_type==1)
+      if !current_user.is_admin? && !is_sheng? && params[:s13].blank?
         @sp_bsbs = @sp_bsbs.where(sp_s_2_1: @rwly).paginate(page: params[:page], per_page: 10)
+      else
+        @sp_bsbs = @sp_bsbs.paginate(page: params[:page], per_page: 10)
       end
     end
 
