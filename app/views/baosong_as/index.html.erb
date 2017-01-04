@@ -16,7 +16,8 @@
     <td><%= baosong_a.name %></td>
     <td><%= baosong_a.note %></td>
     <td><%= baosong_a.rwlylx %></td>
-    <td><%= baosong_a.prov.blank? ? "<i class='text-success'>不限制</i>".html_safe : baosong_a.prov %></td>
+   <!-- <td><%= baosong_a.prov.blank? ? "<i class='text-success'>不限制</i>".html_safe : baosong_a.prov %></td> -->
+    <td><%= baosong_a.sheng.to_s+"-"+baosong_a.shi.to_s+"-"+baosong_a.xian.to_s%></td>
     <td><%= (baosong_a.created_at + 8.hours).strftime("%Y-%m-%d %H:%M:%S")%></td>
     <td>
       <%= link_to '查看', baosong_a, :class => "btn btn-xs btn-primary" %>

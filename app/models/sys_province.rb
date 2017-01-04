@@ -25,7 +25,15 @@ class SysProvince < ActiveRecord::Base
   validates_presence_of :name, message: '请提供名称'
 
   has_many :task_provinces
-
+  def self.level4
+      if is_shi_deploy?
+        @province = SysProvince.level1.find_by_name(current_user.prov_city)
+      elsif is_xian_deploy?
+        @province = SysProvince.level3(current_user.prov_city).find_by_name(current_user.prov_country)
+      else
+        @province = SysProvince.level1 
+      end
+  end
   def self.all_to_json
     @result = {}
 

@@ -1,3 +1,90 @@
+<script type="text/javascript">
+  $(function () {
+    //编辑状态下的市县
+    var baosong_a_shi  = "<%= @baosong_a.shi %>";
+    var baosong_a_xian = "<%= @baosong_a.xian %>";
+    //新建状态下默认市县
+  	var c  = "<%= current_user.jg_bsb.city %>";
+  	var lc = "<%= current_user.jg_bsb.country %>";
+    var renwu = "<%= jg_is_city? ? '市/区局' : '县' %>";
+    //判断是否是编辑状态
+    var is_edit = <%= action?("edit") %>;
+    //判断在新建状态下是否是市县管理员
+    var is_shixian = !is_edit && <%= is_city? || is_county_level? %>;
+
+    //新建状态下自动判断任务来源类型
+    if (is_shixian){
+      $('#baosong_a_rwlylx').val(renwu);
+      $('#hidden_rwlylx').val(renwu);
+      $("#hidden_prov_city").val(c).change();
+      $("#hidden_prov_country").val(lc);
+    }
+
+    //市县管理员锁定市县下拉框
+    <% if is_city? || is_county_level? %>
+      $('#baosong_a_rwlylx').attr("disabled","disabled");
+      $('#city').attr("disabled","disabled");
+      $('#lcity').attr("disabled","disabled");
+    <% end %>
+
+    $.get('/prov.json', {prov: <%= @province.id %>}, function (data) {
+      $('<option>-请选择-</option>').appendTo($('#city'));
+      $('<option>-请选择-</option>').appendTo($('#lcity'));
+      $.each(data.msg, function (i, item) {
+        if (c == item.name && is_edit){
+          $('<option>').attr({'value': item.name, 'data-id': item.id,"selected":"selected"}).text(item.name).appendTo($('#city'));
+          if (lc != "" && lc !="-请选择-" ){
+            $('<option>').attr({'value': lc, 'data-id': item.id,"selected":"selected"}).text(lc).appendTo($('#lcity'));
+          }else {
+            $('<option value="">-请选择-</option>').appendTo($('#lcity'));
+            $.get('/prov.json', {city: item.id}, function (data) {
+              $.each(data.msg, function (i, item) {
+                $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#lcity'));
+              });
+            }, 'json');
+          }
+        }else{
+          $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#city'));
+        }
+      });
+      if (is_edit){
+        $("#city").val(baosong_a_shi).change();
+      }else if(is_shixian){
+        $("#city").val(c).change();
+      }
+    }, 'json');
+
+    var num = 0 //判断第一次加载
+    $('#city').change(function () {
+      var o = $(this);
+      $('#lcity').empty();
+      $('<option>-请选择-</option>').appendTo($('#lcity'));
+			$('#hidden_prov_city').val($('#city').val());
+      $.get('/prov.json', {city: o.find('option:selected').attr('data-id')}, function (data) {
+        $.each(data.msg, function (i, item) {
+          $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#lcity'));
+        });
+        if (num == 0){
+          //编辑状态下给县赋值
+          if (is_edit){
+            $("#lcity").val(baosong_a_xian);
+          }else if(is_shixian){
+            $("#lcity").val(lc);
+          }
+        }
+        num+=1;
+      }, 'json');
+   	});
+
+		$('#lcity').change(function () {
+			$('#hidden_prov_country').val($('#lcity').val());
+		});
+
+    $('#baosong_a_rwlylx').change(function () {
+      $('#hidden_rwlylx').val($('#baosong_a_rwlylx').val());
+    });
+  });
+</script>
 <div class="panel panel-default">
   <div class="panel-body">
     <%= form_for(@baosong_a) do |f| %>
@@ -17,12 +104,23 @@
           <label>任务来源类型：</label><b style="font-size:10px; color:#999">如省局/市局/县</b>
           <br>
           <%= f.select :rwlylx, options_for_select(%w{省局 市/区局 县}, @baosong_a.rwlylx), {}, class: 'form-control input-sm'%>
+          <% unless is_sheng? || current_user.is_admin? %>
+        	  <%= f.text_field :rwlylx, :id => "hidden_rwlylx", :type => "hidden" %>
+          <% end %>
         </div>
         <br>
         <div class="field">
-          <label>市/区</label>
+          <label>市/区：</label>
           <br>
-          <%= f.select :prov, options_for_select(SysProvince.level1.map { |p| [p.name, p.name] }.unshift(['不限制', nil]), @baosong_a.prov), {}, :class => 'form-control input-sm' %>
+					<div class="region form-inline">
+						<%=	current_user.jg_bsb.jg_province %>
+            <%= f.select :shi, '', {}, :class => 'form-control input-sm', :id => 'city' %>
+            <%= f.select :xian, '', {}, :class => 'form-control input-sm', :id => 'lcity' %>
+            <% unless is_sheng? || current_user.is_admin? %>
+        		  <%= f.text_field :shi, :id => "hidden_prov_city", :type => "hidden" %>
+        		  <%= f.text_field :xian, :id => "hidden_prov_country", :type => "hidden" %>
+            <% end %>
+          </div>
         </div>
         <br>
         <div class="actions">

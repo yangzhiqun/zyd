@@ -210,9 +210,9 @@ class YyczController < ApplicationController
       if current_user.yyadmin !=1 
        if is_shi_deploy?
        # @sp_bsbs = @sp_bsbs.where("s.sp_s_4 = ? OR s.sp_s_220 = ?", current_user.user_s_province, current_user.user_s_province)
-       	@sp_bsbs = @sp_bsbs.where("s.sp_s_4 = ? OR s.sp_s_220 = ? ", current_user.prov_city,  current_user.prov_city)
+       	@sp_bsbs = @sp_bsbs.where("s.sp_s_4 = ? OR s.sp_s_220 = ? ", current_user.jg_bsb.city, current_user.jg_bsb.city)
 				elsif is_xian_deploy?
-         @sp_bsbs = @sp_bsbs.where("s.sp_s_5 = ? OR s.sp_s_221 = ? ", current_user.prov_country,  current_user.prov_country)
+         @sp_bsbs = @sp_bsbs.where("s.sp_s_5 = ? OR s.sp_s_221 = ? ",current_user.jg_bsb.country,current_user.jg_bsb.country)
        end
       end
 		end
