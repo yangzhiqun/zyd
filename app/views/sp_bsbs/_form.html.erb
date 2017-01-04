@@ -11,6 +11,22 @@
   var spdata_condition = "<%= "#{@sp_bsb["sp_s_17"]}#{@sp_bsb["sp_s_18"]}#{@sp_bsb["sp_s_19"]}#{@sp_bsb["sp_s_20"]}"%>";
   SP.sp_bsb = <%= @sp_bsb.to_json.html_safe %>;
   ///////////////////
+  $(function () {
+    if(tab()) {
+      $("#sp_bsb_sp_s_2_1").empty();
+      $("#sp_bsb_sp_s_2_1").append("<option parentid='<%= @sp_bsb.sp_s_2_1%>' value='<%= @sp_bsb.sp_s_2_1%>'><%= @sp_bsb.sp_s_2_1%></option>");
+    }
+  });
+  //判断日期
+  function tab(){
+    var oDate1 = new Date("2017-01-01");
+    var oDate2 = new Date("<%=@sp_bsb.created_at %>");
+    if(oDate1.getTime() > oDate2.getTime()){
+      return true
+    } else {
+      return false
+    }
+  }
 
   // 按检测名称查找已记录的检测项目
   function find_sp_data_by_name(name) {
@@ -918,6 +934,12 @@
       }
       <%end%>
 
+      if ($.trim($("#jg_jg_id").val()).length == 0){
+        alert("请填写送检机构并选择");
+        $("#jg_jg_id").focus();
+        return false;
+      }
+
       if (!confirm('确定提交吗？')) {
 				modalHide();
         return false;
@@ -994,10 +1016,9 @@
 				modalHide();
         return false;
       }
-
-      <%@check=[1,2,3,4,5,6,7,11,12,14,16,21,24,30,33,35,36,37,39,40,41,42,61,62,63,70]%>
+      <%@check=[1,2,3,4,5,6,7,11,12,14,16,21,24,30,33,35,36,37,39,40,41,42,61,62,63,70,220,221]%>
       <%@check.each do |i|%>
-      if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0) {
+      if ($.trim($("#sp_bsb_sp_s_" +<%=i%>).val()).length == 0 || $("#sp_bsb_sp_s_" +<%=i%>).val() == '请选择') {
         var info = "";
         info = "<%=i%>";
         if(info==70){
@@ -1078,6 +1099,12 @@
         if(info==63){
           info = "包装分类";
         }
+        if(info==220){
+          info = "标识生产企业地址,市级";
+        }
+        if(info==221){
+          info = "标识生产企业地址,县级";
+        }
 				modalHide();
         alert(info + " ,该项为必填项");
         $("#sp_bsb_sp_s_" +<%=i%>).focus();
@@ -1127,7 +1154,6 @@
         return false;
       }
       <%end%>
-
 
       <%@check=[43,44,45,49,50,51,85,87,88]%>
       <%@check.each do |i|%>
@@ -1674,7 +1700,7 @@
 		<% end %>
 		
   	// 模态框需要调用父级框架的显示
-  	var modalShow = function(){
+  	function modalShow() {
   	  //获取父级框架
   	  var parentFrame = $(document),
   	  parentHtml = parentFrame.find('html').addClass('box-overhide'),
@@ -1692,11 +1718,11 @@
   	  });
   	  
   	  //测试定时器，两秒钟
-  	  setTimeout(modalHide,4000);
+  	  setTimeout(modalHide(),4000);
     }
 
   	// 关闭模态框
-  	var modalHide = function(){
+  	function modalHide() {
   	  //获取父级框架
   	  var parentFrame = $(document);
   	  parentFrame.find('html,body').removeClass('box-overhide');
@@ -2284,7 +2310,7 @@ function pass_ca(){
         </tr>
 
         <tr id="reason">
-          <% if @sp_bsb["sp_i_state"] == 2 or (@sp_bsb["sp_i_state"] >= 4 && @sp_bsb["sp_i_state"] <= 9) %>
+          <% if @sp_bsb["sp_i_state"] == 2 or (@sp_bsb["sp_i_state"] >= 4 && @sp_bsb["sp_i_state"] <= 9) or @sp_bsb["sp_i_state"] == 16 %>
               <td colspan="4">历史退回原因</td>
               <td colspan="26"><%= f.text_area :sp_s_reason, :style => "width: 600px; height: 100px;margin:8px", :readonly => "readonly" %></td>
           <% elsif @sp_bsb["sp_i_state"]==3 %>

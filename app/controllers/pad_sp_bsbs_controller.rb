@@ -72,6 +72,9 @@ class PadSpBsbsController < ApplicationController
     if (params_data.sp_s_18=='婴幼儿配方食品' and params_data.sp_s_56=='一司')&&session[:change_js]==8&&current_user.jg_bsb.jg_name == '上海市质量监督检验技术研究院'
       return 1
     end
+    if params_data.sp_s_35 == current_user.jg_bsb.jg_name 
+      return 1 
+    end
     return 0
   end
 

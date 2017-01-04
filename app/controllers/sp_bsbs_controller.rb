@@ -819,7 +819,7 @@ class SpBsbsController < ApplicationController
 
     # 任务来源
     unless params[:s13].blank?
-      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_2_1 LIKE ?", "%#{params[:s13]}%")
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_2_1 = ?", "#{params[:s13]}".gsub(/\s/,""))
     end
 
     if params[:sp_dl] != '请选择' && !params[:sp_dl].blank?
@@ -984,7 +984,7 @@ class SpBsbsController < ApplicationController
       if current_user.is_admin? || session[:change_js]==10||is_sheng?
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
       else
-        if session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
+        if (session[:change_js]==1&&params[:flag]=="tabs_7")||session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3 = ? or sp_bsbs.sp_s_202 = ?", current_user.user_s_province, current_user.user_s_province).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==7 #数据审核
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
@@ -1000,12 +1000,14 @@ class SpBsbsController < ApplicationController
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 AND sp_bsbs.sp_s_70 LIKE '%一司%' AND sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==10
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 AND sp_bsbs.sp_s_70 NOT LIKE '%一司%' AND sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+        elsif session[:change_js].nil? && params[:s8].present?
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         end
       end
     elsif current_user.is_admin?||session[:change_js]==10||is_sheng?
       @sp_bsbs = @sp_bsbs.paginate(page: params[:page], per_page: 10)
     else
-      if session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
+      if (session[:change_js]==2||session[:change_js]==3||session[:change_js]==4)&&params[:s8].present? #药监局数据审核
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3=? or (sp_bsbs.sp_s_202=? and (sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'))", current_user.user_s_province, current_user.user_s_province).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==7 #数据审核
          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
@@ -1027,13 +1029,17 @@ class SpBsbsController < ApplicationController
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 and sp_bsbs.sp_s_70 NOT LIKE '%一司%'").paginate(page: params[:page], per_page: 10)
       end
     end
-   
+
+    @sp_bsbs = @sp_bsbs.paginate(page: params[:page], per_page: 10)
+
     @rwly = all_super_departments
     if params[:flag]=="tabs_7"
       @sp_bsbs = @sp_bsbs.where(sp_s_2_1: @rwly).paginate(page: params[:page], per_page: 10)
-    else
-      if is_city? || is_county_level? || (current_user.is_account_manager && current_user.user_i_js == 1 && current_user.jg_bsb.jg_type==1) && !current_user.is_admin?
+    elsif is_city? || is_county_level? || (current_user.is_account_manager && current_user.user_i_js == 1 && current_user.jg_bsb.jg_type==1)
+      if !current_user.is_admin? && !is_sheng? && params[:s13].blank?
         @sp_bsbs = @sp_bsbs.where(sp_s_2_1: @rwly).paginate(page: params[:page], per_page: 10)
+      else
+        @sp_bsbs = @sp_bsbs.paginate(page: params[:page], per_page: 10)
       end
     end
 
