@@ -34,7 +34,7 @@
         overflow-y: auto;
         overflow-x: auto;
     }
-}
+
 
 </style>
 
@@ -87,7 +87,7 @@ $(function(){
   <table border="1" cellspacing="0" cellpadding="0" width="820px" class="style1">
     <tr>
 			<td colspan="4"><p>被抽样单位名称*</p></td>
-			<td colspan="11"><%= f.text_field:sp_s_1, :class=>"inputText",:style=>"width: 260px; height: 19px" %></td>
+			<td colspan="11"><%= f.text_field :sp_s_1, :class=>"inputText",:style=>"width: 260px; height: 19px" %></td>
 			<td colspan="4"><p>抽样地点业态*</p></td>
 			<td colspan="11">
         <%=f.select :sp_s_68, @options[68],{},{:style=>"width: 80px;"}%>
@@ -96,13 +96,13 @@ $(function(){
 		</tr>
     <tr>
 			<td colspan="3"><p>年销售额</p></td>
-			<td colspan="5"><%= f.text_field:sp_s_23, :class=>"inputText",:style=>"width: 100px; height: 19px" %></td>
+			<td colspan="5"><%= f.text_field :sp_s_23, :class=>"inputText",:style=>"width: 100px; height: 19px" %></td>
 			<td colspan="3"><p>营业执照号</p></td>
-			<td colspan="5"><%= f.text_field:sp_s_215, :class=>"inputText",:style=>"width: 100px; height: 19px" %></td>
+			<td colspan="5"><%= f.text_field :sp_s_215, :class=>"inputText",:style=>"width: 100px; height: 19px" %></td>
       <td colspan="3"><p>传真</p></td>
-			<td colspan="5"><%= f.text_field:sp_s_bsfl, :class=>"inputText",:style=>"width: 100px; height: 19px" %></td>
+			<td colspan="5"><%= f.text_field :sp_s_bsfl, :class=>"inputText",:style=>"width: 100px; height: 19px" %></td>
       <td colspan="3"><p>区域类型*</p></td>
-			<td colspan="3"><%= f.text_field:sp_s_201, :class=>"inputText",:style=>"width: 60px; height: 19px" %></td>
+			<td colspan="3"><%= f.text_field :sp_s_201, :class=>"inputText",:style=>"width: 60px; height: 19px" %></td>
 		</tr>
       <tr >
 			<td colspan="3" style="width: 73px"><p>所在地区*</p></td>
@@ -124,20 +124,20 @@ $(function(){
 			<td colspan="3" style="width: 73px"><p>单位地址*</p></td>
 			<td colspan="19"><%= f.text_field :sp_s_7, :class=>"inputText",:style=>"width: 420px; height: 19px" %></td>
             <td colspan="3"><p style="width: 43px">邮编</p></td>
-			<td colspan="5"><%= f.text_field:sp_s_10, :class=>"inputText",:style=>"width: 120px; height: 19px" %></td>
+			<td colspan="5"><%= f.text_field :sp_s_10, :class=>"inputText",:style=>"width: 120px; height: 19px" %></td>
 		</tr>
 		<tr>
 			<td colspan="7"><p>被抽样单位法人（负责人）</p></td>
-			<td colspan="7"><%= f.text_field:sp_s_8, :class=>"inputText",:style=>"width: 175px; height: 19px" %></td>
+			<td colspan="7"><%= f.text_field :sp_s_8, :class=>"inputText",:style=>"width: 175px; height: 19px" %></td>
 			<td colspan="4"><p>电话</p></td>
-			<td colspan="12"><%= f.text_field:sp_s_9, :class=>"inputText",:style=>"width: 120px; height: 19px" %></td>
+			<td colspan="12"><%= f.text_field :sp_s_9, :class=>"inputText",:style=>"width: 120px; height: 19px" %></td>
 			
 		</tr>
 		<tr>
 			<td colspan="7"><p>被抽样单位负责（联系）人*</p></td>
-			<td colspan="7"><%= f.text_field:sp_s_11, :class=>"inputText",:style=>"width: 175px; height: 19px" %></td>
+			<td colspan="7"><%= f.text_field :sp_s_11, :class=>"inputText",:style=>"width: 175px; height: 19px" %></td>
 			<td colspan="4" ><p>电话*</p></td>
-			<td colspan="12"><%= f.text_field:sp_s_12, :class=>"inputText",:style=>"width: 120px; height: 19px" %></td>
+			<td colspan="12"><%= f.text_field :sp_s_12, :class=>"inputText",:style=>"width: 120px; height: 19px" %></td>
 		</tr>
     </table>
     <br/>

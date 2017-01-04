@@ -27,7 +27,15 @@
     <div class="panel-body">
       <div class="form-inline">
         <label for="">报送分类：</label>
+        <% if current_user.is_admin? %>
+         <%= select_tag "baosong_a", options_for_select(BaosongA.where(rwlylx: '省局').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+       <% elsif is_xian_deploy? %>
+        <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx = "县"').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+      <% elsif is_shi_deploy? %>
+        <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx = "市/区局"').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+      <% else %>
         <%= select_tag "baosong_a", options_for_select(BaosongA.where(rwlylx: '省局').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+      <% end %>
         <%= select_tag "baosong_b", options_for_select(@baosong_bs.map { |b| [b.name, b.name, {"data-identifier" => b.identifier}] }.unshift(["请选择", ""]), params[:baosong_b]), {:class => "form-control input-sm", id: "baosong_b", style: "width: 150px;"} %>
         <br>
         <br>
@@ -104,7 +112,7 @@
 
                   <!-- 细类名称 -->
                   <td><%= d.name %></td>
-                  <% @tasks.select('distinct(jg_bsb_id)').each do |task| %>
+                  <% @tasks.select('distinct(jg_bsb_id),sys_province_id').each do |task| %>
                       <!-- 交叉点 -->
                       <%= grid4(task, d) %>
                   <% end %>

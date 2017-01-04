@@ -69,7 +69,7 @@
     <% if current_user.jsyp == 1 %>
     <!-- 只有样品接收人员拥有该权限 -->
     <tr>
-      <td colspan="12">
+      <td colspan="11">
         <a href="javascript:void(0);" class="push-all btn btn-xs btn-success"><i class="glyphicon glyphicon-download"></i>批量推送基本信息</a>
       </td>
     </tr>
@@ -193,9 +193,7 @@
           <a class="btn btn-link btn-xs center-block" href="/sp_bsbs/<%= sp_bsb.id%>/fail_pdf_report" target="_blank">查看检验报告</a>
         <% end %>
 
-        <% if [1, 0].include? sp_bsb.sp_i_state %>
-        <%= link_to '删除', "/sp_bsbs/#{sp_bsb.id}",method: :delete, data: { confirm: '是否删除?' }, :class => 'btn btn-link btn-xs center-block' %>
-        <% end %>
+        <%= link_to '删除', "/del_data/#{sp_bsb.id}",method: :delete, data: { confirm: '此处删除将删除基础数据、检测数据、异议数据、核查处置数据。是否删除?' }, :class => 'btn btn-link btn-xs center-block' %>
       </td>
       <td>
         <% if current_user.jsyp == 1 and sp_bsb.sp_i_state == 2 %>
