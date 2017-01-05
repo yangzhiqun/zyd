@@ -11,10 +11,7 @@ class SpBsbsController < ApplicationController
     @spbsb = SpBsb.find(params[:id])
     respond_to do |format|
       format.pdf {
-				logger.error params[:pdf_rules]
         filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], false, current_user.id,false)
-       logger.error "filepath_pdf"
-       logger.error filepath    
        if filepath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
@@ -24,14 +21,10 @@ class SpBsbsController < ApplicationController
       }
       format.html {
         filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], true, current_user.id,false)
-       logger.error "filepath_html"
-       logger.error filepath 
         if filepath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
         else
-	logger.error "filepath"
-	logger.error filepath
           send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
         end
       }
@@ -40,8 +33,6 @@ class SpBsbsController < ApplicationController
 
   def by_ca_info
     @spbsb = SpBsb.find(params[:id])
-    logger.error " @spbsb.report_path"
-    logger.error  @spbsb.report_path
     preview = false
    if !params[:pr_status].blank?
        preview =  params[:pr_status]
@@ -64,7 +55,6 @@ class SpBsbsController < ApplicationController
     clientSignMessages.push(clientSignMessage)
     reqMessage ={appId: '9ff70fce51874b62a5f136fdda43c4b7',sealImg: sealImg, signCert: signCert,
                     sealWidth: 0,sealHeight: 0, clientSignMessages: clientSignMessages}
-    logger.error reqMessage
     reqMessage = Base64.strict_encode64(reqMessage.to_json)
     #tmp_file = Rails.root.join('tmp', "jilin.pdf")
     filename = Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}.txt")
@@ -728,7 +718,7 @@ class SpBsbsController < ApplicationController
       end
     end
 
-    @sp_bsbs = SpBsb.select("sp_bsbs.ca_key_status,sp_bsbs.report_path,sp_bsbs.id, sp_bsbs.updated_at, sp_bsbs.sp_s_3, sp_bsbs.sp_s_4, sp_bsbs.sp_s_14, sp_bsbs.sp_s_16, sp_bsbs.sp_s_43, sp_bsbs.sp_s_214, sp_bsbs.sp_s_35, sp_bsbs.sp_s_71, sp_bsbs.sp_s_202, sp_bsbs.sp_i_state, sp_bsbs.fail_report_path, sp_bsbs.czb_reverted_flag")
+    @sp_bsbs = SpBsb.select("sp_bsbs.ca_key_status,sp_bsbs.report_path,sp_bsbs.id, sp_bsbs.updated_at, sp_bsbs.sp_s_3, sp_bsbs.sp_s_4, sp_bsbs.sp_s_14, sp_bsbs.sp_s_16, sp_bsbs.sp_s_43, sp_bsbs.sp_s_214, sp_bsbs.sp_s_35, sp_bsbs.sp_s_71, sp_bsbs.sp_s_202, sp_bsbs.sp_i_state, sp_bsbs.fail_report_path, sp_bsbs.czb_reverted_flag,sp_bsbs.sp_s_2_1")
     
     if params[:r1]
       session[:change_js]=params[:r1].to_i
@@ -763,7 +753,7 @@ class SpBsbsController < ApplicationController
     end
 
     @ending_time = Time.now
-    @begin_time = Time.now - 3.months
+    @begin_time = Time.now - 12.months
 
     unless params[:begin_time].blank?
       @begin_time = DateTime.parse(params[:begin_time])
@@ -829,7 +819,7 @@ class SpBsbsController < ApplicationController
 
     # 任务来源
     unless params[:s13].blank?
-      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_2_1 LIKE ?", "%#{params[:s13]}%")
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_2_1 = ?", "#{params[:s13]}".gsub(/\s/,""))
     end
 
     if params[:sp_dl] != '请选择' && !params[:sp_dl].blank?
@@ -839,8 +829,24 @@ class SpBsbsController < ApplicationController
     if params[:sp_sf]!='全部' and !params[:sp_sf].blank?
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_4 LIKE ? ",  "%#{params[:sp_sf]}%")
     end
+    if params[:flag]=="tabs_4" #只判断完全提交的数据
+      #  if current_user.jg_bsb.jg_type ==1
+      #  begin
+      # super_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
+      #  jg_names=[]
+      #  jg_names.push(current_user.jg_bsb.jg_name)
+      #  super_jg.each do |j|
+      #     jg_names.push(j.jg_bsb.jg_name)
+      #  end
+      #    @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
+      #rescue
 
-    if current_user.is_admin? || session[:change_js]==10
+      #end
+      #elsif current_user.jg_bsb.jg_type ==3
+      @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
+      #end
+    end
+    if current_user.is_admin? || session[:change_js]==10 || is_shengshi? || params[:flag]=="tabs_7"
       case params[:s8].to_i
         when 1
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state between 0 and 16")
@@ -867,6 +873,7 @@ class SpBsbsController < ApplicationController
         else
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state between 0 and 16")
       end
+
     elsif (session[:change_js]==2||session[:change_js]==3||session[:change_js]==4) && ['tabs_1', 'tabs_5'].include?(params[:flag])
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 6")
     elsif (session[:change_js]==2||session[:change_js]==3||session[:change_js]==4)&&params[:flag]=="tabs_2"
@@ -902,11 +909,11 @@ class SpBsbsController < ApplicationController
     elsif session[:change_js]==8&&params[:flag]=="tabs_4"
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9")
     elsif session[:change_js]==16&&['tabs_1', 'tabs_5'].include?(params[:flag])
-	 @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 16")
+        @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 16")
      elsif session[:change_js]==16&&params[:flag]=="tabs_4"
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9")
      elsif session[:change_js]==16&&params[:flag]=="tabs_2"
-      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state =9")
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state =9 and sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name )
     end
     if params[:flag]=="tabs_5"
       @sp_bsbs =@sp_bsbs.where("sp_bsbs.sp_s_reason IS NOT NULL")
@@ -916,7 +923,7 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:s8]=='10'
-      if current_user.is_admin?||session[:change_js]==10
+      if current_user.is_admin?||session[:change_js]==10||is_sheng?
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 = '抽检监测(总局本级)'").paginate(page: params[:page], per_page: 10)
 
         respond_to do |format|
@@ -928,7 +935,7 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:s8]=='11'
-      if current_user.is_admin?||session[:change_js]==10
+      if current_user.is_admin?||session[:change_js]==10||is_sheng?
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 = '抽检监测（地方）'").paginate(page: params[:page], per_page: 10)
 
         respond_to do |format|
@@ -940,7 +947,7 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:s8]=='12'
-      if current_user.is_admin?||session[:change_js]==10
+      if current_user.is_admin?||session[:change_js]==10||is_sheng?
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 = '三司专项检验'").paginate(page: params[:page], per_page: 10)
         respond_to do |format|
           format.html { render action: "index" }
@@ -951,7 +958,7 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:s8]=='13'
-      if current_user.is_admin?||session[:change_js]==10
+      if current_user.is_admin?||session[:change_js]==10||is_sheng?
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 = '网络专项检验'").paginate(page: params[:page], per_page: 10)
         respond_to do |format|
           format.html { render action: "index" }
@@ -962,7 +969,7 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:s8]=='14'
-      if current_user.is_admin? || session[:change_js] == 10
+      if current_user.is_admin? || session[:change_js] == 10||is_sheng?
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.synced = false and sp_bsbs.sp_i_state = 2").paginate(page: params[:page], per_page: 10)
 
         respond_to do |format|
@@ -974,169 +981,47 @@ class SpBsbsController < ApplicationController
     end
 
     if params[:s8]=='9'
-      if current_user.is_admin? || session[:change_js]==10
+      if current_user.is_admin? || session[:change_js]==10||is_sheng?
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
       else
-        if session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
+        if (session[:change_js]==1&&params[:flag]=="tabs_7")||session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3 = ? or sp_bsbs.sp_s_202 = ?", current_user.user_s_province, current_user.user_s_province).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==7 #数据审核
-          #@sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
-     logger.error "77 " 
-     #if current_user.jg_bsb.jg_type ==1
-     # logger.error "7 "
-      #begin
-      # super_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
-      #  jg_names=[]
-      #  jg_names.push(current_user.jg_bsb.jg_name)
-      #  super_jg.each do |j|
-      #     jg_names.push(j.jg_bsb.jg_name)
-      #  end
-      #  logger.error "jg_names "
-      # #@sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",jg_names).paginate(page: params[:page], per_page: 10)
-      #rescue
-      #  
-      #end
-      #elsif current_user.jg_bsb.jg_type ==3
-      @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
-      #end 
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
        elsif session[:change_js]==6 #数据填报
-         # @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
-      logger.error "666 "
-      #if current_user.jg_bsb.jg_type ==1
-			#logger.error "6 "
-      #begin
-      # super_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
-      #  jg_names=[]
-      #  jg_names.push(current_user.jg_bsb.jg_name)
-      #  super_jg.each do |j|
-      #     jg_names.push(j.jg_bsb.jg_name)
-      #  end
-      #  logger.error "jg_names "
-      # @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",jg_names).paginate(page: params[:page], per_page: 10)
-      #rescue
-      #  
-      #end
-      #elsif current_user.jg_bsb.jg_type ==3
-      @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
-      #end  
-      elsif session[:change_js]==1||session[:change_js]==5 #填报
-         # @sp_bsbs = @sp_bsbs.where('sp_bsbs.user_id = ?', current_user.id).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
-      #if current_user.jg_bsb.jg_type ==1
-		  #  begin
-      # super_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
-      #  jg_names=[]
-      #  jg_names.push(current_user.jg_bsb.jg_name)
-      #  super_jg.each do |j|
-      #     jg_names.push(j.jg_bsb.jg_name)
-      #  end
-      #  logger.error "jg_names "
-      # @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",jg_names).paginate(page: params[:page], per_page: 10)
-      #rescue
-      #  
-      #end
-      #elsif current_user.jg_bsb.jg_type ==3
-      @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
-      #end	
- 
-      elsif session[:change_js]==16 #数据填报
-         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
-
-        elsif session[:change_js]==8 #牵头
-          if session[:user_dl]=='乳制品'&& current_user.jg_bsb_id == JgBsb.find_by_history_name('上海市质量监督检验技术研究院').id
-            @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_17 = ? or (sp_bsbs.sp_s_18='婴幼儿配方食品' and sp_bsbs.sp_s_70 LIKE '%一司%')", session[:user_dl]).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
-          else
-            @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_17 = ?", session[:user_dl]).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+        elsif session[:change_js]==1||session[:change_js]==5 #填报
+          if params[:flag]!="tabs_7" && !is_shengshi?
+            @sp_bsbs = @sp_bsbs.where('sp_bsbs.user_id = ?', current_user.id).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
           end
+        elsif session[:change_js]==16 #数据填报
+         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==9
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 AND sp_bsbs.sp_s_70 LIKE '%一司%' AND sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         elsif session[:change_js]==10
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 AND sp_bsbs.sp_s_70 NOT LIKE '%一司%' AND sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
+        elsif session[:change_js].nil? && params[:s8].present?
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'").paginate(page: params[:page], per_page: 10)
         end
       end
-    elsif current_user.is_admin?||session[:change_js]==10
+    elsif current_user.is_admin?||session[:change_js]==10||is_sheng?
       @sp_bsbs = @sp_bsbs.paginate(page: params[:page], per_page: 10)
     else
-      if session[:change_js]==2||session[:change_js]==3||session[:change_js]==4 #药监局数据审核
+      if (session[:change_js]==2||session[:change_js]==3||session[:change_js]==4)&&params[:s8].present? #药监局数据审核
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3=? or (sp_bsbs.sp_s_202=? and (sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'))", current_user.user_s_province, current_user.user_s_province).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==7 #数据审核
-     #  if current_user.jg_bsb.jg_type ==1
-     #   begin
-     #  super_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
-     #   jg_names=[]
-     #   jg_names.push(current_user.jg_bsb.jg_name)
-     #   super_jg.each do |j|
-     #      jg_names.push(j.jg_bsb.jg_name)
-     #   end
-     #   logger.error "jg_names "
-     #  @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",jg_names).paginate(page: params[:page], per_page: 10)
-     # rescue
-     #   
-     # end
-     # elsif current_user.jg_bsb.jg_type ==3
-      @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
-     # end 
-       # @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
+         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==11 #数据批准
-     #  if current_user.jg_bsb.jg_type ==1
-     #   begin
-     #  super_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
-     #   jg_names=[]
-     #   jg_names.push(current_user.jg_bsb.jg_name)
-     #   super_jg.each do |j|
-     #      jg_names.push(j.jg_bsb.jg_name)
-     #   end
-     #   logger.error "jg_names "
-     #  @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",jg_names).paginate(page: params[:page], per_page: 10)
-     # rescue
-     #   
-     # end
-     # elsif current_user.jg_bsb.jg_type ==3
-      @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
-     # end 
-       # @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
+        @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==6 #数据填报
-		#		if current_user.jg_bsb.jg_type ==1
-    #    begin
-    #   super_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
-    #    jg_names=[]
-    #    jg_names.push(current_user.jg_bsb.jg_name)
-    #    super_jg.each do |j|
-    #       jg_names.push(j.jg_bsb.jg_name)
-    #    end
-    #    logger.error "jg_names "
-    #   @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",jg_names).paginate(page: params[:page], per_page: 10)
-    #  rescue
-    #    
-    #  end
-    #  elsif current_user.jg_bsb.jg_type ==3
-      @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
-    #  end 	
-        #@sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
-       elsif session[:change_js]==16 #数据填报
-        if current_user.jg_bsb.jg_type ==1
-        begin
-       super_jg = JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
-        jg_names=[]
-        jg_names.push(current_user.jg_bsb.jg_name)
-        super_jg.each do |j|
-           jg_names.push(j.jg_bsb.jg_name)
-        end
-        logger.error "jg_names "
-       @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",jg_names).paginate(page: params[:page], per_page: 10)
-      rescue
-        
-      end
-      elsif current_user.jg_bsb.jg_type ==3
-      @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
-      end 
+        @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
+      elsif session[:change_js]==16 #数据填报
+        @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43  in (?)",current_user.jg_bsb.jg_name).paginate(page: params[:page], per_page: 10)
+       #  end
        # @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).paginate(page: params[:page], per_page: 10)
       elsif session[:change_js]==1||session[:change_js]==5 #填报
-        @sp_bsbs = @sp_bsbs.where('sp_bsbs.user_id = ?', current_user.id).paginate(page: params[:page], per_page: 10)
-      elsif session[:change_js]==8 #牵头
-        if session[:user_dl]=='乳制品'&&current_user.jg_bsb_id == JgBsb.find_by_history_name('上海市质量监督检验技术研究院').id
-          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_17=? or (sp_bsbs.sp_s_18='婴幼儿配方食品' and sp_bsbs.sp_s_70 LIKE '%一司%')", session[:user_dl]).paginate(page: params[:page], per_page: 10)
-        else
-          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_17=?", session[:user_dl]).paginate(page: params[:page], per_page: 10)
+        if params[:flag]!="tabs_7" && !is_shengshi?
+          @sp_bsbs = @sp_bsbs.where('sp_bsbs.user_id  in (?)', current_user.id).paginate(page: params[:page], per_page: 10)
         end
       elsif session[:change_js]==9
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 and sp_bsbs.sp_s_70 LIKE '%一司%'").paginate(page: params[:page], per_page: 10)
@@ -1144,19 +1029,24 @@ class SpBsbsController < ApplicationController
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 and sp_bsbs.sp_s_70 NOT LIKE '%一司%'").paginate(page: params[:page], per_page: 10)
       end
     end
-    
-    if  current_user.is_city? and (!current_user.is_super? or !current_user.is_admin?)
-      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_4 = ? or sp_bsbs.sp_s_220 =?",current_user.prov_city,current_user.prov_city).paginate(page: params[:page], per_page: 10)
-    elsif current_user.is_county_level? and (!current_user.is_super? or !current_user.is_admin?)
-      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_5 = ? or sp_bsbs.sp_s_221 =?",current_user.prov_country,current_user.prov_country).paginate(page: params[:page], per_page: 10)
-    elsif (current_user.prov_city.blank? or current_user.prov_city.include?('请选择')) and (current_user.prov_country.blank? or current_user.prov_country.include?('请选择'))
-      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3	=?",current_user.user_s_province).paginate(page: params[:page], per_page: 10)
-   end
 
-     respond_to do |format|
+    @sp_bsbs = @sp_bsbs.paginate(page: params[:page], per_page: 10)
+
+    @rwly = all_super_departments
+    if params[:flag]=="tabs_7"
+      @sp_bsbs = @sp_bsbs.where(sp_s_2_1: @rwly).paginate(page: params[:page], per_page: 10)
+    elsif is_city? || is_county_level? || (current_user.is_account_manager && current_user.user_i_js == 1 && current_user.jg_bsb.jg_type==1)
+      if !current_user.is_admin? && !is_sheng? && params[:s13].blank?
+        @sp_bsbs = @sp_bsbs.where(sp_s_2_1: @rwly).paginate(page: params[:page], per_page: 10)
+      else
+        @sp_bsbs = @sp_bsbs.paginate(page: params[:page], per_page: 10)
+      end
+    end
+
+
+    respond_to do |format|
       format.html {
         if @sp_bsbs.respond_to?(:total_pages)
-	logger.error "-"
           render action: "index"
         else
           render text: '账号存在异常，请联系系统维护方。'
@@ -1567,21 +1457,14 @@ class SpBsbsController < ApplicationController
       super_jg_bsb_id = params[:super_jg_bsb_id]
       @jg_bsbsuper=JgBsbSuper.where(super_jg_bsb_id: super_jg_bsb_id ).group("jg_bsb_id")
       jg_ids=[]
-      logger.error "===================="
-     logger.error  @jg_bsbsuper
     if !@jg_bsbsuper.blank?
       jg_ids.push(super_jg_bsb_id)
       @jg_bsbsuper.each do |j|
          jg_ids.push(j.jg_bsb_id)
       end
-        logger.error "----------------"
-       logger.error jg_ids
        @jg=JgBsb.where("jg_bsbs.jg_detection=? and jg_bsbs.id in(?)",1,jg_ids)
-      logger.error "---------1111-------"
       else
-      logger.error "-------2---------"
        @jg= JgBsb.where("jg_bsbs.jg_detection=? and jg_bsbs.id in(?)",1,super_jg_bsb_id)
-       logger.error "=========----===="
     end
         render json: {status: 'OK', msg: @jg }
    # rescue
