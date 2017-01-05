@@ -1,0 +1,143 @@
+<style type="text/css">
+  .style1 {
+    border-collapse: collapse;
+    font-size: 9pt;
+    font-family: Calibri, sans-serif;
+    border-style: none;
+    border-color: inherit;
+    border-width: medium;
+    table-layout: fixed;
+  }
+
+  .style1 td {
+    border: solid windowtext 1.0px;
+    padding: 0cm 5.4pt 0cm 5.4pt;
+    height: 30px;
+  }
+
+  .style1 th {
+    border: solid windowtext 1.0px;
+    padding: 0cm 5.4pt 0cm 5.4pt;
+    height: 30px;
+  }
+
+  .style1 p {
+    height: 5px;
+
+  }
+
+  .inputText {
+    font-size: 12px;
+    border-right-width: 0px;
+    border-left-width: 0px;
+    border-top-width: 0px;
+    border-bottom: 1px solid;
+    background-color: transparent;
+
+  }
+
+  ul.data-tabs li {
+    display: inline-block;
+  }
+
+  ul.data-tabs {
+    border-bottom: 1px solid #999;
+    padding-left: 15px;
+    position: relative;
+  }
+
+  ul.data-tabs a {
+    display: inline-block;
+    color: black;
+    text-decoration: none;
+    border: 1px solid #999;
+    padding: 5px 10px;
+    position: relative;
+    bottom: -1px;
+  }
+
+  ul.data-tabs a.active {
+    border-bottom: 1px solid #FFFFFF;
+  }
+
+  .search-form th, .search-form td {
+    font-size: 12px;
+  }
+	.ng-pristine tbody td.td_city {
+		text-align: center;
+    padding: 10px;
+    color: #555555;
+    font-size: 17px;
+	}
+</style>
+<script>
+  $(function () {
+  })
+</script>
+
+<h1>食品安全检验数据报送表</h1>
+
+<h1 style="color:red"><%= flash[:edit_result] unless flash[:edit_result].nil? %></h1>
+
+<div class="panel panel-primary">
+  <div class="panel-heading">数据查询选项</div>
+  <div class="panel-body">
+    <form action="/data/seach" method="POST">
+      <%= tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token) %>
+      <fieldset style="padding: 5px 10px;">
+        <table style="table-layout: fixed;" class="search-form table table-bordered table-condensed table-bordered-black">
+
+          <tr>
+            <td colspan="4">抽样编号</td>
+            <td colspan="6">
+              <input class="form-control input-sm" type="text" id="sp_s_16" value="<%= params[:sp_s_16] %>" name="sp_s_16"></td>
+          </tr>
+          <tr style="display:none;">
+            <td colspan="6">
+              <input class="form-control input-sm" type="text" id="sp_order" value="<%= params[:sp_order] %>" name="sp_order">
+            </td>
+            <td colspan="6">
+              <input class="form-control input-sm" type="text" id="sp_order_seq" value="<%= params[:sp_order_seq] %>" name="sp_order_seq">
+            </td>
+            <td colspan="6">
+              <input class="form-control input-sm" type="text" id="flag" value="<%= params[:flag] %>" name="flag">
+            </td>
+            <td colspan="6">
+            </td>
+          </tr>
+        </table>
+        <div class="form-inline">
+          <input id="sp_submit" type="submit" class="btn btn-primary btn-sm" value="搜索">
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</div>
+
+<div id="tabs">
+      <div class="tab-content"><br>
+        共<strong style="font-size: 22px;"><%=@sp_bsbs.total_entries%></strong>条, 当前第<strong style="font-size: 22px;"><%= @sp_bsbs.current_page%></strong>页
+        <p><%= will_paginate @sp_bsbs, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
+       <!-- <table class="table table-bordered table-condensed">
+          <tr>
+            <th>更新日期</th>
+            <th>省份</th>
+            <th>被抽样单位市</th>
+            <th></th>
+            <th></th>
+          </tr>
+
+          <% @sp_bsbs.each do |sp_bsbs| %>
+              <tr>
+                <td><%= sp_bsbs.sp_s_1 %></td>
+                <td><%= sp_bsbs.sp_s_215 %></td>
+                <td><%= sp_bsbs.sp_s_3 %></td>
+                <td><%= link_to '编辑', edit_sp_company_info_path(sp_bsbs), :class => 'btn btn-info btn-xs' %></td>
+                <td><%= link_to '删除', sp_bsbs, class: 'btn btn-danger btn-xs', method: :delete, data: { confirm: 'Are you sure?' } %></td>
+              </tr>
+          <% end %>
+        </table>-->
+        <%= render 'part_index' %>
+        <p><%= will_paginate @sp_bsbs, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
+      </div>
+</div>

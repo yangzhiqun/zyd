@@ -70,22 +70,43 @@
 		
 			if(window.location.pathname.indexOf("new") != -1){
 				$("#city").val("<%= current_user.prov_city %>").change();
+				$("#hidden_prov_city").val("<%= current_user.prov_city %>");
+				$("#hidden_prov_country").val("<%= current_user.prov_country %>");
 			}
     }, 'json');
 //
 //
+		var num = 0 //判断第一次加载
     $('#city').change(function () {
       var o = $(this);
       $('#lcity').empty();
       $('<option>-请选择-</option>').appendTo($('#lcity'));
+			$('#hidden_prov_city').val($('#city').val());
       $.get('/prov.json', {city: o.find('option:selected').attr('data-id')}, function (data) {
         $.each(data.msg, function (i, item) {
           $('<option>').attr({'value': item.name, 'data-id': item.id}).text(item.name).appendTo($('#lcity'));
         });
-				$("#lcity").val("<%= current_user.prov_country %>")
+				if (num == 0) {
+					$("#lcity").val("<%= current_user.prov_country %>");
+          if ($("#lcity").val() == null){
+            $("#lcity").val("-请选择-"); 
+            $("#hidden_prov_country").val("-请选择-"); 
+          }
+				}else{
+      	  reload_jg_data();
+        }
+			  num = num+1;
       }, 'json');
-      reload_jg_data();
    	});
+		
+		//给编辑状态下的下拉框赋值
+		<% if @user.id %>
+			$("#city").val("<%= @user.prov_city %>").change();
+			$("#hidden_prov_city").val("<%= @user.prov_city %>");
+			$("#lcity").val("<%= @user.prov_country %>");
+			$("#hidden_prov_country").val("<%= @user.prov_country %>")
+		<% end %>
+
     $('#submit').click(function () {
        if (($("#user_hccz_level").find("option:selected").val() == 0)&&($("#user_hcz_czbl").attr("checked"))) {
         alert("请选择核查处置领取级别");
@@ -93,21 +114,8 @@
         return false;
       }
     });
-		$(".btn-success").click(function () {
-			var level_num = $("#user_admin_level").val();
-			var shi   = $("#city").val() == "-请选择-" || $("#city").val() == "";
-			var xian  = $("#lcity").val() == "-请选择-" || $("#lcity").val() == "";
-			if ($(".admin_level input[type='checkbox']").is(':checked')) {
-				if (level_num == 2 && shi){
-					alert("请选择所在市");
-					$("#city").focus();
-					return false;
-				} else if (level_num == 3 && xian) {
-					alert("请选择所在区/县");
-					$("#lcity").focus();
-					return false;
-				}
-			}
+		$('#lcity').change(function () {
+			$('#hidden_prov_country').val($('#lcity').val());
 		});
 
   	function reload_jg_data() {
@@ -187,6 +195,9 @@
               <%= f.select :user_s_province, '', {}, :class => 'hidden', :id => 'province' %>
               <%= f.select :prov_city, '', {}, :class => 'form-control input-sm', :id => 'city' %>
               <%= f.select :prov_country, '', {}, :class => 'form-control input-sm', :id => 'lcity' %>
+
+        			<%= f.text_field :prov_city, :id => "hidden_prov_city", :type => "hidden" %>
+        			<%= f.text_field :prov_country, :id => "hidden_prov_country", :type => "hidden" %>
             </div>
         <% else %>
             <%= "#{@user.user_s_province}/#{@user.prov_city}/#{@user.prov_country}" %>

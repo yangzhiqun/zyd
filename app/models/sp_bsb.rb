@@ -649,7 +649,7 @@ class SpBsb < ActiveRecord::Base
       @cjx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE '%合格项%' OR spdata_2 LIKE '%不合格项%')", self.id)
      logger.error @cjx
       @jyjy_struni = (@cjx.where('sp_bsb_id= ? and spdata_4 <> ?', self.id, '/').select('distinct spdata_4').limit(2).map { |s| s.spdata_4 }).uniq.join(",")
-      @jyjy_FY = (@cjx.where("sp_bsb_id= ? and spdata_3 not in ('-','—', '/', '_')", self.id).select('distinct spdata_3').map { |s| s.spdata_3 }).uniq.join(';')
+      @jyjy_FY = self.inspection_basis
       #风险项
       @fxx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE '%不判定项%' OR spdata_2 LIKE '%问题项%')", self.id)
       @fxx_FY = (@fxx.where('sp_bsb_id= ?', self.id).select('distinct spdata_3').map { |s| s.spdata_3 }).uniq.join(';')

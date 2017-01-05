@@ -72,6 +72,9 @@ class PadSpBsbsController < ApplicationController
     if (params_data.sp_s_18=='婴幼儿配方食品' and params_data.sp_s_56=='一司')&&session[:change_js]==8&&current_user.jg_bsb.jg_name == '上海市质量监督检验技术研究院'
       return 1
     end
+    if params_data.sp_s_35 == current_user.jg_bsb.jg_name 
+      return 1 
+    end
     return 0
   end
 
@@ -150,23 +153,12 @@ class PadSpBsbsController < ApplicationController
     @sp_bsb.sp_s_52=current_user.user_s_province
 		@sp_bsb.sp_s_city = current_user.prov_city
     @sp_bsb.sp_s_202 = current_user.user_s_province
-    if params[:rwly].to_i != 0
-      if params[:rwly].to_i == -1
-        @sp_bsb.sp_s_2_1 = "#{SysConfig.get(SysConfig::Key::PROV)}食品药品监督管理局"
-      else
-       # info = "";
-       # if  current_user.prov_country.nil? or current_user.prov_country.blank? or  %w{ 请选择 }.include?(current_user.prov_country)
-        #  info = current_user.prov_city;
-        #  @sp_bsb.sp_s_2_1 = SysProvince.level1.find(params[:rwly].to_i).name + '食品药品监督管理局'
-        #else
-        #  info = current_user.prov_country;
-          @sp_bsb.sp_s_2_1 = SysProvince.level2.find(params[:rwly].to_i).name + '食品药品监督管理局'
-        #end
-
-      end
-      @sp_bsb.sys_province_id = params[:rwly].to_i
+    @sp_bsb.sp_s_2_1=params[:rwly]
+    prov = SysProvince.find_by_name(SysConfig.get(SysConfig::Key::PROV))
+    @sp_bsb.sys_province_id = 
+    if current_user.is_admin? 
+     @sp_bsb.sys_province_id = -1
     end
-
 
     @jg_bsb = current_user.jg_bsb
    # @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
