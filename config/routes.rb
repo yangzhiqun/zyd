@@ -375,6 +375,10 @@ Rails.application.routes.draw do
 
   get "admin/adduser"
 
+  get "data/index"
+  post "data/seach"
+  get "data/seach"
+  delete "del_data/:id" =>"data#destroy"
   root :to => 'welcome_notices#index'
 
 end

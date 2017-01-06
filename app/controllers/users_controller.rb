@@ -38,75 +38,76 @@ class UsersController < ApplicationController
   end
 
   def index
-    if current_user.is_super? or current_user.is_account_manager
-      if params[:user_user_search_form].present?
-        @search_form = User::UserSearchForm.new(params.require(:user_user_search_form).permit(:qtjg, :uid, :hcl_gly, :hcl_czap, :hcl_czbl, :hcl_czsh, :pad_rwbs, :pad_jsyp, :pad_rwxd, :pad_zxcy, :tname, :prov, :jg_id, :tbjbxx, :jbjcsj, :sbsh, :sbpz, :yy_gly, :yy_yysl, :yy_zhxt, :yy_yybl, :yy_yysh,:jbxxsh))
-      else
-        @search_form = User::UserSearchForm.new
+    if params[:user_user_search_form].present?
+      @search_form = User::UserSearchForm.new(params.require(:user_user_search_form).permit(:qtjg, :uid, :hcl_gly, :hcl_czap, :hcl_czbl, :hcl_czsh, :pad_rwbs, :pad_jsyp, :pad_rwxd, :pad_zxcy, :tname, :prov, :jg_id, :tbjbxx, :jbjcsj, :sbsh, :sbpz, :yy_gly, :yy_yysl, :yy_zhxt, :yy_yybl, :yy_yysh,:jbxxsh))
+    else
+      @search_form = User::UserSearchForm.new
+    end
+
+    @users = User.order('tname DESC')
+
+    if current_user.is_account_manager
+    	if current_user.user_i_js == 1 
+		   	@users = @users.where(user_s_province: current_user.user_s_province)
+		 else
+        @users = @users.where(jg_bsb_id: current_user.jg_bsb_id)
       end
+    end
 
-      @users = User.order('tname DESC')
+    if @search_form.tname.present?
+      @users = @users.where('tname like ?', "%#{@search_form.tname}%")
+    end
 
-      if current_user.is_account_manager
-      	if current_user.user_i_js == 1 
-			   	@users = @users.where(user_s_province: current_user.user_s_province)
-			 else
-          @users = @users.where(jg_bsb_id: current_user.jg_bsb_id)
-        end
-      end
+    if @search_form.uid.present?
+      @users = @users.where('uid like ?', "%#{@search_form.uid}%")
+    end
 
-      if @search_form.tname.present?
-        @users = @users.where('tname like ?', "%#{@search_form.tname}%")
-      end
-
-      if @search_form.uid.present?
-        @users = @users.where('uid like ?', "%#{@search_form.uid}%")
-      end
-
-      if @search_form.prov.present? and !@search_form.prov.eql?('/')
-         @users = @users.where('prov_city = ?', "#{@search_form.prov}")
-      end
-			
-      if @search_form.jg_id.present? and !@search_form.jg_id.eql?('/')
-         @users = @users.where('jg_bsb_id = ?', "#{@search_form.jg_id}")
-      end
+    if @search_form.prov.present? and !@search_form.prov.eql?('/')
+       @users = @users.where('prov_city = ?', "#{@search_form.prov}")
+    end
+		
+    if @search_form.jg_id.present? and !@search_form.jg_id.eql?('/')
+       @users = @users.where('jg_bsb_id = ?', "#{@search_form.jg_id}")
+    end
 
 
-      @users = @users.where('user_d_authority = 1') if @search_form.tbjbxx.to_i == 1
-      @users = @users.where('user_d_authority_1 = 1') if @search_form.jbjcsj.to_i == 1
-      @users = @users.where('user_d_authority_2 = 1') if @search_form.sbsh.to_i == 1
-      @users = @users.where('user_d_authority_5 = 1') if @search_form.sbpz.to_i == 1
-      @users = @users.where('jbxx_sh = 1') if @search_form.jbxxsh.to_i == 1
-      if @search_form.qtjg.to_i == 1
-        @users = @users.where('user_i_switch = 1')
-      else
-        @users = @users.where('user_i_switch = 0')
-      end
+    @users = @users.where('user_d_authority = 1') if @search_form.tbjbxx.to_i == 1
+    @users = @users.where('user_d_authority_1 = 1') if @search_form.jbjcsj.to_i == 1
+    @users = @users.where('user_d_authority_2 = 1') if @search_form.sbsh.to_i == 1
+    @users = @users.where('user_d_authority_5 = 1') if @search_form.sbpz.to_i == 1
+    @users = @users.where('jbxx_sh = 1') if @search_form.jbxxsh.to_i == 1
+    if @search_form.qtjg.to_i == 1
+      @users = @users.where('user_i_switch = 1')
+    else
+      @users = @users.where('user_i_switch = 0')
+    end
 
-      @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::GL) if @search_form.yy_gly.to_i == 1
-      @users = @users.where('yycz_permission & ? > 0', ::User::YyczPermission::YYSL) if @search_form.yy_yysl.to_i == 1
-      @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::ZHXT) if @search_form.yy_zhxt.to_i == 1
-      @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYBL) if @search_form.yy_yybl.to_i == 1
-      @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYSH) if @search_form.yy_yysh.to_i == 1
+    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::GL) if @search_form.yy_gly.to_i == 1
+    @users = @users.where('yycz_permission & ? > 0', ::User::YyczPermission::YYSL) if @search_form.yy_yysl.to_i == 1
+    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::ZHXT) if @search_form.yy_zhxt.to_i == 1
+    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYBL) if @search_form.yy_yybl.to_i == 1
+    @users = @users.where('yycz_permission & ? > 1', ::User::YyczPermission::YYSH) if @search_form.yy_yysh.to_i == 1
 
-      @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::GL) if @search_form.hcl_gly.to_i == 1
-      @users = @users.where('hcz_permission & ? > 0', ::User::HczPermission::CZAP) if @search_form.hcl_czap.to_i == 1
-      @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZBL) if @search_form.hcl_czbl.to_i == 1
-      @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZSH) if @search_form.hcl_czsh.to_i == 1
+    @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::GL) if @search_form.hcl_gly.to_i == 1
+    @users = @users.where('hcz_permission & ? > 0', ::User::HczPermission::CZAP) if @search_form.hcl_czap.to_i == 1
+    @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZBL) if @search_form.hcl_czbl.to_i == 1
+    @users = @users.where('hcz_permission & ? > 1', ::User::HczPermission::CZSH) if @search_form.hcl_czsh.to_i == 1
 
-      @users = @users.where('pad_permission & ? > 0', ::User::PadPermission::RWBS) if @search_form.pad_rwbs.to_i == 1
-      @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::ZXCY) if @search_form.pad_zxcy.to_i == 1
-      @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::RWXD) if @search_form.pad_rwxd.to_i == 1
-      @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::JSYP) if @search_form.pad_jsyp.to_i == 1
-     if current_user.is_city? and (!current_user.is_super? or !current_user.is_admin?)
-      @users = @users.where(" prov_city = ?",current_user.prov_city)
-     elsif current_user.is_county_level? and (!current_user.is_super? or !current_user.is_admin?)
-      @users = @users.where(" prov_country = ?",current_user.prov_country)
-     end
-      @users = @users.paginate(page: params[:page], per_page: 20)
+    @users = @users.where('pad_permission & ? > 0', ::User::PadPermission::RWBS) if @search_form.pad_rwbs.to_i == 1
+    @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::ZXCY) if @search_form.pad_zxcy.to_i == 1
+    @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::RWXD) if @search_form.pad_rwxd.to_i == 1
+    @users = @users.where('pad_permission & ? > 1', ::User::PadPermission::JSYP) if @search_form.pad_jsyp.to_i == 1
+    @xiaji = all_own_subordinate
+    if current_user.is_admin? or is_sheng?
+      @users
+    elsif is_city? or is_county_level?
+      @users = @users.where(:jg_bsb_id => @xiaji)
+    elsif current_user.is_account_manager
+      @users = @users.where(:jg_bsb_id => current_user.jg_bsb.id)
     else
       @users = User.where(id: current_user.id)
     end
+    @users = @users.paginate(page: params[:page], per_page: 20)
 
     respond_to do |format|
       format.html # index.html.erb
@@ -444,15 +445,16 @@ class UsersController < ApplicationController
 
   def pending
     return not_found unless current_user.is_account_manager
+    @xiaji = all_own_subordinate
     if current_user.user_i_js == 1
      # @pending_users = User.where('state = ? and user_s_province = ? and prov_city = ?', User::State::ReviewSJ, current_user.user_s_province, current_user.prov_city)
      # @pending_users = User.where('state = ? and user_s_province = ? ', User::State::ReviewSJ, current_user.user_s_province)
       if is_sheng?
         @pending_users = User.where('state = ?', User::State::ReviewSJ)
       elsif is_city?
-        @pending_users = User.where('state = ? and user_s_province = ? and prov_city = ? ', User::State::ReviewSJ, current_user.user_s_province, current_user.prov_city)
+        @pending_users = User.where(state: User::State::ReviewSJ, jg_bsb_id: @xiaji)
       elsif is_county_level?
-        @pending_users = User.where('state = ? and user_s_province = ? and prov_city = ? and prov_country = ?', User::State::ReviewSJ, current_user.user_s_province, current_user.prov_city,current_user.prov_country)
+        @pending_users = User.where(state: User::State::ReviewSJ, jg_bsb_id: @xiaji)
       end
     else
       @pending_users = User.where('state = ? and jg_bsb_id = ?', User::State::ReviewJG, current_user.jg_bsb_id)
