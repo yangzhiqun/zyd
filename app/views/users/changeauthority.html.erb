@@ -3,7 +3,6 @@ $(document).ready(function(){
   $("#r"+<%=session[:change_js]%>).attr("checked","checked");
 });
 </script>
-
 <h3 class="text-center">请切换角色</h3>
 <div class="panel panel-default">
   <div class="panel-body">
@@ -59,7 +58,7 @@ $(document).ready(function(){
       <%end%>
       <%if @user.user_i_js==0&&@user.user_d_authority_5==1%>
         <label class="radio-inline c-radio">
-          <input type="radio" id="r7" value="11" name="r1">
+          <input type="radio" id="r11" value="11" name="r1">
           <span class="fa fa-circle"></span>
           检测机构<%= is_level? %>检测数据批准人员
         </label>

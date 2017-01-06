@@ -551,7 +551,7 @@
                   <li class="<%= "active" if action?("new") %>"><cite></cite><a href="/sp_bsbs/new">食品检验数据录入</a><i></i>
                   </li>
               <% end %>
-              <% if current_user.user_d_authority_5 == 1 or current_user.user_i_switch == 1 or current_user.user_d_authority == 1 or current_user.user_d_authority_1 == 1 or current_user.user_d_authority_2 == 1 or current_user.user_d_authority_3 == 1 or is_shengshi? %>
+              <% if current_user.user_d_authority_5 == 1 or current_user.user_i_switch == 1 or current_user.user_d_authority == 1 or current_user.user_d_authority_1 == 1 or current_user.user_d_authority_2 == 1 or current_user.user_d_authority_3 == 1 or is_shengshi? or current_user.jbxx_sh==1 %>
                   <li class="<%= "active" if controller?("sp_bsbs") and action?('spsearch') %>">
                     <cite></cite><a href="/sp_bsbs_spsearch?<%= session[:query] %>">食品检验数据查看</a><i></i>
                   </li>
