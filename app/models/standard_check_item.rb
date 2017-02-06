@@ -1,6 +1,6 @@
 class StandardCheckItem < ActiveRecord::Base
-  belongs_to :standard_b_categorie
-  belongs_to :standard_c_categorie
-  belongs_to :standard_d_categorie
-  belongs_to :standard_check_item
+  belongs_to :standard_a_category
+  belongs_to :standard_b_category
+  belongs_to :standard_c_category
+  belongs_to :standard_d_category
 end

@@ -23,6 +23,14 @@
   .category .actions {
     border-bottom: 1px solid #CECECE;
   }
+
+  label.checked_all {
+    margin-left: 4px;
+  }
+
+  .select_checkbox {
+    margin-bottom: -19px;
+  }
 </style>
 <script type="text/javascript">
   app.value('BaosongB', <%= @baosong_b.to_json.html_safe %>);
@@ -80,115 +88,102 @@
   </div>
   <div class="form-group">
     <div style="margin: 0;" class="row">
-      <h5 class="col-md-3 col-xs-3">
-        食品大类
-        <a href="javascript:void(0);" x-ng-click="is_editing_a = !is_editing_a" x-ng-show="!is_editing_a" class="btn btn-link btn-xs pull-right">编辑</a>
-        <a href="javascript:void(0);" x-ng-click="is_editing_a = !is_editing_a" x-ng-show="is_editing_a" class="btn btn-link btn-xs pull-right">完成</a>
-      </h5>
-      <h5 class="col-md-3 col-xs-3">食品亚类
-        <a href="javascript:void(0);" x-ng-click="is_editing_b = !is_editing_b" x-ng-show="!is_editing_b" class="btn btn-link btn-xs pull-right">编辑</a>
-        <a href="javascript:void(0);" x-ng-click="is_editing_b = !is_editing_b" x-ng-show="is_editing_b" class="btn btn-link btn-xs pull-right">完成</a>
-      </h5>
-      <h5 class="col-md-3 col-xs-3">食品次亚类
-        <a href="javascript:void(0);" x-ng-click="is_editing_c = !is_editing_c" x-ng-show="!is_editing_c" class="btn btn-link btn-xs pull-right">编辑</a>
-        <a href="javascript:void(0);" x-ng-click="is_editing_c = !is_editing_c" x-ng-show="is_editing_c" class="btn btn-link btn-xs pull-right">完成</a>
-      </h5>
-      <h5 class="col-md-3 col-xs-3">食品细类
-        <a href="javascript:void(0);" x-ng-click="is_editing_d = !is_editing_d" x-ng-show="!is_editing_d" class="btn btn-link btn-xs pull-right">编辑</a>
-        <a href="javascript:void(0);" x-ng-click="is_editing_d = !is_editing_d" x-ng-show="is_editing_d" class="btn btn-link btn-xs pull-right">完成</a>
-      </h5>
+      <h5 class="col-md-3 col-xs-3">食品大类</h5>
+      <h5 class="col-md-3 col-xs-3">食品亚类</h5>
+      <h5 class="col-md-3 col-xs-3">食品次亚类</h5>
+      <h5 class="col-md-3 col-xs-3">食品细类</h5>
     </div>
     <div style="margin: 0;" class="category row">
       <ul class="col-md-3 col-xs-3">
-        <li class="actions" x-ng-show="is_editing_a">
+        <li class="actions" x-ng-show="a_categories && a_categories.length != 0">
+          <input id="a" type="checkbox" data-ng-model="a_all" ng-change="selectAll(a_categories,a_all)"><label for="a" class="checked_all">全选</label>
           <a href="javascript:void(0);" x-ng-click="doRemoveCategory('ACategory', a_categories)" class="pull-right btn btn-xs btn-link">
             <i class="text-danger glyphicon glyphicon-minus"></i>
             移除
           </a>
-          <a href="javascript:void(0);" x-ng-click="addCategory.addACategory('<%= @baosong_b.identifier %>')" class="pull-right btn btn-xs btn-link">
-            <i class="text-success glyphicon glyphicon-plus"></i>
-            添加
-          </a>
           <div class="clearfix"></div>
         </li>
-        <li data-ng-repeat="category in a_categories| filter: {enable: true}">
-          <input x-ng-show="is_editing_a" type="checkbox" data-ng-model="category.checked">
-          <a x-ng-show="!is_editing_a" x-ng-click="select('a_category_id', category)" data-ng-class="{active: selected.a_category_id == category.id}" class="category-link" href="">
-            {{category.name}}
-          </a>
-          <a x-ng-show="is_editing_a" onbeforesave="updateCategoryName('ACategory', $data, category)" class="category-link" e-class="input-sm" buttons="no" editable-text="a_categories[$index].name">{{category.name}}</a>
+        <li data-ng-repeat="category in a_categories">
+          <div x-ng-if="category.enable">
+            <input type="checkbox" data-ng-model="category.checked">
+            <a x-ng-show="!is_editing_a" x-ng-click="select('a_category_id', category)" data-ng-class="{active: selected.a_category_id == category.id}" class="category-link" href="">
+              {{category.name}}
+            </a>
+          </div>
         </li>
       </ul>
       <ul class="col-md-3 col-xs-3">
-        <li class="actions" x-ng-show="is_editing_b">
+        <li class="actions" x-ng-show="b_categories && b_categories.length != 0">
+          <input id="b" type="checkbox" data-ng-model="b_all" ng-change="selectAll(b_categories,b_all)"><label for="b" class="checked_all">全选</label>
           <a href="javascript:void(0);" x-ng-click="doRemoveCategory('BCategory', b_categories)" class="pull-right btn btn-xs btn-link">
             <i class="text-danger glyphicon glyphicon-minus"></i>
             移除
           </a>
-          <a href="javascript:void(0);" x-ng-click="addCategory.addOtherCategory('BCategory', b_categories, selected.a_category_id)" class="pull-right btn btn-xs btn-link">
-            <i class="text-success glyphicon glyphicon-plus"></i>
-            添加
-          </a>
           <div class="clearfix"></div>
         </li>
-        <li data-ng-repeat="category in b_categories| filter: {enable: true}">
-          <input x-ng-show="is_editing_b" type="checkbox" data-ng-model="category.checked">
-          <a x-ng-show="!is_editing_b" x-ng-click="select('b_category_id', category)" data-ng-class="{active: selected.b_category_id == category.id}" class="category-link" href="">
-            {{category.name}}
-          </a>
-          <a x-ng-show="is_editing_b" onbeforesave="updateCategoryName('BCategory', $data, category)" class="category-link" e-class="input-sm" buttons="no" editable-text="b_categories[$index].name">{{category.name}}</a>
+        <li data-ng-repeat="category in b_categories">
+          <div x-ng-if="category.enable">
+            <input type="checkbox" data-ng-model="category.checked">
+            <a x-ng-show="!is_editing_b" x-ng-click="select('b_category_id', category)" data-ng-class="{active: selected.b_category_id == category.id}" class="category-link" href="">
+              {{category.name}}
+            </a>
+          </div>
         </li>
       </ul>
       <ul class="col-md-3 col-xs-3">
-        <li class="actions" x-ng-show="is_editing_c">
+        <li class="actions" x-ng-show="c_categories && c_categories.length != 0">
+          <input id="c" type="checkbox" data-ng-model="c_all" ng-change="selectAll(c_categories,c_all)"><label for="c" class="checked_all">全选</label>
           <a href="javascript:void(0);" x-ng-click="doRemoveCategory('CCategory', c_categories)" class="pull-right btn btn-xs btn-link">
             <i class="text-danger glyphicon glyphicon-minus"></i>
             移除
           </a>
-          <a href="javascript:void(0);" x-ng-click="addCategory.addOtherCategory('CCategory', c_categories, selected.b_category_id)" class="pull-right btn btn-xs btn-link">
-            <i class="text-success glyphicon glyphicon-plus"></i>
-            添加
-          </a>
           <div class="clearfix"></div>
         </li>
-        <li data-ng-repeat="category in c_categories| filter: {enable: true}">
-          <input x-ng-show="is_editing_c" type="checkbox" data-ng-model="category.checked">
-          <a x-ng-show="!is_editing_c" x-ng-click="select('c_category_id', category)" data-ng-class="{active: selected.c_category_id == category.id}" class="category-link" href="">
-            {{category.name}}
-          </a>
-          <a x-ng-show="is_editing_c" onbeforesave="updateCategoryName('CCategory', $data, category)" class="category-link" e-class="input-sm" buttons="no" editable-text="c_categories[$index].name">{{category.name}}</a>
+        <li data-ng-repeat="category in c_categories">
+          <div x-ng-if="category.enable">
+            <input type="checkbox" data-ng-model="category.checked">
+            <a x-ng-show="!is_editing_c" x-ng-click="select('c_category_id', category)" data-ng-class="{active: selected.c_category_id == category.id}" class="category-link" href="">
+              {{category.name}}
+            </a>
+          </div>
         </li>
       </ul>
       <ul class="col-md-3 col-xs-3">
-        <li class="actions" x-ng-show="is_editing_d">
+        <li class="actions" x-ng-show="d_categories && d_categories.length != 0">
+          <input id="d" type="checkbox" data-ng-model="d_all" ng-change="selectAll(d_categories,d_all)"><label for="d" class="checked_all">全选</label>
           <a href="javascript:void(0);" x-ng-click="doRemoveCategory('DCategory', d_categories)" class="pull-right btn btn-xs btn-link">
             <i class="text-danger glyphicon glyphicon-minus"></i>
             移除
           </a>
-          <a href="javascript:void(0);" x-ng-click="addCategory.addOtherCategory('DCategory', d_categories, selected.c_category_id)" class="pull-right btn btn-xs btn-link">
-            <i class="text-success glyphicon glyphicon-plus"></i>
-            添加
-          </a>
           <div class="clearfix"></div>
         </li>
-        <li data-ng-repeat="category in d_categories| filter: {enable: true}">
-          <input x-ng-show="is_editing_d" type="checkbox" data-ng-model="category.checked">
-          <a x-ng-show="!is_editing_d" x-ng-click="select('d_category_id', category)" data-ng-class="{active: selected.d_category_id == category.id}" class="category-link" href="">
-            {{category.name}}
-          </a>
-          <a x-ng-show="is_editing_d" onbeforesave="updateCategoryName('DCategory', $data, category)" class="category-link" e-class="input-sm" buttons="no" editable-text="d_categories[$index].name">{{category.name}}</a>
+        <li data-ng-repeat="category in d_categories">
+          <div x-ng-if="category.enable">
+            <input type="checkbox" data-ng-model="category.checked">
+            <a x-ng-show="!is_editing_d" x-ng-click="select('d_category_id', category)" data-ng-class="{active: selected.d_category_id == category.id}" class="category-link" href="">
+              {{category.name}}
+            </a>
+          </div>
         </li>
       </ul>
     </div>
     <hr>
-    <div class="items-ctner" x-ng-if="check_items.length > 0">
+    <div class="items-ctner" x-ng-if="check_items && check_items.length != 0">
       <h4>检验项目
         <small class="text-warning">（点击各检验项目展开详情）</small>
       </h4>
+      <div class="select_checkbox">
+        <input id="item" class="inspection_select" type="checkbox" ng-model="item_all" ng-change="selectAll(check_items,item_all)">
+        <label class="checked_all" for="item">全选</label>
+        <a href="javascript:void(0);" x-ng-click="doRemoveCategory('CheckItem', check_items)" class="pull-right btn btn-xs btn-link" style="margin-right: 795px;">
+          <i class="text-danger glyphicon glyphicon-minus"></i> 移除
+        </a>
+      </div>
       <hr>
       <div class="item list-group" data-ng-repeat="check_item in check_items">
-        <div class="list-group-item-heading">
+        <div class="list-group-item-heading" ng-if="check_item.enable">
           <h5>
+            <input type="checkbox" class="ng-pristine ng-valid ng-empty ng-touched" data-ng-model="check_item.checked" ng-disabled="!check_item.enable">
             <span x-ng-click="toggleItem(check_item)">{{$index + 1}}. {{check_item.name}}</span>
             <a x-ng-if="current_item == check_item" x-ng-click="deleteItem($index)" class="btn text-danger btn-xs pull-right" href="javascript:void(0);">移除该检测项</a>
           </h5>
@@ -197,20 +192,20 @@
           <table class="table table-bordered table-condensed">
             <tr>
               <th style="text-align: center; vertical-align: middle;" width="80">名称</th>
-              <td><a href="#" editable-text="check_item.name">{{check_item.name || '单击编辑'}}</a></td>
+              <td>{{check_item.name}}</td>
             </tr>
             <tr>
               <th style="text-align: center; vertical-align: middle;" width="80">结果单位</th>
-              <td><a href="#" editable-text="check_item.JGDW">{{check_item.JGDW || '单击编辑'}}</a></td>
+              <td>{{check_item.JGDW}}</td>
             </tr>
             <tr>
               <th width="80" style="vertical-align: middle; text-align: center;">判定依据</th>
               <td>
                 <ol style="padding-left: 30px;" class="pdyj-list">
                   <li data-ng-repeat="pdyj in check_item.PDYJ track by $index">
-                    <a href="#" editable-text="check_item.PDYJ[$index]">{{pdyj || '点击编辑'}}</a></li>
+                    {{pdyj}}
+                  </li>
                 </ol>
-                <a class="btn btn-link btn-xs" x-ng-click="check_item.PDYJ.push(null)" href="javascript:void(0);"><i class="glyphicon glyphicon-plus"></i>添加判定依据</a>
               </td>
             </tr>
             <tr>
@@ -226,44 +221,33 @@
                     <th>标准最小允许限单位</th>
                     <th>标准最大允许限</th>
                     <th>标准最大允许限单位</th>
-                    <th>#</th>
                   </tr>
                   </thead>
                   <tbody>
                   <tr data-ng-repeat="option in check_item.options">
                     <td>
-                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.JYYJ}}" data-ng-model="option.JYYJ">
+                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.JYYJ}}" data-ng-model="option.JYYJ" readonly="readonly">
                     </td>
                     <td>
-                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.BZFFJCX}}" data-ng-model="option.BZFFJCX">
+                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.BZFFJCX}}" data-ng-model="option.BZFFJCX" readonly="readonly">
                     </td>
                     <td>
-                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.BZFFJCXDW}}" data-ng-model="option.BZFFJCXDW">
+                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.BZFFJCXDW}}" data-ng-model="option.BZFFJCXDW" readonly="readonly">
                     </td>
                     <td>
-                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.BZZXYXX}}" data-ng-model="option.BZZXYXX">
+                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.BZZXYXX}}" data-ng-model="option.BZZXYXX" readonly="readonly">
                     </td>
                     <td>
-                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.BZZXYXXDW}}" data-ng-model="option.BZZXYXXDW">
+                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.BZZXYXXDW}}" data-ng-model="option.BZZXYXXDW" readonly="readonly">
                     </td>
                     <td>
-                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.BZZDYXX}}" data-ng-model="option.BZZDYXX">
+                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.BZZDYXX}}" data-ng-model="option.BZZDYXX" readonly="readonly">
                     </td>
                     <td>
-                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.BZZDYXXDW}}" data-ng-model="option.BZZDYXXDW">
-                    </td>
-                    <td>
-                      <a x-ng-click="removeOption(check_item.options, $index)" class="btn btn-xs btn-danger" href="javascript:void(0);">移除</a>
+                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.BZZDYXXDW}}" data-ng-model="option.BZZDYXXDW" readonly="readonly">
                     </td>
                   </tr>
                   </tbody>
-                  <tfoot>
-                  <tr>
-                    <td colspan="8">
-                      <a class="btn btn-success btn-xs" x-ng-click="check_item.options.push({})" href="javascript:void(0);"><i class="glyphicon glyphicon-plus"></i>添加检验依据</a>
-                    </td>
-                  </tr>
-                  </tfoot>
                 </table>
               </td>
             </tr>
@@ -271,26 +255,23 @@
         </div>
       </div>
     </div>
-    <div class="actions">
-      <a href="javascript:void(0);" x-ng-click="addCheckItem()" class="btn btn-xs btn-default"><i class="glyphicon glyphicon-plus"></i>添加检测项目</a>
-    </div>
   </div>
   <div x-ng-if="!!selected.d_category_id">
     <hr>
-    <button x-ng-click="doSave(selected.d_category_id)" class="btn btn-success btn-sm">保存</button>
+    <!--<button x-ng-click="doSave(selected.d_category_id)" class="btn btn-success btn-sm">保存</button>-->
   </div>
 
-  <hr>
+  <!--<hr>
   <div class="well well-sm">
     <h3>报送分类模板更新</h3>
-    <%= form_for @baosong_b do |f| %>
+    <%#= form_for @baosong_b do |f| %>
         <div class="form-group">
-          <%= f.label '模板文件' %> <a href="/baosong_tmpl.xls">导入模板下载</a>
-          <%= f.file_field :file, :class => "form-control input-sm" %>
+          <%#= f.label '模板文件' %> <a href="/baosong_tmpl.xls">导入模板下载</a>
+          <%#= f.file_field :file, :class => "form-control input-sm" %>
         </div>
         <div class="actions">
-          <%= f.submit "提交", :class => "btn btn-sm btn-primary", 'data-confirm' => '确定提交报送分类的更新模板吗?此操作比较危险,可能会导致数据的取值问题,提交前请确认风险承受能力.' %>
+          <%#= f.submit "提交", :class => "btn btn-sm btn-primary", 'data-confirm' => '确定提交报送分类的更新模板吗?此操作比较危险,可能会导致数据的取值问题,提交前请确认风险承受能力.' %>
         </div>
-    <% end %>
-  </div>
+    <%# end %>
+  </div>-->
 </div>

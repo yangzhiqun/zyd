@@ -96,10 +96,10 @@ class BaosongBsNewestsController < ApplicationController
   # POST /baosong_bs.json
   def create
     @baosong_b = BaosongB.new(baosong_b_params)
-		@baosong_b.identifier = @baosong_b.generate_identifier
 
     respond_to do |format|
       if @baosong_b.save
+        @baosong_b.update_attributes(identifier: @baosong_b.generate_identifier)
         format.html { redirect_to :back, notice: '创建成功' }
         format.json { render json: @baosong_b, status: :created, location: @baosong_b }
       else
@@ -138,19 +138,37 @@ class BaosongBsNewestsController < ApplicationController
   end
 
   def categories
+    @data = []
+    if params[:categories_name].present? 
+      categories_name = JSON(params[:categories_name], :symbolize_names => true)
+      a_category = ACategory.where(identifier: params[:identifier], name: categories_name[:a_category_name]).first
+      if ["b_category_id","c_category_id"].include?(params[:type]) && a_category.present?
+        b_category = a_category.b_categories.where(name: categories_name[:b_category_name]).first
+        if "c_category_id" == params[:type] && b_category.present?
+          c_category = b_category.c_categories.where(name: categories_name[:c_category_name]).first
+        end
+      end
+    end
     case params[:type]
       when 'a_category_id'
-        @categories = StandardBCategorie.where(standard_a_category_id: params[:a_category_id])
+        @categories = StandardBCategory.where(standard_a_category_id: params[:a_category_id])
+        @data = a_category.b_categories.map{ |b| b.name} if a_category.present?
       when 'b_category_id'
-        @categories = StandardCCategorie.where(standard_b_category_id: params[:b_category_id])
+        @categories = StandardCCategory.where(standard_b_category_id: params[:b_category_id])
+        @data = b_category.c_categories.map{ |c| c.name} if b_category.present?
       when 'c_category_id'
-        @categories = StandardDCategorie.where(standard_c_category_id: params[:c_category_id])
+        @categories = StandardDCategory.where(standard_c_category_id: params[:c_category_id])
+        @data = c_category.d_categories.map{ |d| d.name} if c_category.present?
+      when 'd_category_id'
+        @categories = StandardCheckItem.where(standard_d_category_id: params[:d_category_id])
+        d_category = DCategory.where(name: categories_name[:d_category_name],identifier: params[:identifier]).first
+        @data = d_category.check_items.map{ |i| i.name} if d_category.present?
       else
-        @categories = StandardACategorie.all
+        @categories = StandardACategory.all
     end
 
     respond_to do |format|
-      format.json { render json: {status: 'OK', msg: @categories} }
+      format.json { render json: {status: 'OK', msg: {standard: @categories, user_stand: @data}} }
     end
   end
 

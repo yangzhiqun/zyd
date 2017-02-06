@@ -22,7 +22,8 @@ class CategoryHelperController < ApplicationController
         CheckItem.where(c_category_id: params[:ids].split(',')).destroy_all
       when DCategory.class
         CheckItem.where(d_category_id: params[:ids].split(',')).destroy_all
-      else
+      when CheckItem.class
+        CheckItem.where(id: params[:ids].split(',')).destroy_all
     end
 
     BaosongMofifyLog.create(user_id: current_user.id, msg: "批量删除：#{params[:category]}/[#{params[:ids]}]")
@@ -57,26 +58,62 @@ class CategoryHelperController < ApplicationController
 
 	def batch_create
     params.permit!
-    model = params[:category].constantize
+    model = params[:category]
 		identifier = params[:identifier]	
-		selected_name = params[:selected_name]	
+		selected_name = params[:selected_name]
 		@error_arr = []
-		if model == ACategory 
+    if ["BCategory","CCategory","DCategory"].include?(model)
+			@a_category = ACategory.where(name:selected_name["a_category_name"],identifier:identifier).first
+      if ["CCategory","DCategory"].include?(model)
+        @b_category = BCategory.where(name:selected_name["b_category_name"],identifier:identifier,a_category_id:@a_category.id).first   
+        if "DCategory" == model
+          @c_category = CCategory.where(name:selected_name["c_category_name"],identifier:identifier,a_category_id:@a_category.id,b_category_id:@b_category.id).first
+        end
+      end
+    end
+		if model == "ACategory" 
 			params[:names].split(',').each do |name|
 				@category = ACategory.new(name: name, identifier: identifier)
 				unless @category.save
 				  @error_arr << @category.errors.first.last
 				end
 			end
-		elsif model == BCategory
-			a_category = ACategory.where(name:selected_name["a_category_name"],identifier:identifier).first
+		elsif model == "BCategory"
 			params[:names].split(',').each do |name|
-				@category = BCategory.new(name: name, a_category_id: a_category.id, identifier: identifier)
+				@category = BCategory.new(name: name, a_category_id: @a_category.id, identifier: identifier)
 				unless @category.save
 				  @error_arr << @category.errors.first.last
 				end
 			end
-		end		
+    elsif model == "CCategory"
+      params[:names].split(',').each do |name|
+        @category = CCategory.new(name: name, a_category_id: @a_category.id, b_category_id: @b_category.id, identifier: identifier)
+        unless @category.save
+          @error_arr << @category.errors.first.last
+        end
+      end
+    elsif model == "DCategory"
+      params[:names].split(',').each do |name|  
+        @category = DCategory.new(name: name, a_category_id: @a_category.id, b_category_id: @b_category.id, c_category_id: @c_category.id, identifier: identifier)
+        unless @category.save
+          @error_arr << @category.errors.first.last
+        end
+      end
+    elsif model == "CheckItems"
+      @d_category = DCategory.where(identifier: identifier, name: params[:name]).first
+      params[:items].each do |item|
+        check_item = CheckItem.new
+        check_item.assign_attributes(item.permit(:identifier, :BZFFJCX, :BZFFJCXDW, :BZZDYXX, :BZZDYXXDW, :BZZXYXX, :BZZXYXXDW, :JGDW, :JYYJ, :PDYJ, :a_category_id, :b_category_id, :c_category_id, :d_category_id, :name))
+        check_item.a_category_id = @d_category.a_category_id
+        check_item.b_category_id = @d_category.b_category_id
+        check_item.c_category_id = @d_category.c_category_id
+        check_item.d_category_id = @d_category.id
+        check_item.identifier = @d_category.identifier
+        unless check_item.save
+           @error_arr << check_item.errors.first.last
+        end
+      end
+		end
 		if @error_arr.empty?
 			render json: { status: 'OK', msg: 'create category succ'}
 		else

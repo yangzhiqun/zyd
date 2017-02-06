@@ -26,8 +26,6 @@ app.controller('NewestsPlanMakerCtrl', ['$scope', '$http', 'BaosongB', '$q', fun
 								$scope.selected_name.b_category_name = category_name;
 
                 load_categories(category);
-								category = "BCategory"
-								upadte_list(category,$scope.baosong_b.identifier,$scope.b_categories,$scope.selected_name);
                 break;
             case 'c_category_id':
                 delete $scope.selected['d_category_id'];
@@ -38,10 +36,11 @@ app.controller('NewestsPlanMakerCtrl', ['$scope', '$http', 'BaosongB', '$q', fun
                 break;
             case 'd_category_id':
 								$scope.selected_name.d_category_name = category_name;
-                load_check_items();
+
+                load_categories(category);
+                //load_check_items();
                 break;
         }
-			console.log($scope.selected_name);
     };
 
     $scope.toggleItem = function (item) {
@@ -61,20 +60,6 @@ app.controller('NewestsPlanMakerCtrl', ['$scope', '$http', 'BaosongB', '$q', fun
     $scope.removeOption = function (options, idx) {
         if (confirm('确定移除吗？')) {
             options.splice(idx, 1);
-        }
-    };
-
-    $scope.doSave = function (did) {
-        if (confirm("我确定要发布所填信息，请帮我保存！")) {
-            var params = {};
-            params.items = pack_check_items($scope.check_items);
-            $http.post("/d_categories/" + did + "/update_check_items.json", params).then(function (res) {
-                if(res.data.status == 'OK') {
-                    alert('保存成功！');
-                }
-            }, function () {
-                alert('保存请求失败！');
-            });
         }
     };
 
@@ -130,84 +115,97 @@ app.controller('NewestsPlanMakerCtrl', ['$scope', '$http', 'BaosongB', '$q', fun
         params.baosong_b[field] = value;
 
         $http.put('/baosong_bs/' + $scope.baosong_b.id + '.json', params).then(function(res){
-            console.log(res);
         }, function(){});
     };
 
-    $scope.addCategory = {
-				//添加食品大类 (数据)
-        addACategory: function (collection) {
+    $scope.addOptions = {
+				//添加检验项目 (数据)
+        addCheckItems: function (parent_category_id) {
+            var obj_status = false;
 						if (!confirm('确定添加所选项吗？')) {
             	return false;
         		}
-						
-        		var names = [];
-        		angular.forEach(collection, function (c) {
-        		  if (!!c.checked) {
-        		    names.push(c.name);
-        		    c.enable = false;
-								c.checked = false;
-        		  }
-        		});
-						
-						if (names.length == 0){
-							alert("提交前请选择");
-							return false;
-						}
-						
-            $http.post('/create_categorys/ACategory.json', {
-              identifier: $scope.baosong_b.identifier,
-              names: names.join(',')
-            }).then(function (res) {
-              if (res.data.status == 'OK') {
-                upadte_list("ACategory",$scope.baosong_b.identifier,$scope.a_categories);
-								alert("添加成功！");
-              } else {
-                alert(res.data.msg.join(','));
-              }
-            }, function () {
-              alert('添加请求失败！');
-            });
-						names = [];
-        },
-				//添加食品亚类、食品次亚类、食品细类(类型、对象、上级ID)
-        addOtherCategory: function (category, collection, parent_category_id) {
-						console.log(category, collection, parent_category_id);
-						var obj_status = false;
-						if (!confirm('确定添加所选项吗？')) {
-            	return false;
-        		}
-
-						//提交前判断是否选择上级
-        		switch (category) {
-        		  case 'BCategory':
-								obj = $scope.a_categories; 
-        		    break;
-        		  case 'CCategory':
-								obj = $scope.b_categories;
-        		    break;
-        		  case 'DCategory':
-								obj = $scope.c_categories;
-        		    break;
-        		}
-						angular.forEach(obj, function (o) {
+						angular.forEach($scope.d_categories, function (o) {
 							if (o.id == parent_category_id && o.enable==true) {
 								alert("请先选择上级");
 								obj_status = true;
 							}
 						});
+            //判断是否选择
 						if (obj_status){
 							return false;
 						}
+            var names = [];
+        		angular.forEach($scope.check_items, function (i) {
+        		  if (!!i.checked) {
+                names.push(i);
+              }
+        		});
+						if (names.length == 0){
+							alert("提交前请选择");
+							return false;
+						}
+
+            var params = {};
+            params.items = pack_check_items(names);
+            params.identifier = $scope.baosong_b.identifier;
+            params.name = $scope.selected_name['d_category_name'];
+            $http.post("/create_categorys/CheckItems.json", params).then(function (res) {
+              if(res.data.status == 'OK') {
+                angular.forEach($scope.check_items, function (c) {
+                  angular.forEach(names, function (n) {
+                    if (c.name == n.name){
+                      c.enable = false;
+                      c.checked = false;
+                    }
+                  });
+                });
+                alert('保存成功！');
+						    names = [];
+              }
+            }, function () {
+              alert('保存请求失败！');
+						  names = [];
+            });
+        },
+				//添加视频大类、食品亚类、食品次亚类、食品细类(类型、对象、上级ID)
+        addCategory: function (category, collection, parent_category_id) {
+						var obj_status = false;
+						if (!confirm('确定添加所选项吗？')) {
+            	return false;
+        		}
+
+            if (category != 'ACategory'){
+						  //提交前判断是否选择上级
+        		  switch (category) {
+        		    case 'BCategory':
+						  		obj = $scope.a_categories; 
+        		      break;
+        		    case 'CCategory':
+						  		obj = $scope.b_categories;
+        		      break;
+        		    case 'DCategory':
+						  		obj = $scope.c_categories;
+        		      break;
+        		  }
+						  angular.forEach(obj, function (o) {
+						  	if (o.id == parent_category_id && o.enable==true) {
+						  		alert("请先选择上级");
+						  		obj_status = true;
+						  	}
+						  });
+              //判断是否选择
+						  if (obj_status){
+						  	return false;
+						  }
+            }
+            
         		var names = [];
         		angular.forEach(collection, function (c) {
         		  if (!!c.checked) {
         		    names.push(c.name);
-        		    c.enable = false;
-								c.checked = false;
         		  }
         		});
-
 						if (names.length == 0){
 							alert("提交前请选择");
 							return false;
@@ -219,15 +217,24 @@ app.controller('NewestsPlanMakerCtrl', ['$scope', '$http', 'BaosongB', '$q', fun
                 names: names.join(',')
             }).then(function (res) {
                 if (res.data.status == 'OK') {
-									upadte_list("b_category",$scope.baosong_b.identifier,obj,$scope.selected_name);
-									alert("添加成功！");
+                  angular.forEach(collection, function (c) {
+                    angular.forEach(names, function (n) {
+                      if (c.name == n){
+                        c.enable = false;
+                        c.checked = false;
+                      }
+                    });
+                  });
+								  alert("添加成功！");
+						      names = [];
                 } else {
                   alert(res.data.msg);
+						      names = [];
                 }
             }, function () {
                 alert('添加请求失败！');
+						    names = [];
             });
-						names = [];
         }
     };
 		
@@ -244,7 +251,6 @@ app.controller('NewestsPlanMakerCtrl', ['$scope', '$http', 'BaosongB', '$q', fun
 						})
 				});
 			}, function () {
-				alert('更新选框失败！');
 			});
 		}
 		
@@ -418,6 +424,8 @@ app.controller('NewestsPlanMakerCtrl', ['$scope', '$http', 'BaosongB', '$q', fun
     function load_categories(category) {
         var params = angular.copy($scope.selected);
         params.type = category;
+        params.categories_name = $scope.selected_name;
+        params.identifier = $scope.baosong_b.identifier;
 
         $scope.is_editing_a = false;
         $scope.is_editing_b = false;
@@ -428,27 +436,53 @@ app.controller('NewestsPlanMakerCtrl', ['$scope', '$http', 'BaosongB', '$q', fun
             delete $scope.check_items;
             switch (category) {
                 case 'a_category_id':
-                    $scope.b_categories = res.data.msg;
+                    $scope.b_categories = res.data.msg["standard"];
+                    cat = $scope.b_categories;
                     delete $scope.c_categories;
                     delete $scope.d_categories;
                     break;
                 case 'b_category_id':
-                    $scope.c_categories = res.data.msg;
+                    $scope.c_categories = res.data.msg["standard"];
+                    cat = $scope.c_categories;
                     delete $scope.d_categories;
                     break;
                 case 'c_category_id':
-                    $scope.d_categories = res.data.msg;
+                    $scope.d_categories = res.data.msg["standard"];
+                    cat = $scope.d_categories;
                     break;
                 case 'd_category_id':
-                    $scope.items = res.data.items;
+                    $scope.check_items = unpack_check_items(res.data.msg["standard"]);
+                    cat = $scope.check_items;
                     break;
             }
+            arr = res.data.msg["user_stand"];
+            angular.forEach(cat, function (i) {
+              angular.forEach(arr, function (a) {
+                if (i.name == a) {
+                  i.enable = false;
+                }
+              })
+            });
         }, function () {
         });
     }
 
+    $scope.selectAll = function (categories,is_checked) {
+      angular.forEach(categories, function (c) {
+        if (is_checked){
+          if(c.enable){
+            c.checked = true;
+          }
+        }else{
+          if(c.enable){
+            c.checked = false;
+          }
+        }
+      })
+    }
+
     $http.get("/baosong_bs_newests/categories.json").then(function (res) {
-        $scope.a_categories = res.data.msg;
+        $scope.a_categories = res.data.msg["standard"];
 				upadte_list("ACategory",$scope.baosong_b.identifier,$scope.a_categories);
     }, function () {
     });

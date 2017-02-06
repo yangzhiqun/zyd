@@ -73,7 +73,7 @@ app.controller('PlanMakerCtrl', ['$scope', '$http', 'BaosongB', '$q', function (
         }
     };
 
-    $scope.doRemoveCategory = function (model_name, collection, category) {
+    $scope.doRemoveCategory = function (model_name, collection) {
         if (!confirm('确定删除所选项目吗？')) {
             return false;
         }
@@ -86,8 +86,44 @@ app.controller('PlanMakerCtrl', ['$scope', '$http', 'BaosongB', '$q', function (
             }
         });
 
-        $http.post('/category_batch_delete/' + model_name + '.json', {ids: ids.join(',')}).then(function (res) {
+        //判断是否选择
+				if (ids.length == 0){
+          alert("提交前请选择");
+					return false;
+				}
 
+        $http.post('/category_batch_delete/' + model_name + '.json', {ids: ids.join(',')}).then(function (res) {
+          if (res.data.status == 'OK') {
+            angular.forEach(collection, function (data) {
+              angular.forEach(ids, function (i) {
+                if (data.id == i){
+                  data.enable = false; 
+                }
+              });
+            });
+            //把该类的子类全部删除
+        		switch (model_name) {
+              case 'ACategory':
+                $scope.b_categories = [];
+                $scope.c_categories = [];
+                $scope.d_categories = [];
+                $scope.check_items  = [];
+                break;
+        		  case 'BCategory':
+                $scope.c_categories = [];
+                $scope.d_categories = [];
+                $scope.check_items  = [];
+                break;
+        		  case 'CCategory':
+                $scope.d_categories = [];
+                $scope.check_items  = [];
+                break;
+        		  case 'DCategory':
+                $scope.check_items  = [];
+                break;
+        		}
+						alert("删除成功！");
+          }
         }, function () {
             alert('删除失败');
         });
@@ -363,6 +399,20 @@ app.controller('PlanMakerCtrl', ['$scope', '$http', 'BaosongB', '$q', function (
             }
         }, function () {
         });
+    }
+
+    $scope.selectAll = function (categories,is_checked) {
+      angular.forEach(categories, function (c) {
+        if (is_checked){
+          if(c.enable){
+            c.checked = true;
+          }
+        }else{
+          if(c.enable){
+            c.checked = false;
+          }
+        }
+      })
     }
 
     $http.get("/baosong_bs/" + BaosongB.id + '/categories.json').then(function (res) {

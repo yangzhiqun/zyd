@@ -88,7 +88,7 @@ Rails.application.routes.draw do
   post 'category_batch_delete/:category' => 'category_helper#batch_delete'
   post 'create_category/:category' => 'category_helper#create'
   post 'update_category/:category' => 'category_helper#update'
-	post  'create_categorys/:category'=> 'category_helper#batch_create'
+	post 'create_categorys/:category'=> 'category_helper#batch_create'
 	get  'query_category/:category'  => 'category_helper#query_categorys'
 
   resources :a_categories do
@@ -105,7 +105,7 @@ Rails.application.routes.draw do
   get "check_items_by_d_id" => "d_categories#check_items"
 
   # 更新 check items
-  post 'd_categories/:id/update_check_items' => 'd_categories#update_check_items'
+  post 'd_categories/update_check_items' => 'd_categories#update_check_items'
 
   resources :sys_provinces
   get 'prov_data' => 'sys_provinces#prov_data'
