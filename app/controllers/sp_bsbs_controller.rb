@@ -11,8 +11,8 @@ class SpBsbsController < ApplicationController
     @spbsb = SpBsb.find(params[:id])
     respond_to do |format|
       format.pdf {
-        filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], false, current_user.id,false)
-       if filepath.nil?
+    			filepath = Rails.root.join('tmp/pdf_preview', "sp_bsbs_#{@spbsb.id}_print.pdf")   
+		if filepath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
         else
@@ -31,30 +31,80 @@ class SpBsbsController < ApplicationController
     end
   end
 
+	def preview_ca_pdf
+		@spbsb = SpBsb.find(params[:id])
+	respond_to do |format|
+	 format.html {
+		signData =params[:signData].split.join('').to_s
+		signCert =params[:signCert].split.join('').to_s
+		filepath = @spbsb.generate_ca_pdf_report(params[:pdf_rules],signData,signCert,params[:nonce])
+			if filepath.nil?
+          flash[:error] = '查看报告失败'
+          redirect_to '/sp_bsbs/no_available_pdf_found' and return
+       else
+				if !params[:ca_key_status].blank?
+					@spbsb.update_attributes({:ca_key_status =>9})
+				end
+          send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
+       end
+		}
+		format.pdf {
+		filepath =  Rails.root.join('tmp/pdf_preview', "preview_sp_bsbs_#{@spbsb.id}_print.pdf")
+      if filepath.nil?
+          flash[:error] = '查看报告失败'
+          redirect_to '/sp_bsbs/no_available_pdf_found' and return
+       else
+          send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
+       end
+    }
+		end
+  end
+
+
   def by_ca_info
     @spbsb = SpBsb.find(params[:id])
     preview = false
    if !params[:pr_status].blank?
        preview =  params[:pr_status]
     end
-    if  !@spbsb.report_path.blank? 
+  
        if @spbsb.ca_key_status ==0
-           pdfpath=@spbsb.generate_bsb_report_pdf(params[:pdf_rules], true, current_user.id,false)
+           pdfpath=@spbsb.generate_bsb_report_pdf('ca_file', true, current_user.id,false)
        else
-          pdfpath=File.expand_path('../reports', Rails.root).to_s + @spbsb.report_path
+         pdfpath = Rails.root.join('tmp/pdf_preview', "sp_bsbs_#{@spbsb.id}_print.pdf") 
        end
-    else
-     pdfpath=@spbsb.generate_bsb_report_pdf(params[:pdf_rules], preview, current_user.id,false)
+		logger.error "@spbsb.sp_i_state"
+		logger.error @spbsb.sp_i_state
+   	if [2, 3].include? @spbsb.sp_i_state
+      keyword = '检验人：'
+    elsif @spbsb.sp_i_state == 4
+      keyword = '审核人：'
+    elsif @spbsb.sp_i_state == 5
+			logger.error "@spbsb.sp_i_state1"
+      keyword = '批准人：'
     end
-    
-    keyword= params[:keyword] 
-    signCert=params[:sign_cert]
-    sealImg=params[:keypic]
+		logger.error "ssss"
+  	signCert=params[:sign_cert]
+	  sealImg=params[:keypic]
+		logger.error signCert
+		_QFRQ_keyword_ = '签发日期：'
+		logger.error "@sp_bsb.sp_i_state"
+		sign_date = (@spbsb.sp_i_state == 16 and params[:sign_date].to_i == 1)
+		logger.error sign_date
+		if sign_date and @spbsb.sign_date.blank?
+			# 记录首次签发日期
+			 @spbsb.update_attributes(sign_date: Time.now)
+		#	sealImg =Base64.strict_encode64(Time.new.strftime("%Y-%m-%d"))
+			sealImg = Time.new.strftime("%Y-%m-%d")
+			keyword= '签发日期：'
+ 		end
+		logger.error keyword
     clientSignMessages=[]
     clientSignMessage ={ruleType: 1,keyword: keyword,searchOrder: '2',fileUniqueId: '111111111111',heightMoveSize: 0,moveSize: 0,moveType: 3,searchOrder: 2}
     clientSignMessages.push(clientSignMessage)
     reqMessage ={appId: '9ff70fce51874b62a5f136fdda43c4b7',sealImg: sealImg, signCert: signCert,
                     sealWidth: 0,sealHeight: 0, clientSignMessages: clientSignMessages}
+		logger.error reqMessage
     reqMessage = Base64.strict_encode64(reqMessage.to_json)
     #tmp_file = Rails.root.join('tmp', "jilin.pdf")
     filename = Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}.txt")
@@ -77,14 +127,16 @@ class SpBsbsController < ApplicationController
     @spbsb = SpBsb.find(params[:id])
     #espond_to do |format|
    # pdfpath=File.expand_path('../reports', Rails.root).to_s + @spbsb.report_path
-   if  !@spbsb.report_path.blank?
-     pdfpath=File.expand_path('../reports', Rails.root).to_s + @spbsb.report_path
+		if @spbsb.ca_key_status ==0
+       pdfpath=@spbsb.generate_bsb_report_pdf('ca_file', true, current_user.id,false)
     else
-     pdfpath=Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}_print.pdf")
-    end
+			pdfpath = Rails.root.join('tmp/pdf_preview', "sp_bsbs_#{@spbsb.id}_print.pdf")
+
+    end		
+
 
     sign_data=params[:sign_data]
-
+	
     logger.error sign_data
     signSealMessagesJson =  File.read(Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}.txt"))
      File.write(Rails.root.join('tmp', "yang.req"),sign_data)

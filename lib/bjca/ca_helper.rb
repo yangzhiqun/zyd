@@ -39,13 +39,13 @@ module Bjca
 		# 数据签名
 		def sign_data_re_all_info(data)
         begin
-					response = @client.call(:sign_data_re_all_info, message: {appName: 'SVSDefault', inData: data})
-					response.as_json['sign_data_re_all_info_response']['out']
-					Rails.logger.error response.as_json
+        	response = @client.call(:sign_data_re_all_info, message: {appName: 'SVSDefault', inData: data})
+					out = response.as_json['sign_data_re_all_info_response']['out']
+					return out
         rescue Savon::SOAPFault => error
 					Rails.logger.error "CAHelper#sign_data_re_all_info: #{error.as_json}"
           nil
-        end
+				end
 		end
 
 		# 验证签名
@@ -59,6 +59,16 @@ module Bjca
           false
         end
 		end
+		def sign_data(inData)
+			begin
+				response = @client.call(:sign_data, message: {appName: 'SVSDefault', inData: inData})
+				response.as_json['sign_data_response']['out'].to_i == 1
+				Rails.logger.error response.as_json
+			 rescue Savon::SOAPFault => error
+				Rails.logger.error "CAHelper#sign_data: #{error.as_json}"
+	         nil
+			end
+		end
 
 		# 验证客户端cert
 		def validate_cert(userCert)
@@ -69,7 +79,8 @@ module Bjca
 
 		# 获取用户信息
 		def get_cert_info_by_oid(userCert)
-			response = @client.call(:get_cert_info_by_oid, message: {appName: "SVSDefault", base64EncodeCert: userCert, oid: '1.2.156.112562.2.1.2.2'})
+				response = @client.call(:get_cert_info_by_oid, message: {appName: "SVSDefault", base64EncodeCert: userCert, oid: '1.2.156.112562.2.1.1.1'})
+			Rails.logger.error response.as_json
 			response.as_json['get_cert_info_by_oid_response']['out'].gsub(/SF/, '')
 		end
 

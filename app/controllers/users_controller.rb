@@ -156,10 +156,10 @@ class UsersController < ApplicationController
       if @user.nil? or !@user.valid_password?(params[:password])
         render json: {status: 'ERR', msg: '无效的用户名或密码'}
       else
-        if params[:user_sign].blank?
-          render json: {status: 'ERR', msg: '无效的签名'}
-          return
-        end
+				
+				if @user.id_card.present?
+          render json: {status: 'ERR', msg: '该用户已绑定过USBKey'} and return
+				end
 
         if session[:sfid].blank?
           render json: {status: 'ERR', msg: '无效的身份证号'}
@@ -167,7 +167,6 @@ class UsersController < ApplicationController
         end
 
         @user.id_card = session[:sfid]
-        @user.user_sign = params[:user_sign]
 
         unless @user.save
           render json: {status: 'ERR', msg: @user.errors.first.last}

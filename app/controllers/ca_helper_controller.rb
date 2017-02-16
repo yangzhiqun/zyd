@@ -87,5 +87,30 @@ class CaHelperController < ApplicationController
 			end
 			render :text => @result.to_s
 		end
-	end 
+	end
+def hash_client_sign
+		signCert = params[:signCert]
+    signEseal = params[:signEseal]
+		@sp_bsb = SpBsb.find(params[:sp_bsb_id])
+	if [2, 3].include? @sp_bsb.sp_i_state
+      keyword = '检验人'
+    elsif @sp_bsb.sp_i_state == 4
+      keyword = '审核人'
+    elsif @sp_bsb.sp_i_state == 5
+      keyword = '批准人：'
+   end
+	_QFRQ_keyword_ = '签发日期：'
+	res = {}
+		
+end
+	def create_text
+		filename=Rails.root.join('tmp', "test.txt")
+		reqMessage ={appId: '9ff70fce51874b62a5f136fdda43c4b7',policyType: 2}
+		reqContent =Base64.strict_encode64(reqMessage.to_json)
+		cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client.jar')} 111.26.194.57 8081 113 #{reqContent} #{filename} "
+		result = `#{cmd}`
+		nonceStr  =  File.read(Rails.root.join('tmp', "test.txt"))
+		render json: {status: 'OK', msg: nonceStr}
+	end
+ 
 end

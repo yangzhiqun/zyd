@@ -677,8 +677,10 @@ class SpBsb < ActiveRecord::Base
           @jcfy = u.tname
         end
       end
-
-      tmp_file = Rails.root.join('tmp', "sp_bsbs_#{self.id}_print.pdf")
+			tmp_file = Rails.root.join('tmp', "sp_bsbs_#{self.id}_print.pdf")
+			if pdf_rules =='ca_file'
+			 tmp_file = Rails.root.join('tmp/pdf_preview', "sp_bsbs_#{self.id}_print.pdf")
+			end
       ApplicationController.new.render template: 'sp_bsbs/1.html.erb',
                                        save_to_file: tmp_file,
                                        save_only: true,
@@ -708,35 +710,39 @@ class SpBsb < ActiveRecord::Base
       if pdf_rules.blank?
          if !self.sp_s_69.blank?
             pdf_rules =self.sp_s_69 
-       else
-         if @jg_bsb.jg_bsb_stamps.count > 0
-            pdf_rules = @jg_bsb.jg_bsb_stamps.pluck(:stamp_no).join(',')
-          else
-	     Rails.logger.error '机构未进行数字签名认证，无法查看报告'
+         else
+           if @jg_bsb.jg_bsb_stamps.count > 0
+             pdf_rules = @jg_bsb.jg_bsb_stamps.pluck(:stamp_no).join(',')
+           else
+	            Rails.logger.error '机构未进行数字签名认证，无法查看报告'
               self.report_path = "#{target_path}/#{self.id}.pdf"
-		 if preview and !force_generate 
-                 #SpBsb.record_timestamps = false
-                  #self.save
-                 #SpBsb.record_timestamps = true
-              return tmp_file
+		           if preview and !force_generate 
+                  return tmp_file
+               end
+                 return nil
             end
-            return nil
-         end
-	 end
+	        end
+			else
+				if pdf_rules =='ca_file'
+					return tmp_file
+				end
+				if preview and force_generate
+						tmp_file = Rails.root.join('tmp/pdf_preview', "sp_bsbs_#{self.id}_print.pdf")
+				end
       end
 
       FileUtils.mkdir_p abs_target_path unless Dir.exists? abs_target_path
 
       self.report_path = "#{target_path}/#{self.id}.pdf"
       # create stamp record
-      userinfo = {userName: '吉林省食品药品监督局', channelId: 'CHN_7F22C8E7F35AF46', creditCodes: {ORG: @jg_bsb.ca_org}}
+      userinfo = {userName: '吉林省食品药品监督局', channelId: 'CHN_7F22C8E7F35AF46', creditCodes: {ORG: '092648364'}}
       documentInfo = {docuName: '云签章', fileDesc: '云签章'}
       content = []
       pdf_rules.split(',').each do |rule|
         content.push({ruleNum: rule, appId: '9ff70fce51874b62a5f136fdda43c4b7', userinfo: userinfo, documentInfo: documentInfo})
       end
       # logger.error content.to_json
-
+			logger.error content
       content = Base64.strict_encode64(content.to_json)
       cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')} 111.26.194.57 8081 105 #{content} #{tmp_file} #{self.absolute_report_path(preview && !force_generate)}"
       logger.error cmd
@@ -774,4 +780,32 @@ class SpBsb < ActiveRecord::Base
       self.absolute_report_path
     end
   end
+
+	def generate_ca_pdf_report(pdf_rules,signData,signCert,nonce)
+			tmp_file = Rails.root.join('tmp/pdf_preview', "sp_bsbs_#{self.id}_print.pdf")
+			#preview_file = "Rails.root.join('tmp/pdf_preview', "sp_bsbs_#{self.id}_print_preview.pdf")"
+			preview_file= Rails.root.join('tmp/pdf_preview', "preview_sp_bsbs_#{self.id}_print.pdf")
+			userinfo = {channelId: 'CHN_7F22C8E7F35AF46'}
+      documentInfo = {docuName: '云签章', fileDesc: '云签章'}
+      ruleNumList = []
+      pdf_rules.split(',').each do |rule|
+				ruleNumList.push(rule)
+        #content.push({ruleNum: rule, appId: '9ff70fce51874b62a5f136fdda43c4b7', userinfo: userinfo, documentInfo: documentInfo,nonce: nonce, signCert: signCert,signData: signData})
+      end
+			reqMessage ={ruleNumList: ruleNumList, appId: '9ff70fce51874b62a5f136fdda43c4b7',policyType: 2, userinfo: userinfo, documentInfo: documentInfo,nonce: nonce, signCert: signCert,signData: signData}
+      logger.error reqMessage
+			content = Base64.strict_encode64(reqMessage.to_json)
+			logger.error content
+      cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client.jar')} 111.26.194.57 8081 114 #{content} #{tmp_file} #{preview_file}"
+			logger.error cmd
+      result = `#{cmd}`
+			logger.error result
+      if result.strip.include?('200')
+				return preview_file
+			else
+				return nil
+			end
+			
+	end
+
 end

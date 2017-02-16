@@ -176,7 +176,9 @@
 					<% end %>
        <% if sp_bsb.ca_key_status ==0 %>
            <a href="/sp_bsbs/<%= sp_bsb.id%>/print" class="print-sp-bsb btn btn-xs btn-link center-block" target="_blank">打印</a>
-       <% else %>
+       <% elsif sp_bsb.ca_key_status ==9 %>
+					<a href="/sp_bsbs/<%= sp_bsb.id%>/preview_ca_pdf.pdf" class="print-sp-bsb btn btn-xs btn-link center-block" target="_blank">打印</a>
+				<% else%>
            <a href="/sp_bsbs/<%= sp_bsb.id%>/print.pdf" class="print-sp-bsb btn btn-xs btn-link center-block" target="_blank">打印</a>
        <% end %>
         <% elsif sp_bsb.sp_i_state == 16 %>

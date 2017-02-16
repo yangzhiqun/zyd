@@ -1,10 +1,14 @@
-<style type="text/css">
+﻿<style type="text/css">
   .no-key-tip {
     color: red;
   }
 </style>
 
 <script type="text/javascript">
+	strServerSignedData = "<%= @ca_login_info[:signed].split('#')[0] %>";
+	strServerCert = "<%= @ca_login_info[:certificate] %>";
+	strServerRan = "<%= @ca_login_info[:ca_random] %>";
+
   function switchTo(type) {
     if (type == 0) {
       $('.login-ca').addClass('hidden');
@@ -22,14 +26,16 @@
       alert('<%= flash[:error] %>');
     }, 500);
     <% end %>
-    SetUserCertList('login_form_ca.user_cert_list', CERT_TYPE_ALL);
+
+    SetUserCertList('login_form_ca.user_cert_list', CERT_TYPE_HARD);
 
     $('#cert-login').click(function () {
-      var ret = Login('login_form_ca', login_form_ca.user_cert_list.value, login_form_ca.cert_password.value)
+      var ret = Login('login_form_ca', login_form_ca.user_cert_list.value, login_form_ca.cert_password.value, '/ca_login')
       if (ret) {
         $('.login-ca *').attr('disabled', 'disabled');
         $('.logining-tip').removeClass('hidden');
         var userCert = $('input[name="UserCert"]').val();
+				alert(userCert);
         $.post('/ca_login.json', {
           userCert: userCert,
           certId: login_form_ca.user_cert_list.value
@@ -75,7 +81,7 @@
     <% if Rails.application.config.site[:enable_ca_login] %>
         <div class="login-ca <%= 'hidden' if Rails.application.config.site[:enable_ca_login] %>">
           <form name="login_form_ca" action="/admin/login" method="post">
-            <% if browser.chrome? and browser.version.to_i > 42 %>
+            <% if false and browser.chrome? and browser.version.to_i > 42 %>
                 <h4>CA登录暂不支持版本号大于42的谷歌（Chrome）浏览器，当前版本：<%= browser.version %></h4>
                 <a href="javascript:void(0);" onclick="switchTo(0);return false;" class="btn btn-info btn-sm login-style-switcher">
                   <i class="glyphicon glyphicon-tag"></i>
@@ -100,7 +106,7 @@
                   账号密码登录>>
                 </a>
                 <br>
-                <a style="color: red; font-size: 12px;" href="http://bbs.cfda.pub:8080/app/BJCA/BJCA.zip">安装证书助手</a>
+                <a style="color: red; font-size: 12px;" href="/cahelper.zip">安装证书助手</a>
             <% end %>
           </form>
         </div>
