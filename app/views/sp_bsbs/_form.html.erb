@@ -69,15 +69,6 @@
     });
     return JSON.stringify(sp_bsb);
   }
-	function generateCAsrc1(){
-		SignedData('102000100021472/6001201312031208','b76c4f67b2b549a99f88e19d5520fca9',function (ret) {
-			alert(ret.retVal);
-	});
-	//alert(session[:certId]);
-	 //SignedData('123456', 'a03820cbb8e34a08af4be79106ce258f','sp_bsb_form.sp_inspection_basis','sp_bsb_form.sp_decision_basis');
-			//SignedData('123456', 'a03820cbb8e34a08af4be79106ce258f');
-	//alert(signed_data);
-	}
 
 
   // 判断是否为数据库保存的数据
@@ -2794,7 +2785,6 @@ function pass_ca(){
       <% if (@sp_bsb["sp_i_state"]<2)&&current_user.user_d_authority==1 %>
           <%= f.submit(vaule="临时保存", options={"id" => "save", :class => "btn btn-xs btn-default"}) %>
           <%= f.submit(vaule="基本信息提交入库", options={"id" => "submit1", :class => "btn btn-xs btn-primary"}) %>
-				 <button type="button" onclick="generateCAsrc1()" class="btn btn-primary btn-sm ok" id="pdf_btt"  >个人签名</button>	
       <% end %>
 
       <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<4&&current_user.user_d_authority_1==1 %>
