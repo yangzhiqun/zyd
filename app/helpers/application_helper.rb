@@ -18,6 +18,13 @@ module ApplicationHelper
     end
   end
 
+  #返回天数时间差
+  def days_between (date1,date2)
+    d1 = Date.parse(date1.to_s)
+    d2 = Date.parse(date2.to_s)
+      return (d1-d2).to_i
+  end
+
   def products_print_pager products, page_size, start_index
     return if products.nil? or products.length == 0
     page = (products.length / page_size.to_f).ceil
