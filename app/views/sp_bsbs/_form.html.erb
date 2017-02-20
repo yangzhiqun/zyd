@@ -485,7 +485,24 @@
      }
      }, 'json')
      });*/
+    //根据任务来源判断报送分类
+    $('#sp_bsb_sp_s_2_1').change(function () {
+      var o = $(this);
+      if (o.val() != '') {
+        $.get('/baosong_bs/by_rwly.json', {a_name: o.val()}, function (data) {
+          if (data.status == 'OK') {
+            $('#sp_bsb_sp_s_70, #sp_bsb_sp_s_67').empty();
+            render_spec_list([]);
 
+            $('#sp_bsb_sp_s_70').empty();
+            $("<option>").text("请选择").appendTo($('#sp_bsb_sp_s_70'));
+            $.each(data.data, function () {
+              $("<option>").attr('data-identifier', this.identifier).attr("value", this.name).text(this.name).appendTo($('#sp_bsb_sp_s_70'));
+            });
+          }
+        }, "json")
+      }
+    });
     // 报送分类第一列
     $('#sp_bsb_sp_s_70').change(function () {
       var o = $(this);
@@ -2057,7 +2074,6 @@
 	else{
 	  ep2.emit('jdcj');
 	}
-
 	if (res.res.FXJC) {
            clientSignByHash(res.res.FXJC,cur_cert_id, $("#ca_sign_pwd").val(), "sign_data",
              function (res) {
@@ -2246,7 +2262,8 @@
         <td colspan="8"><%= f.select :sp_s_2_1, options_for_select(all_super_departments.map { |name| [name,name, {'parentid' => name}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_2_1), {}, {:style => "width: 260px; height: 19px"} %></td>
         <td colspan="3">报送分类*</td>
         <td colspan="14">
-          <%= f.select :sp_s_70, options_for_select(BaosongA.where("prov = ? or prov is null or prov = ''", current_user.user_s_province).map { |b| [b.name, b.name, {'parentid' => b.rwlylx}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_70), {}, {:style => "width: 167px;"} %>
+          <%= f.select :sp_s_70, options_for_select(@sp_s_70s.map { |s| [s.name, s.name, {'data-identifier' => s.id}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_70), {}, {:style => "width: 167px;"} %>
+          <%#= f.select :sp_s_70, options_for_select(BaosongA.where("prov = ? or prov is null or prov = ''", current_user.user_s_province).map { |b| [b.name, b.name, {'parentid' => b.rwlylx}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_70), {}, {:style => "width: 167px;"} %>
           <%= f.select :sp_s_67, options_for_select(@sp_s_67s.map { |s| [s.name, s.name, {'data-identifier' => s.identifier}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_67), {}, {:style => "width: 183px;"} %></td>
         </tr>
         <tr>
@@ -2862,7 +2879,8 @@
 					<div class="modal-group">
 							密码：<input placeholder="USB key密码" class="form-control input-sm" id="ca_sign_pwd" type="password">
 					</div>
-			</div>		
+            </form>
+			</div>
 
 			<div class="modal-footer">
         <label class="hidden loading-label"><%= image_tag('loading.gif', class: 'img-loading') %>提交中...</label>
