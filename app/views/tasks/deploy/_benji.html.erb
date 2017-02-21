@@ -28,13 +28,13 @@
       <div class="form-inline">
         <label for="">报送分类：</label>
         <% if current_user.is_admin? %>
-         <%= select_tag "baosong_a", options_for_select(BaosongA.where('id in (?)',BaosongAJgId.where(jg_bsb_id:current_user.jg_bsb_id).pluck(:baosong_a_id)).map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+         <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx = ? and id in (?)','省局',BaosongAJgId.where(jg_bsb_id:current_user.jg_bsb_id).pluck(:baosong_a_id)).map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
        <% elsif is_xian_deploy? %>
-        <%= select_tag "baosong_a", options_for_select(BaosongA.where('id in (?)',BaosongAJgId.where(jg_bsb_id:current_user.jg_bsb_id).pluck(:baosong_a_id)).map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+        <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx = "县" and id in (?)',BaosongAJgId.where(jg_bsb_id:current_user.jg_bsb_id).pluck(:baosong_a_id)).map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
       <% elsif is_shi_deploy? %>
-        <%= select_tag "baosong_a", options_for_select(BaosongA.where('id in (?)',BaosongAJgId.where(jg_bsb_id:current_user.jg_bsb_id).pluck(:baosong_a_id)).map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+        <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx = "市/区局" and id in (?)',BaosongAJgId.where(jg_bsb_id:current_user.jg_bsb_id).pluck(:baosong_a_id)).map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
       <% else %>
-        <%= select_tag "baosong_a", options_for_select(BaosongA.where('id in (?)',BaosongAJgId.where(jg_bsb_id:current_user.jg_bsb_id).pluck(:baosong_a_id))..map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+        <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx = ? and id in (?)','省局',BaosongAJgId.where(jg_bsb_id:current_user.jg_bsb_id).pluck(:baosong_a_id))..map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
       <% end %>
         <%= select_tag "baosong_b", options_for_select(@baosong_bs.map { |b| [b.name, b.name, {"data-identifier" => b.identifier}] }.unshift(["请选择", ""]), params[:baosong_b]), {:class => "form-control input-sm", id: "baosong_b", style: "width: 150px;"} %>
         <br>

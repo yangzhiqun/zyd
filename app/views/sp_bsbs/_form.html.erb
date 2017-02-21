@@ -959,8 +959,8 @@
  						info = "检验依据";
  					}
 					modalHide();
- 					alert(info + " ,该项为必填项");	
- 					$("#sp_bsb_" + value).focus();					
+ 					//alert(info + " ,该项为必填项");
+ 					//$("#sp_bsb_" + value).focus();
  					return false;
  				}
  			})			
@@ -2939,4 +2939,7 @@
 		<label class="hidden loading-label"><%= image_tag('loading.gif', class: 'img-loading') %>提交中...</label>
       	        <button type="button" class="btn btn-primary btn-sm ok">确定执行【报告发送人】</button>
 	</div>
+              </div>
+            </div>
+</div>
 <% end%>
