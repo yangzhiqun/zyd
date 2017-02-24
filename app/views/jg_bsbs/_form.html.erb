@@ -65,6 +65,12 @@
     var new_sheng   = "<%= current_user.user_s_province %>";
     var new_shi     = "<%= current_user.prov_city %>";
     var new_xian    = "<%= current_user.prov_country %>";
+      if(new_shi=='请选择'||new_shi=='') {
+          new_shi = '-请选择-';
+      }
+      if(new_xian=='请选择'||new_xian=='') {
+          new_xian = '-请选择-';
+      }
     //判断是否是编辑状态
     var is_edit = <%= action?("edit") %>;
     //自动补齐省市县
@@ -79,12 +85,15 @@
       $('#hidden_city').val(edit_shi);
       $('#hidden_country').val(edit_xian);
     }else{
-      $('<option>-请选择-</option>').appendTo($('#jg_bsb_jg_province'));
-      $('<option>-请选择-</option>').appendTo($('#jg_bsb_city'));
-      $('<option>-请选择-</option>').appendTo($('#jg_bsb_country'));
-      $('#hidden_jg_province').val("-请选择-");
-      $('#hidden_city').val("-请选择-");
-      $('#hidden_country').val("-请选择-");
+        if(!is_edit) {
+            $('<option>-请选择-</option>').appendTo($('#jg_bsb_jg_province'));
+            $('<option>-请选择-</option>').appendTo($('#jg_bsb_city'));
+            $('<option>-请选择-</option>').appendTo($('#jg_bsb_country'));
+            $('#jg_bsb_jg_province').val(new_sheng);
+            $('#hidden_jg_province').val(new_sheng);
+            $('#hidden_city').val("-请选择-");
+            $('#hidden_country').val("-请选择-");
+        }
     }
     //下拉框自动锁死
     if (<%= is_sheng? %>){
