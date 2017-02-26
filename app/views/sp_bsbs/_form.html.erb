@@ -2780,6 +2780,9 @@
       <% elsif @sp_bsb["sp_i_state"]==4&&session[:change_js]==7 %>
           <%= f.submit(vaule="检测机构审核通过", options={"id" => "save_2", :class => "btn btn-xs btn-success"}) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
+       <% if old_report(@sp_bsb.created_at) %>
+           <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/print">旧版检验报告</a>
+        <% else %>
 	  <% if @sp_bsb.JDCJ_report_path.present?%>
 	   <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/report.pdf?type=JYBG">监督抽检报告</a>
 	  <% end%>
@@ -2792,9 +2795,12 @@
 	  <% if @sp_bsb.ca_key_status==0&&@sp_bsb.is_jiance? %>
           <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default"  href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf?type=FXBG">风险监测报告</a>
           <% end%>
+         <% end %>
 	 <% elsif @sp_bsb["sp_i_state"]==5&&session[:change_js]==11 %>
           <%= f.submit(vaule="检测机构批准", options={"id" => "save_5", :class => "btn btn-xs btn-success"}) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
+         <% if old_report(@sp_bsb.created_at) %>           <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/print">旧版检验报告</a>
+        <% else %>
         <% if @sp_bsb.JDCJ_report_path.present?%>
            <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/report.pdf?type=JYBG">监督抽检报告</a>
           <% end%>
@@ -2807,6 +2813,7 @@
           <% if @sp_bsb.ca_key_status==0&&@sp_bsb.is_jiance? %>
           <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default"  href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf?type=FXBG">风险监测报告</a>
           <% end%>
+       <% end%>
      <% elsif @sp_bsb["sp_i_state"]==16&&session[:change_js]==16 %>
 	<% if @sp_bsb.ca_key_status!=0%>
 	  <div class="ca-form form-inline">
@@ -2816,6 +2823,8 @@
         <% end %>
         <%= f.submit(vaule="确定通过", options={"id" => "save_16", :class => "btn btn-xs btn-success"}) %>
         <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
+          <% if old_report(@sp_bsb.created_at) %>           <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/print">旧版检验报告</a>
+        <% else %>
 	 <% if @sp_bsb.JDCJ_report_path.present?%>
            <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/report.pdf?type=JYBG">监督抽检报告</a>
           <% end%>
@@ -2828,6 +2837,7 @@
           <% if @sp_bsb.ca_key_status==0&&@sp_bsb.is_jiance? %>
           <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default"  href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf?type=FXBG">风险监测报告</a>
           <% end%>
+        <% end%>
       <% elsif @sp_bsb["sp_i_state"]==6&&session[:change_js]==2 %>
           <%= f.submit(vaule="药监局审核通过", options={"id" => "save_3", :class => "btn btn-xs btn-success"}) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>

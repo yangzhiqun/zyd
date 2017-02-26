@@ -9,28 +9,24 @@ class SpBsbsController < ApplicationController
 
  def print
     @spbsb = SpBsb.find(params[:id])
-    type =params[:type]
     respond_to do |format|
       format.pdf {
-         #filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], false, current_user.id,false)
-	 pdfpath,n=@spbsb.generate_pdf_report(type)
-	if pdfpath.nil?
+         filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], false, current_user.id,false)
+	if filepath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
         else
-	 pdfpath = "#{Rails.application.config.attachment_path}/#{pdfpath}"
-          send_file pdfpath, filename: n, disposition: 'inline'
-        end
+          send_file filepath, filename: "#{@spbsb.sp_s_16}-检验报告.pdf", disposition: 'inline'
+	end
       }
       format.html {
-        #filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], true, current_user.id,false)
-        pdfpath,n=@spbsb.generate_pdf_report(type)
-	if pdfpath.nil?
+        filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], true, current_user.id,false)
+	if filepath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
         else
-          send_file "#{Rails.application.config.attachment_path}/#{pdfpath}", filename: n, disposition: 'inline'
-        end
+         send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
+	end
       }
     end
   end
@@ -853,7 +849,7 @@ class SpBsbsController < ApplicationController
       end
     end
 
-    @sp_bsbs = SpBsb.select("sp_d_38,JDCJ_report_path,FXJC_report_path,sp_s_44,sp_bsbs.ca_key_status,sp_bsbs.report_path,sp_bsbs.id, sp_bsbs.updated_at, sp_bsbs.sp_s_3, sp_bsbs.sp_s_4, sp_bsbs.sp_s_14, sp_bsbs.sp_s_16, sp_bsbs.sp_s_43, sp_bsbs.sp_s_214, sp_bsbs.sp_s_35, sp_bsbs.sp_s_71, sp_bsbs.sp_s_202, sp_bsbs.sp_i_state, sp_bsbs.fail_report_path, sp_bsbs.czb_reverted_flag,sp_bsbs.sp_s_2_1")
+    @sp_bsbs = SpBsb.select("created_at,sp_d_38,JDCJ_report_path,FXJC_report_path,sp_s_44,sp_bsbs.ca_key_status,sp_bsbs.report_path,sp_bsbs.id, sp_bsbs.updated_at, sp_bsbs.sp_s_3, sp_bsbs.sp_s_4, sp_bsbs.sp_s_14, sp_bsbs.sp_s_16, sp_bsbs.sp_s_43, sp_bsbs.sp_s_214, sp_bsbs.sp_s_35, sp_bsbs.sp_s_71, sp_bsbs.sp_s_202, sp_bsbs.sp_i_state, sp_bsbs.fail_report_path, sp_bsbs.czb_reverted_flag,sp_bsbs.sp_s_2_1")
     
     if params[:r1]
       session[:change_js]=params[:r1].to_i
