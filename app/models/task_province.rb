@@ -3,6 +3,7 @@ class TaskProvince < ActiveRecord::Base
 
   belongs_to :a_category
   belongs_to :sys_province
+  belongs_to :baosong_b
 
   def task_executed_count
     PadSpBsb.where(:sp_s_3 => self.sys_province.name).count

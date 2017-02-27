@@ -47,10 +47,17 @@ $.fn.CfdaProvince = function (config) {
         });
 
         if (config.level2) {
-            level2.val(config.level2);
+            // console.log(config)
+            var info = config.level2;
+            if(config.level2=="-请选择-"){
+                info = "请选择"
+            }
+            level2.val(info);
             selected2 = level2[0].selectedIndex - 1;
         }
-        level2.trigger('change');
+        if(level2.val()!=null && level2.val()!="请选择"){
+            level2.trigger('change');
+        }
     });
 
     level2.change(function () {

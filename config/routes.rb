@@ -69,6 +69,7 @@ Rails.application.routes.draw do
     collection do
       get "by_name" => "baosong_bs#baosong_bs_by_name"
       get "by_cityname" => "baosong_bs#baosong_bs_by_cityname"
+      get "by_rwly" => "baosong_bs#baosong_bs_by_rwly"
     end
 
     member do
@@ -167,6 +168,7 @@ Rails.application.routes.draw do
   resources :jg_bsbs do
     member do
       post 'rename'
+      #get 'by_rwly'
     end
 
     collection do
@@ -383,5 +385,6 @@ Rails.application.routes.draw do
   get "data/seach"
   delete "del_data/:id" =>"data#destroy"
   root :to => 'welcome_notices#index'
+
 
 end

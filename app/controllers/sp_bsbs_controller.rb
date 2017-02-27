@@ -357,7 +357,7 @@ class SpBsbsController < ApplicationController
     @sp_jcxcount=1
 
     @sp_s_67s = []
-
+    @sp_s_70s = []
     @a_categories = @b_categories = @c_categories = @d_categories = []
 
     respond_to do |format|
@@ -421,7 +421,18 @@ class SpBsbsController < ApplicationController
     end
 
     @sp_data = Spdatum.where(sp_bsb_id: params[:id])
-
+    unless @sp_bsb.sp_s_2_1.blank?
+      @jg_bsb_names = JgBsbName.find_by_name(@sp_bsb.sp_s_2_1)
+      @jg_bsbs = JgBsb.find_by_id(@jg_bsb_names.jg_bsb_id)
+      if (!@jg_bsbs.city.blank? or @jg_bsbs.city != "-请选择-") and  (@jg_bsbs.country.blank? or @jg_bsbs.country == "-请选择-")
+        @baosong_a = BaosongA.where("shi = ?",@jg_bsbs.city)
+      elsif (!@jg_bsbs.city.blank? or @jg_bsbs.city != "-请选择-") and  (!@jg_bsbs.country.blank? or @jg_bsbs.country != "-请选择-")
+        @baosong_a = BaosongA.where("xian = ?",@jg_bsbs.country)
+      end
+      @sp_s_70s = @baosong_a.select("id, name")
+    else
+      @sp_s_70s=[]
+    end
     unless @sp_bsb.sp_s_70.blank?
       @sp_s_67s = BaosongB.where(baosong_a_id: BaosongA.find_by_name(@sp_bsb.sp_s_70).id)
     else

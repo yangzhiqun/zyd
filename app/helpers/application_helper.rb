@@ -103,7 +103,12 @@ module ApplicationHelper
 		#jg_type : 1 => 监管部门, 2 => 检验机构
 		jg_arr  = []
 		if is_sheng? || current_user.is_admin? #如果是省级管理员和最高全选显示全部机构
-			all_jg = JgBsb.where(jg_type: 1)	
+      #if is_sheng?
+      #  all_jg = JgBsb.where("id = ? and jg_type = ?",current_user.jg_bsb.id,1)
+      #end
+			#if current_user.is_admin?
+        all_jg = JgBsb.where(jg_type: 1)
+      #end
 			all_jg.each{ |a| jg_arr << a.jg_name}
 		else
 			jg_type = current_user.jg_bsb.jg_type
@@ -111,6 +116,7 @@ module ApplicationHelper
 			super_jg.each{ |jg| jg_arr << jg.super_jg_bsb.jg_name}	
 			# 如果是监管部门显示自己跟上级
 			if jg_type == 1
+        jg_arr = []
 				jg_arr << current_user.jg_bsb.jg_name
 			end
 		end 
