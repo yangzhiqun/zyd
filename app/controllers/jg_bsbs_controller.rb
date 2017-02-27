@@ -260,11 +260,11 @@ class JgBsbsController < ApplicationController
     end
     render json: {status: 'OK', msg: @jg_bsbs.map { |j| [j.jg_name, j.id] }}
   end
+
   private
   def check_user_role
     # return not_found if current_user.nil? or !current_user.is_admin?
   end
-
   def jg_bsb_params
     params.require(:jg_bsb).permit(
         :zipcode, :fax, :jg_type, :city, :country, :status, :pdf_sign_rules, :attachment_path_file, :gpsname, :gpspassword, :api_ip_address, :code, :jg_address, :jg_administrion, :jg_bjp_permission, :jg_certification, :jg_contacts, :jg_detection, :jg_enable, :jg_group, :jg_group_category, :jg_higher_level, :jg_hzp_permission, :jg_leader, :jg_name, :jg_sampling, :jg_sp_permission, :jg_tel, :jg_word_area, :jg_province, :jg_email,:ca_org, super_jg_bsbs: []

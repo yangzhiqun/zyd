@@ -22,6 +22,37 @@ class BaosongBsController < ApplicationController
      # end
     end
   end
+  ###新增根据任务来源判断报送分类a
+  def baosong_bs_by_rwly
+    #根据名称获取机构名称所有信息。
+    #@jg_bsb_names = JgBsbName.where("name = ?",params[:a_name]).last
+    #@jg_bsbs = JgBsb.find_by_id(@jg_bsb_names.jg_bsb_id)
+    #if (!@jg_bsbs.city.blank? or @jg_bsbs.city != "-请选择-") and  (@jg_bsbs.country.blank? or @jg_bsbs.country == "-请选择-")
+    #  @baosong_a = BaosongA.where("shi = ?",@jg_bsbs.city)
+    #elsif (!@jg_bsbs.city.blank? or @jg_bsbs.city != "-请选择-") and  (!@jg_bsbs.country.blank? or @jg_bsbs.country != "-请选择-")
+    #  @baosong_a = BaosongA.where("xian = ?",@jg_bsbs.country)
+    #end
+    @jg_bsb_names = JgBsbName.where("name = ?",params[:a_name]).last
+    @baosong_a_jg = BaosongAJgId.where("jg_bsb_id = ?" ,@jg_bsb_names.jg_bsb_id)
+    baosongids = []
+    if !@baosong_a_jg.blank?
+      @baosong_a_jg.each do |baosong|
+        baosongids.push(baosong.baosong_a_id)
+      end
+    end
+    @baosong_a = BaosongA.where("id in (?)",baosongids)
+    # if  is_county_level? or is_city?
+      respond_to do |format|
+        format.json { render json: {status: "OK", msg: "", data: @baosong_a.select("id, name")} }
+      end
+   # else
+   #   @baosong_a = BaosongA.all
+   #   logger.error @baosong_a.to_json
+    #  respond_to do |format|
+   #     format.json { render json: {status: "OK", msg: "", data: @baosong_a.select("id,name")} }
+   #   end
+   # end
+  end
   def baosong_bs_by_cityname
     @baosong_a = BaosongA.find_by_name(params[:a_name])
     @jgBsb = JgBsb.find_by_id(current_user.jg_bsb_id)

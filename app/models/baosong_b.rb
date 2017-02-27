@@ -4,10 +4,16 @@ class BaosongB < ActiveRecord::Base
 
   validates_presence_of :baosong_a_id, :message => "报送分类A不可为空"
   validates_presence_of :name, :message => "名称不可为空"
-  # validates_presence_of :file, :message => "Excel源文件不可为空"
+  validates_presence_of :file, :message => "Excel源文件不可为空"
 
   belongs_to :baosong_a
+  has_many :a_categories, primary_key: :identifier, foreign_key: :identifier, dependent: :delete_all
+  has_many :b_categories, primary_key: :identifier, foreign_key: :identifier, dependent: :delete_all
+  has_many :c_categories, primary_key: :identifier, foreign_key: :identifier, dependent: :delete_all
+  has_many :d_categories, primary_key: :identifier, foreign_key: :identifier, dependent: :delete_all
 
+  has_many :task_jg_bsb, primary_key: :identifier, foreign_key: :identifier, dependent: :delete_all
+  has_many :task_province, primary_key: :identifier, foreign_key: :identifier, dependent: :delete_all
   def a_categories
     ACategory.where(identifier: self.identifier)
   end
