@@ -629,7 +629,7 @@
       return;
     });
 
-    <% if [2, 4, 5].include? @sp_bsb["sp_i_state"] %>
+    <% if [2, 4, 5,16].include? @sp_bsb["sp_i_state"] %>
     // [2, 4, 5] 步骤无法修改基本信息
     $("#province").attr("disabled", "disabled");
 
@@ -640,7 +640,7 @@
          // $("#srd").val("1")
           //$("#sp_bsb_sp_proid").val('');
           $("#sp_bsb_sp_s_64_1").show();
-          $("#sp_bsb_sp_s_64_1").val(<%=@sp_bsb.sp_s_64%>);
+          $("#sp_bsb_sp_s_64_1").val('<%=@sp_bsb.sp_s_64%>');
           $("#sp_bsb_sp_s_64_1").attr("readonly",true);
           $('#sp_bsb_sp_s_64').prop({"disabled":true});
           $('#sp_bsb_sp_s_64').attr({"style":"display:none;"});
