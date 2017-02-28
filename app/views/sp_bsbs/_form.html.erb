@@ -2385,9 +2385,8 @@ $(function () {
         <td colspan="8"><%= f.select :sp_s_2_1, options_for_select(all_super_departments.map { |name| [name,name, {'parentid' => name}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_2_1), {}, {:style => "width: 260px; height: 19px"} %></td>
         <td colspan="3">报送分类*</td>
         <td colspan="14">
-          <%= f.select :sp_s_70, options_for_select(@sp_s_70s.map { |s| [s.name, s.name, {'data-identifier' => s.id}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_70), {}, {:style => "width: 167px;"} %>
-          <%#= f.select :sp_s_70, options_for_select(BaosongA.where("prov = ? or prov is null or prov = ''", current_user.user_s_province).map { |b| [b.name, b.name, {'parentid' => b.rwlylx}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_70), {}, {:style => "width: 167px;"} %>
-          <%= f.select :sp_s_67, options_for_select(@sp_s_67s.map { |s| [s.name, s.name, {'data-identifier' => s.identifier}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_67), {}, {:style => "width: 183px;"} %></td>
+        <%= f.select :sp_s_70, options_for_select(BaosongA.where("name = ?", @sp_bsb.sp_s_70).map { |b| [b.name, b.name, {'parentid' => b.rwlylx}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_70), {}, {:style => "width: 167px;"} %>  
+	<%= f.select :sp_s_67, options_for_select(@sp_s_67s.map { |s| [s.name, s.name, {'data-identifier' => s.identifier}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_67), {}, {:style => "width: 183px;"} %></td>
         </tr>
         <tr>
           <td colspan="5">被抽样单位名称*</td>
