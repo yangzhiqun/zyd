@@ -5,6 +5,7 @@ class TaskJgBsb < ActiveRecord::Base
   validate :check_quota_amount
 
   belongs_to :jg_bsb
+  belongs_to :baosong_b
 
   def a_category
     ACategory.find(self.a_category_id)

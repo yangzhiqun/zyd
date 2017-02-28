@@ -1,4 +1,4 @@
-#encoding: utf-8
+﻿#encoding: utf-8
 class AdminController < ApplicationController
   skip_before_filter :verify_authenticity_token, :only => [:login, :ca_login]
   skip_before_filter :authorize, :only => [:ca_login]
@@ -88,10 +88,6 @@ class AdminController < ApplicationController
 
 
   def logout
-		redirect_to '/'
-=begin
-		return
-    #logger.debug "hello logout"
     user_agent = request.env['HTTP_USER_AGENT']
     user_agent_parsed = UserAgent.parse(request.env['HTTP_USER_AGENT'])
     LoginLog.create(:name => session[:user_name], :sessionid => session.id, :action => '退出登录', :ip => request.env["REMOTE_ADDR"], :os => user_agent_parsed.os, :browser => user_agent_parsed.browser, :brover => user_agent_parsed.version)
@@ -116,9 +112,9 @@ class AdminController < ApplicationController
     session[:userCert] = ''
 
     flash[:notice] = "logout"
-    redirect_to(:action => "login")
-=end
-  end
+		sign_out(current_user)
+		redirect_to '/' 
+ end
 
   # POST /adduser  
   def adduser
@@ -141,31 +137,62 @@ class AdminController < ApplicationController
 
   # CA LOGIN
   def ca_login
-    client = Savon.client(wsdl: "http://#{Rails.application.config.site[:ca_auth_address]}/webservice/services/SecurityEngineDeal?wsdl")
-    response = client.call(:validate_cert, message: {appName: "SVSDefault", password: params[:userCert]})
+	 client = Savon.client(wsdl: "http://#{Rails.application.config.site[:ca_auth_address]}/webservice/services/SecurityEngineDeal?wsdl")
+    response = client.call(:validate_cert, message: {appName: "SVSDefault", password: params[:UserCert]})
     response_code = response.as_json['validate_cert_response']['out'].to_i
 
     respond_to do |format|
       if response_code == 1
         begin
-          response = client.call(:get_cert_info_by_oid, message: {appName: "SVSDefault", base64EncodeCert: params[:userCert], oid: '1.2.156.112562.2.1.1.1'})
-          logger.error response.as_json
+          response = client.call(:get_cert_info_by_oid, message: {appName: "SVSDefault", base64EncodeCert: params[:UserCert], oid: '1.2.156.112562.2.1.1.1'})
         rescue Savon::SOAPFault => error
           logger.error error
         end
 
-        @SFid = response.as_json['get_cert_info_by_oid_response']['out'].gsub(/SF/, '') unless response.as_json['get_cert_info_by_oid_response']['out'].nil?
+				out = response.as_json['get_cert_info_by_oid_response']['out']
+				format.json { render :json => {status: 'ERR', msg: 'out nil' } } and return if out.nil?
+
+				if out.include?('SF')
+					# 个人KEY
+					@SFid = out.gsub(/SF/, '')
+				elsif out.include?('JJ')
+					# 单位KEY
+					begin
+						response = client.call(:get_cert_info_by_oid, message: {appName: "SVSDefault", base64EncodeCert: params[:UserCert], oid: '1.2.156.112562.2.1.1.23'})
+						logger.error response.as_json
+						@SFid = response.as_json['get_cert_info_by_oid_response']['out']
+					rescue Savon::SOAPFault => error
+						logger.error error
+					end
+
+				end
+
         session[:sfid] = @SFid
+				session[:userCert] = params[:UserCert]
         @user = User.find_by_id_card(@SFid)
-        if @user.nil? or @user.user_sign.blank?
-          format.json { render :json => {status: 'ERR', msg: '第一次使用USBKEY登陆系统时，需要与用户在系统中的账号进行绑定，请点击确定按钮进入USBKEY绑定界面。', key: @SFid, code: 444} }
+        if @user.nil? or @user.id_card.blank?
+					format.html {
+						errmsg = '第一次使用USBKEY登陆系统时，需要与用户在系统中的账号进行绑定，请点击确定按钮进入USBKEY绑定界面。'
+						flash[:error] = errmsg
+						redirect_to '/bind_ca_key'
+					}
+          format.json { render :json => {status: 'ERR', msg: errmsg, key: @SFid, code: 444} }
         else
           # TODO 完善CA登陆后逻辑
+          logger.error "111"
           sign_in @user
+					logger.error "222"
+					after_sign_in_path_for(@user)
+					format.html { redirect_to '/welcome_notices' }
           format.json { render :json => {status: 'OK', msg: 'OK'} }
         end
       else
-        format.json { render :json => {status: 'ERR', msg: ValidateCertCode::ResponseCode["code:#{response_code}"]} }
+				errmsg = ValidateCertCode::ResponseCode["code:#{response_code}"]
+				format.html { 
+					flash[:error] = errmsg
+					redirect_to :back 
+				}
+        format.json { render :json => {status: 'ERR', msg: errmsg} }
       end
     end
   end

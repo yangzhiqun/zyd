@@ -174,11 +174,19 @@
 					<% else %>
           <%= link_to '已完全提交', "/sp_bsbs/#{sp_bsb.id}", :class => 'btn btn-info btn-xs center-block' %>
 					<% end %>
-       <% if sp_bsb.ca_key_status ==0 %>
-           <a href="/sp_bsbs/<%= sp_bsb.id%>/print" class="print-sp-bsb btn btn-xs btn-link center-block" target="_blank">打印</a>
-       <% else %>
-           <a href="/sp_bsbs/<%= sp_bsb.id%>/print.pdf" class="print-sp-bsb btn btn-xs btn-link center-block" target="_blank">打印</a>
-       <% end %>
+          <% if sp_bsb.ca_key_status==0&&sp_bsb.is_jiandu? %>
+          <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default"  href="/sp_bsbs/<%= sp_bsb.id %>/print.pdf?type=JYBG">监督抽检报告</a>
+          <% end%>
+          <% if sp_bsb.ca_key_status==0&&sp_bsb.is_jiance? %>
+          <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default"  href="/sp_bsbs/<%= sp_bsb.id %>/print.pdf?type=FXBG">风险监测报告</a>
+          <% end%>
+	<% if sp_bsb.JDCJ_report_path.present?%>
+           <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default" href="/sp_bsbs/<%= sp_bsb.id %>/report.pdf?type=JYBG">监督抽检报告</a>
+          <% end%>
+          <% if sp_bsb.FXJC_report_path.present? %>
+           <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default" href="/sp_bsbs/<%= sp_bsb.id %>/report.pdf?type=FXBG">风险监测报告</a>
+          <% end%>
+
         <% elsif sp_bsb.sp_i_state == 16 %>
              <%= link_to '报告发送人', "/sp_bsbs/#{sp_bsb.id}/edit", :class => 'btn btn-info btn-xs center-block' %>
         <% elsif sp_bsb.sp_i_state == 10 %>

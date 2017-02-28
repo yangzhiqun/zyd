@@ -6,16 +6,31 @@
       <%= @baosong_a.name %>
     </p>
     <p>
-      <b>备注:</b>
-      <%= @baosong_a.note %>
-    </p>
-    <p>
       <b>任务来源类型:</b>
       <%= @baosong_a.rwlylx %>
     </p>
     <p>
+      <b>备注:</b>
+      <%= @baosong_a.note %>
+    </p>
+    <!-- <p>
       <b>省/市/区:</b>
-      <%= @baosong_a.sheng.to_s+"-"+@baosong_a.shi.to_s+"-"+@baosong_a.xian.to_s %>
+      <%#= @baosong_a.sheng.to_s+"-"+@baosong_a.shi.to_s+"-"+@baosong_a.xian.to_s %>
+    </p>-->
+
+  </div>
+  <div class="panel-body">
+    <p>
+      <b>任务机构:</b>
+    <ul class="list-group">
+      <% BaosongAJgId.where(baosong_a_id: @baosong_a.id).group("jg_bsb_id").each_with_index do |s, i| %>
+          <% if !s.jg_bsb.blank? %>
+              <li class="list-group-item"><%= i + 1 %>.
+                <a href="/jg_bsbs/<%= s.jg_bsb.id %>"><%= s.jg_bsb.jg_name %></a>
+              </li>
+          <% end %>
+      <% end %>
+    </ul>
     </p>
     <%= link_to '编辑', edit_baosong_a_path(@baosong_a) %> |
     <%= link_to '返回', baosong_as_path %>
@@ -46,7 +61,9 @@
           <td>
             <%= link_to "查看", bs, :class => "btn btn-xs btn-primary" %>
             <%= link_to "编辑", "/baosong_bs/#{bs.id}/edit", :class => "btn btn-xs btn-primary" %>
+            <% if current_user.is_admin? or is_sheng? %>
             <%= link_to '删除', bs, :class => "btn btn-xs btn-danger", method: :delete, data: {confirm: '确定删除吗？此操作相当危险,可能导致报送表取值错误,删除前请确认承受风险的能力.'} %>
+            <% end %>
           </td>
         </tr>
         <% end %>

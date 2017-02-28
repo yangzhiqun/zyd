@@ -104,6 +104,6 @@ class SpProductionInfosController < ApplicationController
 
 	private
 	def sp_production_info_params
-		params.require(:sp_production_info).permit(:cpmc, :fzdw, :fzrq, :jyfs, :qymc, :scbh, :scdz, :zs, :zsyxq, :sp_s_3, :sp_s_4, :sp_s_5, :spdl,:spyl,:spcyl,:spxl)
+		params.require(:sp_production_info).permit(:sp_proid,:cpmc, :fzdw, :fzrq, :jyfs, :qymc, :scbh, :scdz, :zs, :zsyxq, :sp_s_3, :sp_s_4, :sp_s_5, :spdl,:spyl,:spcyl,:spxl)
 	end
 end

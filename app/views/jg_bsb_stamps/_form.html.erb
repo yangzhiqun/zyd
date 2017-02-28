@@ -14,7 +14,7 @@
     </div>
     <div class="form-group">
       <%= f.label '规则类型：'%><%= show_error(@jg_bsb_stamp.errors, :stamp_type)%><br/>
-      <%= f.select :stamp_type, options_for_select([['请选择', ''], ['专用章', 'ZYZ'], ['骑缝章', 'QFZ'], ['资质章', 'ZZZ']], @jg_bsb_stamp.stamp_type), class: 'form-control input-sm' %>
+      <%= f.select :stamp_type, options_for_select([['请选择', ''], ['专用章', 'ZYZ'], ['骑缝章', 'QFZ'], ['资质章', 'ZZZ'],['风险章','FX']], @jg_bsb_stamp.stamp_type), class: 'form-control input-sm' %>
     </div>
     <div class="form-group">
       <%= f.label '图片：'%><%= show_error(@jg_bsb_stamp.errors, :image_file)%><br/>

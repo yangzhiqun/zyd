@@ -85,6 +85,7 @@ $(function(){
     </div>
   <% end %>
   <table border="1" cellspacing="0" cellpadding="0" width="820px" class="style1">
+    <%= f.hidden_field :sp_proid, :class=>"inputText",:style=>"width: 175px; height: 19px" %>
     <tr>
 			<td colspan="4"><p>被抽样单位名称*</p></td>
 			<td colspan="11"><%= f.text_field :sp_s_1, :class=>"inputText",:style=>"width: 260px; height: 19px" %></td>
@@ -102,7 +103,10 @@ $(function(){
       <td colspan="3"><p>传真</p></td>
 			<td colspan="5"><%= f.text_field :sp_s_bsfl, :class=>"inputText",:style=>"width: 100px; height: 19px" %></td>
       <td colspan="3"><p>区域类型*</p></td>
-			<td colspan="3"><%= f.text_field :sp_s_201, :class=>"inputText",:style=>"width: 60px; height: 19px" %></td>
+			<td colspan="3">
+        <%#= f.text_field :sp_s_201, :class=>"inputText",:style=>"width: 60px; height: 19px" %>
+        <%= f.select :sp_s_201, @options[201], {}, {:style => "width: 60px; height: 19px;"} %>
+      </td>
 		</tr>
       <tr >
 			<td colspan="3" style="width: 73px"><p>所在地区*</p></td>

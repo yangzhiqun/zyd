@@ -1,4 +1,4 @@
-/*--------------------------------------------------------------------------  
+﻿/*--------------------------------------------------------------------------  
  *
  * BJCA Adaptive Javascript, Version SAB(Support All Browsers :))
  * This script support bjca client version 2.0 and later
@@ -150,8 +150,8 @@ function $pushAllDropListBox(certUserListObj)
 	if ($_$allCertListID != "") {
 		$popDropListBoxAll($_$allCertListID);
 	}
+	
 	var strUserList = certUserListObj.retVal;
-	console.log(certUserListObj);
 	var allListArray = []
 	while (true) {
 		var i = strUserList.indexOf("&&&");
@@ -1760,7 +1760,6 @@ function $loginVerifyPINCallBack(retObj)
 
 //Form login
 function Login(formName, strCertID, strPin, strAction) {
-	alert("jinglail ");
 	var objForm = eval(formName);
 	if (objForm == null) {
 		$XTXAlert("表单错误！");
@@ -1774,7 +1773,7 @@ function Login(formName, strCertID, strPin, strAction) {
 		$XTXAlert("请输入证书密码！");
 		return;
 	}
-	
+
 	//Add a hidden item ...
 	var strSignItem = "<input type=\"hidden\" name=\"UserSignedData\" value=\"\">";
 	if (objForm.UserSignedData == null) {
@@ -1790,9 +1789,10 @@ function Login(formName, strCertID, strPin, strAction) {
 	}
     
     var ctx = {certID:strCertID, objForm:objForm, action:strAction};
+    
 	VerifyUserPIN(strCertID, strPin, $loginVerifyPINCallBack, ctx);
 	
-	return true;
+	return;
 }
 
 (function() {

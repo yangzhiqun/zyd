@@ -11,6 +11,21 @@ class DCategoriesController < ApplicationController
   end
 
   def check_items
+=begin
+   if !params[:d_category_id].nil?
+      @check_items = Rails.cache.fetch("check_items_by_d_category_id_#{params[:d_category_id]}") do
+  	 CheckItem.where(:d_category_id => params[:d_category_id], enable: true).to_a
+      end	
+   end
+    if !params[:sp_bsb_id].nil?
+      if !params[:sp_bsb_id].blank?
+        bsb = SpBsb.find(params[:sp_bsb_id])
+        if [4,5,6,7,8,9].include?(bsb.sp_i_state)
+         @check_items = Spdatum.select('check_item_id as id, spdata_0 as name,spdata_18 as JGDW,spdata_3 as JYYJ,spdata_4 as PDYJ,spdata_5 as BZFFJCX,spdata_6 as BZFFJCXDW,spdata_9 as BZZXYXX,spdata_10 as BZZXYXXDW,spdata_13 as BZZDYXX,spdata_14 as BZZDYXXDW, spdata_19 as JYYJJHB, spdata_20 as BZ').where(:sp_bsb_id => bsb.id)
+        end
+       end
+    end
+=end	
     @check_items = CheckItem.where(:d_category_id => params[:d_category_id], enable: true)
     respond_to do |format|
       format.json { render json: {status: "OK", msg: "", items: @check_items} }
@@ -18,8 +33,12 @@ class DCategoriesController < ApplicationController
   end
 
   def by_id
+    @d_categories = Rails.cache.fetch("d_categories_#{params[:c_category_id]}", expires_in: 10.hours) do
+	DCategory.where(c_category_id: params[:c_category_id]).select('id, name').to_a
+    end
     respond_to do |format|
-      format.json { render json: {status: "OK", msg: '', data: DCategory.where(c_category_id: params[:c_category_id]).select('id, name')} }
+      #format.json { render json: {status: "OK", msg: '', data: DCategory.where(c_category_id: params[:c_category_id]).select('id, name')} }
+     format.json { render json: {status: "OK", msg: '', data: @d_categories} }
     end
   end
 
