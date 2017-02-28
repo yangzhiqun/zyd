@@ -55,47 +55,51 @@ class BaosongB < ActiveRecord::Base
         # 排出非合并项
         # @JGDW = nil if (row[8].nil? and row.format(8).top != :none)
 
-        # 检验依据
-        @JYYJ = row[11].to_s.delete("\n").strip unless row[11].nil?
+        # 判定依据
+        @PDYJ = row[11].to_s.delete("\n").strip unless row[11].nil?
         # 排出非合并项
         # @JYYJ = nil if (row[11].nil? and row.format(11).top != :none)
 
-        # 判定依据
-        @PDYJ = row[12].to_s.delete("\n").strip unless row[12].nil?
+        # 检验依据
+        @JYYJ = row[12].to_s.delete("\n").strip unless row[12].nil?
         # 排除非合并项
         # @PDYJ = nil if (row[12].nil? and row.format(12).top != :none)
+	
+        # 检验依据简化版
+	@JYYJJHB = row[13].to_s.delete("\n").strip unless row[13].nil?
+	       
 
         # 标准方法检出限
-        @BZFFJCX = row[13].to_s.delete("\n").strip unless row[13].nil?
+        @BZFFJCX = row[14].to_s.delete("\n").strip unless row[14].nil?
         # 排出非合并项
         # @BZFFJCX = nil if (row[13].nil? and row.format(13).top != :none)
 
         # 标准方法检出限单位
-        @BZFFJCXDW = row[14].to_s.delete("\n").strip unless row[14].nil?
+        @BZFFJCXDW = row[15].to_s.delete("\n").strip unless row[15].nil?
         # 排出非合并项
         # @BZFFJCXDW = nil if (row[14].nil? and row.format(14).top != :none)
 
         # 标准最小允许限
-        @BZZXYXX = row[15].to_s.delete("\n").strip unless row[15].nil?
+        @BZZXYXX = row[16].to_s.delete("\n").strip unless row[16].nil?
         # 排出非合并项
         # @BZZXYXX = nil if (row[15].nil? and row.format(15).top != :none)
 
         # 标准最小允许限单位 
-        @BZZXYXXDW = row[16].to_s.delete("\n").strip unless row[16].nil?
+        @BZZXYXXDW = row[17].to_s.delete("\n").strip unless row[17].nil?
         # 排出非合并项
         # @BZZXYXXDW = nil if (row[16].nil? and row.format(16).top != :none)
 
         # 标准最大允许限 
-        @BZZDYXX = row[17].to_s.delete("\n").strip unless row[17].nil?
+        @BZZDYXX = row[18].to_s.delete("\n").strip unless row[18].nil?
         # 排出非合并项
         # @BZZDYXX = nil if (row[17].nil? and row.format(17).top != :none)
 
         # 标准最大允许限单位 
-        @BZZDYXXDW = row[18].to_s.delete("\n").strip unless row[18].nil?
+        @BZZDYXXDW = row[19].to_s.delete("\n").strip unless row[19].nil?
         # 排出非合并项
         # @BZZDYXXDW = nil if (row[18].nil? and row.format(18).top != :none)
 
-        @lines.push({A_category: @A_category, B_category: @B_category, C_category: @C_category, D_category: @D_category, JYXM: @JYXM, JGDW: @JGDW, JYYJ: @JYYJ, PDYJ: @PDYJ, BZFFJCX: @BZFFJCX, BZFFJCXDW: @BZFFJCXDW, BZZXYXX: @BZZXYXX, BZZXYXXDW: @BZZXYXXDW, BZZDYXX: @BZZDYXX, BZZDYXXDW: @BZZDYXXDW})
+        @lines.push({A_category: @A_category, B_category: @B_category, C_category: @C_category, D_category: @D_category, JYXM: @JYXM, JGDW: @JGDW, PDYJ: @PDYJ, JYYJ: @JYYJ,JYYJJHB: @JYYJJHB, BZFFJCX: @BZFFJCX, BZFFJCXDW: @BZFFJCXDW, BZZXYXX: @BZZXYXX, BZZXYXXDW: @BZZXYXXDW, BZZDYXX: @BZZDYXX, BZZDYXXDW: @BZZDYXXDW})
       end
 
       self.generate_identifier
@@ -134,6 +138,7 @@ class BaosongB < ActiveRecord::Base
           item.JGDW = (item.JGDW || "").split("#").push(line[:JGDW]).uniq.join("#") unless line[:JGDW].blank?
           item.JYYJ = (item.JYYJ || "").split("#").push(line[:JYYJ]).uniq.join("#") unless line[:JYYJ].blank?
           item.PDYJ = (item.PDYJ || "").split("#").push(line[:PDYJ]).uniq.join("#") unless line[:PDYJ].blank?
+	  item.JYYJJHB = (item.JYYJJHB || "").split("#").push(line[:JYYJJHB]).uniq.join("#") unless line[:JYYJJHB].blank?
           item.BZFFJCX = (item.BZFFJCX || "").split("#").push(line[:BZFFJCX]).uniq.join("#") unless line[:BZFFJCX].blank?
 
           item.BZFFJCXDW = (item.BZFFJCXDW || "").split("#").push(line[:BZFFJCXDW]).uniq.join("#") unless line[:BZFFJCXDW].blank?
