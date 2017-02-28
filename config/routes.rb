@@ -12,8 +12,9 @@ Rails.application.routes.draw do
   resources :jg_bsb_stamps do
     get 'cover'
   end
-	post 'ca_helper/create_text' => 'ca_helper#create_text'
-	post 'ca_helper/hash_client_sign' => 'ca_helper#hash_client_sign'
+    get 'ca_helper/create_text' => 'ca_helper#create_text'
+     get  'ca_helper/hash_client_sign' => 'ca_helper#hash_client_sign'
+    get 'ca_helper/client_sign_pdf' => 'ca_helper#client_sign_pdf'
   post 'ca_helper/client_sign_pdf'
   get "ca_helper/verify_report"
   post "ca_helper/verify_report"
@@ -69,6 +70,7 @@ Rails.application.routes.draw do
     collection do
       get "by_name" => "baosong_bs#baosong_bs_by_name"
       get "by_cityname" => "baosong_bs#baosong_bs_by_cityname"
+      get "by_rwly" => "baosong_bs#baosong_bs_by_rwly"
     end
 
     member do
@@ -167,6 +169,7 @@ Rails.application.routes.draw do
   resources :jg_bsbs do
     member do
       post 'rename'
+      #get 'by_rwly'
     end
 
     collection do
@@ -221,7 +224,8 @@ Rails.application.routes.draw do
       get 'xsbg'
       get "cyd"
       get "cyjygzs"
-			get "preview_ca_pdf"
+      get "preview_ca_pdf"
+      get 'report'
     end
 
     collection do
@@ -383,5 +387,6 @@ Rails.application.routes.draw do
   get "data/seach"
   delete "del_data/:id" =>"data#destroy"
   root :to => 'welcome_notices#index'
+
 
 end

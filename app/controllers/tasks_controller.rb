@@ -68,11 +68,12 @@ class TasksController < ApplicationController
         # 总局本级任务
         if params[:tab].to_i == 0
           # 所有检测机构，按名称排序
-          @jg_bsbs = JgBsb.where(status: 0)
-
+          #@jg_bsbs = JgBsb.where(status: 0)
+          @jg_bsbs = JgBsb.where("status= 0")
+          logger.error @jg_bsbs.to_json
           # 如果没有选择报送分类B，则不显示
-          logger.error "@baosong_b"
-          logger.error @baosong_b
+         # logger.error "@baosong_b"
+         # logger.error @baosong_b
           @province = get_province?
           if @baosong_b.nil?
             @tasks = []
@@ -99,7 +100,9 @@ class TasksController < ApplicationController
           @province = get_province?
         #end
         tasks = @province.task_provinces
-	      @jg_bsbs = JgBsb.where(status: 0)
+	      #@jg_bsbs = JgBsb.where(status: 0)
+          @jg_bsbs = JgBsb.where("status= 0")
+          logger.error @jg_bsbs.to_json
         unless params[:baosong_a].blank?
           @baosong_a = BaosongA.find_by_name(params[:baosong_a])
           @baosong_bs = BaosongB.where(:baosong_a_id => @baosong_a.id)
@@ -139,7 +142,8 @@ class TasksController < ApplicationController
         #  @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0)
         # end
         #end 
-         @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0)
+       #  @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0)
+       #   @cyjgs = JgBsb.where("status= 0 and id=? and jg_sampling >= 1 ",current_user.jg_bsb.id)
         @jyjgs = JgBsb.where(:jg_detection => 1, status: 0)
       end
     end
