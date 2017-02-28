@@ -1,5 +1,14 @@
 ﻿<script type="text/javascript">
   /////////////CA\\\\\\\\\\\\\\
+/*if (window.ActiveXObject) {
+    document.writeln("<OBJECT classid=\"CLSID:3F367B74-92D9-4C5E-AB93-234F8A91D5E6\" height=1 id=XTXAPP  style=\"HEIGHT: 1px; LEFT: 10px; TOP: 28px; WIDTH: 1px\" width=1 VIEWASTEXT>");
+    document.writeln("</OBJECT>");
+    XTXAPP.SOF_GetVersion(); 
+  } else {
+    document.writeln("<embed id=XTXAPP0 type=application/x-xtx-axhost clsid={3F367B74-92D9-4C5E-AB93-234F8A91D5E6} event_OnUsbkeyChange=OnUsbKeyChange width=1 height=1 />");
+    XTXAPP = document.getElementById("XTXAPP0");
+    XTXAPP.SOF_GetVersion(); 
+  } */
   window.SP.SP_BSB_CA_FIELDS = <%= SpBsb::CA_FIELDS.to_json.html_safe %>;
   window.SP.SP_DATA_CA_FIELDS = <%= Spdatum::CA_FIELDS.to_json.html_safe %>;
   ///////////////////
@@ -8,6 +17,8 @@
  // var jg_data = <#%= @jg_bsbs.select('id, jg_name, jg_contacts, jg_tel, jg_email').to_json.html_safe%>;
  // <#% end %>
   var jg_data = <%= @jg_bsbs.to_json.html_safe%>;
+  //var sp_com = <%#= @sp_com.to_json.html_safe %>
+  var sp_pd = <%= @sp_pd.to_json.html_safe %>
   var spdata_condition = "<%= "#{@sp_bsb["sp_s_17"]}#{@sp_bsb["sp_s_18"]}#{@sp_bsb["sp_s_19"]}#{@sp_bsb["sp_s_20"]}"%>";
   SP.sp_bsb = <%= @sp_bsb.to_json.html_safe %>;
   ///////////////////
@@ -264,6 +275,12 @@
     });
   }
   $(function () {
+		<% if [2,3,4, 5].include?(@sp_bsb.sp_i_state) %>
+			SetUserCertList('ca_sign_form.user_cert_list', CERT_TYPE_HARD);
+    <% end %>
+		<% if [16].include?(@sp_bsb.sp_i_state) %>
+		SetUserCertList('sp_bsb_form.sp_user_cert_list', CERT_TYPE_HARD);
+		<% end %>
     if ($("#sp_bsb_sp_s_63").val() == "散装") {
       <%@check=[26,27,13,72,73,74]%>
       <%@check.each do |i|%>
@@ -1230,11 +1247,6 @@
       $('#keyword').val("检验人：");
       $('#sp_status').val("4");
      $('#pr_status').val("true");
-      <% if current_user.jg_bsb.jg_bsb_stamps.count > 0 &&  @sp_bsb.report_path.blank?  %>
-      $('#stamp-dlg').modal('show');
-			modalHide();
-      return false;
-      <% end %>
      /*<#% if !@sp_bsb.report_path.blank? %>
 	 ca_value = document.getElementById("user_cert_list").value;
         if(ca_value.length >2){
@@ -1243,24 +1255,32 @@
 	  return false;
 	}
      <#% end %> */
-     $('#sp_bsb_sp_i_state').val("4");
       if (!confirm('确定提交吗？')) {
 				modalHide();
         return false;
       }else{
-	//% if !@sp_bsb.report_path.blank? %> 
         ca_value = document.getElementById("user_cert_list").value;
          if(ca_value.length >2){
-           testGetKeyPic();
-          $('#ca_validate').modal('show');
-					modalHide();
-          return false;
-        }
-	//% end %>
-     } 
+           //testGetKeyPic();
+					$('#sp_bsb_sp_i_state').val("2");
+				
+					$("form.edit_sp_bsb").ajaxSubmit({
+						dataType: "json",
+						success: function (message) {
+						if (message.status == '保存成功!') {
+							 $('#ca_stamp-dlg').modal('show');
+				//			$('#ca_sign_pwd').focus();
+						} else if (message.status == '保存出错!') {
+							alert(message.msg);
+						}
+					}
 
-
-
+        });
+					return false;
+				}else{
+				$('#sp_bsb_sp_i_state').val("4");
+				}			
+     }
       return true;
     });
     $('#save').click(function () {
@@ -1362,9 +1382,8 @@
       $('#sp_bsb_sp_i_state').val("2");
       return true;
     });
-
-
-    /**
+	
+	/**
      * 检测机构审核通过
      * */
     $('#save_2').click(function () {
@@ -1376,7 +1395,7 @@
       $("#sp_bsb_sp_s_70").removeAttr("disabled");
       $("#sp_bsb_sp_s_20").removeAttr("disabled");
      $("#user_cert_list").removeAttr("disabled");
-     $("#UserPwd").removeAttr("readonly");
+     $("#ca_sign_pwd").removeAttr("readonly");
      $("#keypic").removeAttr("disabled");
       $('#sp_bsb_sp_i_state').val("5");
       $('#keyword').val("审核人：");
@@ -1384,16 +1403,32 @@
       if (!confirm('确定提交吗？')) {
         return false;
       }else{
-	ca_value = document.getElementById("user_cert_list").value;
-	if(ca_value.length >2){
-	   testGetKeyPic();
-	   $('#ca_validate').modal('show');	
-     	   return false;
-	}
+				ca_value = document.getElementById("user_cert_list").value;
+         if(ca_value.length >2){
+           //testGetKeyPic();
+          $('#sp_bsb_sp_i_state').val("4");
+        
+          $("form.edit_sp_bsb").ajaxSubmit({
+            dataType: "json",
+            success: function (message) {
+            if (message.status == '保存成功!') {
+               $('#ca_stamp-dlg').modal('show');
+            } else if (message.status == '保存出错!') {
+              alert(message.msg);
+            }
+          }
+
+        });
+          return false;
+        }else{
+        $('#sp_bsb_sp_i_state').val("4");
+        }     
+		
       }
 
       return true;
     });
+
 
     /**
      * 药监局审核通过
@@ -1466,48 +1501,90 @@
       $('#sp_bsb_sp_i_state').val("16");
       $('#keyword').val("批准人：");
       $('#sp_status').val("16");
-      $("#UserPwd").removeAttr("readonly");
+      $("#ca_sign_pwd").removeAttr("readonly");
       $("#user_cert_list").removeAttr("disabled");
       if (!confirm('确定提交吗？')) {
         return false;
       }else{
-	 ca_value = document.getElementById("user_cert_list").value;
-        if(ca_value.length >2){
-	   testGetKeyPic();
-           $('#ca_validate').modal('show');     
-           return false;
-	}
+				ca_value = document.getElementById("user_cert_list").value;
+         if(ca_value.length >2){
+          $('#sp_bsb_sp_i_state').val("5");
+        
+          $("form.edit_sp_bsb").ajaxSubmit({
+            dataType: "json",
+            success: function (message) {
+            if (message.status == '保存成功!') {
+               $('#ca_stamp-dlg').modal('show');
+        //      $('#ca_sign_pwd').focus();
+            } else if (message.status == '保存出错!') {
+              alert(message.msg);
+            }
+          }
+
+        });
+          return false;
+        }else{
+        $('#sp_bsb_sp_i_state').val("5");
+        }     
       }
       return true;
     });
       //盖章人通过
      $('#save_16').click(function () {
      $('#sp_bsb_sp_i_state').val("9");
-    $("#UserPwd").removeAttr("readonly");
-      $("#user_cert_list").removeAttr("disabled");
-     $('#keyword').val("批准人：");
-      if (!confirm('确定提交吗？')) {
-        return false;
-      }else{
-	 ca_value = document.getElementById("user_cert_list").value;
-        if(ca_value.length >2){
-           testGetKeyPic();
-           $('#ca_validate').modal('show');     
-           return false;
-	}
-      }
-      return true;
+    $("#ca_sign_pwd").removeAttr("readonly");
+		$("#sp_ca_sign_pwd").removeAttr("readonly");
+      $("#sp_user_cert_list").removeAttr("readonly");
+		sp_ca_value = document.getElementById("sp_user_cert_list").value;
+        var key_password = $('#sp_ca_sign_pwd').val();
+		if (!key_password) {
+         alert('请填写key密码');
+          return false;
+       }
+		if(sp_ca_value.length>0)
+		{
+			ESeaL_GetUserCert(sp_ca_value, function(ret){$("#sign_cert").val(ret.retVal);});
+		}	
+	
+		VerifyUserPIN(sp_ca_value, key_password, function (ret) {
+        if (ret.retVal) {
+       //   $('form').submit();
+						<% if current_user.jg_bsb.jg_bsb_stamps.count > 0 %>
+							//alert(('#pdf_rules').val());
+							 $('#stamp-dlg').modal('show');					
+						<% else %>
+							$("form.edit_sp_bsb").ajaxSubmit({
+            		dataType: "json",
+            		success: function (message) {
+            		if (message.status == '保存成功!') {
+									location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';					
+           			} else if (message.status == '保存出错!') {
+             				 alert(message.msg);
+            		}
+         		 	}	
+						  });			
+						<% end%>
 
-     
-      $("select").attr("disabled", "disabled");
-      $("input.inputText").attr("disabled", "disabled");
-      $("#sp_bsb_sp_s_16").removeAttr("disabled");
-      $("#sp_bsb_sp_s_55").removeAttr("disabled");
-      $("#sp_bsb_sp_s_56").removeAttr("disabled");
-      $("#sp_bsb_sp_s_70").removeAttr("disabled");
-      $("#sp_bsb_sp_s_20").removeAttr("disabled");
+        } else {
+          alert('Key密码错误，请重新输入密码');
+					return false;
+        }
+			});
+    // $('#keyword').val("报告发送人：");
+    //  if (!confirm('确定提交吗？')) {
+      //  return false;
+     // }else{
+			//	<% if current_user.jg_bsb.jg_bsb_stamps.count > 0 %>
+				//		$('#stamp-dlg').modal('show');
+			//	<%  end %>
+			//	if(sp_ca_value.length >2){			
+					
+   //     }else{
+   //     $('#sp_bsb_sp_i_state').val("9");
+     //   }
+    //  }
       $('#sp_bsb_sp_i_state').val("9");
-      return true;
+			return false;
     });
     // 退回操作
     $('#back_1').click(function () {
@@ -1576,15 +1653,17 @@
     $("input").attr("readonly", "readonly");
     $("#UserPwd").removeAttr("disabled");
      $("#keypic").removeAttr("disabled");
+		$('.ca-form *').removeAttr('disabled readonly');
     <%end%>
 
     <%if (current_user.is_admin? && @sp_bsb["sp_i_state"].to_i == 9)%>
-    <%elsif @sp_bsb["sp_i_state"].to_i >= 4&&@sp_bsb["sp_i_state"].to_i < 10 %>
+    <%elsif (@sp_bsb["sp_i_state"].to_i >= 4&&@sp_bsb["sp_i_state"].to_i < 10) or @sp_bsb["sp_i_state"] == 16 %>
     $("select").attr("disabled", "disabled");
     $("input").attr("readonly", "readonly");
     $("#sp_bsb_sp_s_55").removeAttr("readonly");
     $("#UserPwd").removeAttr("disabled");
      $("#keypic").removeAttr("disabled");
+		$('.ca-form *').removeAttr('disabled readonly');
     <%end%>
 
     $.each(jg_data, function () {
@@ -1654,19 +1733,45 @@
           stamp_nos.push($(stamp).attr('data-stamp-no'));
         });
         if (preview) {
-          window.open('/sp_bsbs/' + SP.sp_bsb.id + '/print.html?pdf_rules=' + stamp_nos.join(','));
-          $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
+					<% if @sp_bsb.ca_key_status ==16%>
+						$.post('/ca_helper/create_text.json', function(data){
+						if (data.status == 'OK'){
+							var signCert = $("#sign_cert").val(); 
+							SignedData(sp_ca_value,data.msg,function (ret) {
+							 var	signData=ret.retVal.replace(/\+/g,"%2B");
+								signCert =signCert.replace(/\+/g,"%2B");
+								window.open('/sp_bsbs/' + SP.sp_bsb.id + '/preview_ca_pdf?pdf_rules=' + stamp_nos.join(',')+'&signData='+signData+'&signCert='+signCert+'&nonce='+data.msg)     	
+								$('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
+							});
+							}
+						});		
+					<% else%>
+          	window.open('/sp_bsbs/' + SP.sp_bsb.id + '/print.html?pdf_rules=' + stamp_nos.join(','));
+          <% end%>	
+					$('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
         } else {
           if (confirm('确定报告执行该操作吗?')) {
-            window.open('/sp_bsbs/' + SP.sp_bsb.id + '/print.pdf?pdf_rules=' + stamp_nos.join(','));
-            $('#pdf_rules').val(stamp_nos.join(','));
-	    $('#sp_bsb_sp_s_69').val(stamp_nos.join(','));
-	    $("#new_sp_bsb, form.edit_sp_bsb").trigger('submit');
-	   location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';	
-	    //$('#stamp-dlg').modal('hide');
-	   // testGetKeyPic();
-	    //$('#ca_validate').modal('show');
-	   // $("#new_sp_bsb, form.edit_sp_bsb").trigger('submit');
+					<% if @sp_bsb.ca_key_status ==16%>
+						$('#sp_bsb_ca_key_status').val('9');
+							$.post('/ca_helper/create_text.json', function(data){
+            if (data.status == 'OK'){
+              var signCert = $("#sign_cert").val(); 
+              SignedData(sp_ca_value,data.msg,function (ret) {
+               var  signData=ret.retVal.replace(/\+/g,"%2B");
+                signCert =signCert.replace(/\+/g,"%2B");
+                window.open('/sp_bsbs/' + SP.sp_bsb.id + '/preview_ca_pdf?pdf_rules=' + stamp_nos.join(',')+'&signData='+signData+'&signCert='+signCert+'&nonce='+data.msg+'&ca_key_status=9')       
+                $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
+              });
+              }
+							$("#new_sp_bsb, form.edit_sp_bsb").trigger('submit');
+            });
+					<% else%>
+						window.open('/sp_bsbs/' + SP.sp_bsb.id + '/print.pdf?pdf_rules=' + stamp_nos.join(','));
+				<% end%>
+      		$('#pdf_rules').val(stamp_nos.join(','));
+	   		 $('#sp_bsb_sp_s_69').val(stamp_nos.join(','));
+	   		// $("#new_sp_bsb, form.edit_sp_bsb").trigger('submit');
+	  		// location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';	
           } else {
             $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
           }
@@ -1727,9 +1832,185 @@
   	  var parentFrame = $(document);
   	  parentFrame.find('html,body').removeClass('box-overhide');
   	  parentFrame.find('#modalbox').hide();
-  	}	
+  	}
+		 // 主检人授权
+    $('#ca_stamp-dlg .ok').click(function () {
 
-  });
+      $('#ca_stamp-dlg .modal-footer .btn').attr('disabled', true);
+      $('.loading-label').removeClass('hidden');
+  	    getSignCertInfo();
+    	  return false;
+    });
+	});
+ <% unless [0, 1].include?(@sp_bsb.sp_i_state.to_i)%>
+	var cur_cert_id;
+/*
+	setTimeout(function () {
+	$("#user_cert_list1").removeAttr("readonly");
+	cur_cert_id = sp_bsb_form.user_cert_list1.value;
+	if(cur_cert_id.length >5 )
+   {
+
+      $(".kk").attr("href","/sp_bsbs/<%= @sp_bsb.id %>/print.pdf");
+ 	 }else{
+
+      $(".kk").attr("href","/sp_bsbs/<%= @sp_bsb.id %>/print");
+   }
+	},1000);
+*/
+	function getSignCertInfo() {
+		cur_cert_id = ca_sign_form.user_cert_list.value;//证书ID
+		var key_password = $('#ca_sign_pwd').val(); //	密码
+		if (!key_password) {
+        alert('请填写key密码');
+        return false;
+    }
+	var ep = new EventProxy();
+		ep.all('sealImg', 'signCert', function (sealImg, signCert) {
+				if(sealImg == '' || signCert == '') {
+					console.log('sealImg: ' + sealImg + ', signCert: ' + signCert);
+					alert('获取签章信息失败');
+					return false;
+				}
+		if(SP.sp_bsb.sp_i_state == 5) {
+          // 当5时盖两遍
+          handle_client_sign(sealImg, signCert, function(){
+            handle_client_sign(sealImg, signCert, null, 1);
+          }, 0);
+        } else {
+          handle_client_sign(sealImg, signCert, null, 0);
+        }
+      });
+		 if(SP.sp_bsb.sp_i_state == 16) {
+					if (!key_password) {
+    			    alert('请填写key密码');
+       				 return false;
+		  	  }
+			VerifyUserPIN(cur_cert_id, key_password, function (ret) {
+        if (ret.retVal) {
+     					$('#sp_bsb_sp_i_state').val("9");
+        $("form.edit_sp_bsb").ajaxSubmit({
+           dataType: "json",
+            success: function (message) {
+            if (message.status == '保存成功!') {
+              location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>'; 
+            }else if (message.status == '保存出错!') {
+            alert(message.msg);
+           }
+          }
+        });
+        } else {
+          alert('Key密码错误，请重新输入密码');
+        }
+     	 });
+      	return false;
+		}
+
+		// get user cert
+      ESeaL_GetUserCert(cur_cert_id, function (ret) {
+        ep.emit('signCert', ret.retVal);
+      });
+
+      // get user image
+      ESeaL_GetStampPic(cur_cert_id, function (ret) {
+        ep.emit('sealImg', ret.retVal);
+      });
+		}
+
+	function handle_client_sign(sealImg, signCert, _onFinish, _sign_date) {
+		 $.get('/sp_bsbs/by_ca_info.json',{
+		 id: <%= @sp_bsb.id %>,
+		 sign_cert: signCert,
+		 keypic: sealImg,
+		 sign_date: _sign_date,
+		pr_status: $("#pr_status").val()
+}, function (res) {
+		if (res.status == 'OK') {
+			var hashed_signs = {};
+			var ep2 = new EventProxy();	
+			 clientSignByHash(res.msg,cur_cert_id, $("#ca_sign_pwd").val(), "sign_data",
+			function (res) {
+				hashed_signs=res;
+		 	  ep2.emit('jdcj');
+				ep2.emit('fxjc');
+			});
+		ep2.all('jdcj', 'fxjc', function () {
+			$.get('/sp_bsbs/print_pdf.json', {
+			id:  '<%= @sp_bsb.id %>',
+			sign_data: hashed_signs,
+			sp_status: $("#sp_status").val()
+			 }, function (data) {
+				if (data.status == 'OK') {
+					if(SP.sp_bsb.sp_i_state != 5){
+						location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
+					}else{
+						 if (_onFinish) {
+			         _onFinish();
+     				 }else {
+       				 location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
+     				 }
+					}
+				 }
+			}, 'json')
+		});
+		}
+   },'json');
+}
+<% end%>
+/*          var hashed_signs = {};
+          var ep2 = new EventProxy();
+			ep2.all('jdcj', 'fxjc', function () {
+            $.post('/ca_helper/client_sign_pdf.json', {f: hashed_signs, sp_bsb_id: <%= @sp_bsb.id %>}, function (res) {
+              if (res.status == 'OK') {
+                if (SP.sp_bsb.sp_i_state == 2 || SP.sp_bsb.sp_i_state == 3) {
+                  if (check_stamp_selector()) {
+										$('#sp_bsb_sp_i_state').val("4");
+                    $("form.edit_sp_bsb").ajaxSubmit({
+                      dataType: "json",
+                      success: function (message) {
+                        if (message.status == '保存成功!') {
+                          alert(message.msg);
+
+                          if (SP.sp_bsb.sp_i_state != parseInt($('#sp_bsb_sp_i_state').val())) {
+                            location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
+                          }
+                        } else if (message.status == '保存出错!') {
+                          alert(message.msg);
+                        }
+                        $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
+                        $('.loading-label').addClass('hidden');
+                      }
+                    });
+                  }
+                } else {
+                  if (_onFinish) {
+                    _onFinish();
+                  } else {
+                    $("form.edit_sp_bsb").ajaxSubmit({
+                      dataType: "json",
+                      success: function (message) {
+                        if (message.status == '保存成功!') {
+                          alert(message.msg);
+
+                          if (SP.sp_bsb.sp_i_state != parseInt($('#sp_bsb_sp_i_state').val())) {
+                            location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
+                          }
+                        } else if (message.status == '保存出错!') {
+                          alert(message.msg);
+                        }
+                        $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
+                        $('.loading-label').addClass('hidden');
+                      }
+                    });
+                  }
+                }
+              }
+            }, 'json')
+          });
+
+}*/
+
+
 </script>
  <script src="/assets/jquery.json-2.4.js"></script>
 <script type="text/javascript">
@@ -1852,6 +2133,126 @@ function pass_ca(){
   //return true;
   $("#new_sp_bsb, form.edit_sp_bsb").trigger('submit');
 }
+//////////////////////////////////分界线//////////////////////////////////////////////////////////////////////////////////////////
+function getPro(datainfo){
+  var bol = true;
+  if(datainfo!=null&&datainfo!='') {
+    for (var i = 0; i < sp_pd.length; i++) {
+      if (sp_pd[i].qymc == datainfo) {
+        bol = false;
+        break;
+      }
+    }
+  }else{
+    bol = false;
+  }
+  return bol;
+}
+$(function () {
+
+ /** $('#sp_bsb_sp_s_1').select2({'width':'250px',"id":"w2w2w2"});
+  $('#sp_bsb_sp_s_1').change(function () {
+
+    var index_cm = this.selectedIndex-1;
+    if(index_cm==-1){
+      $("#sp_bsb_sp_s_23").val('');
+      $("#sp_bsb_sp_s_68").val('');
+      $("#sp_bsb_sp_s_215").val('');
+      $("#sp_bsb_sp_s_201").val('');
+      $("#sp_bsb_sp_s_3").val('请选择');
+      $("#sp_bsb_sp_s_4").val('请选择');
+      $("#sp_bsb_sp_s_5").val('请选择');
+      $("#sp_bsb_sp_s_7").val('');
+      $("#sp_bsb_sp_s_bsfl").val('');
+      $("#sp_bsb_sp_s_10").val('');
+      $("#sp_bsb_sp_s_8").val('');
+      $("#sp_bsb_sp_s_9").val('');
+      $("#sp_bsb_sp_s_2").val('');
+      $("#sp_bsb_sp_s_11").val('');
+      $("#sp_bsb_sp_s_12").val('');
+    }
+    if (index_cm != -1) {
+     // $('#sp_bsb_sp_s_1').select2('close');
+      //console.log(sp_com[index_cm].sp_s_68)
+      $("#sp_bsb_sp_s_23").val(sp_com[index_cm].sp_s_23);
+      $("#sp_bsb_sp_s_68").val(sp_com[index_cm].sp_s_68);
+      $("#sp_bsb_sp_s_68").trigger("change");
+      $("#sp_bsb_sp_s_215").val(sp_com[index_cm].sp_s_215);
+      $("#sp_bsb_sp_s_201").val(sp_com[index_cm].sp_s_201);
+      $("#sp_bsb_sp_s_7").val(sp_com[index_cm].sp_s_7);
+      $("#sp_bsb_sp_s_bsfl").val(sp_com[index_cm].sp_s_bsfl);
+      $("#sp_bsb_sp_s_10").val(sp_com[index_cm].sp_s_10);
+      $("#sp_bsb_sp_s_8").val(sp_com[index_cm].sp_s_8);
+      $("#sp_bsb_sp_s_9").val(sp_com[index_cm].sp_s_9);
+      $("#sp_bsb_sp_s_2").val(sp_com[index_cm].sp_s_2);
+      $("#sp_bsb_sp_s_11").val(sp_com[index_cm].sp_s_11);
+      $("#sp_bsb_sp_s_12").val(sp_com[index_cm].sp_s_12);
+      $("#sp_bsb_sp_s_3").val(sp_com[index_cm].sp_s_3);
+      $("#sp_bsb_sp_s_3").trigger("change");
+      $("#sp_bsb_sp_s_4").val(sp_com[index_cm].sp_s_4);
+      $("#sp_bsb_sp_s_4").trigger("change")
+      $("#sp_bsb_sp_s_5").val(sp_com[index_cm].sp_s_5);
+    }
+  })**/
+    //////////生产企业////////////////
+ if(getPro('<%= @sp_bsb.sp_s_64%>')){
+  // $("#sp_bsb_sp_s_64").empty();
+   $("#sp_bsb_sp_proid").val('');
+   $("#sp_bsb_sp_s_64").append("<option parentid='<%= @sp_bsb.sp_s_64%>' value='<%= @sp_bsb.sp_s_64%>'><%= @sp_bsb.sp_s_64%></option>");
+   $("#sp_bsb_sp_s_64").val('<%= @sp_bsb.sp_s_64%>');
+ }
+    $('#sp_bsb_sp_s_64').select2({'width':'100px'});
+    $('#sp_bsb_sp_s_64').change(function () {
+
+      var index_pd = this.selectedIndex-1;
+      if(index_pd==-1){
+        $("#sp_bsb_sp_s_65").val('');
+        $("#sp_bsb_sp_s_202").val('请选择');
+        $("#sp_bsb_sp_s_220").val('请选择');
+        $("#sp_bsb_sp_s_221").val('请选择');
+      }
+      if (index_pd != -1) {
+        $("#sp_bsb_sp_s_65").val(sp_pd[index_pd]!=null?sp_pd[index_pd].scdz:'');
+        $("#sp_bsb_sp_s_13").val(sp_pd[index_pd]!=null?sp_pd[index_pd].scbh:'');
+        $("#sp_bsb_sp_proid").val(sp_pd[index_pd]!=null?sp_pd[index_pd].sp_proid:'');
+        $("#sp_bsb_sp_s_202").val(sp_pd[index_pd]!=null?sp_pd[index_pd].sp_s_3:"请选择");
+        if(sp_pd[index_pd]!=null)
+        $("#sp_bsb_sp_s_202").trigger("change");
+        $("#sp_bsb_sp_s_220").val(sp_pd[index_pd]!=null?sp_pd[index_pd].sp_s_4:"请选择");
+        if(sp_pd[index_pd]!=null)
+        $("#sp_bsb_sp_s_220").trigger("change")
+        $("#sp_bsb_sp_s_221").val(sp_pd[index_pd]!=null?sp_pd[index_pd].sp_s_5:"请选择");
+      }
+  })
+})
+    function dis(){
+      var i = $("#srd").val();
+      if (i==0) {
+        $("#srd").html("点击选择");
+        $("#srd").val("1")
+        $("#sp_bsb_sp_proid").val('');
+        $("#sp_bsb_sp_s_64_1").show();
+        $('#sp_bsb_sp_s_64').prop({"disabled":true});
+        $('#sp_bsb_sp_s_64').attr({"style":"display:none;"});
+        setTimeout(function(){
+          $('.select2-container--disabled').attr({"style":"display:none;"})
+        },500);
+      }
+      if(i==1){
+        $("#srd").html("点击输入");
+        $("#srd").val("0");
+        $("#sp_bsb_sp_proid").val('<%= @sp_bsb.sp_proid%>');
+        $("#sp_bsb_sp_s_64_1").hide();
+        $('#sp_bsb_sp_s_64').show();
+        $('#sp_bsb_sp_s_64').val('请选择');
+        setTimeout(function(){
+          $('.select2-container--disabled').show();
+          $('.select2-container--disabled').attr({"style":"width:100px;"})
+          $('#sp_bsb_sp_s_64').prop({"disabled":false});
+        },500);
+
+      }
+    }
 </script>
 <style type="text/css">
   .style1 {
@@ -2002,11 +2403,13 @@ function pass_ca(){
   </tr>
 </table>
 <h1 style="color:red"><%= flash[:import_result] unless flash[:import_result].nil? %></h1>
-<%= form_for(@sp_bsb) do |f| %>
+<%= form_for(@sp_bsb,html: {name: 'sp_bsb_form'}) do |f| %>
 <input type="hidden" name="pdf_rules" id="pdf_rules">
 <input type="hidden" name="keyword" id="keyword">
 <input type="hidden" name="sp_status" id="sp_status">
 <input type="hidden" name="pr_status" id="pr_status">
+<input type="hidden" name="sign_data" id="sign_data">
+<input type="hidden" name="sign_cert" id="sign_cert">
     <div id="my_show">
       <table border="1" cellspacing="0" cellpadding="0" width="100%" class="style1">
         <tr>
@@ -2021,7 +2424,12 @@ function pass_ca(){
         </tr>
         <tr>
           <td colspan="5">被抽样单位名称*</td>
-          <td colspan="11"><%= f.text_field :sp_s_1, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="11">
+            <!--<input id="sp_bsb_sp_s_1_1" name="sp_bsb[sp_s_1]"   style="width: 70%; height: 19px;display:none;">-->
+            <%= f.text_field :sp_s_1, :class => "inputText", :style => "width: 100%; height: 19px;" %>
+            <%#= f.select :sp_s_1, options_for_select(SpCompanyInfo.where(qylx: 0).map { |cm| [cm.sp_s_1, cm.sp_s_1] }.unshift(["请选择", ""]), @sp_bsb.sp_s_1), {}, :class => "form-control input-sm" %>
+            <!--<a id = "srd" href="javascript:void(0);" onclick="dis();" value="0">点击输入</a>-->
+          </td>
           <td colspan="3">抽样地点*</td>
           <td colspan="11"><%= f.select :sp_s_68, @options[68], {}, {:style => "width: 87px;"} %>
             <span><%= f.select :sp_s_2, "", {}, :class => "required", :style => "width: 185px;" %></span></td>
@@ -2178,7 +2586,14 @@ function pass_ca(){
         </tr>
         <tr>
           <td colspan="5">标识生产企业名称*</td>
-          <td colspan="5"><%= f.text_field :sp_s_64, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="5">
+            <%= f.hidden_field :sp_proid, :class => "inputText", :style => "width: 100%; height: 19px" %>
+            <!--<input type = "hidden" id="sp_bsb_sp_s_proid" name="sp_bsb[sp_proid]" value=""  style="width: 60%; height: 19px;display:none;">-->
+            <input id="sp_bsb_sp_s_64_1" name="sp_bsb[sp_s_64]"   style="width: 60%; height: 19px;display:none;">
+            <%#= f.text_field :sp_s_64, :class => "inputText", :style => "width: 100%; height: 19px" %>
+            <%= f.select :sp_s_64, options_for_select(SpProductionInfo.where(qylx: 0).map { |pd| [pd.qymc, pd.qymc] }.unshift(["请选择", ""]), @sp_bsb.sp_s_64), {}, :class => "form-control input-sm" %>
+            <a id = "srd" href="javascript:void(0);" onclick="dis();" value="0">点击输入</a>
+          </td>
           <td colspan="4">生产企业联系人*</td>
           <td colspan="4"><%= f.text_field :sp_s_75, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
           <td colspan="4">生产企业电话*</td>
@@ -2450,7 +2865,7 @@ function pass_ca(){
 
     <div class="actions">
 
- 	<div class="modal fade" id="ca_validate"  name="ca_validate"tabindex="-1" role="dialog">
+ <!--	<div class="modal fade" id="ca_validate"  name="ca_validate"tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
               <div class="modal-content">
                 <div class="modal-header">
@@ -2459,14 +2874,15 @@ function pass_ca(){
                   <h4 class="modal-title">请输入key密码</h4>
                 </div>
                 <div class="modal-body">
-                  <div class="modal-group">
-                  <select id="user_cert_list" name="user_cert_list" onchange= "testGetKeyPic()"  class="form-control input-sm"></select>
-                  <input type="text" name="keypic" id="keypic" size="30" hidden="true" />
+					        <form name="ca_sign_form" style="margin: 10px auto;" class="form-inline">
+								
+									用户：<select id="user_cert_list" name="user_cert_list" class="form-control input-sm"></select>
+									密码：<input placeholder="USB key密码" class="form-control input-sm" id="ca_sign_pwd" type="password">
+          			 </form>
+					        <input type="text" name="keypic" id="keypic" size="30" hidden="true" />
                   <input type="text" name="sign_cert" id="sign_cert" size="30"  hidden="true" />
                   <IMG id="picimg1" height=20 src="" width=64>
                   </div>
-                  <input type="button" value="获得签名" onclick="testGetKeyPic()"  hidden="true"/>
-                  <input type="button" value="同步信息" onclick="GetDigestData()"  hidden="true"/>
                 <div class="form-group"  id="sign_div"  hidden="true">
                   <label for="">证书密码：</label><br>
                   <input  type="password" name="pwd1" id="UserPwd" class="user-sign-field">
@@ -2482,17 +2898,20 @@ function pass_ca(){
                 </div>
                 </div>
                 <div class="modal-footer">
-  
-		  <% if @sp_bsb.sp_i_state == 16 %>
+  						<form name="ca_sign_form" style="margin: 10px auto;" class="form-inline">
+              用户：<select id="user_cert_list" name="user_cert_list" class="form-control input-sm"></select>
+              密码：<input placeholder="USB key密码" class="form-control input-sm" id="ca_sign_pwd" type="password">
+            </form>
+		  % if @sp_bsb.sp_i_state == 16 %>
                    <button type="button" onclick="pass_ca()" class="btn btn-primary btn-sm ok" id="pdf_btt" disabled="disabled" >确定</button>
-                 <% else %>
+                 % else %>
 		   <button type="button" onclick="printpdf()" class="btn btn-primary btn-sm ok" id="pdf_btt" disabled="disabled" >个人签名</button>	
-                <% end %>
+                % end %>
 		</div>
               </div>
             </div>
           </div>
-
+-->
       <% if @sp_bsb.new_record? %>
           <%= f.submit(vaule="保存并新建", options={"id" => "save_and_create", :class => "btn btn-xs btn-success"}) %>
       <% end %>
@@ -2507,37 +2926,7 @@ function pass_ca(){
           <%= f.submit(vaule="检测数据提交入库", options={"id" => "submit2", :class => "btn btn-xs btn-success"}) %>
           <% if @sp_bsb.sp_i_state == 2 %>
               <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
-          <% end %>
-          <div class="modal fade" id="stamp-dlg" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span></button>
-                  <h4 class="modal-title">电子报告签章选择</h4>
-                </div>
-                <div class="modal-body">
-                  <ul class="stamp-selector-list">
-                    <% @jg_bsb.jg_bsb_stamps.each do |stamp| %>
-                        <li>
-                          <a href="javascript:void(0);" data-stamp-no="<%= stamp.stamp_no %>" class="stamp-selector">
-                            <img src="/jg_bsb_stamps/<%= stamp.id %>/cover" class="img-thumbnail" alt="<%= stamp.stamp_no %>">
-                            <div class="text-center"><%= stamp.stamp_type_desc %></div>
-                            <i data-stamp-no="<%= stamp.stamp_no %>" class="hidden glyphicon glyphicon-ok"></i>
-                          </a>
-                        </li>
-                    <% end %>
-                  </ul>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-primary btn-sm ok">确定执行【主检人审核】</button>
-                  <button type="button" class="btn btn-default btn-sm preview">报告预览</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
+					<% end %>
       <% elsif @sp_bsb["sp_i_state"]==4&&session[:change_js]==7 %>
           <%= f.submit(vaule="检测机构审核通过", options={"id" => "save_2", :class => "btn btn-xs btn-success"}) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
@@ -2547,6 +2936,10 @@ function pass_ca(){
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
          <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default kk">检验报告</a>
      <% elsif @sp_bsb["sp_i_state"]==16&&session[:change_js]==16 %>
+					 <div class="ca-form form-inline">
+            用户：<select id="sp_user_cert_list" style="width: 200px;" name="sp_user_cert_list" class="form-control input-sm"></select>
+            密码：<input placeholder="USB key密码" class="form-control input-sm" id="sp_ca_sign_pwd" type="password">
+          </div>
         <%= f.submit(vaule="确定通过", options={"id" => "save_16", :class => "btn btn-xs btn-success"}) %>
         <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
 	      <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default kk">检验报告</a>
@@ -2589,16 +2982,80 @@ function pass_ca(){
         <br>
         <%= submit_tag '上传', class: 'btn btn-sm btn-default' %>
     <% end %>
-
 <% end %>
- <script src="/assets/XTXSAB.js"></script>
-<script src="/assets/ESealWebSocket_PDFClientLogin.js"></script>
-<SCRIPT LANGUAGE=JAVASCRIPT>
-   SetUserCertList("edit_sp_bsb_"+'<%= @sp_bsb.id %>'+".user_cert_list", CERT_TYPE_HARD);
- setTimeout(function () {
-   cur_cert_id = document.getElementById("user_cert_list").value;
-   jg_count = <%= current_user.jg_bsb.jg_bsb_stamps.count %>;
+<div class="modal fade" id="ca_stamp-dlg" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">提交报告</h4>
+      </div>
+			 <div class="modal-body">
+						<form name="ca_sign_form" style="margin: 10px auto;" class="form-inline">
+            <div class="modal-group">
+							用户：<select id="user_cert_list" name="user_cert_list" class="form-control input-sm"></select>
+					</div>
+					<div class="modal-group">
+							密码：<input placeholder="USB key密码" class="form-control input-sm" id="ca_sign_pwd" type="password">
+					</div>
+			</div>		
 
+			<div class="modal-footer">
+        <label class="hidden loading-label"><%= image_tag('loading.gif', class: 'img-loading') %>提交中...</label>
+				<% if @sp_bsb.sp_i_state ==2 || @sp_bsb.sp_i_state ==3%>
+  	      <button type="button" class="btn btn-primary btn-sm ok">确定执行【主检人检验】</button>
+				<% elsif @sp_bsb.sp_i_state ==4 %>
+					<button type="button" class="btn btn-primary btn-sm ok">确定执行【主检人审核】</button>
+				<% elsif @sp_bsb.sp_i_state ==5 %>
+          <button type="button" class="btn btn-primary btn-sm ok">确定执行【主检人批准】</button>
+				<% elsif @sp_bsb.sp_i_state ==16 %>
+					<button type="button" class="btn btn-primary btn-sm ok">确定执行【报告发送】</button>
+				<% end %>
+      </div>
+    </div>
+  </div>
+</div>
+<% if @sp_bsb.sp_i_state == 16 %>
+<div class="modal fade" id="stamp-dlg" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">电子报告签章选择</h4>
+                </div>
+                <div class="modal-body">
+                  <ul class="stamp-selector-list">
+                    <% @jg_bsb.jg_bsb_stamps.each do |stamp| %>
+                        <li>
+                          <a href="javascript:void(0);" data-stamp-no="<%= stamp.stamp_no %>" class="stamp-selector">
+                            <img src="/jg_bsb_stamps/<%= stamp.id %>/cover" class="img-thumbnail" alt="<%= stamp.stamp_no %>">
+                            <div class="text-center"><%= stamp.stamp_type_desc %></div>
+                            <i data-stamp-no="<%= stamp.stamp_no %>" class="hidden glyphicon glyphicon-ok"></i>
+                          </a>
+                        </li>
+                    <% end %>
+                  </ul>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary btn-sm ok">确定执行【主检人审核】</button>
+                  <button type="button" class="btn btn-default btn-sm preview">报告预览</button>
+                </div>
+              </div>
+            </div>
+</div>
+<% end%>
+
+<SCRIPT LANGUAGE=JAVASCRIPT>
+ setTimeout(function () {
+		var cur_cert_id;
+	cur_cert_id = document.getElementById("user_cert_list").value;
+	<%  if [2,3,4, 5].include?(@sp_bsb.sp_i_state) %>
+   cur_cert_id = document.getElementById("user_cert_list").value;
+	<% elsif [16].include?(@sp_bsb.sp_i_state)  %>
+		cur_cert_id = document.getElementById("sp_user_cert_list").value;
+	<% end %>
    if(cur_cert_id.length >5 )
      {
 
@@ -2610,3 +3067,4 @@ function pass_ca(){
   }, 2000);	
 
 </SCRIPT>
+

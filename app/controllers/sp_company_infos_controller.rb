@@ -26,10 +26,12 @@ class SpCompanyInfosController < ApplicationController
   # GET /sp_company_infos/new.json
   def new
     @sp_company_info = SpCompanyInfo.new
+    @avala=[68, 201]
     @options = []
-    @options[68]=Flexcontent.where(flex_field: 'sp_bsb_sp_s_68').order('flex_sortid ASC')
-    @options[68]=@options[68].map{|option|[option[:flex_name],option[:flex_id]]}.unshift(['请选择', nil])
-
+    @avala.each do |i|
+    @options[i]=Flexcontent.where(flex_field: "sp_bsb_sp_s_#{i}").order('flex_sortid ASC')
+    @options[i]=@options[i].map{|option|[option[:flex_name],option[:flex_id]]}.unshift(['请选择', nil])
+    end
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @sp_company_info }
@@ -39,9 +41,12 @@ class SpCompanyInfosController < ApplicationController
   # GET /sp_company_infos/1/edit
   def edit
     @sp_company_info = SpCompanyInfo.find(params[:id])
+    @avala=[68, 201]
     @options = []
-    @options[68] = Flexcontent.where(flex_field: "sp_bsb_sp_s_68").order("flex_sortid ASC")
-    @options[68]=@options[68].map{|option|[option[:flex_name],option[:flex_id]]}.unshift(['请选择', nil])
+    @avala.each do |i|
+      @options[i]=Flexcontent.where(flex_field: "sp_bsb_sp_s_#{i}").order('flex_sortid ASC')
+      @options[i]=@options[i].map{|option|[option[:flex_name],option[:flex_id]]}.unshift(['请选择', nil])
+    end
   end
 
   # POST /sp_company_infos

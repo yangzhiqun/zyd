@@ -11,8 +11,8 @@ class SpBsbsController < ApplicationController
     @spbsb = SpBsb.find(params[:id])
     respond_to do |format|
       format.pdf {
-        filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], false, current_user.id,false)
-       if filepath.nil?
+    			filepath = Rails.root.join('tmp/pdf_preview', "sp_bsbs_#{@spbsb.id}_print.pdf")   
+		if filepath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
         else
@@ -31,30 +31,80 @@ class SpBsbsController < ApplicationController
     end
   end
 
+	def preview_ca_pdf
+		@spbsb = SpBsb.find(params[:id])
+	respond_to do |format|
+	 format.html {
+		signData =params[:signData].split.join('').to_s
+		signCert =params[:signCert].split.join('').to_s
+		filepath = @spbsb.generate_ca_pdf_report(params[:pdf_rules],signData,signCert,params[:nonce])
+			if filepath.nil?
+          flash[:error] = '查看报告失败'
+          redirect_to '/sp_bsbs/no_available_pdf_found' and return
+       else
+				if !params[:ca_key_status].blank?
+					@spbsb.update_attributes({:ca_key_status =>9})
+				end
+          send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
+       end
+		}
+		format.pdf {
+		filepath =  Rails.root.join('tmp/pdf_preview', "preview_sp_bsbs_#{@spbsb.id}_print.pdf")
+      if filepath.nil?
+          flash[:error] = '查看报告失败'
+          redirect_to '/sp_bsbs/no_available_pdf_found' and return
+       else
+          send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
+       end
+    }
+		end
+  end
+
+
   def by_ca_info
     @spbsb = SpBsb.find(params[:id])
     preview = false
    if !params[:pr_status].blank?
        preview =  params[:pr_status]
     end
-    if  !@spbsb.report_path.blank? 
+  
        if @spbsb.ca_key_status ==0
-           pdfpath=@spbsb.generate_bsb_report_pdf(params[:pdf_rules], true, current_user.id,false)
+           pdfpath=@spbsb.generate_bsb_report_pdf('ca_file', true, current_user.id,false)
        else
-          pdfpath=File.expand_path('../reports', Rails.root).to_s + @spbsb.report_path
+         pdfpath = Rails.root.join('tmp/pdf_preview', "sp_bsbs_#{@spbsb.id}_print.pdf") 
        end
-    else
-     pdfpath=@spbsb.generate_bsb_report_pdf(params[:pdf_rules], preview, current_user.id,false)
+		logger.error "@spbsb.sp_i_state"
+		logger.error @spbsb.sp_i_state
+   	if [2, 3].include? @spbsb.sp_i_state
+      keyword = '检验人：'
+    elsif @spbsb.sp_i_state == 4
+      keyword = '审核人：'
+    elsif @spbsb.sp_i_state == 5
+			logger.error "@spbsb.sp_i_state1"
+      keyword = '批准人：'
     end
-    
-    keyword= params[:keyword] 
-    signCert=params[:sign_cert]
-    sealImg=params[:keypic]
+		logger.error "ssss"
+  	signCert=params[:sign_cert]
+	  sealImg=params[:keypic]
+		logger.error signCert
+		_QFRQ_keyword_ = '签发日期：'
+		logger.error "@sp_bsb.sp_i_state"
+		sign_date = (@spbsb.sp_i_state == 16 and params[:sign_date].to_i == 1)
+		logger.error sign_date
+		if sign_date and @spbsb.sign_date.blank?
+			# 记录首次签发日期
+			 @spbsb.update_attributes(sign_date: Time.now)
+		#	sealImg =Base64.strict_encode64(Time.new.strftime("%Y-%m-%d"))
+			sealImg = Time.new.strftime("%Y-%m-%d")
+			keyword= '签发日期：'
+ 		end
+		logger.error keyword
     clientSignMessages=[]
     clientSignMessage ={ruleType: 1,keyword: keyword,searchOrder: '2',fileUniqueId: '111111111111',heightMoveSize: 0,moveSize: 0,moveType: 3,searchOrder: 2}
     clientSignMessages.push(clientSignMessage)
     reqMessage ={appId: '9ff70fce51874b62a5f136fdda43c4b7',sealImg: sealImg, signCert: signCert,
                     sealWidth: 0,sealHeight: 0, clientSignMessages: clientSignMessages}
+		logger.error reqMessage
     reqMessage = Base64.strict_encode64(reqMessage.to_json)
     #tmp_file = Rails.root.join('tmp', "jilin.pdf")
     filename = Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}.txt")
@@ -77,14 +127,16 @@ class SpBsbsController < ApplicationController
     @spbsb = SpBsb.find(params[:id])
     #espond_to do |format|
    # pdfpath=File.expand_path('../reports', Rails.root).to_s + @spbsb.report_path
-   if  !@spbsb.report_path.blank?
-     pdfpath=File.expand_path('../reports', Rails.root).to_s + @spbsb.report_path
+		if @spbsb.ca_key_status ==0
+       pdfpath=@spbsb.generate_bsb_report_pdf('ca_file', true, current_user.id,false)
     else
-     pdfpath=Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}_print.pdf")
-    end
+			pdfpath = Rails.root.join('tmp/pdf_preview', "sp_bsbs_#{@spbsb.id}_print.pdf")
+
+    end		
+
 
     sign_data=params[:sign_data]
-
+	
     logger.error sign_data
     signSealMessagesJson =  File.read(Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}.txt"))
      File.write(Rails.root.join('tmp', "yang.req"),sign_data)
@@ -229,6 +281,8 @@ class SpBsbsController < ApplicationController
   # GET /sp_bsbs/new
   # GET /sp_bsbs/new.json
   def new
+   # @sp_com = SpCompanyInfo.where(qylx: 0);
+    @sp_pd = SpProductionInfo.where(qylx: 0);
     @province_plus = "省"
     if ["北京", "天津", "上海", "重庆"].include?(current_user.user_s_province)
       @province_plus = "市"
@@ -316,6 +370,8 @@ class SpBsbsController < ApplicationController
 
   # GET /sp_bsbs/1/edit
   def edit
+   # @sp_com = SpCompanyInfo.where(qylx: 0);
+    @sp_pd = SpProductionInfo.where(qylx: 0);
     if current_user.is_admin?
       @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
  else
@@ -1475,7 +1531,7 @@ class SpBsbsController < ApplicationController
  
   private
   def sp_bsb_params
-    params.require(:sp_bsb).permit(
+    params.require(:sp_bsb).permit(:sp_proid,
         :ca_key_status,:report_path, :sp_s_1, :sp_s_2, :sp_s_3, :sp_s_4, :sp_s_5, :sp_s_6, :sp_s_7, :sp_s_8, :sp_s_9, :sp_s_10, :sp_s_11, :sp_s_12, :sp_s_13, :sp_s_14, :sp_n_15, :sp_s_16, :sp_s_17, :sp_s_18, :sp_s_19, :sp_s_20, :sp_s_21, :sp_d_22, :sp_s_23, :sp_s_24, :sp_s_25, :sp_s_26, :sp_s_27, :sp_d_28, :sp_n_29, :sp_s_30, :sp_n_31, :sp_n_32, :sp_s_33, :sp_s_34, :sp_s_35, :sp_s_36, :sp_s_37, :sp_d_38, :sp_s_39, :sp_s_40, :sp_s_41, :sp_s_42, :sp_s_43, :sp_s_44, :sp_s_45, :sp_d_46, :sp_d_47, :sp_s_48, :sp_s_49, :sp_s_50, :sp_s_51, :sp_s_52, :sp_s_53, :sp_s_54, :sp_s_55, :sp_s_56, :sp_s_57, :sp_s_58, :sp_s_59, :sp_s_60, :sp_s_61, :sp_s_62, :sp_s_63, :sp_s_64, :sp_s_65, :sp_s_66, :sp_s_67, :sp_s_68, :sp_s_69, :sp_s_70, :sp_s_71, :sp_s_72, :sp_s_73, :sp_s_74, :sp_s_75, :sp_s_76, :sp_s_77, :sp_s_78, :sp_s_79, :sp_s_80, :sp_s_81, :sp_s_82, :sp_s_83, :sp_s_84, :sp_s_85, :sp_d_86, :sp_s_87, :sp_s_88, :user_id, :uid,
         :sp_n_jcxcount,
         :cyd_file, :cyjygzs_file,

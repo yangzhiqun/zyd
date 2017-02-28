@@ -12,7 +12,9 @@ Rails.application.routes.draw do
   resources :jg_bsb_stamps do
     get 'cover'
   end
-
+	post 'ca_helper/create_text' => 'ca_helper#create_text'
+	post 'ca_helper/hash_client_sign' => 'ca_helper#hash_client_sign'
+  post 'ca_helper/client_sign_pdf'
   get "ca_helper/verify_report"
   post "ca_helper/verify_report"
   get "beica_sso" => 'ca_helper#sso'
@@ -219,6 +221,7 @@ Rails.application.routes.draw do
       get 'xsbg'
       get "cyd"
       get "cyjygzs"
+			get "preview_ca_pdf"
     end
 
     collection do
