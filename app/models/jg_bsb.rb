@@ -9,6 +9,7 @@ class JgBsb < ActiveRecord::Base
   require 'RMagick'
 
   has_many :jg_bsb_names, dependent: :delete_all
+  has_many :baosong_a_jg_ids, dependent: :delete_all
   has_many :jg_bsb_stamps
   has_many :users
   has_many :jg_bsb_supers

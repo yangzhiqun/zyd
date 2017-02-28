@@ -47,7 +47,7 @@ $.fn.CfdaProvince = function (config) {
         });
 
         if (config.level2) {
-           // console.log(config)
+
             var info = config.level2;
             if(config.level2=="-请选择-"){
                 info = "请选择"
