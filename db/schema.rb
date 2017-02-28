@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161207053855) do
+ActiveRecord::Schema.define(version: 20170215074439) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -69,6 +69,9 @@ ActiveRecord::Schema.define(version: 20161207053855) do
     t.string   "prov",       limit: 255
     t.string   "rwlylx",     limit: 255
     t.datetime "deleted_at"
+    t.string   "sheng",      limit: 10
+    t.string   "shi",        limit: 10
+    t.string   "xian",       limit: 10
   end
 
   add_index "baosong_as", ["deleted_at"], name: "index_baosong_as_on_deleted_at", using: :btree
@@ -230,7 +233,7 @@ ActiveRecord::Schema.define(version: 20161207053855) do
     t.integer  "status",            limit: 4,     default: 0
     t.integer  "sys_province_id",   limit: 4
     t.string   "city",              limit: 15
-    t.string   "country",           limit: 10
+    t.string   "country",           limit: 100
     t.string   "zipcode",           limit: 255
     t.string   "fax",               limit: 255
     t.integer  "jg_type",           limit: 4
@@ -1807,8 +1810,6 @@ ActiveRecord::Schema.define(version: 20161207053855) do
     t.integer  "blr_user_id",         limit: 4
     t.integer  "tbr_user_id",         limit: 4
     t.integer  "shr_user_id",         limit: 4
-    t.string   "sp_s_4",              limit: 20
-    t.string   "sp_s_5",              limit: 20
     t.string   "sp_s_220",            limit: 20
     t.string   "sp_s_221",            limit: 20
     t.string   "SPDL",                limit: 255
@@ -1818,6 +1819,8 @@ ActiveRecord::Schema.define(version: 20161207053855) do
     t.string   "xc_attachment_path",  limit: 100
     t.string   "pc_attachment_path",  limit: 100
     t.string   "xz_attachment_path",  limit: 100
+    t.string   "sp_s_4",              limit: 20
+    t.string   "sp_s_5",              limit: 20
     t.date     "qdqk_sdrq"
     t.string   "qdqk_sfjs",           limit: 60
     t.text     "cpkzqk_wzhyy",        limit: 65535
@@ -1968,14 +1971,14 @@ ActiveRecord::Schema.define(version: 20161207053855) do
     t.string   "cydwsf",                 limit: 60
     t.string   "bsscqymc",               limit: 60
     t.datetime "scrq"
-    t.string   "sp_s_4",                 limit: 20
-    t.string   "sp_s_5",                 limit: 20
     t.string   "sp_s_220",               limit: 20
     t.string   "sp_s_221",               limit: 20
     t.string   "SPDL",                   limit: 255
     t.string   "SPYL",                   limit: 255
     t.string   "SPCYL",                  limit: 255
     t.string   "SPXL",                   limit: 255
+    t.string   "sp_s_4",                 limit: 20
+    t.string   "sp_s_5",                 limit: 20
     t.string   "bcydw_shi",              limit: 60
     t.string   "bcydw_xian",             limit: 60
     t.string   "bsscqy_shi",             limit: 60
