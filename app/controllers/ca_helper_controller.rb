@@ -3,15 +3,22 @@ class CaHelperController < ApplicationController
   skip_before_filter :authenticate_user!
 
   def sso
-    response = Unirest.get("http://60.247.77.105:8080/am/identity/attributes?subjectid=#{params['tokenId']}&attributenames=useridcode")
+    response = Unirest.get("http://223.71.250.19:8080/am/identity/attributes?subjectid=#{params['tokenId']}&attributenames=useridcode")
     if response.code == 200
       ca_uuid = response.body.lines.last.split('=').last.strip
       user = User.find_by_ca_uuid(ca_uuid)
       if user.nil?
         render text: "用户不存在或未登记, caid: #{ca_uuid}"
       else
-        sign_in(user)
-        redirect_to '/'
+				if current_user.nil?
+					sign_in(user)
+				else
+					if current_user.id != user.id
+						sign_out(current_user)
+						sign_in(user)
+					end
+				end
+				redirect_to '/'
       end
     else
       render text: "服务器错误, Status: #{response.code}"
