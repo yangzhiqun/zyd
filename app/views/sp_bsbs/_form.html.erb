@@ -210,6 +210,10 @@
       var index = $('.fht-fixed-column .JYJG').index($(this));
       $($('.fht-fixed-body .JYJG').get(index)).val($(this).val()).trigger('change');
     });
+   $('body').delegate('.fht-fixed-column .JYXM', 'keyup blur', function () {
+      var index = $('.fht-fixed-column .JYXM').index($(this));
+      $($('.fht-fixed-body .JYXM').get(index)).val($(this).val()).trigger('change');
+    });
 
     $('#tblGrid').fixedHeaderTable("destroy");
     $('#tblGrid').fixedHeaderTable({altClass: 'odd', fixedColumns: 3});
@@ -1903,6 +1907,7 @@
 		<% unless [0,2,3].include?@sp_bsb.sp_i_state %>
 			$("#sp_bsb_inspection_basis").attr("readonly","readonly");
 			$("#sp_bsb_decision_basis").attr("readonly","readonly");
+			$("#sp_bsb_FX_jyyj_custom").attr("readonly","readonly");
 		<% end %>
 		
   	// 模态框需要调用父级框架的显示
@@ -1936,22 +1941,31 @@
   	}
 		 // 主检人授权
     $('#ca_stamp-dlg .ok').click(function () {
+	cur_cert_id = ca_sign_form.user_cert_list.value;//证书ID
+      var key_password = $('#ca_sign_pwd').val(); //  密码：
+      if (!key_password) {
+        alert('请填写key密码');
 
-      $('#ca_stamp-dlg .modal-footer .btn').attr('disabled', true);
-      $('.loading-label').removeClass('hidden');
-  	    getSignCertInfo();
-    	  return false;
+        return false;
+      }else{
+    VerifyUserPIN(cur_cert_id, key_password, function (ret) {
+      if (ret.retVal) {
+          $('#ca_stamp-dlg .modal-footer .btn').attr('disabled', true);
+          $('.loading-label').removeClass('hidden');
+          getSignCertInfo();
+          return false;
+        }else{
+         alert('KEY密码错误！');
+         return false;
+        }
+      });
+    }
     });
 	});
  <% unless [0, 1].include?(@sp_bsb.sp_i_state.to_i)%>
 	var cur_cert_id;
 	function getSignCertInfo() {
 		cur_cert_id = ca_sign_form.user_cert_list.value;//证书ID
-		var key_password = $('#ca_sign_pwd').val(); //	密码
-		if (!key_password) {
-        alert('请填写key密码');
-        return false;
-    }
 	var ep = new EventProxy();
 		ep.all('sealImg', 'signCert', function (sealImg, signCert) {
 				if(sealImg == '' || signCert == '') {
@@ -1968,30 +1982,6 @@
           handle_client_sign(sealImg, signCert, null, 0);
         }
       });
-		 if(SP.sp_bsb.sp_i_state == 16) {
-					if (!key_password) {
-    			    alert('请填写key密码');
-       				 return false;
-		  	  }
-			VerifyUserPIN(cur_cert_id, key_password, function (ret) {
-        if (ret.retVal) {
-     					$('#sp_bsb_sp_i_state').val("9");
-        $("form.edit_sp_bsb").ajaxSubmit({
-           dataType: "json",
-            success: function (message) {
-            if (message.status == '保存成功!') {
-              location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>'; 
-            }else if (message.status == '保存出错!') {
-            alert(message.msg);
-           }
-          }
-        });
-        } else {
-          alert('Key密码错误，请重新输入密码');
-        }
-     	 });
-      	return false;
-		}
 
 		// get user cert
       ESeaL_GetUserCert(cur_cert_id, function (ret) {

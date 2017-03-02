@@ -25,12 +25,10 @@ class SpBsbsController < ApplicationController
       format.html {
         #filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], true, current_user.id,false)
         pdfpath,n=@spbsb.generate_pdf_report(type)
-	logger.error "pdfpath"
 	if pdfpath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
         else
-	  logger.error "#{Rails.application.config.attachment_path}/#{pdfpath}"	
           send_file "#{Rails.application.config.attachment_path}/#{pdfpath}", filename: n, disposition: 'inline'
         end
       }
@@ -63,22 +61,15 @@ class SpBsbsController < ApplicationController
 	 format.html {
 		signData =params[:signData]
 		signCert =params[:signCert]
-                #type=params[:type]
-                 logger.error @spbsb.JDCJ_report_path
                if params[:type] =='JYBG'
-	          # ca_filepath=@spbsb.JDCJ_reporti_path
-		   #logger.error ca_filepath
-		  #filepath = @spbsb.generate_ca_pdf_report(ca_filepath,@spbsb.JDCJ_pdf_rules,signData,signCert,params[:nonce])
 		  ca_filepath=@spbsb.JDCJ_report_path
                 new_ca_filepath = "#{Rails.application.config.attachment_path}/result/#{@spbsb.sp_s_16}-look.pdf"
-                logger.error new_ca_filepath
 		ruleNumList = []
 	        params[:pdf_rules].split(',').each do |rule|
 		   ruleNumList.push(rule)
 	         end
 		                                    
 	        filepath = @spbsb.generate_ca_pdf_report(ca_filepath,new_ca_filepath,ruleNumList,signData,signCert,params[:nonce])
-		logger.error filepath 
 		if filepath.nil?
                     flash[:error] = '查看报告失败'
                     redirect_to '/sp_bsbs/no_available_pdf_found' and return
@@ -103,12 +94,7 @@ class SpBsbsController < ApplicationController
                  end
 		
 	       end
-	       # logger.error type		
-		#filepath = @spbsb.generate_ca_pdf_report(ca_filepath,params[:pdf_rules],signData,signCert,params[:nonce])
 			if !filepath.nil?
- #         flash[:error] = '查看报告失败'
-  #        redirect_to '/sp_bsbs/no_available_pdf_found' and return
-       #else
 				if !params[:ca_key_status].blank?
 					@spbsb.update_attributes({:ca_key_status =>9})
 				end
@@ -153,7 +139,6 @@ class SpBsbsController < ApplicationController
         #render json: {status: 'OK', msg: signSealMessagesJson,pdfpath: pdfpath}
         res[:JDCJ]=jybg_file
 	pdf_path[:JDCJ]=pdfpath
-	logger.error res
       else
        render json: {status: 'ERR', msg:  jybg_result} and return
       end
@@ -177,7 +162,6 @@ class SpBsbsController < ApplicationController
 	  render json: {status: 'ERR', msg:  fxbg_result} and return
 	end
    end
-	logger.error "res"
 	render json: {status: 'OK', res: res,pdfpath: pdf_path}
   end
 
@@ -197,8 +181,6 @@ class SpBsbsController < ApplicationController
     #   pdfpath = "#{Rails.application.config.attachment_path}/#{@spbsb.sp_s_16}-#{type}.pdf"
    # end
    res ={}
-   logger.error pdfpath
-   logger.error params[:sign_data][:JDCJ].present? 
     if @spbsb.is_jiandu? and params[:sign_data][:JDCJ].present?
       type='JYBG'
       pdfpath=  params[:pdfpath][:JDCJ]
@@ -207,7 +189,6 @@ class SpBsbsController < ApplicationController
       writeJson= Rails.root.join('tmp', "yang.req")
       result = `java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  111.26.194.57 8081 199  #{reqMessage} #{writeJson} #{pdfpath}`     
      logger.error result
-     logger.error sign_data
 
      if  result.strip.include?('200')
         sp_status=params[:sp_status]
@@ -455,7 +436,6 @@ class SpBsbsController < ApplicationController
           end
 =end
     end
-
     @sp_bsb.sp_d_86=(Time.now).year.to_s+'-'+(Time.now).mon.to_s+'-'+(Time.now).day.to_s
     @sp_jcxcount=1
 
@@ -471,6 +451,7 @@ class SpBsbsController < ApplicationController
 
   # GET /sp_bsbs/1/edit
   def edit
+=begin
     if current_user.is_admin?
       @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
  else
@@ -486,6 +467,8 @@ class SpBsbsController < ApplicationController
     @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1 and id in (?) ',current_user.jg_bsb_id).order('jg_province')
     end
   end
+   logger.error @jg_bsbs.to_json
+=end
     unless current_user.jg_bsb.nil?
       # 筛选 送检机构 下拉选项内容
 =begin
@@ -573,6 +556,21 @@ class SpBsbsController < ApplicationController
     if @pad_sp_bsbs != nil
       @pictures = SpBsbPicture.where(:sp_bsb_id => @pad_sp_bsbs.id).order('sort_index ASC')
     end
+     if current_user.is_admin?
+      @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
+   else
+    if current_user.jg_bsb.jg_type==1
+     super_jg= JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
+        jg_names=[]
+        jg_names.push(current_user.jg_bsb_id)
+        super_jg.each do |j|
+           jg_names.push(j.jg_bsb_id)
+        end
+    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1  and id in (?)',jg_names).order('jg_province')
+    elsif current_user.jg_bsb.jg_type==3
+    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1 and id in (?) ',current_user.jg_bsb_id).order('jg_province')
+    end
+  end
 
     @jg_bsb = JgBsb.find_by_jg_name(@sp_bsb.sp_s_43)
   end
@@ -1604,7 +1602,6 @@ class SpBsbsController < ApplicationController
           item.JYYJ = (item.JYYJ || "").split("#").push(line[:JYYJ]).uniq.join("#")
           item.PDYJ = (item.PDYJ || "").split("#").push(line[:PDYJ]).uniq.join("#")
           item.BZFFJCX = (item.BZFFJCX || "").split("#").push(line[:BZFFJCX]).uniq.join("#")
-          logger.error item.BZFFJCX
 
           item.BZFFJCXDW = (item.BZFFJCXDW || "").split("#").push(line[:BZFFJCXDW]).uniq.join("#")
           item.BZZXYXX = (item.BZZXYXX || "").split("#").push(line[:BZZXYXX]).uniq.join("#")
