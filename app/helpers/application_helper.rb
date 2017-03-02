@@ -121,7 +121,7 @@ module ApplicationHelper
 			jg_type = current_user.jg_bsb.jg_type
 			super_jg = current_user.jg_bsb.jg_bsb_supers
 			super_jg.each{ |jg| jg_arr << jg.super_jg_bsb.jg_name}	
-			# 如果是监管部门显示自己跟上级
+			# 如果是监管部门显示自己
 			if jg_type == 1
         jg_arr = []
 				jg_arr << current_user.jg_bsb.jg_name

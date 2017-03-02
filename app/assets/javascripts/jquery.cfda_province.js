@@ -55,7 +55,7 @@ $.fn.CfdaProvince = function (config) {
             level2.val(info);
             selected2 = level2[0].selectedIndex - 1;
         }
-        if(level2.val()!=null && level2.val()!="请选择"){
+        if(level2.val()!=null && level2.val()!="请选择" && level2.val()!="-请选择-" && level2.val()!=""){
             level2.trigger('change');
         }
     });
