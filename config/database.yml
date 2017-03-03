@@ -8,7 +8,7 @@ development:
   database: tdepot_demo_production_ceshi
   pool: 25
   username: root
-  password: admin
+  password: BJzyd82510
 
 production:
   adapter: mysql2
