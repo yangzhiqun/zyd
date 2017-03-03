@@ -49,8 +49,8 @@
       if(c=='请选择'||c=='') {
           c = '-请选择-';
       }
-      if(cl=='请选择'||cl=='') {
-          cl = '-请选择-';
+      if(lc=='请选择'||lc=='') {
+          lc = '-请选择-';
       }
     $.get('/prov.json', {prov: <%= @province.id %>}, function (data) {
       $('<option>-请选择-</option>').appendTo($('#city'));
@@ -77,11 +77,13 @@
 			if(window.location.pathname.indexOf("new") != -1){
           if(c == '-请选择-'){
               $("#city").val(c).change();
+              $("#hidden_prov_city").val(c);
+              $("#hidden_prov_country").val(lc);
           }else {
               $("#city").val("<%= current_user.prov_city %>").change();
-          }
-				$("#hidden_prov_city").val("<%= current_user.prov_city %>");
-				$("#hidden_prov_country").val("<%= current_user.prov_country %>");
+		$("#hidden_prov_city").val("<%= current_user.prov_city %>");
+		$("#hidden_prov_country").val("<%= current_user.prov_country %>");
+		}
 			}
     }, 'json');
 //
