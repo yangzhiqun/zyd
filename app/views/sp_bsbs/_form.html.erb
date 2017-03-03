@@ -16,6 +16,13 @@
       $("#sp_bsb_sp_s_2_1").empty();
       $("#sp_bsb_sp_s_2_1").append("<option parentid='<%= @sp_bsb.sp_s_2_1%>' value='<%= @sp_bsb.sp_s_2_1%>'><%= @sp_bsb.sp_s_2_1%></option>");
     }
+    if(tab_1()){
+        $("#sp_bsb_sp_s_70").empty();
+        $("#sp_bsb_sp_s_70").append("<option parentid='<%= @sp_bsb.sp_s_70%>' value='<%= @sp_bsb.sp_s_70%>'><%= @sp_bsb.sp_s_70%></option>");
+        $("#sp_bsb_sp_s_67").empty();
+        $("#sp_bsb_sp_s_67").append("<option parentid='<%= @sp_bsb.sp_s_67%>' value='<%= @sp_bsb.sp_s_67%>'><%= @sp_bsb.sp_s_67%></option>");
+
+    }
   });
   //判断日期
   function tab(){
@@ -27,7 +34,16 @@
       return false
     }
   }
-
+  //判断日期
+  function tab_1(){
+      var oDate1 = new Date("2017-03-07");
+      var oDate2 = new Date("<%=@sp_bsb.created_at %>");
+      if(oDate1.getTime() > oDate2.getTime()){
+          return true
+      } else {
+          return false
+      }
+  }
   // 按检测名称查找已记录的检测项目
   function find_sp_data_by_name(name) {
     if (spdata == null) return null;
