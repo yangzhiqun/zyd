@@ -451,7 +451,6 @@ class SpBsbsController < ApplicationController
 
   # GET /sp_bsbs/1/edit
   def edit
-=begin
     if current_user.is_admin?
       @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
  else
@@ -467,8 +466,6 @@ class SpBsbsController < ApplicationController
     @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1 and id in (?) ',current_user.jg_bsb_id).order('jg_province')
     end
   end
-   logger.error @jg_bsbs.to_json
-=end
  #   unless current_user.jg_bsb.nil?
       # 筛选 送检机构 下拉选项内容
 =begin
