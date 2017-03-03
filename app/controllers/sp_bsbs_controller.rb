@@ -469,7 +469,7 @@ class SpBsbsController < ApplicationController
   end
    logger.error @jg_bsbs.to_json
 =end
-    unless current_user.jg_bsb.nil?
+ #   unless current_user.jg_bsb.nil?
       # 筛选 送检机构 下拉选项内容
 =begin
       if current_user.jg_bsb.jg_type == 3
@@ -483,7 +483,7 @@ class SpBsbsController < ApplicationController
         end
       end
 =end
-    end
+ #   end
     sp_bsb = SpBsb.find(params[:id])
     #2015-01-12
     if data_owner(sp_bsb)==0
@@ -507,18 +507,7 @@ class SpBsbsController < ApplicationController
     end
 
     @sp_data = Spdatum.where(sp_bsb_id: params[:id])
-    unless @sp_bsb.sp_s_2_1.blank?
-      @jg_bsb_names = JgBsbName.find_by_name(@sp_bsb.sp_s_2_1)
-      @jg_bsbs = JgBsb.find_by_id(@jg_bsb_names.jg_bsb_id)
-      if (!@jg_bsbs.city.blank? or @jg_bsbs.city != "-请选择-") and  (@jg_bsbs.country.blank? or @jg_bsbs.country == "-请选择-")
-        @baosong_a = BaosongA.where("shi = ?",@jg_bsbs.city)
-      elsif (!@jg_bsbs.city.blank? or @jg_bsbs.city != "-请选择-") and  (!@jg_bsbs.country.blank? or @jg_bsbs.country != "-请选择-")
-        @baosong_a = BaosongA.where("xian = ?",@jg_bsbs.country)
-      end
-      @sp_s_70s = @baosong_a.select("id, name")
-    else
-      @sp_s_70s=[]
-    end
+
     unless @sp_bsb.sp_s_70.blank?
       @sp_s_67s = BaosongB.where(baosong_a_id: BaosongA.find_by_name(@sp_bsb.sp_s_70).id)
     else
@@ -556,21 +545,6 @@ class SpBsbsController < ApplicationController
     if @pad_sp_bsbs != nil
       @pictures = SpBsbPicture.where(:sp_bsb_id => @pad_sp_bsbs.id).order('sort_index ASC')
     end
-     if current_user.is_admin?
-      @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
-   else
-    if current_user.jg_bsb.jg_type==1
-     super_jg= JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
-        jg_names=[]
-        jg_names.push(current_user.jg_bsb_id)
-        super_jg.each do |j|
-           jg_names.push(j.jg_bsb_id)
-        end
-    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1  and id in (?)',jg_names).order('jg_province')
-    elsif current_user.jg_bsb.jg_type==3
-    @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1 and id in (?) ',current_user.jg_bsb_id).order('jg_province')
-    end
-  end
 
     @jg_bsb = JgBsb.find_by_jg_name(@sp_bsb.sp_s_43)
   end
