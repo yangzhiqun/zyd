@@ -28,13 +28,13 @@
       <div class="form-inline">
         <label for="">报送分类：</label>
         <% if current_user.is_admin? %>
-         <%= select_tag "baosong_a", options_for_select(BaosongA.where(rwlylx: '省局').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+         <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx = ? and id in (?)','省局',BaosongAJgId.where(jg_bsb_id:current_user.jg_bsb_id).pluck(:baosong_a_id)).map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
        <% elsif is_xian_deploy? %>
-        <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx = "县"').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+        <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx = "县" and id in (?)',BaosongAJgId.where(jg_bsb_id:current_user.jg_bsb_id).pluck(:baosong_a_id)).map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
       <% elsif is_shi_deploy? %>
-        <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx = "市/区局"').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+        <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx = "市/区局" and id in (?)',BaosongAJgId.where(jg_bsb_id:current_user.jg_bsb_id).pluck(:baosong_a_id)).map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
       <% else %>
-        <%= select_tag "baosong_a", options_for_select(BaosongA.where(rwlylx: '省局').map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
+        <%= select_tag "baosong_a", options_for_select(BaosongA.where('rwlylx = ? and id in (?)','省局',BaosongAJgId.where(jg_bsb_id:current_user.jg_bsb_id).pluck(:baosong_a_id))..map { |a| [a.name, a.name] }.unshift(["请选择", ""]), params[:baosong_a]), {:class => "form-control input-sm", id: "baosong_a", style: "width: 150px;"} %>
       <% end %>
         <%= select_tag "baosong_b", options_for_select(@baosong_bs.map { |b| [b.name, b.name, {"data-identifier" => b.identifier}] }.unshift(["请选择", ""]), params[:baosong_b]), {:class => "form-control input-sm", id: "baosong_b", style: "width: 150px;"} %>
         <br>
@@ -49,14 +49,32 @@
         <label>采样机构：</label>
         <% cache 'jg_data' do %>
             <!-- 采样机构列表 -->
-            <select style="width: 300px;" id="cyjg" class="form-control input-sm" onchange="jg_change()">
+            <!--<select style="width: 300px;" id="cyjg" class="form-control input-sm" onchange="jg_change()">
               <option value="">请选择采样机构</option>
-              <% @jg_bsbs.each do |jg_bsb| %>
+              <%# @jg_bsbs.each do |jg_bsb| %>
+                  <%# if jg_bsb.code.blank? %>
+                      <option value="<#%= jg_bsb.id %>" data-jg-type="<%#= jg_bsb.jg_type.to_i %>" disabled="disabled"><%#= jg_bsb.jg_name %>
+                        (未设编号,无法安排)
+                      </option>
+                  <%# elsif jg_bsb.jg_sampling==1 %>
+                      <option value="<%#= jg_bsb.id %>" data-jg-type="<%#= jg_bsb.jg_type.to_i %>"><%#= jg_bsb.jg_name %></option>
+                  <#% end %>
+              <#% end %>
+            </select>
+            <br>
+            <br>
+            <label>检验机构：</label>-->
+            <!-- 检验机构列表 -->
+            <!--<select style="width: 300px;" id="jyjg" class="form-control input-sm">
+            </select>-->
+            <select style="width: 300px;" id="cyjg" class="form-control input-sm">
+              <option value="">请选择采样机构</option>
+              <% @jg_bsbs.where('id in (?) or id = ?', JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id).pluck(:jg_bsb_id),current_user.jg_bsb_id).each do |jg_bsb| %>
                   <% if jg_bsb.code.blank? %>
                       <option value="<%= jg_bsb.id %>" data-jg-type="<%= jg_bsb.jg_type.to_i %>" disabled="disabled"><%= jg_bsb.jg_name %>
                         (未设编号,无法安排)
                       </option>
-                  <% elsif jg_bsb.jg_sampling==1 %>
+                  <% else %>
                       <option value="<%= jg_bsb.id %>" data-jg-type="<%= jg_bsb.jg_type.to_i %>"><%= jg_bsb.jg_name %></option>
                   <% end %>
               <% end %>
@@ -66,6 +84,16 @@
             <label>检验机构：</label>
             <!-- 检验机构列表 -->
             <select style="width: 300px;" id="jyjg" class="form-control input-sm">
+              <option value="">请选择检验机构</option>
+              <% @jg_bsbs.where('id in (?) and jg_type = 3', JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id).pluck(:jg_bsb_id)).each do |jg_bsb| %>
+                  <% if jg_bsb.code.blank? %>
+                      <option value="<%= jg_bsb.id %>" data-jg-type="<%= jg_bsb.jg_type.to_i %>" disabled="disabled"><%= jg_bsb.jg_name %>
+                        (未设编号,无法安排)
+                      </option>
+                  <% else %>
+                      <option value="<%= jg_bsb.id %>" data-jg-type="<%= jg_bsb.jg_type.to_i %>"><%= jg_bsb.jg_name %></option>
+                  <% end %>
+              <% end %>
             </select>
         <% end %>
         <br>

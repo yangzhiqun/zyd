@@ -9,105 +9,239 @@ class SpBsbsController < ApplicationController
 
  def print
     @spbsb = SpBsb.find(params[:id])
-    respond_to do |format|
+     type =params[:type]
+     respond_to do |format|
       format.pdf {
-        filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], false, current_user.id,false)
-       if filepath.nil?
+	 pdfpath,n=@spbsb.generate_pdf_report(type)
+	if pdfpath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
         else
-          send_file filepath, filename: "#{@spbsb.sp_s_16}-检验报告.pdf", disposition: 'inline'
-        end
+	 pdfpath = "#{Rails.application.config.attachment_path}/#{pdfpath}"
+         send_file pdfpath, filename: n, disposition: 'inline'
+	end
       }
       format.html {
         filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], true, current_user.id,false)
-        if filepath.nil?
+	if filepath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
         else
-          send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
-        end
+         send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
+	end
       }
     end
   end
+  def report
+     @spbsb = SpBsb.find(params[:id])
+    respond_to do |format|
+    format.pdf {  
+     type= params[:type]
+     if @spbsb.JDCJ_report_path.present? and type=="JYBG"
+            filepath=@spbsb.JDCJ_report_path
+     end
+     if @spbsb.FXJC_report_path.present? and type=="FXBG"
+            filepath=@spbsb.FXJC_report_path
+     end
+     if filepath.nil?
+          flash[:error] = '查看报告失败'
+          redirect_to '/sp_bsbs/no_available_pdf_found' and return
+     else 
+        send_file filepath, filename: "#{@spbsb.sp_s_16}-检验报告.pdf", disposition: 'inline'
+     end
+     }
+    end
+  end
+  def preview_ca_pdf
+	@spbsb = SpBsb.find(params[:id])
+	
+	respond_to do |format|
+	 format.html {
+		signData =params[:signData]
+		signCert =params[:signCert]
+               if params[:type] =='JYBG'
+		  ca_filepath=@spbsb.JDCJ_report_path
+                new_ca_filepath = "#{Rails.application.config.attachment_path}/result/#{@spbsb.sp_s_16}-look.pdf"
+		ruleNumList = []
+	        params[:pdf_rules].split(',').each do |rule|
+		   ruleNumList.push(rule)
+	         end
+		                                    
+	        filepath = @spbsb.generate_ca_pdf_report(ca_filepath,new_ca_filepath,ruleNumList,signData,signCert,params[:nonce])
+		if filepath.nil?
+                    flash[:error] = '查看报告失败'
+                    redirect_to '/sp_bsbs/no_available_pdf_found' and return
+                 else
+		    send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
+	         end
+                end
+	       if params[:type] =='FXBG'
+
+	         ca_filepath=@spbsb.FXJC_report_path
+		new_ca_filepath = "#{Rails.application.config.attachment_path}/result/#{@spbsb.sp_s_16}-FX_look.pdf"
+		ruleNumList = []
+                params[:pdf_rules].split(',').each do |rule|
+                   ruleNumList.push(rule)
+                 end
+                 filepath = @spbsb.generate_ca_pdf_report(ca_filepath,new_ca_filepath,ruleNumList,signData,signCert,params[:nonce])
+		if filepath.nil?
+                    flash[:error] = '查看报告失败'
+                    redirect_to '/sp_bsbs/no_available_pdf_found' and return
+                 else
+		   send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
+                 end
+		
+	       end
+			if !filepath.nil?
+				if !params[:ca_key_status].blank?
+					@spbsb.update_attributes({:ca_key_status =>9})
+				end
+			end
+         # send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
+		}
+		format.pdf {
+		#filepath =  Rails.root.join('tmp/pdf_preview', "preview_sp_bsbs_#{@spbsb.id}_print.pdf")
+		filepath  = File.expand_path('../reports', Rails.root).to_s+"preview_sp_bsbs_#{self.id}_print.pdf"
+      if filepath.nil?
+          flash[:error] = '查看报告失败'
+          redirect_to '/sp_bsbs/no_available_pdf_found' and return
+       else
+          send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
+       end
+    }	
+	end
+  end
+   
+
 
   def by_ca_info
     @spbsb = SpBsb.find(params[:id])
-    preview = false
-   if !params[:pr_status].blank?
-       preview =  params[:pr_status]
-    end
-    if  !@spbsb.report_path.blank? 
-       if @spbsb.ca_key_status ==0
-           pdfpath=@spbsb.generate_bsb_report_pdf(params[:pdf_rules], true, current_user.id,false)
-       else
-          pdfpath=File.expand_path('../reports', Rails.root).to_s + @spbsb.report_path
-       end
-    else
-     pdfpath=@spbsb.generate_bsb_report_pdf(params[:pdf_rules], preview, current_user.id,false)
-    end
-    
-    keyword= params[:keyword] 
-    signCert=params[:sign_cert]
+    sign_data=params[:sign_date]
     sealImg=params[:keypic]
-    clientSignMessages=[]
-    clientSignMessage ={ruleType: 1,keyword: keyword,searchOrder: '2',fileUniqueId: '111111111111',heightMoveSize: 0,moveSize: 0,moveType: 3,searchOrder: 2}
-    clientSignMessages.push(clientSignMessage)
-    reqMessage ={appId: '9ff70fce51874b62a5f136fdda43c4b7',sealImg: sealImg, signCert: signCert,
-                    sealWidth: 0,sealHeight: 0, clientSignMessages: clientSignMessages}
-    reqMessage = Base64.strict_encode64(reqMessage.to_json)
-    #tmp_file = Rails.root.join('tmp', "jilin.pdf")
-    filename = Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}.txt")
-    cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  111.26.194.57 8081 108  #{reqMessage} #{pdfpath} #{filename}"
-      result = `#{cmd}`
-     Rails.logger.error "cmd"
-    Rails.logger.error cmd
-     Rails.logger.error "result"
-     Rails.logger.error result
+    signCert=params[:sign_cert]
+    res = {}
+    pdf_path={} 
+   if @spbsb.is_jiandu?
+         type='JYBG'
 
-    if  result.strip.include?('200')
-      signSealMessagesJson =  File.read(Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}.txt"))
-      logger.error "signSealMessagesJson"
-      logger.error signSealMessagesJson
-      render json: {status: 'OK', msg: signSealMessagesJson}
+       if @spbsb.ca_key_status ==0
+           pdfpath,n=@spbsb.generate_pdf_report(type)
+       else
+         pdfpath = "#{@spbsb.sp_s_16}-#{type}.pdf" 
+       end
+	pdfpath = "#{Rails.application.config.attachment_path}/#{pdfpath}"
+	filename = Rails.root.join('tmp', "sp_bsbs_jybg_#{@spbsb.id}.txt")	
+        jybg_result= @spbsb.client_sign_ca(pdfpath,sign_data,sealImg,signCert,filename)
+      if jybg_result.strip.include?('200')
+        jybg_file =  File.read(Rails.root.join('tmp', "sp_bsbs_jybg_#{@spbsb.id}.txt"))
+        #render json: {status: 'OK', msg: signSealMessagesJson,pdfpath: pdfpath}
+        res[:JDCJ]=jybg_file
+	pdf_path[:JDCJ]=pdfpath
+      else
+       render json: {status: 'ERR', msg:  jybg_result} and return
+      end
     end
+    if  @spbsb.is_jiance?
+	type='FXBG'
+	
+       if @spbsb.ca_key_status ==0
+         pdfpath,n=@spbsb.generate_pdf_report(type)
+       else
+         pdfpath = "#{@spbsb.sp_s_16}-#{type}.pdf"
+       end
+        pdfpath = "#{Rails.application.config.attachment_path}/#{pdfpath}"
+        filename = Rails.root.join('tmp', "sp_bsbs_fxbg_#{@spbsb.id}.txt")
+	fxbg_result= @spbsb.client_sign_ca(pdfpath,sign_data,sealImg,signCert,filename)
+	if fxbg_result.strip.include?('200')
+           fxbg_file =  File.read(Rails.root.join('tmp', "sp_bsbs_fxbg_#{@spbsb.id}.txt"))
+	   res[:FXJC]= fxbg_file
+	   pdf_path[:FXJC]=pdfpath
+	else
+	  render json: {status: 'ERR', msg:  fxbg_result} and return
+	end
+   end
+	render json: {status: 'OK', res: res,pdfpath: pdf_path}
   end
 
   def print_pdf
     @spbsb = SpBsb.find(params[:id])
-    #espond_to do |format|
-   # pdfpath=File.expand_path('../reports', Rails.root).to_s + @spbsb.report_path
-   if  !@spbsb.report_path.blank?
-     pdfpath=File.expand_path('../reports', Rails.root).to_s + @spbsb.report_path
-    else
-     pdfpath=Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}_print.pdf")
+    reqMessage ={appId: '9ff70fce51874b62a5f136fdda43c4b7'}
+    reqMessage =  Base64.strict_encode64(reqMessage.to_json)
+    #if @spbsb.is_jiandu? and params[:sign_data][:JDCJ].present?
+#	type='JYBG'
+ #   end
+  #  if @spbsb.is_jiance? and params[:sign_data][:FXJC].present?
+   #   type='FXBG'
+   # end
+    #if @spbsb.ca_key_status ==0
+       pdfpath=params[:pdfpath]
+    #else
+    #   pdfpath = "#{Rails.application.config.attachment_path}/#{@spbsb.sp_s_16}-#{type}.pdf"
+   # end
+   res ={}
+    if @spbsb.is_jiandu? and params[:sign_data][:JDCJ].present?
+      type='JYBG'
+      pdfpath=  params[:pdfpath][:JDCJ]
+      sign_data =params[:sign_data][:JDCJ][:hash]
+      File.write(Rails.root.join('tmp', "yang.req"),sign_data)
+      writeJson= Rails.root.join('tmp', "yang.req")
+      result = `java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  111.26.194.57 8081 199  #{reqMessage} #{writeJson} #{pdfpath}`     
+     logger.error result
+
+     if  result.strip.include?('200')
+        sp_status=params[:sp_status]
+        #@spbsb.update_attributes({:sp_i_state =>sp_status})
+        @spbsb.update_attributes({:ca_key_status => sp_status,:sp_s_48 =>current_user.tname,:JDCJ_report_path => pdfpath})
+        SpLog.create(:sp_bsb_id => @spbsb.id, :sp_i_state => sp_status, :remark => "", :user_id => current_user.id,:ca_key_status => 1)
+        #render json: {status: 'OK', msg: '成功'}
+	res[:JDCJ] = {t: 'JDCJ', status: 'OK'}
+      else
+	render json: {status: 'ERR', msg: result} and return
+      end
+
     end
-
-    sign_data=params[:sign_data]
-
-    logger.error sign_data
-    signSealMessagesJson =  File.read(Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}.txt"))
-     File.write(Rails.root.join('tmp', "yang.req"),sign_data)
-     writeJson= Rails.root.join('tmp', "yang.req")
-     logger.error  "writeJson"
-     logger.error  writeJson
-    #filename = Rails.root.join('tmp', "jilin.pdf")
+    if @spbsb.is_jiance? and params[:sign_data][:FXJC].present?
+      type='FXBG'
+      pdfpath=  params[:pdfpath][:FXJC]
+      sign_data=params[:sign_data][:FXJC][:hash]
+          File.write(Rails.root.join('tmp', "yang.req"),sign_data)
+      writeJson= Rails.root.join('tmp', "yang.req")
+      result = `java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  111.26.194.57 8081 199  #{reqMessage} #{writeJson} #{pdfpath}`
+      logger.error result
+      if  result.strip.include?('200')
+        sp_status=params[:sp_status]
+        #@spbsb.update_attributes({:sp_i_state =>sp_status})
+        @spbsb.update_attributes({:ca_key_status => sp_status,:sp_s_48 =>current_user.tname,:FXJC_report_path => pdfpath})
+        SpLog.create(:sp_bsb_id => @spbsb.id, :sp_i_state => sp_status, :remark => "", :user_id => current_user.id,:ca_key_status => 1)
+        #render json: {status: 'OK', msg: '成功'}
+        res[:FXJC] = {t: 'FXJC', status: 'OK'}
+       else
+        render json: {status: 'ERR', msg: result} and return
+       end             
+   end
+   render json: {status: 'OK', msg: '成功',res: res}
+=begin
+    if @spbsb.ca_key_status ==0
+       pdfpath=params[:pdfpath]
+    else
+       pdfpath = "#{Rails.application.config.attachment_path}/#{@spbsb.sp_s_16}-#{type}.pdf"
+    end
+    sign_data=params[:sign_data][:hash]
+    #signSealMessagesJson =  File.read(Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}.txt"))	
+     #File.write(Rails.root.join('tmp', "yang.req"),sign_data)
+    # writeJson= Rails.root.join('tmp', "yang.req")
+     writeJson=sign_data
      reqMessage ={appId: '9ff70fce51874b62a5f136fdda43c4b7'}
      reqMessage =  Base64.strict_encode64(reqMessage.to_json)
      result = `java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  111.26.194.57 8081 199  #{reqMessage} #{writeJson} #{pdfpath}`
-     # result = `#{cmd}`
-      logger.error "result"
-      Rails.logger.error result
       if  result.strip.include?('200')
-      logger.error signSealMessagesJson
 	sp_status=params[:sp_status]
         @spbsb.update_attributes({:sp_i_state =>sp_status})
-         #if sp_status=4 and @spbsb.report_path.blank?
-           # report_path = "#{Time.now.strftime('/%Y/%m/%d')}/#{@spbsb.id}.pdf"
-             @spbsb.update_attributes({:ca_key_status => sp_status,:sp_s_48 =>current_user.tname})
-         SpLog.create(:sp_bsb_id => @spbsb.id, :sp_i_state => sp_status, :remark => "", :user_id => current_user.id,:ca_key_status => 1)
-	 render json: {status: 'OK', msg: '成功'}
+        @spbsb.update_attributes({:ca_key_status => sp_status,:sp_s_48 =>current_user.tname})
+        SpLog.create(:sp_bsb_id => @spbsb.id, :sp_i_state => sp_status, :remark => "", :user_id => current_user.id,:ca_key_status => 1)
+	render json: {status: 'OK', msg: '成功'}
       end
+=end
   end
 
 
@@ -300,12 +434,11 @@ class SpBsbsController < ApplicationController
           end
 =end
     end
-
     @sp_bsb.sp_d_86=(Time.now).year.to_s+'-'+(Time.now).mon.to_s+'-'+(Time.now).day.to_s
     @sp_jcxcount=1
 
     @sp_s_67s = []
-
+    @sp_s_70s = []
     @a_categories = @b_categories = @c_categories = @d_categories = []
 
     respond_to do |format|
@@ -331,7 +464,7 @@ class SpBsbsController < ApplicationController
     @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1 and id in (?) ',current_user.jg_bsb_id).order('jg_province')
     end
   end
-    unless current_user.jg_bsb.nil?
+ #   unless current_user.jg_bsb.nil?
       # 筛选 送检机构 下拉选项内容
 =begin
       if current_user.jg_bsb.jg_type == 3
@@ -345,7 +478,7 @@ class SpBsbsController < ApplicationController
         end
       end
 =end
-    end
+ #   end
     sp_bsb = SpBsb.find(params[:id])
     #2015-01-12
     if data_owner(sp_bsb)==0
@@ -718,7 +851,7 @@ class SpBsbsController < ApplicationController
       end
     end
 
-    @sp_bsbs = SpBsb.select("sp_bsbs.ca_key_status,sp_bsbs.report_path,sp_bsbs.id, sp_bsbs.updated_at, sp_bsbs.sp_s_3, sp_bsbs.sp_s_4, sp_bsbs.sp_s_14, sp_bsbs.sp_s_16, sp_bsbs.sp_s_43, sp_bsbs.sp_s_214, sp_bsbs.sp_s_35, sp_bsbs.sp_s_71, sp_bsbs.sp_s_202, sp_bsbs.sp_i_state, sp_bsbs.fail_report_path, sp_bsbs.czb_reverted_flag,sp_bsbs.sp_s_2_1")
+    @sp_bsbs = SpBsb.select("created_at,sp_d_38,JDCJ_report_path,FXJC_report_path,sp_s_44,sp_bsbs.ca_key_status,sp_bsbs.report_path,sp_bsbs.id, sp_bsbs.updated_at, sp_bsbs.sp_s_3, sp_bsbs.sp_s_4, sp_bsbs.sp_s_14, sp_bsbs.sp_s_16, sp_bsbs.sp_s_43, sp_bsbs.sp_s_214, sp_bsbs.sp_s_35, sp_bsbs.sp_s_71, sp_bsbs.sp_s_202, sp_bsbs.sp_i_state, sp_bsbs.fail_report_path, sp_bsbs.czb_reverted_flag,sp_bsbs.sp_s_2_1")
     
     if params[:r1]
       session[:change_js]=params[:r1].to_i
@@ -1438,7 +1571,6 @@ class SpBsbsController < ApplicationController
           item.JYYJ = (item.JYYJ || "").split("#").push(line[:JYYJ]).uniq.join("#")
           item.PDYJ = (item.PDYJ || "").split("#").push(line[:PDYJ]).uniq.join("#")
           item.BZFFJCX = (item.BZFFJCX || "").split("#").push(line[:BZFFJCX]).uniq.join("#")
-          logger.error item.BZFFJCX
 
           item.BZFFJCXDW = (item.BZFFJCXDW || "").split("#").push(line[:BZFFJCXDW]).uniq.join("#")
           item.BZZXYXX = (item.BZZXYXX || "").split("#").push(line[:BZZXYXX]).uniq.join("#")
@@ -1476,7 +1608,7 @@ class SpBsbsController < ApplicationController
   private
   def sp_bsb_params
     params.require(:sp_bsb).permit(
-        :ca_key_status,:report_path, :sp_s_1, :sp_s_2, :sp_s_3, :sp_s_4, :sp_s_5, :sp_s_6, :sp_s_7, :sp_s_8, :sp_s_9, :sp_s_10, :sp_s_11, :sp_s_12, :sp_s_13, :sp_s_14, :sp_n_15, :sp_s_16, :sp_s_17, :sp_s_18, :sp_s_19, :sp_s_20, :sp_s_21, :sp_d_22, :sp_s_23, :sp_s_24, :sp_s_25, :sp_s_26, :sp_s_27, :sp_d_28, :sp_n_29, :sp_s_30, :sp_n_31, :sp_n_32, :sp_s_33, :sp_s_34, :sp_s_35, :sp_s_36, :sp_s_37, :sp_d_38, :sp_s_39, :sp_s_40, :sp_s_41, :sp_s_42, :sp_s_43, :sp_s_44, :sp_s_45, :sp_d_46, :sp_d_47, :sp_s_48, :sp_s_49, :sp_s_50, :sp_s_51, :sp_s_52, :sp_s_53, :sp_s_54, :sp_s_55, :sp_s_56, :sp_s_57, :sp_s_58, :sp_s_59, :sp_s_60, :sp_s_61, :sp_s_62, :sp_s_63, :sp_s_64, :sp_s_65, :sp_s_66, :sp_s_67, :sp_s_68, :sp_s_69, :sp_s_70, :sp_s_71, :sp_s_72, :sp_s_73, :sp_s_74, :sp_s_75, :sp_s_76, :sp_s_77, :sp_s_78, :sp_s_79, :sp_s_80, :sp_s_81, :sp_s_82, :sp_s_83, :sp_s_84, :sp_s_85, :sp_d_86, :sp_s_87, :sp_s_88, :user_id, :uid,
+        :ca_key_status,:report_path, :sp_s_1, :sp_s_2, :sp_s_3, :sp_s_4, :sp_s_5, :sp_s_6, :sp_s_7, :sp_s_8, :sp_s_9, :sp_s_10, :sp_s_11, :sp_s_12, :sp_s_13, :sp_s_14, :sp_n_15, :sp_s_16, :sp_s_17, :sp_s_18, :sp_s_19, :sp_s_20, :sp_s_21, :sp_d_22, :sp_s_23, :sp_s_24, :sp_s_25, :sp_s_26, :sp_s_27, :sp_d_28, :sp_n_29, :sp_s_30, :sp_n_31, :sp_n_32, :sp_s_33, :sp_s_34, :sp_s_35, :sp_s_36, :sp_s_37, :sp_d_38, :sp_s_39, :sp_s_40, :sp_s_41, :sp_s_42, :sp_s_43, :sp_s_44, :sp_s_45, :sp_d_46, :sp_d_47, :sp_s_48, :sp_s_49, :sp_s_50, :sp_s_51, :sp_s_52, :sp_s_53, :sp_s_54, :sp_s_55, :sp_s_56, :sp_s_57, :sp_s_58, :sp_s_59, :sp_s_60, :sp_s_61, :sp_s_62, :sp_s_63, :sp_s_64, :sp_s_65, :sp_s_66, :sp_s_67, :sp_s_68, :sp_s_69, :sp_s_70, :sp_s_71, :sp_s_72, :sp_s_73, :sp_s_74, :sp_s_75, :sp_s_76, :sp_s_77, :sp_s_78, :sp_s_79, :sp_s_80, :sp_s_81, :sp_s_82, :sp_s_83, :sp_s_84, :sp_s_85, :sp_d_86, :sp_s_87, :sp_s_88,:sp_s_89, :user_id, :uid,
         :sp_n_jcxcount,
         :cyd_file, :cyjygzs_file,
         :yydj_enabled_by_admin_at,
@@ -1825,8 +1957,8 @@ class SpBsbsController < ApplicationController
         :updated_at,
         :czb_reverted_flag,
         :czb_reverted_reason,
-				:synced, :ca_source, :ca_sign,
-				:inspection_basis, :decision_basis
+	:synced, :ca_source, :ca_sign,
+	:inspection_basis, :decision_basis,:FX_jyyj_custom,:JDCJ_report_path,:FXJC_report_pah,:JDCJ_pdf_rules,:FXJC_pdf_rules
     )
   end
 end

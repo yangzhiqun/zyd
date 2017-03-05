@@ -33,7 +33,9 @@ module DemoyjsRuby2X
 	:client_id       => "4d9bfbc1b9e39e27ceab94cd57ec1b7202cac13694e51fd026c21861593b1ef0",
 	:client_secret   => "ecf7b1622a58c9b58f37178b0d14e4313a44edce72a22772606cb9a31bd8144a",
 	:api_base        => "http://qzj.cfda.pub:880/"
-	    }
+	:ca_auth_address => '60.247.77.101',
+	:province        => "河北",
+		    }
 
 
     config.fail_report_path = File.expand_path('../fail_reports', Rails.root).to_s

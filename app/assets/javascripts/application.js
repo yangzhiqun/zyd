@@ -74,7 +74,7 @@
 //= require react
 //= require react_ujs
 //= require components
-
+//= require eventproxy
 $(function(){
   $('#preview').iframeAutoHeight({debug: false});
   
