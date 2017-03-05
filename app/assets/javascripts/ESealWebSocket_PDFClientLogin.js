@@ -1,4 +1,4 @@
-/*--------------------------------------------------------------------------  
+﻿/*--------------------------------------------------------------------------  
  *
  * BJCA Adaptive Javascript, Version 2.12
  * This script is compatible with XTXSvr XTXAppCOM BJCASecCOMV2 BJCASecCOM
@@ -10,9 +10,9 @@
  *--------------------------------------------------------------------------*/
  
 //gloal variant for clientSignByHash function 
-var jsonStr = null;
-var digestMessageArray = null; // 定义一个digestMessages数组
-var cur_Sign_index = 0;
+//var jsonStr = null;
+//var digestMessageArray = null; // 定义一个digestMessages数组
+//var cur_Sign_index = 0;
 
 var $_$WebSocketConnectState = false;
 var $_$XTXAlert = null;     				// alert custom function
@@ -27,8 +27,9 @@ var $_$ClientSign_PDFClientLogin = null;   	// Current use class Object
  * @param cur_cert_id 客户端KEY证书唯一标示
  * @param passwd 证书密码
  * @param retdata_ID 返回签章数据的元素ID
+ * @callback cb callback(digestMessages)
  */
-function clientSignByHash(json, cur_cert_id, passwd, retdata_ID) {
+function clientSignByHash(json, cur_cert_id, passwd, retdata_ID, cb) {
 	if(json == "" || cur_cert_id == "") {
 		alert("input error!");
 		return;
@@ -41,14 +42,14 @@ function clientSignByHash(json, cur_cert_id, passwd, retdata_ID) {
 		}
 	}
 	
-	jsonStr = null;
-	jsonStr = json;
+	var jsonStr = null;
+	var jsonStr = json;
 	var jsonObj = $.parseJSON(jsonStr); // parseJSON 将字符串转为json对象
 	
 
-	digestMessageArray = null;
+	var digestMessageArray = null;
 	digestMessageArray = new Array();
-	cur_Sign_index = 0;
+	var cur_Sign_index = 0;
 	
 	//var digestMessageArray = new Array(); // 定义一个digestMessages数组
 	for(var i = 0; i < jsonObj.digestMessages.length; i++){
@@ -58,7 +59,7 @@ function clientSignByHash(json, cur_cert_id, passwd, retdata_ID) {
 		digestMessageArray[i] = digestMessage;
 		ESeaL_SignHashData(cur_cert_id,  passwd, jsonObj.digestMessages[i].hashData,function(ret){
 			if(ret.retVal == "") {
-				alert("passwd error");
+				alert("KEY密码错误");
 				return;
 			}
 			digestMessageArray[cur_Sign_index].clientSignData = ret.retVal;
@@ -67,7 +68,13 @@ function clientSignByHash(json, cur_cert_id, passwd, retdata_ID) {
 				// all sign ok;
 				var digestMessages = {};
 				digestMessages.digestMessages = digestMessageArray;
-				$(retdata_ID).val($.toJSON(digestMessages));
+				if(retdata_ID) {
+					$(retdata_ID).val($.toJSON(digestMessages));
+				}
+				
+				if(cb) {
+					cb($.toJSON(digestMessages));
+				}
 			}
 		});					
 	}

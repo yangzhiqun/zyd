@@ -108,6 +108,14 @@ class ApplicationController < ActionController::Base
     if current_user.user_i_js == 0 && current_user.user_d_authority_2 == 1
       session[:change_js]=7
     end
+    #批准
+    if @user.user_i_js==0 && @user.user_d_authority_5==1
+      session[:change_js]=11	
+    end
+    #报告发送人
+    if @user.user_i_js==0 && @user.jbxx_sh==1
+      session[:change_js]=16
+    end
 
     #检测机构牵头单位
     if current_user.user_s_dl.present?

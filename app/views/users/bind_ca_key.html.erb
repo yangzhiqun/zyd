@@ -1,4 +1,4 @@
-<style type="text/css">
+﻿<style type="text/css">
 .bind-panel {
 	width: 400px;
 	margin: 10px auto;
@@ -6,7 +6,7 @@
 </style>
 <script type="text/javascript">
 $(function(){
-	SetUserCertList('bind_ca_form.user_cert_list', CERT_TYPE_ALL);
+	SetUserCertList('bind_ca_form.user_cert_list', CERT_TYPE_HARD);
 
 	SetOnUsbKeyChangeCallBack(function(){
 		setTimeout(function(){
@@ -16,12 +16,19 @@ $(function(){
 				location.href = "/";
 			} else {
 				$('.no-key-tip').addClass('hidden');
-				loadPicture();
+				ESeaL_GetStampPic(bind_ca_form.user_cert_list.value, function(pic){
+					loadPicture(pic.retVal);
+				});
 			}
 		}, 2000)
 	});
 
-	loadPicture();
+	setTimeout(function(){
+		ESeaL_GetStampPic(bind_ca_form.user_cert_list.value, function(pic){
+			loadPicture(pic.retVal);
+		});
+	}, 2000);
+
 
 	$('#bind_ca_form').submit(function(){
 		$('#bind_ca_form').ajaxSubmit({
@@ -38,21 +45,15 @@ $(function(){
 });
 
 // 加载图片
-function loadPicture() {
-	if(!!window.getpicItvl) clearInterval(window.getpicItvl);
-
-	window.getpicItvl = setInterval(function(){
-		var sign = GetPic(bind_ca_form.user_cert_list.value);
-		if(!!sign) {
-			$('.user-sign').attr('src', 'data:image/png;base64,' + sign);
-			$('.user-sign-field').val(sign);
-		} else {
-			if(!!window.getpicItvl) clearInterval(window.getpicItvl);
-			
-			$('.user-sign').attr('src', '');
-			$('.user-sign-field').val('');
-		}
-	}, 1000);
+function loadPicture(sign) {
+	return false;
+	if(!!sign) {
+		$('.user-sign').attr('src', 'data:image/png;base64,' + sign);
+		$('.user-sign-field').val(sign);
+	} else {
+		$('.user-sign').attr('src', '');
+		$('.user-sign-field').val('');
+	}
 }
 </script>
 <div class="container">
@@ -69,11 +70,11 @@ function loadPicture() {
 					<select id="user_cert_list" name="user_cert_list" class="hidden form-control input-sm"></select>
 				</div>
 
-				<div class="form-group">
+				<!--div class="form-group">
 					<label for="">签名：</label><br>
 					<img class="user-sign" src="">
 					<input type="hidden" name="user_sign" class="user-sign-field">
-				</div>
+				</div-->
 
 				<div class="form-group">
           <label>账号：</label>
