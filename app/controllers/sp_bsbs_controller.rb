@@ -9,14 +9,16 @@ class SpBsbsController < ApplicationController
 
  def print
     @spbsb = SpBsb.find(params[:id])
+    type =params[:type]
     respond_to do |format|
       format.pdf {
-         filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], false, current_user.id,false)
-	if filepath.nil?
+        pdfpath,n=@spbsb.generate_pdf_report(type)
+	if pdfpath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
         else
-          send_file filepath, filename: "#{@spbsb.sp_s_16}-检验报告.pdf", disposition: 'inline'
+	  pdfpath = "#{Rails.application.config.attachment_path}/#{pdfpath}"
+	  send_file pdfpath, filename: n, disposition: 'inline'
 	end
       }
       format.html {
