@@ -15,8 +15,8 @@ production:
   encoding: utf8
   collation: utf8_unicode_ci
   reconnect: false
-  database: jiangxi_ceshi
+  database: summer
   pool: 25
   #host: '10.0.39.208'
   username: root
-  password: BJzyd82510
+  password: admin

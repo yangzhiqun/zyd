@@ -24,7 +24,11 @@ module ApplicationHelper
     d2 = Date.parse(date2.to_s)
       return (d1-d2).to_i
   end
-
+  def old_report(data)
+    d1=Date.parse('2017-03-01')
+    d2=Date.parse(data.to_s)
+    return d2<d1
+  end  	
   def products_print_pager products, page_size, start_index
     return if products.nil? or products.length == 0
     page = (products.length / page_size.to_f).ceil

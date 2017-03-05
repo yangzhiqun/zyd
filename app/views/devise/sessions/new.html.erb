@@ -5,7 +5,7 @@
 </style>
 
 <script type="text/javascript">
-	strServerSignedData = "<%= @ca_login_info[:signed].split('#')[0] %>";
+	strServerSignedData = "<%= @ca_login_info[:signed].split('#')[0] if @ca_login_info[:signed] %>";
 	strServerCert = "<%= @ca_login_info[:certificate] %>";
 	strServerRan = "<%= @ca_login_info[:ca_random] %>";
 

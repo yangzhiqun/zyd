@@ -292,6 +292,9 @@
       <tr>
         <th colspan="4">报告书编号</th>
         <td colspan="26">
+	 <% if old_report(@sp_bsb.created_at) %>
+           <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/print">旧版检验报告</a>
+        <% else %>
 	  <% if @sp_bsb.JDCJ_report_path.present?%>
 	   <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/report.pdf?type=JYBG">监督抽检报告</a>
 	  <% end%>
@@ -303,7 +306,8 @@
      	  <% end%>
 	  <% if @sp_bsb.ca_key_status==0&&@sp_bsb.is_jiance? %>
           <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default"  href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf?type=FXBG">风险监测报告</a>
-    <% end%>
+          <% end%>
+         <% end%>
           <% if @sp_bsb.xsbg_file_path.present? %>
               &emsp;&emsp;<a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @sp_bsb.id %>/xsbg_24h"><i class="glyphicon glyphicon-download-alt"></i>24小时限时报告</a>
           <% end %>
