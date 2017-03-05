@@ -75,7 +75,7 @@ module Bjca
 			 rescue Savon::SOAPFault => error
 				Rails.logger.error "CAHelper#sign_data: #{error.as_json}"
 	             nil
-		    begin
+		    rescue
 			nil
 			end
 		end
