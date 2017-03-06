@@ -9,10 +9,10 @@ class SpBsbsController < ApplicationController
 
  def print
     @spbsb = SpBsb.find(params[:id])
-    type =params[:type]
-    respond_to do |format|
+     type =params[:type]
+     respond_to do |format|
       format.pdf {
-        pdfpath,n=@spbsb.generate_pdf_report(type)
+	 pdfpath,n=@spbsb.generate_pdf_report(type)
 	if pdfpath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
