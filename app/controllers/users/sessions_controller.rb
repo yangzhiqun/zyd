@@ -22,7 +22,7 @@ class Users::SessionsController < Devise::SessionsController
   logger.error "random"
     logger.error @random
 =end
-	@ca_login_info = Bjca::CaHelper.new.gen_client_verify_random_info
+#	@ca_login_info = Bjca::CaHelper.new.gen_client_verify_random_info
     super
   end
 
