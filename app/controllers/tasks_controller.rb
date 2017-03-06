@@ -144,7 +144,7 @@ class TasksController < ApplicationController
         #end 
        #  @cyjgs = JgBsb.where(:jg_sampling => 1, status: 0)
        #   @cyjgs = JgBsb.where("status= 0 and id=? and jg_sampling >= 1 ",current_user.jg_bsb.id)
-        @jyjgs = JgBsb.where(:jg_detection => 1, status: 0)
+        @jyjgs = JgBsb.where( status: 0)
       end
     end
   end
