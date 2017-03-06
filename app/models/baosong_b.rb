@@ -37,7 +37,7 @@ class BaosongB < ActiveRecord::Base
       sheet = book.worksheet(0)
 
       @lines = []
-      sheet.each_with_index 2 do |row, index|
+      sheet.each_with_index 1 do |row, index|
         # 大类
         @A_category = row[0].to_s.delete("\n").strip unless row[0].nil?
         # 亚类
