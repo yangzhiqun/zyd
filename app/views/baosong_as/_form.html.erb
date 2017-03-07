@@ -1,16 +1,15 @@
 <script type="text/javascript">
-  $(function () {
-   /** //编辑状态下的市县
-    var baosong_a_shi  = "<%#= @baosong_a.shi %>";
-    var baosong_a_xian = "<%#= @baosong_a.xian %>";
+  $(function () {//编辑状态下的市县
+    //var baosong_a_shi  = "<%#= @baosong_a.shi %>";
+    //var baosong_a_xian = "<%#= @baosong_a.xian %>";
     //新建状态下默认市县
-  	var c  = "<%#= current_user.jg_bsb.city %>";
-  	var lc = "<%#= current_user.jg_bsb.country %>";
-    var renwu = "<%#= jg_is_city? ? '市/区局' : '县' %>";
+  	var c  = "<%= current_user.jg_bsb.city %>";
+  	var lc = "<%= current_user.jg_bsb.country %>";
+    var renwu = "<%= jg_is_city? ? '市/区局' : '县' %>";
     //判断是否是编辑状态
-    var is_edit = <%#= action?("edit") %>;
+    var is_edit = <%= action?("edit") %>;
     //判断在新建状态下是否是市县管理员
-    var is_shixian = !is_edit && <%#= is_city? || is_county_level? %>;
+    var is_shixian = !is_edit && <%= is_city? || is_county_level? %>;
 
     //新建状态下自动判断任务来源类型
     if (is_shixian){
@@ -21,13 +20,13 @@
     }
 
     //市县管理员锁定市县下拉框
-    <%# if is_city? || is_county_level? %>
+    <% if is_city? || is_county_level? %>
       $('#baosong_a_rwlylx').attr("disabled","disabled");
       $('#city').attr("disabled","disabled");
       $('#lcity').attr("disabled","disabled");
-    <%# end %>
+    <% end %>
 
-    $.get('/prov.json', {prov: <%#= @province.id %>}, function (data) {
+ /**   $.get('/prov.json', {prov: <%#= @province.id %>}, function (data) {
       $('<option>-请选择-</option>').appendTo($('#city'));
       $('<option>-请选择-</option>').appendTo($('#lcity'));
       $.each(data.msg, function (i, item) {
@@ -78,12 +77,12 @@
 
 		$('#lcity').change(function () {
 			$('#hidden_prov_country').val($('#lcity').val());
-		});
+		});**/
 
     $('#baosong_a_rwlylx').change(function () {
       $('#hidden_rwlylx').val($('#baosong_a_rwlylx').val());
     });
-    **/
+
     ///////////////分界线/////////////////////////////////////
     $("#baosong_a_jg_ids").select2({theme: 'bootstrap', placeholder: '请选择任务机构'});
   });

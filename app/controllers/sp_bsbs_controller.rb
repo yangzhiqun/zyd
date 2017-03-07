@@ -9,30 +9,26 @@ class SpBsbsController < ApplicationController
 
  def print
     @spbsb = SpBsb.find(params[:id])
-    type =params[:type]
-    respond_to do |format|
+     type =params[:type]
+     respond_to do |format|
       format.pdf {
-         #filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], false, current_user.id,false)
 	 pdfpath,n=@spbsb.generate_pdf_report(type)
 	if pdfpath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
         else
 	 pdfpath = "#{Rails.application.config.attachment_path}/#{pdfpath}"
-          send_file pdfpath, filename: n, disposition: 'inline'
-        end
+         send_file pdfpath, filename: n, disposition: 'inline'
+	end
       }
       format.html {
-        #filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], true, current_user.id,false)
-        pdfpath,n=@spbsb.generate_pdf_report(type)
-	logger.error "pdfpath"
-	if pdfpath.nil?
+        filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], true, current_user.id,false)
+	if filepath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
         else
-	  logger.error "#{Rails.application.config.attachment_path}/#{pdfpath}"	
-          send_file "#{Rails.application.config.attachment_path}/#{pdfpath}", filename: n, disposition: 'inline'
-        end
+         send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
+	end
       }
     end
   end
@@ -63,22 +59,15 @@ class SpBsbsController < ApplicationController
 	 format.html {
 		signData =params[:signData]
 		signCert =params[:signCert]
-                #type=params[:type]
-                 logger.error @spbsb.JDCJ_report_path
                if params[:type] =='JYBG'
-	          # ca_filepath=@spbsb.JDCJ_reporti_path
-		   #logger.error ca_filepath
-		  #filepath = @spbsb.generate_ca_pdf_report(ca_filepath,@spbsb.JDCJ_pdf_rules,signData,signCert,params[:nonce])
 		  ca_filepath=@spbsb.JDCJ_report_path
                 new_ca_filepath = "#{Rails.application.config.attachment_path}/result/#{@spbsb.sp_s_16}-look.pdf"
-                logger.error new_ca_filepath
 		ruleNumList = []
 	        params[:pdf_rules].split(',').each do |rule|
 		   ruleNumList.push(rule)
 	         end
 		                                    
 	        filepath = @spbsb.generate_ca_pdf_report(ca_filepath,new_ca_filepath,ruleNumList,signData,signCert,params[:nonce])
-		logger.error filepath 
 		if filepath.nil?
                     flash[:error] = '查看报告失败'
                     redirect_to '/sp_bsbs/no_available_pdf_found' and return
@@ -103,12 +92,7 @@ class SpBsbsController < ApplicationController
                  end
 		
 	       end
-	       # logger.error type		
-		#filepath = @spbsb.generate_ca_pdf_report(ca_filepath,params[:pdf_rules],signData,signCert,params[:nonce])
 			if !filepath.nil?
- #         flash[:error] = '查看报告失败'
-  #        redirect_to '/sp_bsbs/no_available_pdf_found' and return
-       #else
 				if !params[:ca_key_status].blank?
 					@spbsb.update_attributes({:ca_key_status =>9})
 				end
@@ -153,7 +137,6 @@ class SpBsbsController < ApplicationController
         #render json: {status: 'OK', msg: signSealMessagesJson,pdfpath: pdfpath}
         res[:JDCJ]=jybg_file
 	pdf_path[:JDCJ]=pdfpath
-	logger.error res
       else
        render json: {status: 'ERR', msg:  jybg_result} and return
       end
@@ -177,7 +160,6 @@ class SpBsbsController < ApplicationController
 	  render json: {status: 'ERR', msg:  fxbg_result} and return
 	end
    end
-	logger.error "res"
 	render json: {status: 'OK', res: res,pdfpath: pdf_path}
   end
 
@@ -197,8 +179,6 @@ class SpBsbsController < ApplicationController
     #   pdfpath = "#{Rails.application.config.attachment_path}/#{@spbsb.sp_s_16}-#{type}.pdf"
    # end
    res ={}
-   logger.error pdfpath
-   logger.error params[:sign_data][:JDCJ].present? 
     if @spbsb.is_jiandu? and params[:sign_data][:JDCJ].present?
       type='JYBG'
       pdfpath=  params[:pdfpath][:JDCJ]
@@ -207,7 +187,6 @@ class SpBsbsController < ApplicationController
       writeJson= Rails.root.join('tmp', "yang.req")
       result = `java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  111.26.194.57 8081 199  #{reqMessage} #{writeJson} #{pdfpath}`     
      logger.error result
-     logger.error sign_data
 
      if  result.strip.include?('200')
         sp_status=params[:sp_status]
@@ -457,7 +436,6 @@ class SpBsbsController < ApplicationController
           end
 =end
     end
-
     @sp_bsb.sp_d_86=(Time.now).year.to_s+'-'+(Time.now).mon.to_s+'-'+(Time.now).day.to_s
     @sp_jcxcount=1
 
@@ -504,7 +482,7 @@ class SpBsbsController < ApplicationController
         end
       end
 =end
-  #  end
+ #   end
     sp_bsb = SpBsb.find(params[:id])
     #2015-01-12
     if data_owner(sp_bsb)==0
@@ -528,18 +506,6 @@ class SpBsbsController < ApplicationController
     end
 
     @sp_data = Spdatum.where(sp_bsb_id: params[:id])
-    #unless @sp_bsb.sp_s_2_1.blank?
-    #  @jg_bsb_names = JgBsbName.find_by_name(@sp_bsb.sp_s_2_1)
-    #  @jg_bsbs = JgBsb.find_by_id(@jg_bsb_names.jg_bsb_id)
-    #  if (!@jg_bsbs.city.blank? or @jg_bsbs.city != "-请选择-") and  (@jg_bsbs.country.blank? or @jg_bsbs.country == "-请选择-")
-    #    @baosong_a = BaosongA.where("shi = ?",@jg_bsbs.city)
-    #  elsif (!@jg_bsbs.city.blank? or @jg_bsbs.city != "-请选择-") and  (!@jg_bsbs.country.blank? or @jg_bsbs.country != "-请选择-")
-    #    @baosong_a = BaosongA.where("xian = ?",@jg_bsbs.country)
-    #  end
-    #  @sp_s_70s = @baosong_a.select("id, name")
-    #else
-    #  @sp_s_70s=[]
-    #end
     unless @sp_bsb.sp_s_70.blank?
       @sp_s_67s = BaosongB.where(baosong_a_id: BaosongA.find_by_name(@sp_bsb.sp_s_70).id)
     else
@@ -888,7 +854,7 @@ class SpBsbsController < ApplicationController
       end
     end
 
-    @sp_bsbs = SpBsb.select("JDCJ_report_path,FXJC_report_path,sp_s_44,sp_bsbs.ca_key_status,sp_bsbs.report_path,sp_bsbs.id, sp_bsbs.updated_at, sp_bsbs.sp_s_3, sp_bsbs.sp_s_4, sp_bsbs.sp_s_14, sp_bsbs.sp_s_16, sp_bsbs.sp_s_43, sp_bsbs.sp_s_214, sp_bsbs.sp_s_35, sp_bsbs.sp_s_71, sp_bsbs.sp_s_202, sp_bsbs.sp_i_state, sp_bsbs.fail_report_path, sp_bsbs.czb_reverted_flag,sp_bsbs.sp_s_2_1")
+    @sp_bsbs = SpBsb.select("created_at,sp_d_38,JDCJ_report_path,FXJC_report_path,sp_s_44,sp_bsbs.ca_key_status,sp_bsbs.report_path,sp_bsbs.id, sp_bsbs.updated_at, sp_bsbs.sp_s_3, sp_bsbs.sp_s_4, sp_bsbs.sp_s_14, sp_bsbs.sp_s_16, sp_bsbs.sp_s_43, sp_bsbs.sp_s_214, sp_bsbs.sp_s_35, sp_bsbs.sp_s_71, sp_bsbs.sp_s_202, sp_bsbs.sp_i_state, sp_bsbs.fail_report_path, sp_bsbs.czb_reverted_flag,sp_bsbs.sp_s_2_1")
     
     if params[:r1]
       session[:change_js]=params[:r1].to_i
@@ -1608,7 +1574,6 @@ class SpBsbsController < ApplicationController
           item.JYYJ = (item.JYYJ || "").split("#").push(line[:JYYJ]).uniq.join("#")
           item.PDYJ = (item.PDYJ || "").split("#").push(line[:PDYJ]).uniq.join("#")
           item.BZFFJCX = (item.BZFFJCX || "").split("#").push(line[:BZFFJCX]).uniq.join("#")
-          logger.error item.BZFFJCX
 
           item.BZFFJCXDW = (item.BZFFJCXDW || "").split("#").push(line[:BZFFJCXDW]).uniq.join("#")
           item.BZZXYXX = (item.BZZXYXX || "").split("#").push(line[:BZZXYXX]).uniq.join("#")

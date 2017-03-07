@@ -139,14 +139,14 @@
           <%= link_to '新建用户', new_user_path, :class => 'btn btn-sm btn-success' %>
           <a href="/users_export_user_info" class="btn btn-sm btn-success" data-method="post">用户信息下载</a>
           <hr>
-          <div class="well well-sm">
-            <b> <%= flash[:import_result] unless flash[:import_result].nil? %> </b>
-            <%= form_tag({action: :import_data_excel}, multipart: true) do %>
-                <%= file_field_tag 'excel' %>
+        <!--  <div class="well well-sm">
+            <b> <#%= flash[:import_result] unless flash[:import_result].nil? %> </b>
+            <#%= form_tag({action: :import_data_excel}, multipart: true) do %>
+                <#%= file_field_tag 'excel' %>
                 <br>
-                <%= submit_tag("批量导入用户", :class => 'btn btn-xs btn-primary') %>
-            <% end %>
-          </div>
+                <#%= submit_tag("批量导入用户", :class => 'btn btn-xs btn-primary') %>
+            <#% end %>
+          </div> -->
         </div>
       </div>
   <% end %>

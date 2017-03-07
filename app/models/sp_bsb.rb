@@ -59,13 +59,6 @@ class SpBsb < ActiveRecord::Base
   end
 
   def absolute_report_path(preview=false)
-     #if self.report_path.blank? and !preview
-      # return  Rails.root.join('tmp', "sp_bsbs_#{self.id}_print.pdf")
-     #else
-      # return nil
-     #end
-     logger.error self.report_path
-     logger.error self.report_path.blank?
      return Rails.root.join('tmp', "sp_bsbs_#{self.id}_print.pdf")  if self.report_path.blank?
     return File.expand_path('../reports', Rails.root).to_s + self.report_path unless preview
     return Rails.root.join('tmp', 'report_preview').to_s + self.report_path if preview
@@ -648,14 +641,12 @@ class SpBsb < ActiveRecord::Base
     if force_generate or preview  or (self.report_path.blank? and self.ca_key_status ==0) or !File.exists?(self.absolute_report_path)
       @jg_bsb = JgBsb.find_by_jg_name(self.sp_s_43)
       @jyxm_str = Spdatum.where('sp_bsb_id= ? and (spdata_2 = ? or spdata_2 = ?)', self.id, '合格项', '不合格项').limit(3).map { |s| s.spdata_0 }.join(",") + "等#{Spdatum.where("sp_bsb_id= ? and (spdata_2 = ? or spdata_2 = ?)", self.id, '合格项', '不合格项').count}项。"
-     logger.error @jyxm_str      
 @jyjy_str = Spdatum.where('sp_bsb_id= ? and spdata_4 <> ?', self.id, '/').limit(2).map { |s| s.spdata_3 }.join(",")
       @jyjy_str4 = Spdatum.where('sp_bsb_id= ? and spdata_4 <> ?', self.id, '/').limit(2).map { |s| s.spdata_4 }.join(",")
       @jyjy_str1 = Spdatum.where('sp_bsb_id = ? and (spdata_4 = ? OR spdata_4 = ?)', self.id, '/', '-').map { |s| s.spdata_3 }.uniq.join(",")
       @splog = SpLog.where('sp_bsb_id = ? AND (sp_i_state = ? or sp_i_state =?)', self.id, '2','4').last
       #抽检项
       @cjx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE '%合格项%' OR spdata_2 LIKE '%不合格项%')", self.id)
-     logger.error @cjx
       @jyjy_struni = (@cjx.where('sp_bsb_id= ? and spdata_4 <> ?', self.id, '/').select('distinct spdata_4').limit(2).map { |s| s.spdata_4 }).uniq.join(",")
       @jyjy_FY = self.inspection_basis
       #风险项
@@ -704,15 +695,8 @@ class SpBsb < ActiveRecord::Base
 
       if preview and !force_generate
         abs_target_path = Rails.root.join('tmp', 'report_preview').to_s + target_path
-        # if pdf_rules.blank?
-        #   return tmp_file
-        # end
-      	logger.error "这应该是打印的"
-	logger.error abs_target_path
 	else
         abs_target_path = File.expand_path('../reports', Rails.root).to_s + target_path
-      	logger.error "这应该是浏览的"
-        logger.error abs_target_path
 	end
 
       if pdf_rules.blank?
@@ -750,25 +734,10 @@ class SpBsb < ActiveRecord::Base
         content.push({ruleNum: rule, appId: '9ff70fce51874b62a5f136fdda43c4b7', userinfo: userinfo, documentInfo: documentInfo})
       end
       # logger.error content.to_json
-			logger.error content
       content = Base64.strict_encode64(content.to_json)
       cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')} 111.26.194.57 8081 105 #{content} #{tmp_file} #{self.absolute_report_path(preview && !force_generate)}"
-      logger.error cmd
 
       result = `#{cmd}`
-
-  logger.error "result"
-
-  logger.error result
-    logger.error tmp_file
-    logger.error self.absolute_report_path(preview && !force_generate)
-      #cmd = "/usr/local/java-ppc64-80/jre/bin/java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 1 #{pdf_rules.split(',').join('#')} #{tmp_file} #{self.absolute_report_path(preview && !force_generate)}"
-      Rails.logger.error cmd
-      # cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.0.0-SNAPSHOT-client.jar')} 172.16.88.126 80 105 #{content} #{tmp_file} #{@spbsb.absolute_report_path}"
-      # logger.error cmd
-      #
-      # result = `#{cmd}`
-      Rails.logger.error result
 
       FileUtils.rm_f(tmp_file)
 
@@ -791,22 +760,12 @@ class SpBsb < ActiveRecord::Base
 
 	def generate_ca_pdf_report(ca_filepath,new_ca_filepath,ruleNumList,signData,signCert,nonce)
 	    tmp_file = ca_filepath
-	    logger.error tmp_file 
-	    #preview_file = "Rails.root.join('tmp/pdf_preview', "sp_bsbs_#{self.id}_print_preview.pdf")"
-	   # preview_file= Rails.root.join('tmp/pdf_preview', "preview_sp_bsbs_#{self.id}_print.pdf")
-	    #preview_file= File.expand_path('../reports', Rails.root).to_s+"preview_sp_bsbs_#{self.id}_print.pdf"
 	    userinfo = {channelId: 'CHN_3039394B3D71D6FD'}
             documentInfo = {docuName: '云签章', fileDesc: '云签章'}
-             #ruleNumList = []
-            # pdf_rules.split(',').each do |rule|
-	     #ruleNumList.push(rule)
-           # end
 	   reqMessage ={ruleNumList: ruleNumList, appId: '9ff70fce51874b62a5f136fdda43c4b7',policyType: 2, userinfo: userinfo, documentInfo: documentInfo,nonce: nonce, signCert: signCert,signData: signData}
-      logger.error reqMessage
 	   content = Base64.strict_encode64(reqMessage.to_json)
       cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client.jar')} 111.26.194.57 8081 114 #{content} #{tmp_file} #{new_ca_filepath}"
       result = `#{cmd}`
-    logger.error result
       if result.strip.include?('200')
 	return new_ca_filepath
       else
@@ -833,12 +792,10 @@ class SpBsb < ActiveRecord::Base
     clientSignMessages.push(clientSignMessage)
     reqMessage ={appId: '9ff70fce51874b62a5f136fdda43c4b7',sealImg: sealImg, signCert: signCert,
                  sealWidth: 0,sealHeight: 0, clientSignMessages: clientSignMessages}
-    logger.error reqMessage
     reqMessage = Base64.strict_encode64(reqMessage.to_json)
     #filename = Rails.root.join('tmp', "sp_bsbs_#{self.id}.txt")
     cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  111.26.194.57 8081 108  #{reqMessage} #{pdfpath} #{filename}"
     signSeal_result = `#{cmd}`
-	logger.error signSeal_result
      return signSeal_result
   end
 
@@ -850,40 +807,6 @@ class SpBsb < ActiveRecord::Base
     context[:jyjy_str] = Spdatum.where('sp_bsb_id= ? and spdata_4 <> ?', self.id, '/').limit(2).map { |s| s.spdata_3 }.join(",")
     context[:jyjy_str4] = Spdatum.where('sp_bsb_id= ? and spdata_4 <> ?', self.id, '/').limit(2).map { |s| s.spdata_4 }.join(",")
     context[:jyjy_str1] = Spdatum.where('sp_bsb_id = ? and (spdata_4 = ? OR spdata_4 = ?)', self.id, '/', '-').map { |s| s.spdata_3 }.uniq.join(",")
-    #批准人
-    #logfive = SpLog.with_deleted.where(sp_bsb_id: self.id, sp_i_state: 5).order('id asc').last
-=begin
-    logfive = SpLog.where(sp_bsb_id: self.id, sp_i_state: 5).order('id asc').last
-    if logfive.nil?
-      #context[:sp_bsb][:pzr] = '未记录@1'
-     else
-      log = SpLog.where('sp_bsb_id = ? and sp_i_state = ? and id > ?', self.id, 16, logfive.id).order('id asc').first
-      if log.nil?
-        log = SpLog..where(sp_bsb_id: self.id, sp_i_state: 8).order('sp_i_state asc').last
-      end
-      unless log.nil?
-        user = User.find(log.user_id)
-   	 #context[:sp_bsb][:pzr] = @user.tname
-      else
-          #context[:sp_bsb][:pzr] = '未记录@2'
-      end
-    end
-         #审核人检验人
-      log = SpLog.where(sp_bsb_id: self.id, sp_i_state: 5).last
-    unless log.nil?
-      user = User.find(log.user_id)
-     #context[:sp_bsb][:shr] = @user.tname
-     else
-      #context[:sp_bsb][:shr] = '未记录'
-     end
-      log = SpLog.where(sp_bsb_id: self.id, sp_i_state: 4).last
-    unless log.nil?
-      user = User.find(log.user_id)
-      #context[:sp_bsb][:jyr] = @user.tname
-    else
-      #context[:sp_bsb][:jyr] = '未记录'
-    end
-=end
     if report_type.eql?('JYBG')
       context[:padsplog_jcfy] = PadSpLogs.where('sp_s_16 = ? AND remark = ?', self.sp_s_16, '接收样品').last
       context[:splog_jcfy] = SpLog.where('sp_bsb_id = ? AND sp_i_state = ?', self.id, 2).first
@@ -1062,8 +985,6 @@ class SpBsb < ActiveRecord::Base
 			            :@jyjy_str4 => context[:jyjy_str4], 
 				    :@jyjy_str1 => context[:jyjy_str1]
 				   }
-	logger.error ":@fxx"
-	logger.error context[:wtx]
       return "#{self.sp_s_16}-#{f_name}.pdf", "#{self.sp_s_16}-#{f_name}.pdf"
   end
 end

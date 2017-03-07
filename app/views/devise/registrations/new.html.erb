@@ -1,6 +1,5 @@
 <script type="text/javascript" charset="utf-8">
   $(function () {
-alert(123123);
 //    $('#user_user_s_province').change(function () {
 //      var o = $(this);
 //      if (o.val() == '') return false;
@@ -92,8 +91,8 @@ alert(123123);
     $('#user_jg_type').select2({theme: 'bootstrap', placeholder: '机构类型'}).change(function () {
       reload_jg_data();
     });
-$("<option>'-请选择-'</option>").appendTo($('#user_prov_country'));
-$('#user_prov_country').val('-请选择-');
+      $("<option>-请选择-</option>").appendTo($('#user_prov_country'));
+      $('#user_prov_country').val('-请选择-');
   });
 
   function reload_jg_data() {
