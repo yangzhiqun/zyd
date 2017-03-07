@@ -109,11 +109,11 @@ class ApplicationController < ActionController::Base
       session[:change_js]=7
     end
     #批准
-    if @user.user_i_js==0 && @user.user_d_authority_5==1
+    if current_user.user_i_js==0 && current_user.user_d_authority_5==1
       session[:change_js]=11	
     end
     #报告发送人
-    if @user.user_i_js==0 && @user.jbxx_sh==1
+    if current_user.user_i_js==0 && current_user.jbxx_sh==1
       session[:change_js]=16
     end
 
