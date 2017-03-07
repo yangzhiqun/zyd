@@ -25,7 +25,7 @@ module ApplicationHelper
       return (d1-d2).to_i
   end
   def old_report(data)
-    d1=Date.parse('2017-03-05')
+    d1=Date.parse('2017-03-01')
     d2=Date.parse(data.to_s)
     return d2<d1
   end  	

@@ -19,10 +19,12 @@ module Bjca
                    begin
 					response = @client.call(:gen_random, message: {appName: "SVSDefault", len: length})
 					response.as_json['gen_random_response']['out']
+		     logger.error "==========="
                    rescue Savon::SOAPFault => error
 					Rails.logger.error "CAHelper#get_random: #{error.as_json}"
 			nil
-		   rescue
+		   rescue Errno::EHOSTUNREACH => e
+				Rails.logger.error "CAHelper#get_random: 获取服务器错误"	
                           nil
                     end
 		end
@@ -35,7 +37,8 @@ module Bjca
                  rescue Savon::SOAPFault => error
 					Rails.logger.error "CAHelper#get_server_certificate: #{error.as_json}"
                       nil
-	         rescue 
+	         rescue Errno::EHOSTUNREACH => e
+                                Rails.logger.error "CAHelper#get_server_certificate: 获取服务器错误"  
                           nil
                  end
 		end
@@ -49,7 +52,8 @@ module Bjca
                  rescue Savon::SOAPFault => error
 		    Rails.logger.error "CAHelper#sign_data_re_all_info: #{error.as_json}"
                          nil
-                  rescue
+                  rescue Errno::EHOSTUNREACH => e
+                                Rails.logger.error "CAHelper#sign_data_re_all_info: 获取服务器错误"  
                           nil
 		  end
 		end
@@ -62,8 +66,6 @@ module Bjca
 					Rails.logger.error response.as_json
         rescue Savon::SOAPFault => error
 					Rails.logger.error "CAHelper#verify_signed_data_by_all_info: #{error.as_json}"
-		false
-	rescue
           false
         end
 		end
@@ -74,9 +76,7 @@ module Bjca
 				Rails.logger.error response.as_json
 			 rescue Savon::SOAPFault => error
 				Rails.logger.error "CAHelper#sign_data: #{error.as_json}"
-	             nil
-		    rescue
-			nil
+	         nil
 			end
 		end
 
