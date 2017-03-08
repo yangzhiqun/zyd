@@ -5,7 +5,10 @@
 </style>
 
 <script type="text/javascript">
-
+	strServerSignedData = "<%= @ca_login_info[:signed].split('#')[0] %>";
+	strServerCert = "<%= @ca_login_info[:certificate] %>";
+	strServerRan = "<%= @ca_login_info[:ca_random] %>";
+	
   function switchTo(type) {
     if (type == 0) {
       $('.login-ca').addClass('hidden');
@@ -25,10 +28,29 @@
     <% end %>
 
     SetUserCertList('login_form_ca.user_cert_list', CERT_TYPE_HARD);
+    
 
     $('#cert-login').click(function () {
+    var ep = new EventProxy();
+     var cur_cert_id = login_form_ca.user_cert_list.value
+       GetSignCert(cur_cert_id,function(ret){
+	if(ret.retVal){
+	  GetExtCertInfoByOID(ret.retVal,'1.2.156.112562.2.1.1.23',function(ret){
+                if(ret.retVal){
+		  $("#ca_userid").val(ret.retVal);
+                  ep.emit('userid', ret.retVal);
+                }
+          });
+	}
+	});
+    ep.all('userid', function (userid) {
+	if(userid == ''){
+	 alert('获取用户唯一标志值失败');
+	 return false;
+	}
       var ret = Login('login_form_ca', login_form_ca.user_cert_list.value, login_form_ca.cert_password.value, '/ca_login')
       if (ret) {
+	alert(ret);
         $('.login-ca *').attr('disabled', 'disabled');
         $('.logining-tip').removeClass('hidden');
         var userCert = $('input[name="UserCert"]').val();
@@ -49,6 +71,7 @@
           $('.logining-tip').addClass('hidden');
         }, 'json')
       }
+    });
       return false;
     });
 
@@ -71,13 +94,14 @@
     });
   });
 </script>
-<img src="/site-logo" width="480" height="70" style="display: block; margin: 15px auto;" alt="站点图片">
 <DIV class="logmainbox">
   <DIV class="left"></DIV>
   <DIV class="right">
     <% if Rails.application.config.site[:enable_ca_login] %>
         <div class="login-ca <%= 'hidden' if Rails.application.config.site[:enable_ca_login] %>">
           <form name="login_form_ca" action="/admin/login" method="post">
+	  <input type="hidden" name="random" id="random" value="<%= @ca_login_info[:ca_random] %>">
+	  <input type="hidden" name="ca_userid" id="ca_userid" >
             <% if false and browser.chrome? and browser.version.to_i > 42 %>
                 <h4>CA登录暂不支持版本号大于42的谷歌（Chrome）浏览器，当前版本：<%= browser.version %></h4>
                 <a href="javascript:void(0);" onclick="switchTo(0);return false;" class="btn btn-info btn-sm login-style-switcher">

@@ -735,7 +735,7 @@ class SpBsb < ActiveRecord::Base
       end
       # logger.error content.to_json
       content = Base64.strict_encode64(content.to_json)
-      cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')} 111.26.194.57 8081 105 #{content} #{tmp_file} #{self.absolute_report_path(preview && !force_generate)}"
+      cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 105 #{content} #{tmp_file} #{self.absolute_report_path(preview && !force_generate)}"
 
       result = `#{cmd}`
 
@@ -764,7 +764,7 @@ class SpBsb < ActiveRecord::Base
             documentInfo = {docuName: '云签章', fileDesc: '云签章'}
 	   reqMessage ={ruleNumList: ruleNumList, appId: '9ff70fce51874b62a5f136fdda43c4b7',policyType: 2, userinfo: userinfo, documentInfo: documentInfo,nonce: nonce, signCert: signCert,signData: signData}
 	   content = Base64.strict_encode64(reqMessage.to_json)
-      cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client.jar')} 111.26.194.57 8081 114 #{content} #{tmp_file} #{new_ca_filepath}"
+      cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 114 #{content} #{tmp_file} #{new_ca_filepath}"
       result = `#{cmd}`
       if result.strip.include?('200')
 	return new_ca_filepath
@@ -794,7 +794,7 @@ class SpBsb < ActiveRecord::Base
                  sealWidth: 0,sealHeight: 0, clientSignMessages: clientSignMessages}
     reqMessage = Base64.strict_encode64(reqMessage.to_json)
     #filename = Rails.root.join('tmp', "sp_bsbs_#{self.id}.txt")
-    cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  111.26.194.57 8081 108  #{reqMessage} #{pdfpath} #{filename}"
+    cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 108  #{reqMessage} #{pdfpath} #{filename}"
     signSeal_result = `#{cmd}`
      return signSeal_result
   end
