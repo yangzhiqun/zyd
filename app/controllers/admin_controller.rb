@@ -137,46 +137,21 @@ class AdminController < ApplicationController
 
   # CA LOGIN
   def ca_login
-	 client = Savon.client(wsdl: "http://#{Rails.application.config.site[:ca_auth_address]}/webservice/services/SecurityEngineDeal?wsdl")
-    response = client.call(:validate_cert, message: {appName: "SVSDefault", password: params[:UserCert]})
-    response_code = response.as_json['validate_cert_response']['out'].to_i
-
-    respond_to do |format|
-      if response_code == 1
-        begin
-          response = client.call(:get_cert_info_by_oid, message: {appName: "SVSDefault", base64EncodeCert: params[:UserCert], oid: '1.2.156.112562.2.1.1.1'})
-        rescue Savon::SOAPFault => error
-          logger.error error
-        end
-
-				out = response.as_json['get_cert_info_by_oid_response']['out']
-				format.json { render :json => {status: 'ERR', msg: 'out nil' } } and return if out.nil?
-
-				if out.include?('SF')
-					# 个人KEY
-					@SFid = out.gsub(/SF/, '')
-				elsif out.include?('JJ')
-					# 单位KEY
-					begin
-						response = client.call(:get_cert_info_by_oid, message: {appName: "SVSDefault", base64EncodeCert: params[:UserCert], oid: '1.2.156.112562.2.1.1.23'})
-						logger.error response.as_json
-						@SFid = response.as_json['get_cert_info_by_oid_response']['out']
-					rescue Savon::SOAPFault => error
-						logger.error error
-					end
-
-				end
-
-        session[:sfid] = @SFid
-				session[:userCert] = params[:UserCert]
-        @user = User.find_by_id_card(@SFid)
+	 validate_ca_cert= Bjca::CaHelper.new.validate_ca_cert(params[:UserCert])
+  	 validate_random= Bjca::CaHelper.new.validate_random(params[:random],params[:UserSignedData],params[:UserCert])
+     ca_userid=params[:ca_userid]
+   respond_to do |format|
+	if validate_ca_cert.include?("成功")&& validate_random
+	    session[:sfid] = ca_userid
+	    session[:userCert] =params[:UserCert]
+        @user = User.find_by_id_card(ca_userid)
         if @user.nil? or @user.id_card.blank?
-					format.html {
-						errmsg = '第一次使用USBKEY登陆系统时，需要与用户在系统中的账号进行绑定，请点击确定按钮进入USBKEY绑定界面。'
-						flash[:error] = errmsg
-						redirect_to '/bind_ca_key'
-					}
-          format.json { render :json => {status: 'ERR', msg: errmsg, key: @SFid, code: 444} }
+	     format.html {
+		 errmsg = '第一次使用USBKEY登陆系统时，需要与用户在系统中的账号进行绑定，请点击确定按钮进入USBKEY绑定界面。'
+		 flash[:error] = errmsg
+		 redirect_to '/bind_ca_key'
+	    }
+          format.json { render :json => {status: 'ERR', msg: errmsg, key: ca_userid , code: 444} }
         else
           # TODO 完善CA登陆后逻辑
           logger.error "111"
@@ -186,15 +161,9 @@ class AdminController < ApplicationController
 					format.html { redirect_to '/welcome_notices' }
           format.json { render :json => {status: 'OK', msg: 'OK'} }
         end
-      else
-				errmsg = ValidateCertCode::ResponseCode["code:#{response_code}"]
-				format.html { 
-					flash[:error] = errmsg
-					redirect_to :back 
-				}
-        format.json { render :json => {status: 'ERR', msg: errmsg} }
-      end
-    end
-  end
-
+     else
+      format.json { render :json => {status: 'ERR', msg: '无效key'} }
+     end
+   end
+   end
 end

@@ -78,18 +78,20 @@ class BaosongAsController < ApplicationController
   # POST /baosong_as.json
   def create
     @baosong_a = BaosongA.new(baosong_a_params)
-		@baosong_a.sheng = SysConfig.get(SysConfig::Key::PROV) 
+    @baosong_a.sheng = SysConfig.get(SysConfig::Key::PROV) 
     respond_to do |format|
-      if @baosong_a.save
-        logger.error params[:js_ids]
-       # params[:js_ids].each do |i|
-        #  BaosongAJgId.create(baosong_a_id: self.id, jg_bsb_id: i)
-         # end
-        format.html { redirect_to @baosong_a, notice: 'Baosong a was successfully created.' }
-        format.json { render json: @baosong_a, status: :created, location: @baosong_a }
+      if !BaosongA.find_by_name(baosong_a_params["name"]).nil?
+	format.html {
+          redirect_to :back, :flash => {:error => "报送分类A名字重复！"}
+        }
       else
-        format.html { render action: "new" }
-        format.json { render json: @baosong_a.errors, status: :unprocessable_entity }
+        if @baosong_a.save
+          format.html { redirect_to @baosong_a, notice: 'Baosong a was successfully created.' }
+          format.json { render json: @baosong_a, status: :created, location: @baosong_a }
+        else
+          format.html { render action: "new" }
+          format.json { render json: @baosong_a.errors, status: :unprocessable_entity }
+        end
       end
     end
   end
@@ -103,12 +105,18 @@ class BaosongAsController < ApplicationController
       da.destroy
     end
     respond_to do |format|
-      if @baosong_a.update_attributes(baosong_a_params)
-        format.html { redirect_to @baosong_a, notice: 'Baosong a was successfully updated.' }
-        format.json { head :no_content }
+      if !BaosongA.find_by_name(baosong_a_params["name"]).nil? && @baosong_a.name != baosong_a_params["name"]
+	format.html {
+          redirect_to :back, :flash => {:error => "报送分类A名字重复！"}
+        }
       else
-        format.html { render action: "edit" }
-        format.json { render json: @baosong_a.errors, status: :unprocessable_entity }
+        if @baosong_a.update_attributes(baosong_a_params)
+          format.html { redirect_to @baosong_a, notice: 'Baosong a was successfully updated.' }
+          format.json { head :no_content }
+        else
+          format.html { render action: "edit" }
+          format.json { render json: @baosong_a.errors, status: :unprocessable_entity }
+        end
       end
     end
   end
