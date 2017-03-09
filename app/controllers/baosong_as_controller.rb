@@ -81,8 +81,9 @@ class BaosongAsController < ApplicationController
     @baosong_a.sheng = SysConfig.get(SysConfig::Key::PROV) 
     respond_to do |format|
       if !BaosongA.find_by_name(baosong_a_params["name"]).nil?
-        flash[:error] = "报送分类A名字重复！"
- 	format.html { render action: "new" }
+	format.html {
+          redirect_to :back, :flash => {:error => "报送分类A名字重复！"}
+        }
       else
         if @baosong_a.save
           format.html { redirect_to @baosong_a, notice: 'Baosong a was successfully created.' }
@@ -105,8 +106,9 @@ class BaosongAsController < ApplicationController
     end
     respond_to do |format|
       if !BaosongA.find_by_name(baosong_a_params["name"]).nil? && @baosong_a.name != baosong_a_params["name"]
-        flash[:error] = "报送分类A名字重复！"
- 	format.html { render action: "new" }
+	format.html {
+          redirect_to :back, :flash => {:error => "报送分类A名字重复！"}
+        }
       else
         if @baosong_a.update_attributes(baosong_a_params)
           format.html { redirect_to @baosong_a, notice: 'Baosong a was successfully updated.' }
