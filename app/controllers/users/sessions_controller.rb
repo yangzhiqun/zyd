@@ -1,4 +1,4 @@
-class Users::SessionsController < Devise::SessionsController
+﻿class Users::SessionsController < Devise::SessionsController
   layout 'session'
 
   before_filter :configure_sign_in_params, only: [:create]
@@ -7,6 +7,22 @@ class Users::SessionsController < Devise::SessionsController
   # GET /resource/sign_in
   def new
     @title = '登录'
+=begin
+	 cmd = `java -jar #{Rails.root.join('bin', 'mssg-sign-client-1.0.3-SNAPSHOT-clientAll.jar')} 123.56.20.192 9527 'bc333fe259054915bb40c6c206039389' 'GENRANDOM' 8  #{Rails.root.join('tmp', "random.txt")}`
+	@random = File.read(Rails.root.join('tmp',"random.txt"))
+	appid= 'bc333fe259054915bb40c6c206039389'
+	type ='SIGNDATA'
+	random_content =Base64.strict_encode64(@random.to_json)
+	keyID= 'KEY_9c5aa23754d64399bf4674929654d55c'
+ #服务器证书
+  @serverCert = 'MIIBZzCCAQugAwIBAgIIaW57AZPf6sEwDAYIKoEcz1UBg3UFADAvMREwDwYDVQQDDAhiamNhdGVzdDENMAsGA1UECgwEYmpjYTELMAkGA1UEBhMCY24wHhcNMTYwOTE4MDY1MDEzWhcNMTcwOTE4MDc1MDEzWjAvMS0wKwYDVQQDDCRLRVlfOWM1YWEyMzc1NGQ2NDM5OWJmNDY3NDkyOTY1NGQ1NWMwWTATBgcqhkjOPQIBBggqgRzPVQGCLQNCAARWirtwnhBnifJiVFAAz9FPZl+9FvZB5jND6wvGI6vDCW1iqkezKwkU9+d5ZWhZqD0r1tVSdHQcoSQWC5hURKnxow8wDTALBgNVHQ8EBAMCB4AwDAYIKoEcz1UBg3UFAANIADBFAiEAhCC6J1qcldS/8FGvDVyeUXu/4pSx4y/LtWUeDVu6qtYCIHrPJBi6LkhfJLKd4mNmlADmgWh5NnTxMnnVVzQBCoJ9'
+	filename =Rails.root.join('tmp', "filename.txt")
+	 cmd = `java -jar #{Rails.root.join('bin', 'mssg-sign-client-1.0.3-SNAPSHOT-clientAll.jar')} 123.56.20.192 9527 #{appid} #{type} #{random_content} #{keyID}  #{@serverCert} #{filename}`
+  @signedData =File.read(Rails.root.join('tmp','filename.txt'))
+  logger.error "random"
+    logger.error @random
+=end
+#	@ca_login_info = Bjca::CaHelper.new.get_client_verify_random_info
     super
   end
 
@@ -33,10 +49,12 @@ class Users::SessionsController < Devise::SessionsController
     end
   end
 
-  # DELETE /resource/sign_out
-  # def destroy
-  #   super
-  # end
+   #DELETE /resource/sign_out
+   def destroy
+    cookies.delete(:u, domain: '.cfda.pub')
+		cookies.delete(:n, domain: '.cfda.pub')
+		super
+   end
 
   protected
 

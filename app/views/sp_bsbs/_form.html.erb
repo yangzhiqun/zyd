@@ -16,6 +16,13 @@
       $("#sp_bsb_sp_s_2_1").empty();
       $("#sp_bsb_sp_s_2_1").append("<option parentid='<%= @sp_bsb.sp_s_2_1%>' value='<%= @sp_bsb.sp_s_2_1%>'><%= @sp_bsb.sp_s_2_1%></option>");
     }
+    if(tab_1()){
+        $("#sp_bsb_sp_s_70").empty();
+        $("#sp_bsb_sp_s_70").append("<option parentid='<%= @sp_bsb.sp_s_70%>' value='<%= @sp_bsb.sp_s_70%>'><%= @sp_bsb.sp_s_70%></option>");
+        $("#sp_bsb_sp_s_67").empty();
+        $("#sp_bsb_sp_s_67").append("<option parentid='<%= @sp_bsb.sp_s_67%>' value='<%= @sp_bsb.sp_s_67%>'><%= @sp_bsb.sp_s_67%></option>");
+
+    }
   });
   //判断日期
   function tab(){
@@ -27,7 +34,16 @@
       return false
     }
   }
-
+  //判断日期
+  function tab_1(){
+      var oDate1 = new Date("2017-03-07");
+      var oDate2 = new Date("<%=@sp_bsb.created_at %>");
+      if(oDate1.getTime() > oDate2.getTime()){
+          return true
+      } else {
+          return false
+      }
+  }
   // 按检测名称查找已记录的检测项目
   function find_sp_data_by_name(name) {
     if (spdata == null) return null;
@@ -90,6 +106,16 @@
       if (!!item.PDYJ)
         $.each(item.PDYJ.split("#"), function (index, data) {
           copied.find('.PDYJ').append("<option value='" + data + "'>" + data + "</option>");
+        });
+	
+	if (!!item.JYYJJHB)
+        $.each(item.JYYJJHB.split("#"), function (index, data) {
+          copied.find('.JYYJJHB').append("<option value='" + data + "'>" + data + "</option>");
+        });
+
+      if (!!item.BZ)
+        $.each(item.BZ.split("#"), function (index, data) {
+          copied.find('.BZ').append("<option value='" + data + "'>" + data + "</option>");
         });
 
       if ((item.PDYJ || "").split("#")[0].length < 4) {
@@ -200,6 +226,10 @@
       var index = $('.fht-fixed-column .JYJG').index($(this));
       $($('.fht-fixed-body .JYJG').get(index)).val($(this).val()).trigger('change');
     });
+   $('body').delegate('.fht-fixed-column .JYXM', 'keyup blur', function () {
+      var index = $('.fht-fixed-column .JYXM').index($(this));
+      $($('.fht-fixed-body .JYXM').get(index)).val($(this).val()).trigger('change');
+    });
 
     $('#tblGrid').fixedHeaderTable("destroy");
     $('#tblGrid').fixedHeaderTable({altClass: 'odd', fixedColumns: 3});
@@ -264,6 +294,12 @@
     });
   }
   $(function () {
+		<% if [2,3,4, 5].include?(@sp_bsb.sp_i_state) %>
+			SetUserCertList('ca_sign_form.user_cert_list', CERT_TYPE_HARD);
+    <% end %>
+		<% if [16].include?(@sp_bsb.sp_i_state) %>
+		SetUserCertList('sp_bsb_form.sp_user_cert_list', CERT_TYPE_HARD);
+		<% end %>
     if ($("#sp_bsb_sp_s_63").val() == "散装") {
       <%@check=[26,27,13,72,73,74]%>
       <%@check.each do |i|%>
@@ -358,6 +394,19 @@
         }
       }
       jgpd.trigger('change');
+    });
+    <% end %>
+    //检验依据 判定依据 手动变化时触发 判定结果的触发器，生成用于检验报告文本串
+    <% if @sp_bsb.sp_i_state.to_i >= 0 && @sp_bsb.sp_i_state<4 && current_user.user_d_authority_1==1 %>
+    $('body').delegate('.fht-fixed-body .PDYJ', 'change', function () {
+      var o = $(this);
+      o.parents('tr').find('.JGPD').trigger('change');
+    });
+    $('body').delegate('.fht-fixed-body .JYYJ', 'change', function () {
+      var o = $(this);
+      o.parents('tr').find('.JGPD').trigger('change');
+      o.parents('tr').find('.JYYJJHB').get(0).selectedIndex = this.selectedIndex;
+      o.parents('tr').find('.BZ').get(0).selectedIndex = this.selectedIndex;
     });
     <% end %>
 
@@ -456,7 +505,24 @@
      }
      }, 'json')
      });*/
+    //根据任务来源判断报送分类
+    $('#sp_bsb_sp_s_2_1').change(function () {
+      var o = $(this);
+      if (o.val() != '') {
+        $.get('/baosong_bs/by_rwly.json', {a_name: o.val()}, function (data) {
+          if (data.status == 'OK') {
+            $('#sp_bsb_sp_s_70, #sp_bsb_sp_s_67').empty();
+            render_spec_list([]);
 
+            $('#sp_bsb_sp_s_70').empty();
+            $("<option>").text("请选择").appendTo($('#sp_bsb_sp_s_70'));
+            $.each(data.data, function () {
+              $("<option>").attr('data-identifier', this.identifier).attr("value", this.name).text(this.name).appendTo($('#sp_bsb_sp_s_70'));
+            });
+          }
+        }, "json")
+      }
+    });
     // 报送分类第一列
     $('#sp_bsb_sp_s_70').change(function () {
       var o = $(this);
@@ -541,11 +607,11 @@
           if (data.status == 'OK') {
             render_spec_list(data.items);
 						if(window.location.pathname.indexOf("new") != -1){
-							get_basis();
+							//get_basis();
 						}else{
 							//针对老数据　如果老数据没有两项自动添加
 							if ($("#sp_bsb_inspection_basis").val()=="" || $("#sp_bsb_decision_basis").val()==""){
-								get_basis();
+							//	get_basis();
 							} 
 						}
           }
@@ -705,6 +771,68 @@
       else {
         $("#sp_bsb_sp_s_71").val("未检验样品");
       }
+	//主检人阶段自动修改报告中 三段内容
+	<% if @sp_bsb.sp_i_state == 2 or @sp_bsb.sp_i_state == 3 or true%>
+      var jyyj = "";
+      var jyjl = "";
+      var fxjyyj = "";
+      var trnum = $(this).parents('table').find("tr").length;
+      var wtxnum = 0;
+      var hgx = new Array();
+      var jyx = new Array();
+      var fxx = new Array();
+      var jyyj_bhgx_str4 = "经抽样检验，";
+      var jyyj_hgx_str4 = '经抽样检验，所检项目符合';
+           for (var i = 1; i < trnum - 1; i++) {
+        var thistr = $(this).parents('table').find('tr:eq(' + i + ')');
+        if (thistr.find('#spdata__spdata_2').val() == '不合格项') {
+          wtxnum = wtxnum + 1;
+          jyyj_bhgx_str4 = jyyj_bhgx_str4 + thistr.find('.JYXM').val() + '项目不符合' + thistr.find('#spdata__spdata_4').val() + '要求，';
+        }
+        if (thistr.find('#spdata__spdata_2').val() == '合格项' && thistr.find('#spdata__spdata_4').val() != '/') {
+          if ($.inArray(thistr.find('#spdata__spdata_4').val(), hgx) == -1) {
+            hgx.push(thistr.find('#spdata__spdata_4').val());
+          }
+        }
+        if ((thistr.find('#spdata__spdata_2').val() == '合格项' || thistr.find('#spdata__spdata_2').val() == '不合格项' ) && $.inArray(thistr.find('#spdata__spdata_3').val(), ['-', '—', '/', '_']) == -1) {
+          if ($.inArray(thistr.find('#spdata__spdata_3').val(), jyx) == -1) {
+            jyx.push(thistr.find('#spdata__spdata_3').val());
+          }
+        }
+	        if ((thistr.find('#spdata__spdata_2').val() == '合格项' || thistr.find('#spdata__spdata_2').val() == '不合格项' ) && $.inArray(thistr.find('#spdata__spdata_3').val(), ['-', '—', '/', '_']) == -1) {
+          if ($.inArray(thistr.find('#spdata__spdata_3').val(), jyx) == -1) {
+            jyx.push(thistr.find('#spdata__spdata_3').val());
+          }
+        }
+        if ((thistr.find('#spdata__spdata_2').val() == '不判定项' || thistr.find('#spdata__spdata_2').val() == '问题项' ) && $.inArray(thistr.find('#spdata__spdata_3').val(), ['-', '—', '/', '_']) == -1) {
+          if ($.inArray(thistr.find('#spdata__spdata_3').val(), fxx) == -1) {
+            fxx.push(thistr.find('#spdata__spdata_3').val());
+          }
+        }
+
+      }
+      jyyj_bhgx_str4 = jyyj_bhgx_str4 + '检验结论为不合格。'
+      jyjl = jyyj_hgx_str4 + hgx.join(',') + '要求。';
+      jyyj = jyx.join(';');
+      fxjyyj = fxx.join(';');
+      if (wtxnum > 0) {
+        jyjl = jyyj_bhgx_str4;
+      }
+      if ($('#sp_bsb_sp_s_44').val() == '风险监测') {
+        $('#sp_bsb_FX_jyyj_custom').val(fxjyyj);
+      }
+      if ($('#sp_bsb_sp_s_44').val() == '抽检监测') {
+        $('#sp_bsb_inspection_basis').val(jyjl);
+        $('#sp_bsb_decision_basis').val(jyyj);
+        $('#sp_bsb_FX_jyyj_custom').val(fxjyyj);
+      }
+      if ($('#sp_bsb_sp_s_44').val() == '监督抽检') {
+	// 检验结论
+        $('#sp_bsb_inspection_basis').val(jyjl);
+	//检验依据
+        $('#sp_bsb_decision_basis').val(jyyj);
+      }
+      <% end %>
     });
 
     /**
@@ -841,14 +969,14 @@
  				if ($.trim($("#sp_bsb_" + value).val()).length == 0 || $("#sp_bsb_" + value).val() == '请选择') {		
  					var info = "";		
  					if(value == "inspection_basis"){
- 						info = "检验依据";
+ 						info = "检验结论";
  					}
  					if(value == "decision_basis"){
- 						info = "判定依据";
+ 						info = "检验依据";
  					}
 					modalHide();
- 					alert(info + " ,该项为必填项");	
- 					$("#sp_bsb_" + value).focus();					
+ 					//alert(info + " ,该项为必填项");
+ 					//$("#sp_bsb_" + value).focus();
  					return false;
  				}
  			})			
@@ -1226,41 +1354,35 @@
       }
       $("#sp_bsb_sp_s_70").removeAttr("disabled");
       $("#sp_bsb_sp_s_20").removeAttr("disabled");
-//      $('#sp_bsb_sp_i_state').val("4");
+      $('#sp_bsb_sp_i_state').val("4");
       $('#keyword').val("检验人：");
       $('#sp_status').val("4");
      $('#pr_status').val("true");
-      <% if current_user.jg_bsb.jg_bsb_stamps.count > 0 &&  @sp_bsb.report_path.blank?  %>
-      $('#stamp-dlg').modal('show');
-			modalHide();
-      return false;
-      <% end %>
-     /*<#% if !@sp_bsb.report_path.blank? %>
-	 ca_value = document.getElementById("user_cert_list").value;
-        if(ca_value.length >2){
-           testGetKeyPic();
-	  $('#ca_validate').modal('show');
-	  return false;
-	}
-     <#% end %> */
-     $('#sp_bsb_sp_i_state').val("4");
       if (!confirm('确定提交吗？')) {
 				modalHide();
         return false;
       }else{
-	//% if !@sp_bsb.report_path.blank? %> 
         ca_value = document.getElementById("user_cert_list").value;
          if(ca_value.length >2){
-           testGetKeyPic();
-          $('#ca_validate').modal('show');
-					modalHide();
-          return false;
-        }
-	//% end %>
-     } 
+           //testGetKeyPic();
+					$('#sp_bsb_sp_i_state').val("2");
+				
+					$("form.edit_sp_bsb").ajaxSubmit({
+						dataType: "json",
+						success: function (message) {
+						if (message.status == '保存成功!') {
+							$('#sp_bsb_sp_i_state').val("4");
+							 $('#ca_stamp-dlg').modal('show');
+				//			$('#ca_sign_pwd').focus();
+						} else if (message.status == '保存出错!') {
+							alert(message.msg);
+						}
+					}
 
-
-
+        });
+					return false;
+				}
+     }
       return true;
     });
     $('#save').click(function () {
@@ -1362,9 +1484,8 @@
       $('#sp_bsb_sp_i_state').val("2");
       return true;
     });
-
-
-    /**
+	
+	/**
      * 检测机构审核通过
      * */
     $('#save_2').click(function () {
@@ -1376,7 +1497,7 @@
       $("#sp_bsb_sp_s_70").removeAttr("disabled");
       $("#sp_bsb_sp_s_20").removeAttr("disabled");
      $("#user_cert_list").removeAttr("disabled");
-     $("#UserPwd").removeAttr("readonly");
+     $("#ca_sign_pwd").removeAttr("readonly");
      $("#keypic").removeAttr("disabled");
       $('#sp_bsb_sp_i_state').val("5");
       $('#keyword').val("审核人：");
@@ -1385,15 +1506,17 @@
         return false;
       }else{
 	ca_value = document.getElementById("user_cert_list").value;
-	if(ca_value.length >2){
-	   testGetKeyPic();
-	   $('#ca_validate').modal('show');	
-     	   return false;
-	}
+         if(ca_value.length >2){
+           //testGetKeyPic();
+	   $('#ca_stamp-dlg').modal('show');
+	  return false;
+        
+        }	
       }
 
       return true;
     });
+
 
     /**
      * 药监局审核通过
@@ -1466,48 +1589,70 @@
       $('#sp_bsb_sp_i_state').val("16");
       $('#keyword').val("批准人：");
       $('#sp_status').val("16");
-      $("#UserPwd").removeAttr("readonly");
+      $("#ca_sign_pwd").removeAttr("readonly");
       $("#user_cert_list").removeAttr("disabled");
       if (!confirm('确定提交吗？')) {
         return false;
       }else{
-	 ca_value = document.getElementById("user_cert_list").value;
-        if(ca_value.length >2){
-	   testGetKeyPic();
-           $('#ca_validate').modal('show');     
-           return false;
-	}
+	ca_value = document.getElementById("user_cert_list").value;
+         if(ca_value.length >2){
+	  $('#ca_stamp-dlg').modal('show');
+	 return false;
+	/*
+        /  $('#sp_bsb_sp_i_state').val("5");
+        
+          $("form.edit_sp_bsb").ajaxSubmit({
+            dataType: "json",
+            success: function (message) {
+            if (message.status == '保存成功!') {
+               $('#ca_stamp-dlg').modal('show');
+        //      $('#ca_sign_pwd').focus();
+            } else if (message.status == '保存出错!') {
+              alert(message.msg);
+            }
+          }
+
+        });
+          return false;
+        }else{
+        $('#sp_bsb_sp_i_state').val("5");
+        }
+       */     
       }
+	}
       return true;
     });
       //盖章人通过
      $('#save_16').click(function () {
      $('#sp_bsb_sp_i_state').val("9");
-    $("#UserPwd").removeAttr("readonly");
-      $("#user_cert_list").removeAttr("disabled");
-     $('#keyword').val("批准人：");
-      if (!confirm('确定提交吗？')) {
-        return false;
-      }else{
-	 ca_value = document.getElementById("user_cert_list").value;
-        if(ca_value.length >2){
-           testGetKeyPic();
-           $('#ca_validate').modal('show');     
-           return false;
-	}
-      }
-      return true;
-
-     
-      $("select").attr("disabled", "disabled");
-      $("input.inputText").attr("disabled", "disabled");
-      $("#sp_bsb_sp_s_16").removeAttr("disabled");
-      $("#sp_bsb_sp_s_55").removeAttr("disabled");
-      $("#sp_bsb_sp_s_56").removeAttr("disabled");
-      $("#sp_bsb_sp_s_70").removeAttr("disabled");
-      $("#sp_bsb_sp_s_20").removeAttr("disabled");
-      $('#sp_bsb_sp_i_state').val("9");
-      return true;
+     $("#ca_sign_pwd").removeAttr("readonly");
+     $("#sp_ca_sign_pwd").removeAttr("readonly");
+     $("#sp_user_cert_list").removeAttr("readonly");
+     <% if @sp_bsb.ca_key_status!=0%>
+      <% if current_user.jg_bsb.jg_bsb_stamps.count > 0   %>
+      sp_ca_value = document.getElementById("sp_user_cert_list").value;
+        var key_password = $('#sp_ca_sign_pwd').val();
+	if (!key_password) {
+         alert('请填写key密码');
+          return false;
+       }
+	if(sp_ca_value.length>0)
+	{
+	  ESeaL_GetUserCert(sp_ca_value, function(ret){$("#sign_cert").val(ret.retVal);});
+	}	
+	VerifyUserPIN(sp_ca_value, key_password, function (ret) {
+        if (ret.retVal) {
+	 $('#stamp-dlg').modal('show');
+	   return false;			
+         } else {
+           alert('Key密码错误，请重新输入密码');
+	   return false;
+         }
+	});
+	 return false;
+	<% end %>
+	<% end%>
+	return true;
     });
     // 退回操作
     $('#back_1').click(function () {
@@ -1576,6 +1721,7 @@
     $("input").attr("readonly", "readonly");
     $("#UserPwd").removeAttr("disabled");
      $("#keypic").removeAttr("disabled");
+		$('.ca-form *').removeAttr('disabled readonly');
     <%end%>
 
     <%if (current_user.is_admin? && @sp_bsb["sp_i_state"].to_i == 9)%>
@@ -1585,6 +1731,7 @@
     $("#sp_bsb_sp_s_55").removeAttr("readonly");
     $("#UserPwd").removeAttr("disabled");
      $("#keypic").removeAttr("disabled");
+		$('.ca-form *').removeAttr('disabled readonly');
     <%end%>
 
     $.each(jg_data, function () {
@@ -1634,15 +1781,71 @@
     });
 
     $('#stamp-dlg .ok').click(function () {
-      $('#stamp-dlg .modal-footer .btn').attr('disabled', true);
       check_stamp_selector(false);
     });
     $('#stamp-dlg .preview').click(function () {
-      $('#stamp-dlg .modal-footer .btn').attr('disabled', true);
-      check_stamp_selector(true);
+      var o = $(this);
+      var nos = [];
+      $.each(o.parents('.well').find('ul .selected'), function (i, sel) {
+        nos.push($(sel).attr('data-stamp-no'))
+      });
+      if (nos.length == 0) {
+        alert('请选择签章');
+        return false;
+      }
+     $.get('/ca_helper/create_text.json', function(data){
+          if (data.status == 'OK'){
+             var signCert = $("#sign_cert").val(); 
+                 SignedData(sp_ca_value,data.msg,function (ret) {
+                   var    signData=ret.retVal.replace(/\+/g,"%2B");
+                      signCert =signCert.replace(/\+/g,"%2B");
+                   window.open('/sp_bsbs/' + SP.sp_bsb.id + '/preview_ca_pdf?pdf_rules=' + nos.join(',')+'&signData='+signData+'&signCert='+signCert+'&nonce='+data.msg+'&type='+o.attr('data-type'))             
+                    $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
+                 },'json')
+               }
+        });     
+  //   window.open('/sp_bsbs/' + SP.sp_bsb.id + '/preview_ca_pdf?type=' + o.attr('data-type') + ')
+      return false; 
+      //$('#stamp-dlg .modal-footer .btn').attr('disabled', true);
+     // check_stamp_selector(true);
     });
 
     function check_stamp_selector(preview) {
+      var error_msg = null;
+      var stamp_nos_list = {JDCJ: [], FXJC: []};
+      var foo = [];
+      <% if @sp_bsb.is_jiandu? %>
+      foo.push('JDCJ');
+      <% end %>
+
+      <% if @sp_bsb.is_jiance? %>
+      foo.push('FXJC');
+      <% end %>
+      $.each(foo, function (i, item) {
+        var selected = $('.well.' + item + ' .stamp-selector i.selected');
+        if (selected.length == 0) {
+          $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
+          error_msg = '请选择签章!';
+          return false;
+        }
+         
+        $.each(selected, function (i, stamp) {
+          stamp_nos_list[item].push($(stamp).attr('data-stamp-no'));
+        });
+      });
+      if (!!error_msg) {
+        alert(error_msg);
+        return false;
+      }
+       if (stamp_nos_list.JDCJ.length != 0) {
+	//alert(stamp_nos.JDCJ.join(','));
+        $('#sp_bsb_JDCJ_pdf_rules').val(stamp_nos_list.JDCJ.join(','));
+       }
+	
+      if (stamp_nos_list.FXJC.length != 0) {
+	//alert(stamp_nos.FXJC.join(','));
+        $('#sp_bsb_FXJC_pdf_rules').val(stamp_nos_list.FXJC.join(','));
+      }
       var selected = $('#stamp-dlg .stamp-selector i.selected');
       if (!preview && selected.length == 0) {
         $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
@@ -1653,30 +1856,53 @@
         $.each(selected, function (i, stamp) {
           stamp_nos.push($(stamp).attr('data-stamp-no'));
         });
-        if (preview) {
-          window.open('/sp_bsbs/' + SP.sp_bsb.id + '/print.html?pdf_rules=' + stamp_nos.join(','));
-          $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
-        } else {
           if (confirm('确定报告执行该操作吗?')) {
-            window.open('/sp_bsbs/' + SP.sp_bsb.id + '/print.pdf?pdf_rules=' + stamp_nos.join(','));
-            $('#pdf_rules').val(stamp_nos.join(','));
-	    $('#sp_bsb_sp_s_69').val(stamp_nos.join(','));
-	    $("#new_sp_bsb, form.edit_sp_bsb").trigger('submit');
-	   location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';	
-	    //$('#stamp-dlg').modal('hide');
-	   // testGetKeyPic();
-	    //$('#ca_validate').modal('show');
-	   // $("#new_sp_bsb, form.edit_sp_bsb").trigger('submit');
-          } else {
-            $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
-          }
-        }
-        return false;
-      }
-      return false;
+          $('#stamp-dlg .modal-footer .btn').attr('disabled', true);
+          $('.loading-label').removeClass('hidden');
+	   <% if @sp_bsb.ca_key_status ==16%>
+	  //  $('#sp_bsb_ca_key_status').val('9');
+	$.get('/ca_helper/create_text.json', function(data){
+          if (data.status == 'OK'){
+              var signCert = $("#sign_cert").val(); 
+           SignedData(sp_ca_value,data.msg,function (ret) {
+               var  signData=ret.retVal
+               // signCert =signCert;
+            $.get('/ca_helper/client_sign_pdf.html',{
+	      sp_bsb_id:  SP.sp_bsb.id,
+              pdf_rules_list: stamp_nos_list,
+              signData: signData,
+              signCert: signCert,
+              nonce: data.msg,
+              ca_key_status: 9},
+            function (ret) {
+	     if(ret.status == 'OK'){
+		$('#sp_bsb_ca_key_status').val('9');
+		$("form.edit_sp_bsb").ajaxSubmit({
+       		  dataType: "json",
+                 success: function (message) {
+		  if (message.status == '保存成功!') {
+		   alert(message.msg);
+		  if (SP.sp_bsb.sp_i_state != parseInt($('#sp_bsb_sp_i_state').val())) {
+                      location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
+                  }
+		} else if (message.status == '保存出错!') {
+                  alert(message.msg);
+               }
+	     }
+	   });	
+           }
+	},'json');
+	  },'json');
+	}
+      },'json');
+      <% end %>
+       }else{
+          return false;	
+       }
     }
+}
 
-		function get_basis() {
+   function get_basis() {
       var inspection_basis = ""
       var decision_basis   = ""
       $(".JYYJ").each(function(){
@@ -1697,6 +1923,7 @@
 		<% unless [0,2,3].include?@sp_bsb.sp_i_state %>
 			$("#sp_bsb_inspection_basis").attr("readonly","readonly");
 			$("#sp_bsb_decision_basis").attr("readonly","readonly");
+			$("#sp_bsb_FX_jyyj_custom").attr("readonly","readonly");
 		<% end %>
 		
   	// 模态框需要调用父级框架的显示
@@ -1727,132 +1954,151 @@
   	  var parentFrame = $(document);
   	  parentFrame.find('html,body').removeClass('box-overhide');
   	  parentFrame.find('#modalbox').hide();
-  	}	
+  	}
+		 // 主检人授权
+    $('#ca_stamp-dlg .ok').click(function () {
+	cur_cert_id = ca_sign_form.user_cert_list.value;//证书ID
+      var key_password = $('#ca_sign_pwd').val(); //  密码：
+      if (!key_password) {
+        alert('请填写key密码');
 
-  });
-</script>
- <script src="/assets/jquery.json-2.4.js"></script>
-<script type="text/javascript">
-// 读取电子签章方法
-   var cur_cert_id;
-   var keypic;
-   var sign_cert;
-   var report_path;
-  function testGetKeyPic(){
-     cur_cert_id = document.getElementById("user_cert_list").value;
-    // ESeaL_GetStampPic(cur_cert_id, 
-    //     function(sealImg){
-    //    $("#keypic").val(sealImg);
-    //    picimg1.src = "data:image/gif;base64,"+sealImg+"";//显示图片
-    //      //$("#picimg1").attr("src","data:image/gif;base64","+sealImg+");
-    //    });
-    // ESeaL_GetUserCert(cur_cert_id, function(signCert){$("#sign_cert").val(signCert);});//签名证书
-
-    // cur_cert_id = LoginForm.UserList.value;//证书ID
-    $("#cert_id").val(cur_cert_id);
-    ESeaL_GetUserCert(cur_cert_id, function(ret){$("#sign_cert").val(ret.retVal);});//签名证书
-    ESeaL_GetStampPic(cur_cert_id, function(ret){
-     $("#keypic").val(ret.retVal);
-     picimg1.src = "data:image/gif;base64,"+ret.retVal+"";
-    });//签名证书
-    setTimeout("GetDigestData()", 2000); 
-  };
-  // function setCaInfo(){
-  //   alert("keypic3"); 
-  //   alert(keypic);    
-  //   $.get('/ca_helper/by_ca_info.json', {
-  //      keypic:  $("#keypic").val(),
-  //      sign_cert: $("#sign_cert").val()
-  //     }, function (data) {
-  //       if (data.status == 'OK') {
-  //         $.each(data.msg, function (index, item) {
-  //          alert("成功");
-  //         });
-  //       }
-  //        }, 'json');
-  // };
-
-  // function  getCaInfo(){
-  //   cur_cert_id = document.getElementById("user_cert_list").value;
-  //   ESeaL_GetStampPic(cur_cert_id, 
-  //       function(sealImg){
-  //      $("#keypic").val(sealImg);
-  //      keypic=sealImg;
-  //        alert("keypic1"); 
-  //       alert(cur_cert_id);        //签章值
-  //      picimg1.src = "data:image/gif;base64,"+sealImg+"";//显示图片
-  //        //$("#picimg1").attr("src","data:image/gif;base64","+sealImg+");
-  //      });
-  //   ESeaL_GetUserCert(cur_cert_id, function(signCert){$("#sign_cert").val(signCert);sign_cert=signCert;});//签名证书
-
-  // };
-  // 读取证书用户唯一标识 
-  function clientSign(){
-    clientSignByHash($("#digest_data").val(),cur_cert_id, $("#UserPwd").val(), "#sign_data");
-    setTimeout("showdata()",1500);
-  };
-  function showdata()
-  {
-    sign_data= $("#sign_data").val();
-    if(sign_data.length >10)
-    {
-     alert("成功");   
-     $('#pdf_btt').removeAttr("disabled");  
-  };
-    
-  };
-  function GetDigestData(){
-        report_path= "<%= @sp_bsb.report_path %>";
-        sp_i_status="<%= @sp_bsb.sp_i_state%>"
-      if(cur_cert_id.length>0 && report_path.length<3 && sp_i_status==2){
-      //$("#new_sp_bsb, form.edit_sp_bsb").trigger('submit');
-      $('#sp_bsb_sp_i_state').val("2");
-      $("#new_sp_bsb, form.edit_sp_bsb").ajaxSubmit({
-        dataType: "json",
-        success: function (message) {
-          if (message.status == '保存成功!') {
-            alert("您的信息已经成功存入数据库！");
-          } else if (message.status == '保存出错!') {
-            alert(message.msg);
-          }
+        return false;
+      }else{
+    VerifyUserPIN(cur_cert_id, key_password, function (ret) {
+      if (ret.retVal) {
+          $('#ca_stamp-dlg .modal-footer .btn').attr('disabled', true);
+          $('.loading-label').removeClass('hidden');
+          getSignCertInfo();
+          return false;
+        }else{
+         alert('KEY密码错误！');
+         return false;
         }
       });
-     };
-   setTimeout(function(){$.get('/sp_bsbs/by_ca_info.json', {
-       keyword: $("#keyword").val(),
-       id:  '<%= @sp_bsb.id %>',
-       keypic:  $("#keypic").val(),
-       sign_cert: $("#sign_cert").val(),
-       pr_status: $("#pr_status").val()
-      }, function (data) {
-        if (data.status == 'OK') {
-           $('#digest_data').attr("value", data.msg);
-	   $('#sign_div').removeAttr("hidden");
+    }
+    });
+	});
+ <% unless [0, 1].include?(@sp_bsb.sp_i_state.to_i)%>
+	var cur_cert_id;
+	function getSignCertInfo() {
+		cur_cert_id = ca_sign_form.user_cert_list.value;//证书ID
+	var ep = new EventProxy();
+		ep.all('sealImg', 'signCert', function (sealImg, signCert) {
+				if(sealImg == '' || signCert == '') {
+					console.log('sealImg: ' + sealImg + ', signCert: ' + signCert);
+					alert('获取签章信息失败');
+					return false;
+				}
+		if(SP.sp_bsb.sp_i_state == 5) {
+          // 当5时盖两遍
+          handle_client_sign(sealImg, signCert, function(){
+            handle_client_sign(sealImg, signCert, null, 1);
+          }, 0);
+        } else {
+          handle_client_sign(sealImg, signCert, null, 0);
         }
-         }, 'json');},1000);
-  }
-	
-  function printpdf()
-  {
-    $.get('/sp_bsbs/print_pdf.json', {
-       id:  '<%= @sp_bsb.id %>',
-       sign_data:  $("#sign_data").val(),
-       sp_status: $("#sp_status").val()
-      }, function (data) {
-        if (data.status == 'OK') {
-        //  $("#new_sp_bsb, form.edit_sp_bsb").trigger('submit');
-          location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
-         //  $('#digest_data').attr("value", data.msg);
-//	 $("#new_sp_bsb, form.edit_sp_bsb").trigger('submit');
-        }
-         }, 'json');
+      });
 
-  }
-function pass_ca(){
-  //return true;
-  $("#new_sp_bsb, form.edit_sp_bsb").trigger('submit');
+		// get user cert
+      ESeaL_GetUserCert(cur_cert_id, function (ret) {
+        ep.emit('signCert', ret.retVal);
+      });
+
+      // get user image
+      ESeaL_GetStampPic(cur_cert_id, function (ret) {
+        ep.emit('sealImg', ret.retVal);
+      });
+		}
+
+	function handle_client_sign(sealImg, signCert, _onFinish, _sign_date) {
+		 $.get('/sp_bsbs/by_ca_info.json',{
+		 id: <%= @sp_bsb.id %>,
+		 sign_cert: signCert,
+		 keypic: sealImg,
+		 sign_date: _sign_date,
+		pr_status: $("#pr_status").val()
+}, function (res) {
+		if (res.status == 'OK') {
+			var hashed_signs = {};
+			var pdfpath={};
+			var ep2 = new EventProxy();	
+		ep2.all('jdcj', 'fxjc', function () {
+			$.get('/sp_bsbs/print_pdf.json', {
+			id:  '<%= @sp_bsb.id %>',
+			sign_data: hashed_signs,
+			sp_status: $("#sp_status").val(),
+			pdfpath: pdfpath
+			 }, function (data) {
+				if (data.status == 'OK') {
+					if(SP.sp_bsb.sp_i_state != 5){
+					   $("form.edit_sp_bsb").ajaxSubmit({
+				       	     dataType: "json",
+                                             success: function (message) {
+                                              if (message.status == '保存成功!') {
+                                                 alert(message.msg);
+					   	 location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
+                                              } else if (message.status == '保存出错!') {
+                         		          alert(message.msg);
+                        		     	 $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
+                    			         $('.loading-label').addClass('hidden');
+					       }
+					    }
+					   });
+				}else{
+				 if (_onFinish) {
+			           _onFinish();
+     				 }else {
+				  $("form.edit_sp_bsb").ajaxSubmit({
+                                             dataType: "json",
+                                             success: function (message) {
+                                              if (message.status == '保存成功!') {
+                                                 alert(message.msg);
+                                                 location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
+                                              } else if (message.status == '保存出错!') {
+                                                  alert(message.msg);
+                                                 $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
+                                                 $('.loading-label').addClass('hidden');
+                                               }
+                                            }                                           
+					});
+     				 }
+					}
+				 } else{
+				   alert(data.msg);
+				 }
+			}, 'json')
+		});
+		}
+	if (res.res.JDCJ) {
+           clientSignByHash(res.res.JDCJ,cur_cert_id, $("#ca_sign_pwd").val(), "sign_data",
+             function (res) {
+                  hashed_signs['JDCJ']= {hash: res,type: 'JYBG'};
+                  ep2.emit('jdcj');
+              });
+	 pdfpath['JDCJ']=res.pdfpath.JDCJ;
+	}
+	else{
+	  ep2.emit('jdcj');
+	}
+	if (res.res.FXJC) {
+           clientSignByHash(res.res.FXJC,cur_cert_id, $("#ca_sign_pwd").val(), "sign_data",
+             function (res) {
+                  hashed_signs['FXJC'] = {hash: res,type: 'FXBG'};
+                  ep2.emit('fxjc');
+              });
+	    pdfpath['FXJC']=res.pdfpath.FXJC;
+        }
+        else{
+          ep2.emit('fxjc');
+        }
+	
+
+   },'json');
 }
+<% end%>
+
 </script>
+ <script src="/assets/jquery.json-2.4.js"></script>
 <style type="text/css">
   .style1 {
     border-collapse: collapse;
@@ -1998,15 +2244,21 @@ function pass_ca(){
     </td>
     <td colspan="2" align="left">
       <span><input class="inputText SM" name="spdata[][spdata_17]" style="width: 70px;"></span>
+      <%= select_tag "spdata[][spdata_19]", '', {style: "display: none;", class: "JYYJJHB tb_select"} %>
+      <%= select_tag "spdata[][spdata_20]", '', {style: "display: none;", class: "BZ tb_select"} %>
     </td>
   </tr>
 </table>
 <h1 style="color:red"><%= flash[:import_result] unless flash[:import_result].nil? %></h1>
-<%= form_for(@sp_bsb) do |f| %>
+<%= form_for(@sp_bsb,html: {name: 'sp_bsb_form'}) do |f| %>
 <input type="hidden" name="pdf_rules" id="pdf_rules">
 <input type="hidden" name="keyword" id="keyword">
 <input type="hidden" name="sp_status" id="sp_status">
 <input type="hidden" name="pr_status" id="pr_status">
+<input type="hidden" name="sign_data" id="sign_data">
+<input type="hidden" name="sign_cert" id="sign_cert">
+<%= f.hidden_field :JDCJ_pdf_rules %>
+<%= f.hidden_field :FXJC_pdf_rules %>
     <div id="my_show">
       <table border="1" cellspacing="0" cellpadding="0" width="100%" class="style1">
         <tr>
@@ -2016,8 +2268,8 @@ function pass_ca(){
         <td colspan="8"><%= f.select :sp_s_2_1, options_for_select(all_super_departments.map { |name| [name,name, {'parentid' => name}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_2_1), {}, {:style => "width: 260px; height: 19px"} %></td>
         <td colspan="3">报送分类*</td>
         <td colspan="14">
-          <%= f.select :sp_s_70, options_for_select(BaosongA.where("prov = ? or prov is null or prov = ''", current_user.user_s_province).map { |b| [b.name, b.name, {'parentid' => b.rwlylx}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_70), {}, {:style => "width: 167px;"} %>
-          <%= f.select :sp_s_67, options_for_select(@sp_s_67s.map { |s| [s.name, s.name, {'data-identifier' => s.identifier}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_67), {}, {:style => "width: 183px;"} %></td>
+        <%= f.select :sp_s_70, options_for_select(BaosongA.where("name = ?", @sp_bsb.sp_s_70).map { |b| [b.name, b.name, {'parentid' => b.rwlylx}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_70), {}, {:style => "width: 167px;"} %>  
+	<%= f.select :sp_s_67, options_for_select(@sp_s_67s.map { |s| [s.name, s.name, {'data-identifier' => s.identifier}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_67), {}, {:style => "width: 183px;"} %></td>
         </tr>
         <tr>
           <td colspan="5">被抽样单位名称*</td>
@@ -2292,11 +2544,15 @@ function pass_ca(){
         </tr>
         <tr>
           <td colspan="3">结论*</td>
-          <td colspan="6"><%= f.text_field :sp_s_71, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
-          <td colspan="3">确认情况</td>
-          <td colspan="8"><%= f.select :sp_s_214, options_for_select([["样品未确认", "样品未确认"], ["样品已确认", "样品已确认"]], @sp_bsb.sp_s_214), {}, {:style => "width: 100%;"} %></td>
-          <td colspan="4">备注</td>
-          <td colspan="6"><%= f.text_field :sp_s_84, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="11"><%= f.text_field :sp_s_71, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
+          <td colspan="5">确认情况</td>
+          <td colspan="11"><%= f.select :sp_s_214, options_for_select([["样品未确认", "样品未确认"], ["样品已确认", "样品已确认"]], @sp_bsb.sp_s_214), {}, {:style => "width: 100%;"} %></td>
+        </tr>
+	<tr>
+	  <td colspan="3">监督抽检报告备注</td>
+          <td colspan="11"><%= f.text_field :sp_s_84, :class => "inputText", :style => "width: 100%; height: 19px" %></td> 
+	  <td colspan="5">风险监测报告备注</td>
+          <td colspan="11"><%= f.text_field :sp_s_89, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
           <td colspan="3  ">填报人*</td>
@@ -2383,18 +2639,74 @@ function pass_ca(){
       <div class="clear"></div>
     </div>
     <br>
-		<div class="basis">
-      <table class="table table-bordered" style="table-layout: fixed;" id="tblGrid">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree"> 数字上下标</a>
+	</h4>
+      </div>
+      <div id="collapseThree" class="panel-collapse collapse">
+        <div class="panel-body">
+          <table border="1" cellspacing="0" cellpadding="0" width="100%" class="style2">
+		            <tr>
+              <th>上标</th>
+              <td>⁰</td>
+              <td>¹</td>
+              <td>²</td>
+              <td>³</td>
+              <td>⁴</td>
+              <td>⁺</td>
+            </tr>
+            <tr>
+              <th>-</th>
+              <td>⁵</td>
+              <td>⁶</td>
+              <td>⁷</td>
+              <td>⁸</td>
+              <td>⁹</td>
+              <td>⁻</td>
+            </tr>
+            <tr>
+              <th>下标</th>
+              <td>₀</td>
+              <td>₁</td>
+              <td>₂</td>
+              <td>₃</td>
+              <td>₄</td>
+              <td>₊</td>
+            </tr>
+            <tr>
+              <th>-</th>
+              <td>₅</td>
+              <td>₆</td>
+              <td>₇</td>
+              <td>₈</td>
+              <td>₉</td>
+              <td>₋</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+      <div class="basis">
+      <table class="table table-bordered" style="table-layout: fixed;" id="tblGrid1">
         <tr>
-          <th colspan="6">检验依据</th>
+          <th colspan="6">检验结论</th>
           <td colspan="34">
             <%= f.text_area :inspection_basis, :class => "form-control input-sm", :rows => "3" %>
           </td>
         </tr>
         <tr>
-          <th colspan="6">判定依据</th>
+          <th colspan="6">检验依据</th>
           <td colspan="34">
             <%= f.text_area :decision_basis, :class => "form-control input-sm", :rows => "3" %>
+          </td>
+        </tr>
+	<tr>
+          <th colspan="6">风险报告检验依据</th>
+          <td colspan="34">
+            <%= f.text_area :FX_jyyj_custom, :class => "form-control input-sm", :rows => "3" %>
           </td>
         </tr>
       </table>
@@ -2450,49 +2762,6 @@ function pass_ca(){
 
     <div class="actions">
 
- 	<div class="modal fade" id="ca_validate"  name="ca_validate"tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span></button>
-                  <h4 class="modal-title">请输入key密码</h4>
-                </div>
-                <div class="modal-body">
-                  <div class="modal-group">
-                  <select id="user_cert_list" name="user_cert_list" onchange= "testGetKeyPic()"  class="form-control input-sm"></select>
-                  <input type="text" name="keypic" id="keypic" size="30" hidden="true" />
-                  <input type="text" name="sign_cert" id="sign_cert" size="30"  hidden="true" />
-                  <IMG id="picimg1" height=20 src="" width=64>
-                  </div>
-                  <input type="button" value="获得签名" onclick="testGetKeyPic()"  hidden="true"/>
-                  <input type="button" value="同步信息" onclick="GetDigestData()"  hidden="true"/>
-                <div class="form-group"  id="sign_div"  hidden="true">
-                  <label for="">证书密码：</label><br>
-                  <input  type="password" name="pwd1" id="UserPwd" class="user-sign-field">
-                  <button type="button" onclick="clientSign()">执行客户端签名</button>
-                </div>
-                  <div class="form-group" hidden="true">
-                    <label for="">摘要数据:</label><br>
-                    <textarea id="digest_data" rows="4" cols="50"></textarea>
-                  </div>
-                  <div class="form-group" hidden="true">
-                  <label for="">签名数据:</label><br>
-                  <textarea id="sign_data" name="sign_data" rows="4" cols="50"></textarea>
-                </div>
-                </div>
-                <div class="modal-footer">
-  
-		  <% if @sp_bsb.sp_i_state == 16 %>
-                   <button type="button" onclick="pass_ca()" class="btn btn-primary btn-sm ok" id="pdf_btt" disabled="disabled" >确定</button>
-                 <% else %>
-		   <button type="button" onclick="printpdf()" class="btn btn-primary btn-sm ok" id="pdf_btt" disabled="disabled" >个人签名</button>	
-                <% end %>
-		</div>
-              </div>
-            </div>
-          </div>
-
       <% if @sp_bsb.new_record? %>
           <%= f.submit(vaule="保存并新建", options={"id" => "save_and_create", :class => "btn btn-xs btn-success"}) %>
       <% end %>
@@ -2507,49 +2776,68 @@ function pass_ca(){
           <%= f.submit(vaule="检测数据提交入库", options={"id" => "submit2", :class => "btn btn-xs btn-success"}) %>
           <% if @sp_bsb.sp_i_state == 2 %>
               <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
-          <% end %>
-          <div class="modal fade" id="stamp-dlg" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span></button>
-                  <h4 class="modal-title">电子报告签章选择</h4>
-                </div>
-                <div class="modal-body">
-                  <ul class="stamp-selector-list">
-                    <% @jg_bsb.jg_bsb_stamps.each do |stamp| %>
-                        <li>
-                          <a href="javascript:void(0);" data-stamp-no="<%= stamp.stamp_no %>" class="stamp-selector">
-                            <img src="/jg_bsb_stamps/<%= stamp.id %>/cover" class="img-thumbnail" alt="<%= stamp.stamp_no %>">
-                            <div class="text-center"><%= stamp.stamp_type_desc %></div>
-                            <i data-stamp-no="<%= stamp.stamp_no %>" class="hidden glyphicon glyphicon-ok"></i>
-                          </a>
-                        </li>
-                    <% end %>
-                  </ul>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-primary btn-sm ok">确定执行【主检人审核】</button>
-                  <button type="button" class="btn btn-default btn-sm preview">报告预览</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
+					<% end %>
       <% elsif @sp_bsb["sp_i_state"]==4&&session[:change_js]==7 %>
           <%= f.submit(vaule="检测机构审核通过", options={"id" => "save_2", :class => "btn btn-xs btn-success"}) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
-	       <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default kk">检验报告</a>
-      <% elsif @sp_bsb["sp_i_state"]==5&&session[:change_js]==11 %>
+       <% if old_report(@sp_bsb.created_at) %>
+           <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/print">旧版检验报告</a>
+        <% else %>
+	  <% if @sp_bsb.JDCJ_report_path.present?%>
+	   <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/report.pdf?type=JYBG">监督抽检报告</a>
+	  <% end%>
+	  <% if @sp_bsb.FXJC_report_path.present? %>
+	   <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/report.pdf?type=FXBG">风险监测报告</a>
+	  <% end%>
+	  <% if @sp_bsb.ca_key_status==0&&@sp_bsb.is_jiandu? %> 
+	  <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default"  href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf?type=JYBG">监督抽检报告</a>
+     	  <% end%>
+	  <% if @sp_bsb.ca_key_status==0&&@sp_bsb.is_jiance? %>
+          <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default"  href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf?type=FXBG">风险监测报告</a>
+          <% end%>
+         <% end %>
+	 <% elsif @sp_bsb["sp_i_state"]==5&&session[:change_js]==11 %>
           <%= f.submit(vaule="检测机构批准", options={"id" => "save_5", :class => "btn btn-xs btn-success"}) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
-         <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default kk">检验报告</a>
+         <% if old_report(@sp_bsb.created_at) %>           <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/print">旧版检验报告</a>
+        <% else %>
+        <% if @sp_bsb.JDCJ_report_path.present?%>
+           <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/report.pdf?type=JYBG">监督抽检报告</a>
+          <% end%>
+          <% if @sp_bsb.FXJC_report_path.present? %>
+           <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/report.pdf?type=FXBG">风险监测报告</a>
+          <% end%>
+	          <% if @sp_bsb.ca_key_status==0&&@sp_bsb.is_jiandu? %>
+          <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default"  href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf?type=JYBG">监督抽检报告</a>
+          <% end%>
+          <% if @sp_bsb.ca_key_status==0&&@sp_bsb.is_jiance? %>
+          <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default"  href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf?type=FXBG">风险监测报告</a>
+          <% end%>
+       <% end%>
      <% elsif @sp_bsb["sp_i_state"]==16&&session[:change_js]==16 %>
+	<% if @sp_bsb.ca_key_status!=0%>
+	  <div class="ca-form form-inline">
+            用户：<select id="sp_user_cert_list" style="width: 200px;" name="sp_user_cert_list" class="form-control input-sm"></select>
+            密码：<input placeholder="USB key密码" class="form-control input-sm" id="sp_ca_sign_pwd" type="password">
+          </div>
+        <% end %>
         <%= f.submit(vaule="确定通过", options={"id" => "save_16", :class => "btn btn-xs btn-success"}) %>
         <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
-	      <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default kk">检验报告</a>
+          <% if old_report(@sp_bsb.created_at) %>           <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/print">旧版检验报告</a>
+        <% else %>
+	 <% if @sp_bsb.JDCJ_report_path.present?%>
+           <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/report.pdf?type=JYBG">监督抽检报告</a>
+          <% end%>
+          <% if @sp_bsb.FXJC_report_path.present? %>
+           <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/report.pdf?type=FXBG">风险监测报告</a>
+          <% end%>
+	           <% if @sp_bsb.ca_key_status==0&&@sp_bsb.is_jiandu? %>
+          <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default"  href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf?type=JYBG">监督抽检报告</a>
+          <% end%>
+          <% if @sp_bsb.ca_key_status==0&&@sp_bsb.is_jiance? %>
+          <a data-confirm="由于系统使用人数较多,可能导致打开报告时间略长,确定预览报告吗?" target="_blank" class="btn btn-xs btn-default"  href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf?type=FXBG">风险监测报告</a>
+          <% end%>
+        <% end%>
       <% elsif @sp_bsb["sp_i_state"]==6&&session[:change_js]==2 %>
           <%= f.submit(vaule="药监局审核通过", options={"id" => "save_3", :class => "btn btn-xs btn-success"}) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
@@ -2589,24 +2877,95 @@ function pass_ca(){
         <br>
         <%= submit_tag '上传', class: 'btn btn-sm btn-default' %>
     <% end %>
-
 <% end %>
- <script src="/assets/XTXSAB.js"></script>
-<script src="/assets/ESealWebSocket_PDFClientLogin.js"></script>
-<SCRIPT LANGUAGE=JAVASCRIPT>
-   SetUserCertList("edit_sp_bsb_"+'<%= @sp_bsb.id %>'+".user_cert_list", CERT_TYPE_HARD);
- setTimeout(function () {
-   cur_cert_id = document.getElementById("user_cert_list").value;
-   jg_count = <%= current_user.jg_bsb.jg_bsb_stamps.count %>;
+<div class="modal fade" id="ca_stamp-dlg" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">提交报告</h4>
+      </div>
+			 <div class="modal-body">
+						<form name="ca_sign_form" style="margin: 10px auto;" class="form-inline">
+            <div class="modal-group">
+							用户：<select id="user_cert_list" name="user_cert_list" class="form-control input-sm"></select>
+					</div>
+					<div class="modal-group">
+							密码：<input placeholder="USB key密码" class="form-control input-sm" id="ca_sign_pwd" type="password">
+					</div>
+            </form>
+			</div>
 
-   if(cur_cert_id.length >5 )
-     {
-
-      $(".kk").attr("href","/sp_bsbs/<%= @sp_bsb.id %>/print.pdf");
-    }else{
-
-      $(".kk").attr("href","/sp_bsbs/<%= @sp_bsb.id %>/print");
-    }   
-  }, 2000);	
-
-</SCRIPT>
+			<div class="modal-footer">
+        <label class="hidden loading-label"><%= image_tag('loading.gif', class: 'img-loading') %>提交中...</label>
+				<% if @sp_bsb.sp_i_state ==2 || @sp_bsb.sp_i_state ==3%>
+  	      <button type="button" class="btn btn-primary btn-sm ok">确定执行【主检人检验】</button>
+				<% elsif @sp_bsb.sp_i_state ==4 %>
+					<button type="button" class="btn btn-primary btn-sm ok">确定执行【主检人审核】</button>
+				<% elsif @sp_bsb.sp_i_state ==5 %>
+          <button type="button" class="btn btn-primary btn-sm ok">确定执行【主检人批准】</button>
+				<% elsif @sp_bsb.sp_i_state ==16 %>
+					<button type="button" class="btn btn-primary btn-sm ok">确定执行【报告发送】</button>
+				<% end %>
+      </div>
+    </div>
+  </div>
+</div>
+<% if @sp_bsb.sp_i_state == 16 %>
+<div class="modal fade" id="stamp-dlg" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">电子报告签章选择</h4>
+                </div>
+                <div class="modal-body">
+		   <% if @sp_bsb.is_jiandu? %>
+		     <div class="well well-sm JDCJ">
+		       <label for="">监督抽检报告:</label>
+		       <ul class="stamp-selector-list JDCJ">				
+                        <% @jg_bsb.jg_bsb_stamps.where("stamp_type not in ('FX1')").each do |stamp| %>
+			  <li>
+                             <a href="javascript:void(0);" data-stamp-no="<%= stamp.stamp_no %>" class="stamp-selector">
+                             <img src="/jg_bsb_stamps/<%= stamp.id %>/cover" class="img-thumbnail" alt="<%= stamp.stamp_no %>">
+                             <div class="text-center"><%= stamp.stamp_type_desc %></div>
+                             <i data-stamp-no="<%= stamp.stamp_no %>" class="hidden glyphicon glyphicon-ok"></i>
+                            </a>
+                          </li>
+			<% end if @jg_bsb.present? %>
+		       </ul>
+		       <div class="preview-ctner">
+                	<a type="button" target="_blank" data-type="JYBG" class="btn btn-info btn-xs preview" href="#">报告预览</a>			
+                       </div> 
+		   </div>
+		<% end %>
+		<% if @sp_bsb.is_jiance? %>
+		<div class="well well-sm FXJC">
+              <label for="">风险监测报告:</label>
+              <ul class="stamp-selector-list FXJC">
+                <% @jg_bsb.jg_bsb_stamps.where('stamp_type not in ("FX1")').each do |stamp| %>
+                    <li>
+                      <a href="javascript:void(0);" data-stamp-no="<%= stamp.stamp_no %>" class="stamp-selector">
+                        <img src="/jg_bsb_stamps/<%= stamp.id %>/cover" class="img-thumbnail" alt="<%= stamp.stamp_no %>">
+                        <div class="text-center"><%= stamp.stamp_type_desc %></div>
+                        <i data-stamp-no="<%= stamp.stamp_no %>" class="hidden glyphicon glyphicon-ok"></i>
+                      </a>
+                    </li>
+                <% end %>
+              </ul>
+	     <div class="preview-ctner">
+                <a type="button" target="_blank" data-type="FXBG" class="btn btn-info btn-xs preview" href="#">报告预览</a>
+		</div>
+            </div>
+          <% end %>
+         </div>
+	<div class="modal-footer">
+		<label class="hidden loading-label"><%= image_tag('loading.gif', class: 'img-loading') %>提交中...</label>
+      	        <button type="button" class="btn btn-primary btn-sm ok">确定执行【报告发送人】</button>
+	</div>
+              </div>
+            </div>
+</div>
+<% end%>

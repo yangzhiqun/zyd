@@ -49,15 +49,16 @@ class SpBsb < ActiveRecord::Base
       "未知"
     end
   end
+ ## 判断是否为风险报告
+  def is_jiance?
+     self.sp_s_44.present? and (self.sp_s_44.include?('抽检监测') or self.sp_s_44.eql?('风险监测'))
+  end
+  # 判断是否为监督报告
+  def is_jiandu?
+     self.sp_s_44.present? and (self.sp_s_44.include?('监督抽检') or self.sp_s_44.eql?('抽检监测'))
+  end
 
   def absolute_report_path(preview=false)
-     #if self.report_path.blank? and !preview
-      # return  Rails.root.join('tmp', "sp_bsbs_#{self.id}_print.pdf")
-     #else
-      # return nil
-     #end
-     logger.error self.report_path
-     logger.error self.report_path.blank?
      return Rails.root.join('tmp', "sp_bsbs_#{self.id}_print.pdf")  if self.report_path.blank?
     return File.expand_path('../reports', Rails.root).to_s + self.report_path unless preview
     return Rails.root.join('tmp', 'report_preview').to_s + self.report_path if preview
@@ -640,14 +641,12 @@ class SpBsb < ActiveRecord::Base
     if force_generate or preview  or (self.report_path.blank? and self.ca_key_status ==0) or !File.exists?(self.absolute_report_path)
       @jg_bsb = JgBsb.find_by_jg_name(self.sp_s_43)
       @jyxm_str = Spdatum.where('sp_bsb_id= ? and (spdata_2 = ? or spdata_2 = ?)', self.id, '合格项', '不合格项').limit(3).map { |s| s.spdata_0 }.join(",") + "等#{Spdatum.where("sp_bsb_id= ? and (spdata_2 = ? or spdata_2 = ?)", self.id, '合格项', '不合格项').count}项。"
-     logger.error @jyxm_str      
 @jyjy_str = Spdatum.where('sp_bsb_id= ? and spdata_4 <> ?', self.id, '/').limit(2).map { |s| s.spdata_3 }.join(",")
       @jyjy_str4 = Spdatum.where('sp_bsb_id= ? and spdata_4 <> ?', self.id, '/').limit(2).map { |s| s.spdata_4 }.join(",")
       @jyjy_str1 = Spdatum.where('sp_bsb_id = ? and (spdata_4 = ? OR spdata_4 = ?)', self.id, '/', '-').map { |s| s.spdata_3 }.uniq.join(",")
       @splog = SpLog.where('sp_bsb_id = ? AND (sp_i_state = ? or sp_i_state =?)', self.id, '2','4').last
       #抽检项
       @cjx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE '%合格项%' OR spdata_2 LIKE '%不合格项%')", self.id)
-     logger.error @cjx
       @jyjy_struni = (@cjx.where('sp_bsb_id= ? and spdata_4 <> ?', self.id, '/').select('distinct spdata_4').limit(2).map { |s| s.spdata_4 }).uniq.join(",")
       @jyjy_FY = self.inspection_basis
       #风险项
@@ -677,9 +676,11 @@ class SpBsb < ActiveRecord::Base
           @jcfy = u.tname
         end
       end
-
-      tmp_file = Rails.root.join('tmp', "sp_bsbs_#{self.id}_print.pdf")
-      ApplicationController.new.render template: 'sp_bsbs/1.html.erb',
+			tmp_file = Rails.root.join('tmp', "sp_bsbs_#{self.id}_print.pdf")
+			if pdf_rules =='ca_file'
+			 tmp_file = Rails.root.join('tmp/pdf_preview', "sp_bsbs_#{self.id}_print.pdf")
+			end
+      ApplicationController.new.render template: 'sp_bsbs/old.1.html.erb',
                                        save_to_file: tmp_file,
                                        save_only: true,
                                        pdf: 'home',
@@ -694,67 +695,49 @@ class SpBsb < ActiveRecord::Base
 
       if preview and !force_generate
         abs_target_path = Rails.root.join('tmp', 'report_preview').to_s + target_path
-        # if pdf_rules.blank?
-        #   return tmp_file
-        # end
-      	logger.error "这应该是打印的"
-	logger.error abs_target_path
 	else
         abs_target_path = File.expand_path('../reports', Rails.root).to_s + target_path
-      	logger.error "这应该是浏览的"
-        logger.error abs_target_path
 	end
 
       if pdf_rules.blank?
          if !self.sp_s_69.blank?
             pdf_rules =self.sp_s_69 
-       else
-         if @jg_bsb.jg_bsb_stamps.count > 0
-            pdf_rules = @jg_bsb.jg_bsb_stamps.pluck(:stamp_no).join(',')
-          else
-	     Rails.logger.error '机构未进行数字签名认证，无法查看报告'
+         else
+           if @jg_bsb.jg_bsb_stamps.count > 0
+             pdf_rules = @jg_bsb.jg_bsb_stamps.pluck(:stamp_no).join(',')
+           else
+	            Rails.logger.error '机构未进行数字签名认证，无法查看报告'
               self.report_path = "#{target_path}/#{self.id}.pdf"
-		 if preview and !force_generate 
-                 #SpBsb.record_timestamps = false
-                  #self.save
-                 #SpBsb.record_timestamps = true
-              return tmp_file
+		           if preview and !force_generate 
+                  return tmp_file
+               end
+                 return nil
             end
-            return nil
-         end
-	 end
+	        end
+			else
+				if pdf_rules =='ca_file'
+					return tmp_file
+				end
+				if preview and force_generate
+						tmp_file = Rails.root.join('tmp/pdf_preview', "sp_bsbs_#{self.id}_print.pdf")
+				end
       end
 
       FileUtils.mkdir_p abs_target_path unless Dir.exists? abs_target_path
 
       self.report_path = "#{target_path}/#{self.id}.pdf"
       # create stamp record
-      userinfo = {userName: '吉林省食品药品监督局', channelId: 'CHN_7F22C8E7F35AF46', creditCodes: {ORG: @jg_bsb.ca_org}}
+      userinfo = {userName: '吉林省食品药品监督局', channelId: 'CHN_3039394B3D71D6FD', creditCodes: {ORG: '092648364'}}
       documentInfo = {docuName: '云签章', fileDesc: '云签章'}
       content = []
       pdf_rules.split(',').each do |rule|
         content.push({ruleNum: rule, appId: '9ff70fce51874b62a5f136fdda43c4b7', userinfo: userinfo, documentInfo: documentInfo})
       end
       # logger.error content.to_json
-
       content = Base64.strict_encode64(content.to_json)
-      cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')} 111.26.194.57 8081 105 #{content} #{tmp_file} #{self.absolute_report_path(preview && !force_generate)}"
-      logger.error cmd
+      cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 105 #{content} #{tmp_file} #{self.absolute_report_path(preview && !force_generate)}"
 
       result = `#{cmd}`
-
-  logger.error "result"
-
-  logger.error result
-    logger.error tmp_file
-    logger.error self.absolute_report_path(preview && !force_generate)
-      #cmd = "/usr/local/java-ppc64-80/jre/bin/java -jar #{Rails.root.join('bin', 'esspdf-client.jar')} #{Rails.application.config.site[:ca_pdf_address]} 8888 1 #{pdf_rules.split(',').join('#')} #{tmp_file} #{self.absolute_report_path(preview && !force_generate)}"
-      Rails.logger.error cmd
-      # cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.0.0-SNAPSHOT-client.jar')} 172.16.88.126 80 105 #{content} #{tmp_file} #{@spbsb.absolute_report_path}"
-      # logger.error cmd
-      #
-      # result = `#{cmd}`
-      Rails.logger.error result
 
       FileUtils.rm_f(tmp_file)
 
@@ -773,5 +756,235 @@ class SpBsb < ActiveRecord::Base
     else
       self.absolute_report_path
     end
+  end
+
+	def generate_ca_pdf_report(ca_filepath,new_ca_filepath,ruleNumList,signData,signCert,nonce)
+	    tmp_file = ca_filepath
+	    userinfo = {channelId: 'CHN_3039394B3D71D6FD'}
+            documentInfo = {docuName: '云签章', fileDesc: '云签章'}
+	   reqMessage ={ruleNumList: ruleNumList, appId: '9ff70fce51874b62a5f136fdda43c4b7',policyType: 2, userinfo: userinfo, documentInfo: documentInfo,nonce: nonce, signCert: signCert,signData: signData}
+	   content = Base64.strict_encode64(reqMessage.to_json)
+      cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 114 #{content} #{tmp_file} #{new_ca_filepath}"
+      result = `#{cmd}`
+      if result.strip.include?('200')
+	return new_ca_filepath
+      else
+		return nil
+	end
+	end
+    def client_sign_ca(pdfpath,sign_data,sealImg,signCert,filename)
+    if [2, 3].include? self.sp_i_state
+      keyword = '检验人：'
+    elsif self.sp_i_state == 4
+      keyword = '审核人：'
+    elsif self.sp_i_state == 5
+      keyword = '批准人：'
+    end
+     _QFRQ_keyword_ = '签发日期：'
+     sign_date_result = (self.sp_i_state == 5 and sign_data.to_i == 1)
+      if sign_date_result  #and self.sign_date.blank?
+        self.update_attributes(sign_date: Time.now)
+          sealImg = Time.new.strftime("%Y-%m-%d")
+          keyword= '签发日期：'
+      end
+    clientSignMessages=[]
+    clientSignMessage ={ruleType: 1,keyword: keyword,searchOrder: '2',fileUniqueId: '111111111111',heightMoveSize: 0,moveSize: 0,moveType: 3,searchOrder: 2}
+    clientSignMessages.push(clientSignMessage)
+    reqMessage ={appId: '9ff70fce51874b62a5f136fdda43c4b7',sealImg: sealImg, signCert: signCert,
+                 sealWidth: 0,sealHeight: 0, clientSignMessages: clientSignMessages}
+    reqMessage = Base64.strict_encode64(reqMessage.to_json)
+    #filename = Rails.root.join('tmp', "sp_bsbs_#{self.id}.txt")
+    cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 108  #{reqMessage} #{pdfpath} #{filename}"
+    signSeal_result = `#{cmd}`
+     return signSeal_result
+  end
+
+  def generate_report_context(report_type)
+    jg_bsb = JgBsb.find_by_jg_name(self.sp_s_43)
+
+    context = {sp_bsb: self.as_json, spdata: [], jg_bsb: jg_bsb.as_json, jg_bsb_obj: jg_bsb}
+    context[:splog] = SpLog.where('sp_bsb_id = ? AND remark = ?', self.id, '检测机构批准').last
+    context[:jyjy_str] = Spdatum.where('sp_bsb_id= ? and spdata_4 <> ?', self.id, '/').limit(2).map { |s| s.spdata_3 }.join(",")
+    context[:jyjy_str4] = Spdatum.where('sp_bsb_id= ? and spdata_4 <> ?', self.id, '/').limit(2).map { |s| s.spdata_4 }.join(",")
+    context[:jyjy_str1] = Spdatum.where('sp_bsb_id = ? and (spdata_4 = ? OR spdata_4 = ?)', self.id, '/', '-').map { |s| s.spdata_3 }.uniq.join(",")
+    if report_type.eql?('JYBG')
+      context[:padsplog_jcfy] = PadSpLogs.where('sp_s_16 = ? AND remark = ?', self.sp_s_16, '接收样品').last
+      context[:splog_jcfy] = SpLog.where('sp_bsb_id = ? AND sp_i_state = ?', self.id, 2).first
+      context[:sp_bsb][:jcfy] = '/'
+      if !context[:splog_jcfy].nil?
+        context[:sp_bsb][:jcfy] = User.where('id = ?', context[:splog_jcfy].user_id).last.tname
+      end
+      if !context[:padsplog_jcfy].nil?
+        u = User.where('id = ?', context[:padsplog_jcfy].user_id).last
+        if !u.nil?
+          context[:sp_bsb][:jcfy] = u.tname
+        end
+      end
+       context[:sp_bsb][:jyyj_summary] = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE '%合格项%' OR spdata_2 LIKE '%不合格项%')", self.id).where('sp_bsb_id= ? and spdata_4 <> ?', self.id, '/').select('distinct spdata_4').limit(2).map { |s| s.spdata_4 }.uniq.join(',')
+       context[:wtx] = Spdatum.where('sp_bsb_id = ? AND spdata_2 LIKE ?', self.id, '%不合格%')
+      if context[:wtx].blank?
+        context[:sp_bsb][:jyjl] = '经抽样检验，所检项目符合' + Spdatum.where('sp_bsb_id= ? and spdata_4 <> ? and spdata_2 like ?', self.id, '/', '%合格项%').map { |s| s.spdata_4 }.uniq.join(',')+'要求。'
+      else
+        context[:sp_bsb][:jyjl] = '经抽样检验，'
+        context[:wtx].each do |wtx|
+          context[:sp_bsb][:jyjl] += (wtx.spdata_0 + '项目不符合' + wtx.spdata_4 + '要求，')
+        end
+        context[:sp_bsb][:jyjl] += '检验结论为不合格。'
+      end
+
+      if self.sp_s_84.blank?
+        context[:sp_bsb][:note] = '无'
+      else
+        context[:sp_bsb][:note] = self.sp_s_84
+      end
+     #抽检项
+       context[:cjx] = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE '%合格项%' OR spdata_2 LIKE '%不合格项%')", self.id)
+      context[:jyjy_struni] = (context[:cjx].where('sp_bsb_id= ? and spdata_4 <> ?', self.id, '/').select('distinct spdata_4').limit(2).map { |s| s.spdata_4 }).uniq.join(",")
+      context[:cjx].each_with_index do |item, index|
+        datum = {index: index + 1, JYXM: item.spdata_0, BZZB: '', SCZ: nil, DXPD: item.spdata_2.delete('项'), BZ: nil}
+        # 处理检验项目
+       unless %w{- / \ }.include?(item.spdata_18)
+          datum[:JYXM] += ", #{item.spdata_18}"
+        end
+
+        # 处理标准指标
+	if %w{0 0.0}.include?(item.spdata_11) and %w{0 0.0}.include?(item.spdata_15)
+          datum[:BZZB] += '不得检出'
+        elsif %w{- — / \_0 0.0}.include?(item.spdata_11)
+          if %w{0 1 2 3 4 5 6 7 8 9}.include?(item.spdata_15[0, 1])
+            datum[:BZZB] += '≤'
+          end
+          datum[:BZZB] += item.spdata_15
+        elsif %w{- — / \_}.include?(item.spdata_15)
+          datum[:BZZB] += '≥'
+          datum[:BZZB] += item.spdata_11
+        else
+          datum[:BZZB] += item.spdata_11
+          datum[:BZZB] += '～'
+          datum[:BZZB] += item.spdata_15
+        end
+
+         # 处理实测值
+        datum[:SCZ] = item.spdata_1
+        if item.spdata_1.eql?('未检出')
+          unless %w{- /}.include? item.spdata_7
+            datum[:SCZ] += "(检出限: #{item.spdata_7} #{item.spdata_8})"
+          end
+        end
+
+        # 处理备注
+        if item.spdata_17.present?
+          datum[:BZ] = item.spdata_17
+        else
+          datum[:BZ] = '/'
+        end
+        context[:spdata].push(datum)
+      end
+       #附页内容
+      context[:FY] = (context[:cjx].where("sp_bsb_id= ? and spdata_3 not in ('-','—', '/', '_')", self.id).select('distinct spdata_3').map { |s| s.spdata_3 }).uniq.join(';')
+      context[:sp_bsb][:jyxm] = Spdatum.where('sp_bsb_id= ? and (spdata_2 = ? or spdata_2 = ?)', self.id, '合格项', '不合格项').limit(3).map { |s| s.spdata_0 }.join(',') + "等#{Spdatum.where('sp_bsb_id= ? and (spdata_2 = ? or spdata_2 = ?)', self.id, '合格项', '不合格项').count}项。"
+    elsif report_type.eql?('FXBG')
+      if self.sp_d_28.blank?
+        context[:sp_bsb][:sp_d_28] = '/'
+      end
+      #风险项
+     context[:fxx] = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE '%不判定项%' OR spdata_2 LIKE '%问题项%')", self.id)
+
+      # 检验结论
+      context[:sp_bsb][:jyyj] = (context[:fxx].where('sp_bsb_id= ?', self.id).select('distinct spdata_3').map { |s| s.spdata_3 }).uniq.join(';')
+
+      # 样品数量
+     if self.sp_n_15.to_s[self.sp_n_15.to_s.length - 2, self.sp_n_15.to_s.length - 1]=='.0'
+        context[:sp_bsb][:ypsl] = self.sp_n_15.to_s.chop.chop
+      else
+        context[:sp_bsb][:ypsl] = self.sp_n_15.to_s
+      end
+      context[:sp_bsb][:ypsl] += self.sp_s_6
+
+      # 问题项目
+    context[:sp_bsb][:wtxm] = Spdatum.where('sp_bsb_id = ? AND spdata_2 LIKE ?', self.id, '%问题%').map { |s| s.spdata_0 }.join(',')
+      if context[:sp_bsb][:wtxm].blank?
+        context[:sp_bsb][:wtxm] = '/'
+      end
+
+      context[:fxx].each_with_index do |item, index|
+        datum = {index: index + 1, XMMC: item.spdata_0, DW: item.spdata_18, CKZ: '', JCSJ: ''}
+        if "-,/\\".include? item.spdata_11 and "-,/\\".include? item.spdata_15
+          datum[:CKZ] += '/'
+        elsif "-,/\\".include? item.spdata_11
+          if %w{0 1 2 3 4 5 6 7 8 9}.include?(item.spdata_15[0, 1])
+            datum[:CKZ] += '≤'
+          end
+          datum[:CKZ] += item.spdata_15
+        elsif "-,/,\\".include? item.spdata_15
+          if %w{0 1 2 3 4 5 6 7 8 9}.include?(item.spdata_15[0, 1])
+            datum[:CKZ] += '≥'
+          end
+          datum[:CKZ] += item.spdata_11
+        else
+          datum[:CKZ] += item.spdata_11
+          datum[:CKZ] += '~'
+          datum[:CKZ] += item.spdata_15
+        end
+
+        # 检测数据
+          datum[:JCSJ] = item.spdata_1
+        if item.spdata_1.eql?('未检出')
+          unless %w{- /}.include? item.spdata_7
+            datum[:JCSJ] += "(检出限: #{item.spdata_7} #{item.spdata_8})"
+          end
+        end
+
+        context[:spdata].push(datum)
+      end
+    else
+      return nil
+    end
+	return context
+  end
+ 
+  def generate_pdf_report(report_type)
+	context = generate_report_context(report_type)
+	if report_type.eql?('JYBG')
+         template = 'sp_bsbs/1.html.erb'
+   	 f_name = 'JYBG'	
+	elsif report_type.eql?('FXBG')
+         template = 'sp_bsbs/2.html.erb'
+         f_name = 'FXBG'
+	end
+	now = Time.now
+	outpath_folder = "#{Rails.application.config.attachment_path}"
+	FileUtils.mkdir_p(outpath_folder) unless File.directory?(outpath_folder)
+	outpath = "#{outpath_folder}/#{self.sp_s_16}-#{f_name}.pdf"
+	ApplicationController.new.render template: template,
+		              save_to_file: outpath,
+			      save_only: true,
+			      pdf: 'home',
+          	              wkhtmltopdf: '/usr/local/bin/wkhtmltopdf',
+		              encoding: 'utf-8',
+			      disable_javascript: true,
+			      print_media_type: true,
+		              lowquality: false,
+			      locals: {
+				    :@spbsb => self, 
+			            :@splog_jcfy => context[:splog_jcfy],
+	                            :@jcfy => context[:sp_bsb][:jcfy], 
+				    :@padsplog_jcfy => context[:padsplog_jcfy], 
+			            :@fxx => context[:fxx], 
+				    :@fxx_FY => context[:sp_bsb][:jyyj], 
+			            :@wtx => context[:wtx], 
+				    :@jyyj_hgx_str4 => context[:sp_bsb][:jyjl], 
+	                            :@wtx_str => context[:sp_bsb][:wtxm], 
+			            :@jyjy_FY => context[:FY], 
+				    :@splog => context[:splog], 
+				    :@cjx => context[:cjx], 
+			            :@jyjy_struni => context[:jyjy_struni],#  不知何值
+				    :@jg_bsb => context[:jg_bsb_obj], 
+				    :@jyxm_str => context[:sp_bsb][:jyxm], 
+				    :@jyjy_str => context[:jyjy_str], 
+			            :@jyjy_str4 => context[:jyjy_str4], 
+				    :@jyjy_str1 => context[:jyjy_str1]
+				   }
+      return "#{self.sp_s_16}-#{f_name}.pdf", "#{self.sp_s_16}-#{f_name}.pdf"
   end
 end

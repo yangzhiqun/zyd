@@ -18,6 +18,17 @@ module ApplicationHelper
     end
   end
 
+  #返回天数时间差
+  def days_between (date1,date2)
+    d1 = Date.parse(date1.to_s)
+    d2 = Date.parse(date2.to_s)
+      return (d1-d2).to_i
+  end
+  def old_report(data)
+    d1=Date.parse('2017-03-01')
+    d2=Date.parse(data.to_s)
+    return d2<d1
+  end  	
   def products_print_pager products, page_size, start_index
     return if products.nil? or products.length == 0
     page = (products.length / page_size.to_f).ceil
@@ -103,14 +114,20 @@ module ApplicationHelper
 		#jg_type : 1 => 监管部门, 2 => 检验机构
 		jg_arr  = []
 		if is_sheng? || current_user.is_admin? #如果是省级管理员和最高全选显示全部机构
-			all_jg = JgBsb.where(jg_type: 1)	
+      #if is_sheng?
+      #  all_jg = JgBsb.where("id = ? and jg_type = ?",current_user.jg_bsb.id,1)
+      #end
+			#if current_user.is_admin?
+        all_jg = JgBsb.where(jg_type: 1)
+      #end
 			all_jg.each{ |a| jg_arr << a.jg_name}
 		else
 			jg_type = current_user.jg_bsb.jg_type
 			super_jg = current_user.jg_bsb.jg_bsb_supers
 			super_jg.each{ |jg| jg_arr << jg.super_jg_bsb.jg_name}	
-			# 如果是监管部门显示自己跟上级
+			# 如果是监管部门显示自己
 			if jg_type == 1
+        jg_arr = []
 				jg_arr << current_user.jg_bsb.jg_name
 			end
 		end 

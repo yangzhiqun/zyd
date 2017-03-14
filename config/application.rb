@@ -32,8 +32,12 @@ module DemoyjsRuby2X
 	:province        => "兵团",
 	:client_id       => "839f5fcd9df18beb07c4870ed39bb914fbe3961503d981beeaefcf3480d4201b",
 	:client_secret   => "e04e6c1a56a0d0153f20cbe3d07960d8582654050ec09e8840d84af94c086e55",
-	:api_base        => "http://qzj.cfda.pub:8800"
-	    }
+	:api_base        => "http://qzj.cfda.pub:8800",
+	:ca_auth_address => '60.247.77.101',
+        :ip              => "111.26.194.57",
+        :port            => "8081",
+        :ca_server_cert  => "MIIBwTCCAWagAwIBAgIJIBA0AAAAFX6sMAoGCCqBHM9VAYN1MD4xCzAJBgNVBAYMAkNOMQ0wCwYDVQQKDARCSkNBMQ8wDQYDVQQLDAZQRVJTT04xDzANBgNVBAMMBk1TU1BDQTAeFw0xNzAzMDYwNTA5MjZaFw0yMjAzMDYwNjA5MjZaMDwxCzAJBgNVBAYMAkNOMS0wKwYDVQQDDCRLRVlfODU2MTkxYjk0ODU3NDQ3ZmI4OGZkMDljYzQ4MzQyM2IwWTATBgcqhkjOPQIBBggqgRzPVQGCLQNCAAS5JKsfdSgnNJvH88CSYx6t/Wd0ZnT96yOE188F0xh7IH+eoK3DgE1wKRn6//+NmlxvpRpLwl4Nmoag3m3Yho/wo08wTTAfBgNVHSMEGDAWgBRzoYUmnPPjwFlc369eozVd+6nwXzAdBgNVHQ4EFgQUpjyF1IZKL7XAuM3ykXpHarMGM/cwCwYDVR0PBAQDAgeAMAoGCCqBHM9VAYN1A0kAMEYCIQDKIgCyaipH+yXV1ltfXuni3M5zy3PLuhFNUlEVJXlIGQIhAIQmQqL7NfzDUi4KpnMjghe+bHjqbcySCbvEUJEE1xTp"
+		    }
 
 
     config.fail_report_path = File.expand_path('../fail_reports', Rails.root).to_s

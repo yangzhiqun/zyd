@@ -1,8 +1,7 @@
 <script type="text/javascript">
-  $(function () {
-    //编辑状态下的市县
-    var baosong_a_shi  = "<%= @baosong_a.shi %>";
-    var baosong_a_xian = "<%= @baosong_a.xian %>";
+  $(function () {//编辑状态下的市县
+    //var baosong_a_shi  = "<%#= @baosong_a.shi %>";
+    //var baosong_a_xian = "<%#= @baosong_a.xian %>";
     //新建状态下默认市县
   	var c  = "<%= current_user.jg_bsb.city %>";
   	var lc = "<%= current_user.jg_bsb.country %>";
@@ -27,7 +26,7 @@
       $('#lcity').attr("disabled","disabled");
     <% end %>
 
-    $.get('/prov.json', {prov: <%= @province.id %>}, function (data) {
+ /**   $.get('/prov.json', {prov: <%#= @province.id %>}, function (data) {
       $('<option>-请选择-</option>').appendTo($('#city'));
       $('<option>-请选择-</option>').appendTo($('#lcity'));
       $.each(data.msg, function (i, item) {
@@ -78,14 +77,18 @@
 
 		$('#lcity').change(function () {
 			$('#hidden_prov_country').val($('#lcity').val());
-		});
+		});**/
 
     $('#baosong_a_rwlylx').change(function () {
       $('#hidden_rwlylx').val($('#baosong_a_rwlylx').val());
     });
+
+    ///////////////分界线/////////////////////////////////////
+    $("#baosong_a_jg_ids").select2({theme: 'bootstrap', placeholder: '请选择任务机构'});
   });
 </script>
 <div class="panel panel-default">
+  <div class="text-danger"><%= flash[:error] unless flash[:error].blank? %></div>
   <div class="panel-body">
     <%= form_for(@baosong_a) do |f| %>
         <div class="field">
@@ -94,12 +97,7 @@
           <%= f.text_field :name, :class => "form-control input-sm" %>
         </div>
         <br>
-        <div class="field">
-          <label>备注：</label>
-          <br>
-          <%= f.text_field :note, :class => "form-control input-sm" %>
-        </div>
-        <br>
+
         <div class="field">
           <label>任务来源类型：</label><b style="font-size:10px; color:#999">如省局/市局/县</b>
           <br>
@@ -110,18 +108,30 @@
         </div>
         <br>
         <div class="field">
+          <label>任务机构：</label>
+          <br>
+          <%= f.select :jg_ids, options_for_select(@jg_bsbs.map { |s| [s.jg_name, s.id] }.unshift(["请选择", ""]), @baosong_a.baosong_a_jg_ids.pluck(:jg_bsb_id)), {},multiple: true, class:"form-control input-sm" %>
+        </div>
+        <br>
+        <div class="field">
+          <label>备注：</label>
+          <br>
+          <%= f.text_field :note, :class => "form-control input-sm" %>
+        </div>
+        <br>
+        <!--<div class="field">
           <label>市/区：</label>
           <br>
 					<div class="region form-inline">
-						<%=	current_user.jg_bsb.jg_province %>
-            <%= f.select :shi, '', {}, :class => 'form-control input-sm', :id => 'city' %>
-            <%= f.select :xian, '', {}, :class => 'form-control input-sm', :id => 'lcity' %>
-            <% unless is_sheng? || current_user.is_admin? %>
-        		  <%= f.text_field :shi, :id => "hidden_prov_city", :type => "hidden" %>
-        		  <%= f.text_field :xian, :id => "hidden_prov_country", :type => "hidden" %>
-            <% end %>
+						<%#=	current_user.jg_bsb.jg_province %>
+            <%#= f.select :shi, '', {}, :class => 'form-control input-sm', :id => 'city' %>
+            <%#= f.select :xian, '', {}, :class => 'form-control input-sm', :id => 'lcity' %>
+            <#% unless is_sheng? || current_user.is_admin? %>
+        		  <%#= f.text_field :shi, :id => "hidden_prov_city", :type => "hidden" %>
+        		  <%#= f.text_field :xian, :id => "hidden_prov_country", :type => "hidden" %>
+            <%# end %>
           </div>
-        </div>
+        </div>-->
         <br>
         <div class="actions">
           <%= f.submit "保存", :class => "btn-sm btn-primary btn" %>
