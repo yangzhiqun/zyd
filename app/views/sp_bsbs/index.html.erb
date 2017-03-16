@@ -169,6 +169,13 @@
     });
 
     $(".td_city span.select2-container").css({"width":"98px","margin-left":"74px"});	
+    $("#sp_submit").click(function(){
+      $("#spearch_form").attr("action","/sp_bsbs_spsearch"); 
+    })
+    $("#export").click(function(){
+      $("#spearch_form").attr("action","/sp_bsbs_export_excel_alldata");
+      $("#spearch_form").submit();
+    })
   });
 </script>
 
@@ -179,7 +186,7 @@
 <div class="panel panel-primary">
   <div class="panel-heading">数据查询选项</div>
   <div class="panel-body">
-    <form action="/sp_bsbs_spsearch" method="POST">
+    <form action="/sp_bsbs_spsearch" method="POST" id="spearch_form">
       <%= tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token) %>
       <fieldset style="padding: 5px 10px;">
         <table style="table-layout: fixed;" class="search-form table table-bordered table-condensed table-bordered-black">
@@ -359,6 +366,9 @@
         共<strong style="font-size: 22px;"><%=@sp_bsbs.total_entries%></strong>条, 当前第<strong style="font-size: 22px;"><%= @sp_bsbs.current_page%></strong>页
         <p><%= will_paginate @sp_bsbs, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
         <%= render 'part_index' %>
+        <% if @sp_bsbs.present? && params[:flag].eql?('tabs_1') %>
+          <button id="export" class="btn btn-xs btn-default">全部样品检测数据下载</button>
+        <% end %>
         <p><%= will_paginate @sp_bsbs, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
       </div>
   <% end %>
@@ -396,7 +406,7 @@
             </fieldset>
         <% end %>
 
-        <% if session[:change_js]==1||session[:change_js]==5||session[:change_js]==2||session[:change_js]==7||session[:change_js]==8||current_user.is_admin?||session[:change_js]==10 %>
+        <%# if session[:change_js]==1||session[:change_js]==5||session[:change_js]==2||session[:change_js]==7||session[:change_js]==8||current_user.is_admin?||session[:change_js]==10 %>
             <fieldset style="padding: 5px 10px;">
               <legend>检测结果导出成为Excel文件并下载至本地</legend>
               <%= form_tag({action: :export_excel_alldata}, multipart: true) do %>
@@ -509,7 +519,7 @@
                   <%= submit_tag("全部样品检测数据下载") %><span class="text-danger">特别注意：</span>本功能可将系统中的全部样品检测数据下载到本地，本功能非常占用系统资源，下载时间会较长，每小时只下载更新一次，数据必须用wps打开，需office打开的要用wps另存，wps软件为免费软件，wps官方网上可免费下载！<br><br>
               <% end %>
             </fieldset>
-        <% end %>
+        <%# end %>
       </div>
   <% end %>
 </div>

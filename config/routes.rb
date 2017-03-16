@@ -293,7 +293,7 @@ Rails.application.routes.draw do
   post "sp_bsbs_export_data_excel" => "sp_bsbs#export_data_excel"
   post "sp_bsbs_export_excel_search" => "sp_bsbs#export_excel_search"
   post "sp_bsbs_export_excel_allinfo" => "sp_bsbs#export_excel_allinfo"
-  post "sp_bsbs_export_excel_alldata" => "sp_bsbs#export_excel_alldata"
+  match "sp_bsbs_export_excel_alldata" => "sp_bsbs#export_excel_alldata", via: [:get, :post]
   post "sp_bsbs_export_excel_all_wjc_data" => "sp_bsbs#export_excel_all_wjc_data"
   post "sp_bsbs_export_excel_all_jc_data" => "sp_bsbs#export_excel_all_jc_data"
   post "sp_bsbs_export_excel_all_hg_data" => "sp_bsbs#export_excel_all_hg_data"
