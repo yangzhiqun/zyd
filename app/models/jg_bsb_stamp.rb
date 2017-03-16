@@ -15,7 +15,9 @@ class JgBsbStamp < ActiveRecord::Base
 		# 专用
     ZY = 'ZYZ'
 		#风险
-    FX= 'FX'	
+    FX= 'FX'
+    # 首页
+    SY = 'SY'	
   end
 
   def stamp_type_desc
@@ -25,7 +27,9 @@ class JgBsbStamp < ActiveRecord::Base
       when Type::ZY
         '专用章'
       when Type::FX
-	'风险章'
+	      '风险章'
+      when Type::SY
+        '首页章'
       else
         '资质章 '
     end

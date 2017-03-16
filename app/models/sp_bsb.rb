@@ -1,4 +1,4 @@
-﻿#encoding: utf-8
+#encoding: utf-8
 class SpBsb < ActiveRecord::Base
   include ApplicationHelper
 
@@ -952,6 +952,10 @@ class SpBsb < ActiveRecord::Base
          template = 'sp_bsbs/2.html.erb'
          f_name = 'FXBG'
 	end
+  if self.sp_i_state==3
+    pdf_path = Rails.root.join("../attachments", "#{self.sp_s_16}-#{report_type}.pdf")
+    FileUtils.rm_f(pdf_path)  if File.exists?(self.pdf_path)
+  end
 	now = Time.now
 	outpath_folder = "#{Rails.application.config.attachment_path}"
 	FileUtils.mkdir_p(outpath_folder) unless File.directory?(outpath_folder)
