@@ -135,7 +135,7 @@ Rails.application.routes.draw do
   post "tasks/create_top_plan"
 
   get "tasks/assign"
-
+  get "assign_by_categories_id" => 'tasks#assign_validate'
   match 'tasks/check', via: [:get, :post]
 
   get "yycz/new"
