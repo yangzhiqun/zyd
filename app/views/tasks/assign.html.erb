@@ -2,6 +2,7 @@
     $(document).ready(function () {
         $('#assign_act').click(function () {
             if (($('#baosong_a').val() == "") || ($('#baosong_a').val() == "请选择")) {
+                alert('<%= @delegate.jg_bsb_id unless @delegate.nil? %>');
                 alert("请选择报送分类A");
                 return false;
             }
@@ -9,7 +10,38 @@
                 alert("请选择报送分类B");
                 return false;
             }
+             if(($('#XL').val() ==null) || ($('#XL').val() =="请选择")){
+                alert("请选完产品类别");
+                return false;
+            }
+            flag = true;
+            a_category_id= $('#DL').find('option:selected').attr('data-id');
+            b_category_id= $('#YL').find('option:selected').attr('data-id');
+            c_category_id= $('#CYL').find('option:selected').attr('data-id');
+            d_category_id= $('#XL').find('option:selected').attr('data-id');
+            jg_bsb_id ='<%= @delegate.jg_bsb_id unless @delegate.nil? %>';
+             $.ajax({
+                 url: '/assign_by_categories_id.json',
+                 dataType:'json',
+                 type:'get',
+                 async: false,
+                 data: {jg_bsb_id: jg_bsb_id,a_category_id: a_category_id,b_category_id: b_category_id,c_category_id: c_category_id,d_category_id: d_category_id},
+                   success: function(response){
+                     if(response.status =='ERR'){
+                         alert(response.msg);
+                         flag =false;
+                         return false;
+                      }
+                   },
+                 error: function(message){
+                    var error_message = $.parseJOSN(message);
+                         alert("message.errors");
+                     }
+             });
+                return flag;
+
         });
+
         $('#baosong_a').change(function () {
             var o = $(this);
             if (o.val() != '') {
@@ -27,6 +59,7 @@
             } else {
                 $('#DL, #YL, #CYL, #XL, #baosong_b').empty();
             }
+
         });
 
         // 报送分类第二列
@@ -228,7 +261,7 @@
 </style>
 <br>
 <div class="panel-body">
-  <form class="form-inline" action="/pad_sp_bsbs/new" method="get">
+  <form class="form-inline" action="/pad_sp_bsbs/new" method="get" >
     <div class="panel panel-primary">
       <div class="panel-heading">新建采样任务</div>
       <div class="panel-body">

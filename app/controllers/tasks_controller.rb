@@ -483,4 +483,12 @@ class TasksController < ApplicationController
 
     @pad_sp_bsbs = @pad_sp_bsbs.paginate(:page => (params[:page].present? ? params[:page].to_i : 1), :per_page => 10).order("updated_at DESC")
   end
+  def assign_validate
+    count= TaskJgBsb.where("jg_bsb_id = ? AND a_category_id = ? AND b_category_id=?  AND c_category_id=?  AND d_category_id =?",
+                    params[:jg_bsb_id],params[:a_category_id],params[:b_category_id],params[:c_category_id],params[:d_category_id] ).count
+      if count ==0
+        render :json => {status: 'ERR', msg: "请先部署！！"} and return
+      end
+      render :json => {status: 'OK', msg: "OK"}
+  end
 end

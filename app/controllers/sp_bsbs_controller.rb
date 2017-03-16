@@ -725,6 +725,9 @@ class SpBsbsController < ApplicationController
         if @role_name.eql? '检测机构批准' or params[:sp_bsb][:sp_i_state].to_s == '6' or @loglaststatesign or params[:sp_bsb][:sp_i_state].to_s =='5' 
           @sp_bsb.sp_s_48 = current_user.tname
         end
+         if sp_bsb_params["sp_i_state"] == "3"
+          @sp_bsb.update_attributes({:ca_key_status => 0})
+         end
 
         @sp_bsb.assign_attributes(sp_bsb_params)
 
