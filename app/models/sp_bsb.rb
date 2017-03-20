@@ -22,7 +22,7 @@ class SpBsb < ActiveRecord::Base
   before_save :check_benji_company
   after_update :callback_when_updated
 
-  SpState = {3 => "基本信息(填报中)", 4 => "检测数据(填报)", 5 => "检测数据(机构审核中)", 8 => "检测数据(已提交至秘书处)", 15 => "检测数据(机构批准中)", 16 => "检测数据(报告发送人审核中)", 32 => "基本信息(审核中)", 35 => "基本信息(接样中)"} 
+  SpState = {1 => "基本信息(填报中)", 2 => "检测数据(填报)", 3 => "检测数据(填报)", 4 => "检测数据(机构审核中)", 5 => "检测数据(机构批准中)", 6 => "待机构审核", 9 => "检测数据(已提交至秘书处)", 16 => "检测数据(报告发送人审核中)", 32 => "基本信息审核", 35 => "接收样品"} 
 
   # 核查处置完成情况
   def status_desc
@@ -66,7 +66,7 @@ class SpBsb < ActiveRecord::Base
     return Rails.root.join('tmp', 'report_preview').to_s + self.report_path if preview
   end
 
-  def self.search(params,change_js,current_user,is_city,is_county_level,is_shengshi,all_super_departments,query_type=nil)
+  def self.search(params,change_js,current_user,is_sheng,is_city,is_county_level,is_shengshi,all_super_departments,query_type=nil)
     if query_type == "spsearch"
       @sp_bsbs = SpBsb.select("created_at,sp_d_38,JDCJ_report_path,FXJC_report_path,sp_s_44,sp_bsbs.ca_key_status,sp_bsbs.report_path,sp_bsbs.id, sp_bsbs.updated_at, sp_bsbs.sp_s_3, sp_bsbs.sp_s_4, sp_bsbs.sp_s_14, sp_bsbs.sp_s_16, sp_bsbs.sp_s_43, sp_bsbs.sp_s_214, sp_bsbs.sp_s_35, sp_bsbs.sp_s_71, sp_bsbs.sp_s_202, sp_bsbs.sp_i_state, sp_bsbs.fail_report_path, sp_bsbs.czb_reverted_flag,sp_bsbs.sp_s_2_1")
     else
@@ -233,49 +233,47 @@ class SpBsb < ActiveRecord::Base
     end
 
     if params[:s8]=='10'
-      if current_user.is_admin?||change_js==10||is_sheng?
+      if current_user.is_admin?||change_js==10||is_sheng
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 = '抽检监测(总局本级)'")
         return @sp_bsbs, @ending_time, @begin_time
       end
     end
 
     if params[:s8]=='11'
-      if current_user.is_admin?||change_js==10||is_sheng?
+      if current_user.is_admin?||change_js==10||is_sheng
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 = '抽检监测（地方）'")
         return @sp_bsbs, @ending_time, @begin_time
       end
     end
 
     if params[:s8]=='12'
-      if current_user.is_admin?||change_js==10||is_sheng?
+      if current_user.is_admin?||change_js==10||is_sheng
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 = '三司专项检验'")
         return @sp_bsbs, @ending_time, @begin_time
       end
     end
 
     if params[:s8]=='13'
-      if current_user.is_admin?||change_js==10||is_sheng?
+      if current_user.is_admin?||change_js==10||is_sheng
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 = '网络专项检验'")
         return @sp_bsbs, @ending_time, @begin_time
       end
     end
 
     if params[:s8]=='14'
-      if current_user.is_admin? || change_js == 10||is_sheng?
+      if current_user.is_admin? || change_js == 10||is_sheng
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.synced = false and sp_bsbs.sp_i_state = 2")
         return @sp_bsbs, @ending_time, @begin_time
       end
     end
 
     if params[:s8]=='9'
-      if current_user.is_admin? || change_js==10||is_sheng?
+      if current_user.is_admin? || change_js==10||is_sheng
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'")
       else
         if (change_js==1&&params[:flag]=="tabs_7")||change_js==2||change_js==3||change_js==4 #药监局数据审核
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3 = ? or sp_bsbs.sp_s_202 = ?", current_user.user_s_province, current_user.user_s_province).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'")
-        elsif change_js==7 #数据审核
-          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'")
-       elsif change_js==6 #数据填报
+        elsif change_js==7 || change_js==6 || change_js==11 #数据审核 #数据填报 #批准 
           @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'")
         elsif change_js==1||change_js==5 #填报
           if params[:flag]!="tabs_7" && !is_shengshi
@@ -317,7 +315,7 @@ class SpBsb < ActiveRecord::Base
     if params[:flag]=="tabs_7"
       @sp_bsbs = @sp_bsbs.where(sp_s_2_1: @rwly)
     elsif is_city || is_county_level || (current_user.is_account_manager && current_user.user_i_js == 1 && current_user.jg_bsb.jg_type==1)
-      if !current_user.is_admin? && !is_sheng? && params[:s13].blank?
+      if !current_user.is_admin? && !is_sheng && params[:s13].blank?
         @sp_bsbs = @sp_bsbs.where(sp_s_2_1: @rwly)
       end
     end
@@ -967,7 +965,8 @@ class SpBsb < ActiveRecord::Base
 	else
         abs_target_path = File.expand_path('../reports', Rails.root).to_s + target_path
 	end
-
+        return tmp_file
+=begin
       if pdf_rules.blank?
          if !self.sp_s_69.blank?
             pdf_rules =self.sp_s_69 
@@ -1007,7 +1006,8 @@ class SpBsb < ActiveRecord::Base
       cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 105 #{content} #{tmp_file} #{self.absolute_report_path(preview && !force_generate)}"
 
       result = `#{cmd}`
-
+      logger.error "result"
+      logger.error result
       FileUtils.rm_f(tmp_file)
 
       if result.strip.include?('200')
@@ -1025,6 +1025,8 @@ class SpBsb < ActiveRecord::Base
     else
       self.absolute_report_path
     end
+=end
+   end
   end
 
 	def generate_ca_pdf_report(ca_filepath,new_ca_filepath,ruleNumList,signData,signCert,nonce)

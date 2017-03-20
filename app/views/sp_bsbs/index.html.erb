@@ -366,7 +366,7 @@
         共<strong style="font-size: 22px;"><%=@sp_bsbs.total_entries%></strong>条, 当前第<strong style="font-size: 22px;"><%= @sp_bsbs.current_page%></strong>页
         <p><%= will_paginate @sp_bsbs, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
         <%= render 'part_index' %>
-        <% if @sp_bsbs.present? && params[:flag].eql?('tabs_1') %>
+        <% if @sp_bsbs.present? && params[:flag].eql?('tabs_1') && current_user.is_admin? %>
           <button id="export" class="btn btn-xs btn-default">全部样品检测数据下载</button>
         <% end %>
         <p><%= will_paginate @sp_bsbs, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>

@@ -2,7 +2,6 @@
     $(document).ready(function () {
         $('#assign_act').click(function () {
             if (($('#baosong_a').val() == "") || ($('#baosong_a').val() == "请选择")) {
-                alert('<%= @delegate.jg_bsb_id unless @delegate.nil? %>');
                 alert("请选择报送分类A");
                 return false;
             }

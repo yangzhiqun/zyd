@@ -873,7 +873,7 @@ class SpBsbsController < ApplicationController
       params[:page] = 1
     end
 
-    @sp_bsbs,@ending_time,@begin_time = SpBsb.search(params,session[:change_js],current_user,is_city?,is_county_level?,is_shengshi?,all_super_departments,"spsearch")
+    @sp_bsbs,@ending_time,@begin_time = SpBsb.search(params,session[:change_js],current_user,is_sheng?,is_city?,is_county_level?,is_shengshi?,all_super_departments,"spsearch")
     @sp_bsbs = @sp_bsbs.paginate(page: params[:page], per_page: 10)  
     respond_to do |format|
       format.html {
@@ -1284,9 +1284,8 @@ class SpBsbsController < ApplicationController
 
   # 导出成为Excel文件并下载至本地 
   def export_excel_alldata
-    @sp_bsbs,@ending_time,@begin_time = SpBsb.search(params,session[:change_js],current_user,is_city?,is_county_level?,is_shengshi?,all_super_departments)
-    savetempfile = DownloadData.start(@sp_bsbs)
-    send_file(savetempfile, :disposition => "attachment")
+    @sp_bsbs,@ending_time,@begin_time = SpBsb.search(params,session[:change_js],current_user,is_sheng?,is_city?,is_county_level?,is_shengshi?,all_super_departments)
+    send_file(DownloadData.start(@sp_bsbs), :disposition => "attachment")
   end
 
   def  super_jg

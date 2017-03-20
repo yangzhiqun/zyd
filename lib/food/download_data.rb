@@ -3,7 +3,7 @@
 module DownloadData
   class << self 
 
-	  def start(sp_data)
+    def start(sp_data)
       @sp_bsbs = sp_data
       book = Spreadsheet::Workbook.new
       sheet = book.create_worksheet :name => "totles"
@@ -20,7 +20,7 @@ module DownloadData
           end
         end
       end
-      savetempfile="public/#{Time.now.strftime("%Y-%m-%d-%H:%M")}-检测结果.xls"
+      savetempfile="public/#{Time.now.strftime("%Y")}-检测结果.xls"
       book.write(savetempfile)
       return savetempfile
     end
