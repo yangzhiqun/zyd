@@ -182,7 +182,7 @@ module ApplicationHelper
 	#机构是否是省
 	def jg_is_province?
 		jg = current_user.jg_bsb	
-		return jg.jg_province != "-请选择-" && jg.city == "-请选择-" && jg.country == "-请选择-"
+		return jg.jg_province != "-请选择-" && (jg.city == "-请选择-" || jg.country == "-请选择-")
 	end
 	
 	#机构是否是市
@@ -209,31 +209,12 @@ module ApplicationHelper
      return "市级"  if  is_city?
      return "县级"  if is_county_level?                              
  end
-
-   #机构是否是省
-  def jg_is_province?
-     jg = current_user.jg_bsb
-     return jg.jg_province != "-请选择-" && jg.city == "-请选择-" && jg.country == "-请选择-"
-   end 
-   #机构是否是市
-   def jg_is_city?
-     jg = current_user.jg_bsb
-     return jg.jg_province != "-请选择-" && jg.city != "-请选择-" && jg.country == "-请选择-"
-   end
- 
-   #机构是否是县
-   def jg_is_country?
-        jg = current_user.jg_bsb
-     return jg.jg_province != "-请选择-" && jg.city != "-请选择-" && jg.country != "-请选择-"
-   end
   
   def get_province?
      if is_shi_deploy?
          @province = SysProvince.level1.find_by_name(current_user.jg_bsb.city)
      elsif is_xian_deploy?
          @province = SysProvince.level3(current_user.jg_bsb.city).find_by_name(current_user.jg_bsb.country)
-     else
-         @province = SysProvince.level1 
      end
      return @province
   end
