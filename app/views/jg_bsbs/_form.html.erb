@@ -240,17 +240,20 @@
       </tr>
       <tr>
         <th colspan="6">所属地<%= show_error(@jg_bsb.errors, :jg_province) %></th>
-        <td colspan="34">
+        <td colspan="18">
           <div class="form-inline">
             <%= f.select :jg_province, options_for_select(SysProvince.where("level LIKE '__' OR level LIKE '_'").pluck(:name, :id).map { |p| [p[0], p[0], {'data-id' => p[1]}] }.unshift(['-请选择-', nil]), @jg_bsb.jg_province), {}, :class => 'form-control input-sm' %>
             <%= f.select :city, [], {}, :class => 'form-control input-sm' %>
-            <%= f.select :country, [], {}, :class => 'form-control input-sm' %>
-					
-						<%= f.text_field :jg_province, :id => "hidden_jg_province", :type => "hidden" %>	
-						<%= f.text_field :city, :id => "hidden_city", :type => "hidden" %>	
-						<%= f.text_field :country, :id => "hidden_country", :type => "hidden" %>	
+            <%= f.select :country, [], {}, :class => 'form-control input-sm' %>		
+	    <%= f.text_field :jg_province, :id => "hidden_jg_province", :type => "hidden" %>	
+	    <%= f.text_field :city, :id => "hidden_city", :type => "hidden" %>	
+	    <%= f.text_field :country, :id => "hidden_country", :type => "hidden" %>	
           </div>
         </td>
+	<th colspan="6">机构级别</th>
+	<td colspan="10">
+	   <%= f.select :jgjb, options_for_select(JgBsb::JGJB_TYPE.map { |jg| [jg[:name], jg[:code]] }.unshift(['机构', 0]), @jg_bsb.jgjb), {}, class: 'form-control input-sm' %>
+	</td>
       </tr>
       <tr>
         <th colspan="6">地址</th>
