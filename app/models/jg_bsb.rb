@@ -29,6 +29,19 @@ class JgBsb < ActiveRecord::Base
                  code: 3
              }
   ]
+ JGJB_TYPE =[
+	    {
+	     name: '省级',
+	     code: 2
+	    },
+	    {
+             name: '市级',
+             code: 3
+            },
+	    {
+             name: '县级',
+             code: 4
+            }]
 
   after_save :doings_after_save
   before_save :generate_code

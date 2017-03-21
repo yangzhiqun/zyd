@@ -21,8 +21,6 @@ module TasksHelper
 
   # 国家局下达的省局抽验任务
   def grid3(prov, xl)
-    logger.error "prov==============="
-    logger.error prov.to_json
     @result = [] if @result.blank?
 
     @query = TaskProvince.where("sys_province_id = ? AND a_category_id = ?", prov.id, xl.a_category_id)
@@ -77,7 +75,6 @@ module TasksHelper
   # 国家局下达的局本级抽验任务
   def grid4(task, xl)
     @result = [] if @result.blank?
-    logger.error task.to_json
     @query = TaskJgBsb.where("sys_province_id = ? AND jg_bsb_id = ? AND a_category_id = ? AND identifier = ?",task.sys_province_id,task.jg_bsb_id, xl.a_category_id, xl.identifier)
     # A
     if (@count = @query.sum("quota")) > 0 and @query.where("b_category_id IS NULL AND c_category_id IS NULL AND d_category_id IS NULL").sum("quota") == @count
