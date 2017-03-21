@@ -71,7 +71,11 @@
         <td colspan="2"><%= jg_bsb.jg_province %></td>
         <td colspan="2"><%= jg_bsb.city == "-请选择-"? "":jg_bsb.city %></td>
         <td colspan="2"><%= link_to '编辑', edit_jg_bsb_path(jg_bsb), class: 'btn btn-default btn-xs' %></td>
+<% if current_user.is_admin? or is_sheng? %>
         <td colspan="2"><%= link_to '删除', jg_bsb, method: :delete, data: {confirm: 'Are you sure?'}, class: 'btn btn-xs btn-danger' %></td>
+<% else %>
+       <td colspan="2">--</td>
+<% end %>
       </tr>
   <% end %>
 </table>
