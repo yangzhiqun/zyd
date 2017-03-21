@@ -88,6 +88,7 @@
   });
 </script>
 <div class="panel panel-default">
+  <div class="text-danger"><%= flash[:error] unless flash[:error].blank? %></div>
   <div class="panel-body">
     <%= form_for(@baosong_a) do |f| %>
         <div class="field">
