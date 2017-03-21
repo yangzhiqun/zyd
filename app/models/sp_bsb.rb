@@ -1,4 +1,4 @@
-﻿#encoding: utf-8
+#encoding: utf-8
 class SpBsb < ActiveRecord::Base
   include ApplicationHelper
 
@@ -21,6 +21,8 @@ class SpBsb < ActiveRecord::Base
   before_save :check_bsb_validity
   before_save :check_benji_company
   after_update :callback_when_updated
+
+  SpState = {1 => "基本信息(填报中)", 2 => "检测数据(填报)", 3 => "检测数据(填报)", 4 => "检测数据(机构审核中)", 5 => "检测数据(机构批准中)", 6 => "待机构审核", 9 => "检测数据(已提交至秘书处)", 16 => "检测数据(报告发送人审核中)", 32 => "基本信息审核", 35 => "接收样品"} 
 
   # 核查处置完成情况
   def status_desc
@@ -62,6 +64,271 @@ class SpBsb < ActiveRecord::Base
      return Rails.root.join('tmp', "sp_bsbs_#{self.id}_print.pdf")  if self.report_path.blank?
     return File.expand_path('../reports', Rails.root).to_s + self.report_path unless preview
     return Rails.root.join('tmp', 'report_preview').to_s + self.report_path if preview
+  end
+
+  def self.search(params,change_js,current_user,is_sheng,is_city,is_county_level,is_shengshi,all_super_departments,query_type=nil)
+    if query_type == "spsearch"
+      @sp_bsbs = SpBsb.select("created_at,sp_d_38,JDCJ_report_path,FXJC_report_path,sp_s_44,sp_bsbs.ca_key_status,sp_bsbs.report_path,sp_bsbs.id, sp_bsbs.updated_at, sp_bsbs.sp_s_3, sp_bsbs.sp_s_4, sp_bsbs.sp_s_14, sp_bsbs.sp_s_16, sp_bsbs.sp_s_43, sp_bsbs.sp_s_214, sp_bsbs.sp_s_35, sp_bsbs.sp_s_71, sp_bsbs.sp_s_202, sp_bsbs.sp_i_state, sp_bsbs.fail_report_path, sp_bsbs.czb_reverted_flag,sp_bsbs.sp_s_2_1")
+    else
+      @sp_bsbs = SpBsb.all
+    end
+    
+    if !params[:sp_order].blank?
+      @sp_bsbs = @sp_bsbs.order("#{params[:sp_order]} #{params[:sp_order_seq] || 'DESC'}")
+    elsif !params[:sp_order_seq].blank?
+      @sp_bsbs = @sp_bsbs.order("sp_bsbs.updated_at #{params[:sp_order_seq]}")
+    else
+      @sp_bsbs = @sp_bsbs.order("sp_bsbs.updated_at DESC")
+    end
+
+    @ending_time = Time.now
+    @begin_time = Time.now - 12.months
+
+    unless params[:begin_time].blank?
+      @begin_time = DateTime.parse(params[:begin_time])
+    end
+
+    unless params[:ending_time].blank?
+      @ending_time = DateTime.parse(params[:ending_time])
+    end
+
+    @sp_bsbs = @sp_bsbs.where("sp_bsbs.updated_at BETWEEN ? AND ?", @begin_time.beginning_of_day, @ending_time.end_of_day)
+
+    if params[:flag]=="tabs_3"
+      return @sp_bsbs, @ending_time, @begin_time
+    end
+
+    unless params[:s1].blank?
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_35 LIKE ?", "%#{params[:s1]}%")
+    end
+
+    unless params[:s2].blank?
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 LIKE ?", "%#{params[:s2]}%")
+    end
+
+    unless params[:s3].blank?
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_85 LIKE ?", "%#{params[:s3]}%")
+    end
+
+    unless params[:s4].blank?
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_14 LIKE ?", "%#{params[:s4]}%")
+    end
+
+    if  !params[:s5].blank? and params[:s5] != "请选择"
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_2 LIKE ?", "%#{params[:s5]}%")
+    end
+
+    if  !params[:s6].blank? and params[:s6] != "请选择"
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_18 LIKE ?", "%#{params[:s6]}%")
+    end
+    if !params[:sp_bsa].blank? and params[:sp_bsa] !="请选择"
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 LIKE ?", "%#{params[:sp_bsa]}%")
+    end
+    if !params[:sp_bsb].blank? and params[:sp_bsb] !="请选择"
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_67 LIKE ?", "%#{params[:sp_bsb]}%")
+    end
+
+    unless params[:s7].blank?
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_16 LIKE ?", "%#{params[:s7]}%")
+    end
+
+    # 被抽样单位名称
+    unless params[:s11].blank?
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_1 LIKE ?", "%#{params[:s11]}%")
+    end
+
+    # 标识生产企业名称
+    unless params[:s12].blank?
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_64 LIKE ?", "%#{params[:s12]}%")
+    end
+
+    # 任务来源
+    unless params[:s13].blank?
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_2_1 = ?", "#{params[:s13]}".gsub(/\s/,""))
+    end
+
+    if params[:sp_dl] != '请选择' && !params[:sp_dl].blank?
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_17 LIKE ?", "%#{params[:sp_dl]}%")
+    end
+
+    if params[:sp_sf]!='全部' and !params[:sp_sf].blank?
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_4 LIKE ? ",  "%#{params[:sp_sf]}%")
+    end
+    if params[:flag]=="tabs_4" #只判断完全提交的数据
+      @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name)
+    end
+    if current_user.is_admin? || change_js==10 || is_shengshi || params[:flag]=="tabs_7"
+      case params[:s8].to_i
+        when 1
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state between 0 and 16")
+        when 2
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 10")
+        when 3
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state IN (0, 1)")
+        when 4
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state IN (2, 3)")
+        when 5
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state IN (4)")
+        when 6
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state IN (6, 7)")
+        when 7
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 8")
+        when 8
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9")
+        when 9, 10, 11, 12, 13
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state between 0 and 16")
+        when 15
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 5")
+        when 16
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 16")
+        else
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state between 0 and 16")
+      end
+    elsif (change_js==2||change_js==3||change_js==4) && ['tabs_1', 'tabs_5'].include?(params[:flag])
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 6")
+    elsif (change_js==2||change_js==3||change_js==4)&&params[:flag]=="tabs_2"
+      @sp_bsbs = @sp_bsbs.where('sp_bsbs.sp_i_state IN (7, 8)')
+    elsif (change_js==2||change_js==3||change_js==4)&&params[:flag]=="tabs_4"
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9")
+    elsif (change_js==1||change_js==5) && ['tabs_1', 'tabs_5'].include?(params[:flag])
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state IN (0, 1, 10)")
+    elsif (change_js==1||change_js==5)&&params[:flag]=="tabs_2"
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state between 2 and 8")
+    elsif (change_js==1||change_js==5)&&params[:flag]=="tabs_4"
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9")
+    elsif change_js==6 && ['tabs_1', 'tabs_5'].include?(params[:flag])
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state IN (2, 3)")
+    elsif change_js==6&&params[:flag]=="tabs_2"
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state between 4 and 8")
+    elsif change_js==6&&params[:flag]=="tabs_4"
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9")
+    elsif change_js==7 && ['tabs_1', 'tabs_5'].include?(params[:flag])
+	    @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 4")
+    elsif change_js==7&&params[:flag]=="tabs_2"
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state between 5 and 8")
+    elsif change_js==7&&params[:flag]=="tabs_4"
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9")
+    elsif change_js==11 && ['tabs_1', 'tabs_5'].include?(params[:flag])
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 5")
+    elsif change_js==11&&params[:flag]=="tabs_2"
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state =16")
+    elsif change_js==11&&params[:flag]=="tabs_4"
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9")
+    elsif change_js==8 && ['tabs_1', 'tabs_5'].include?(params[:flag])
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 8")
+    elsif change_js==8&&params[:flag]=="tabs_4"
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9")
+    elsif change_js==16&&['tabs_1', 'tabs_5'].include?(params[:flag])
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 16")
+    elsif change_js==16&&params[:flag]=="tabs_4"
+     @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9")
+    elsif change_js==16&&params[:flag]=="tabs_2"
+     @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state =9 and sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name )
+    end
+    if params[:flag]=="tabs_5"
+      @sp_bsbs =@sp_bsbs.where("sp_bsbs.sp_s_reason IS NOT NULL")
+    end
+    if params[:flag]=="tabs_6"
+      @sp_bsbs =@sp_bsbs.where("sp_bsbs.czb_reverted_flag = 1")
+    end
+
+    if params[:s8]=='10'
+      if current_user.is_admin?||change_js==10||is_sheng
+        @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 = '抽检监测(总局本级)'")
+        return @sp_bsbs, @ending_time, @begin_time
+      end
+    end
+
+    if params[:s8]=='11'
+      if current_user.is_admin?||change_js==10||is_sheng
+        @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 = '抽检监测（地方）'")
+        return @sp_bsbs, @ending_time, @begin_time
+      end
+    end
+
+    if params[:s8]=='12'
+      if current_user.is_admin?||change_js==10||is_sheng
+        @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 = '三司专项检验'")
+        return @sp_bsbs, @ending_time, @begin_time
+      end
+    end
+
+    if params[:s8]=='13'
+      if current_user.is_admin?||change_js==10||is_sheng
+        @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 = '网络专项检验'")
+        return @sp_bsbs, @ending_time, @begin_time
+      end
+    end
+
+    if params[:s8]=='14'
+      if current_user.is_admin? || change_js == 10||is_sheng
+        @sp_bsbs = @sp_bsbs.where("sp_bsbs.synced = false and sp_bsbs.sp_i_state = 2")
+        return @sp_bsbs, @ending_time, @begin_time
+      end
+    end
+
+    if params[:s8]=='9'
+      if current_user.is_admin? || change_js==10||is_sheng
+        @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'")
+      else
+        if (change_js==1&&params[:flag]=="tabs_7")||change_js==2||change_js==3||change_js==4 #药监局数据审核
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3 = ? or sp_bsbs.sp_s_202 = ?", current_user.user_s_province, current_user.user_s_province).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'")
+        elsif change_js==7 || change_js==6 || change_js==11 #数据审核 #数据填报 #批准 
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'")
+        elsif change_js==1||change_js==5 #填报
+          if params[:flag]!="tabs_7" && !is_shengshi
+            @sp_bsbs = @sp_bsbs.where('sp_bsbs.user_id = ?', current_user.id).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'")
+          end
+        elsif change_js==16 #数据填报
+         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'")
+        elsif change_js==9
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 AND sp_bsbs.sp_s_70 LIKE '%一司%' AND sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'")
+        elsif change_js==10
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 AND sp_bsbs.sp_s_70 NOT LIKE '%一司%' AND sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'")
+        elsif change_js.nil? && params[:s8].present?
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'")
+        end
+      end
+    else
+      if (change_js==2||change_js==3||change_js==4)&&params[:s8].present? #药监局数据审核
+        @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3=? or (sp_bsbs.sp_s_202=? and (sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'))", current_user.user_s_province, current_user.user_s_province)
+      elsif change_js==7 #数据审核
+         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names)
+      elsif change_js==11 #数据批准
+        @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names)
+      elsif change_js==6 #数据填报
+        @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names)
+      elsif change_js==16 #数据填报
+        @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43  in (?)",current_user.jg_bsb.jg_name)
+      elsif change_js==1||change_js==5 #填报
+        if params[:flag]!="tabs_7" && !is_shengshi
+          @sp_bsbs = @sp_bsbs.where('sp_bsbs.user_id  in (?)', current_user.id)
+        end
+      elsif change_js==9
+        @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 and sp_bsbs.sp_s_70 LIKE '%一司%'")
+      elsif change_js==10
+        @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 and sp_bsbs.sp_s_70 NOT LIKE '%一司%'")
+      end
+    end
+
+    @rwly = all_super_departments
+    if params[:flag]=="tabs_7"
+      @sp_bsbs = @sp_bsbs.where(sp_s_2_1: @rwly)
+    elsif is_city || is_county_level || (current_user.is_account_manager && current_user.user_i_js == 1 && current_user.jg_bsb.jg_type==1)
+      if !current_user.is_admin? && !is_sheng && params[:s13].blank?
+        @sp_bsbs = @sp_bsbs.where(sp_s_2_1: @rwly)
+      end
+    end
+    return @sp_bsbs, @ending_time, @begin_time
+  end
+
+  # get /sp_bsbs/submit
+  def submit
+    #if current_user.is_admin?
+    @sp_bsb = SpBsb.find(params[:id])
+    @sp_bsb.update_attribute(:sp_i_state, 1)
+    #end
+    
   end
 
   PUSH_BASE_DATA_FIELDS = [
@@ -698,7 +965,8 @@ class SpBsb < ActiveRecord::Base
 	else
         abs_target_path = File.expand_path('../reports', Rails.root).to_s + target_path
 	end
-
+        return tmp_file
+=begin
       if pdf_rules.blank?
          if !self.sp_s_69.blank?
             pdf_rules =self.sp_s_69 
@@ -738,7 +1006,8 @@ class SpBsb < ActiveRecord::Base
       cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 105 #{content} #{tmp_file} #{self.absolute_report_path(preview && !force_generate)}"
 
       result = `#{cmd}`
-
+      logger.error "result"
+      logger.error result
       FileUtils.rm_f(tmp_file)
 
       if result.strip.include?('200')
@@ -756,6 +1025,8 @@ class SpBsb < ActiveRecord::Base
     else
       self.absolute_report_path
     end
+=end
+   end
   end
 
 	def generate_ca_pdf_report(ca_filepath,new_ca_filepath,ruleNumList,signData,signCert,nonce)
@@ -952,6 +1223,10 @@ class SpBsb < ActiveRecord::Base
          template = 'sp_bsbs/2.html.erb'
          f_name = 'FXBG'
 	end
+  if self.sp_i_state==3
+    pdf_path = Rails.root.join("../attachments", "#{self.sp_s_16}-#{report_type}.pdf")
+    FileUtils.rm_f(pdf_path)  if File.exists?(self.pdf_path)
+  end
 	now = Time.now
 	outpath_folder = "#{Rails.application.config.attachment_path}"
 	FileUtils.mkdir_p(outpath_folder) unless File.directory?(outpath_folder)

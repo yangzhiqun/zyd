@@ -245,6 +245,10 @@ module ApplicationHelper
     p.to_query
   end
 
+  def is_opne_ca
+    YAML.load_file("config/use_ca.yml")["open_ca"]
+  end
+
   def sp_bsb_fields
     return {
         :bsb => {
