@@ -166,7 +166,7 @@ class SpBsbsController < ApplicationController
 
   def print_pdf
     @spbsb = SpBsb.find(params[:id])
-    reqMessage ={appId: '932bae8aab4c4b279ff086bd0e321764'}
+    reqMessage ={appId: Rails.application.config.site[:appid]}
     reqMessage =  Base64.strict_encode64(reqMessage.to_json)
     #if @spbsb.is_jiandu? and params[:sign_data][:JDCJ].present?
 #	type='JYBG'
@@ -186,7 +186,7 @@ class SpBsbsController < ApplicationController
       sign_data =params[:sign_data][:JDCJ][:hash]
       File.write(Rails.root.join('tmp', "yang.req"),sign_data)
       writeJson= Rails.root.join('tmp', "yang.req")
-      result = `java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  61.178.55.42 13001 199  #{reqMessage} #{writeJson} #{pdfpath}`     
+      result = `java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 199  #{reqMessage} #{writeJson} #{pdfpath}`     
      logger.error result
 
      if  result.strip.include?('200')
@@ -207,7 +207,7 @@ class SpBsbsController < ApplicationController
       sign_data=params[:sign_data][:FXJC][:hash]
           File.write(Rails.root.join('tmp', "yang.req"),sign_data)
       writeJson= Rails.root.join('tmp', "yang.req")
-      result = `java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  61.178.55.42 13001 199  #{reqMessage} #{writeJson} #{pdfpath}`
+      result = `java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 199  #{reqMessage} #{writeJson} #{pdfpath}`
       logger.error result
       if  result.strip.include?('200')
         sp_status=params[:sp_status]
