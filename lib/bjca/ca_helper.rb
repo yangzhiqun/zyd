@@ -102,7 +102,7 @@
 		 if !File::exists?(Rails.root.join('tmp', "random.txt") )
                     File.new(Rails.root.join('tmp', "random.txt"),"w+")
                  end
-		 cmd = "java -jar #{Rails.root.join('bin', 'mssg-sign-client-1.0.7-SNAPSHOT-clientAll.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} '9ff70fce51874b62a5f136fdda43c4b7' 'GENRANDOM' 32  #{Rails.root.join('tmp', "random.txt")}"  
+		 cmd = "java -jar #{Rails.root.join('bin', 'mssg-sign-client-1.0.7-SNAPSHOT-clientAll.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} #{Rails.application.config.site[:appid]} 'GENRANDOM' 32  #{Rails.root.join('tmp', "random.txt")}"  
 	         result = `#{cmd}`
 	         random =File.read(Rails.root.join('tmp', "random.txt"))
          	end
@@ -115,7 +115,7 @@
 		if !File::exists?(Rails.root.join('tmp', "signData.txt") )
                     File.new(Rails.root.join('tmp', "signData.txt"),"w+")
                  end
-	 	appid= '9ff70fce51874b62a5f136fdda43c4b7'
+	 	appid= Rails.application.config.site[:appid]
 	    	type ='SIGNDATA'
 	    	#random_content =Base64.strict_encode64(ca_random.to_json)
 		random_content =ca_random
@@ -139,7 +139,7 @@
 		if !File::exists?(Rails.root.join('tmp', "validate.txt") )
                     File.new(Rails.root.join('tmp', "validate.txt"),"w+")
                 end
-		appid= '9ff70fce51874b62a5f136fdda43c4b7'
+		appid= Rails.application.config.site[:appid]
 		type ='VERIFYCERT'
                 res =Rails.root.join('tmp', "validate.txt")
                 cmd = "java -jar #{Rails.root.join('bin', 'mssg-sign-client-1.0.7-SNAPSHOT-clientAll.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]}  #{appid} #{type} #{userCert}  #{res}"
@@ -151,7 +151,7 @@
                 if !File::exists?(Rails.root.join('tmp', "sign.txt") )
                     File.new(Rails.root.join('tmp', "sign.txt"),"w+")
                 end
-		appid= '9ff70fce51874b62a5f136fdda43c4b7'
+		appid= Rails.application.config.site[:appid]
 		type ='VERIFYSIGN'
 		text =random
 		text_gb2312 = text.encode 'gb2312','utf-8'
