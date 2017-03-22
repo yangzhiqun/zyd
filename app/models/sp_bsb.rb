@@ -1033,7 +1033,7 @@ class SpBsb < ActiveRecord::Base
 	    tmp_file = ca_filepath
 	    userinfo = {channelId: 'CHN_3039394B3D71D6FD'}
             documentInfo = {docuName: '云签章', fileDesc: '云签章'}
-	   reqMessage ={ruleNumList: ruleNumList, appId: '9ff70fce51874b62a5f136fdda43c4b7',policyType: 2, userinfo: userinfo, documentInfo: documentInfo,nonce: nonce, signCert: signCert,signData: signData}
+	   reqMessage ={ruleNumList: ruleNumList, appId: Rails.application.config.site[:appid],policyType: 2, userinfo: userinfo, documentInfo: documentInfo,nonce: nonce, signCert: signCert,signData: signData}
 	   content = Base64.strict_encode64(reqMessage.to_json)
       cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 114 #{content} #{tmp_file} #{new_ca_filepath}"
       result = `#{cmd}`
@@ -1061,7 +1061,7 @@ class SpBsb < ActiveRecord::Base
     clientSignMessages=[]
     clientSignMessage ={ruleType: 1,keyword: keyword,searchOrder: '2',fileUniqueId: '111111111111',heightMoveSize: 0,moveSize: 0,moveType: 3,searchOrder: 2}
     clientSignMessages.push(clientSignMessage)
-    reqMessage ={appId: '9ff70fce51874b62a5f136fdda43c4b7',sealImg: sealImg, signCert: signCert,
+    reqMessage ={appId: Rails.application.config.site[:appid],sealImg: sealImg, signCert: signCert,
                  sealWidth: 0,sealHeight: 0, clientSignMessages: clientSignMessages}
     reqMessage = Base64.strict_encode64(reqMessage.to_json)
     #filename = Rails.root.join('tmp', "sp_bsbs_#{self.id}.txt")
