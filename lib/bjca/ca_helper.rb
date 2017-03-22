@@ -102,7 +102,7 @@
 		 if !File::exists?(Rails.root.join('tmp', "random.txt") )
                     File.new(Rails.root.join('tmp', "random.txt"),"w+")
                  end
-		 cmd = "java -jar #{Rails.root.join('bin', 'mssg-sign-client-1.0.7-SNAPSHOT-clientAll.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} '9ff70fce51874b62a5f136fdda43c4b7' 'GENRANDOM' 32  #{Rails.root.join('tmp', "random.txt")}"  
+		 cmd = "java -jar #{Rails.root.join('bin', 'mssg-sign-client-1.0.7-SNAPSHOT-clientAll.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} '932bae8aab4c4b279ff086bd0e321764' 'GENRANDOM' 32  #{Rails.root.join('tmp', "random.txt")}"  
 	         result = `#{cmd}`
 	         random =File.read(Rails.root.join('tmp', "random.txt"))
          	end
@@ -115,7 +115,7 @@
 		if !File::exists?(Rails.root.join('tmp', "signData.txt") )
                     File.new(Rails.root.join('tmp', "signData.txt"),"w+")
                  end
-	 	appid= '9ff70fce51874b62a5f136fdda43c4b7'
+	 	appid= '932bae8aab4c4b279ff086bd0e321764'
 	    	type ='SIGNDATA'
 	    	#random_content =Base64.strict_encode64(ca_random.to_json)
 		random_content =ca_random
@@ -123,7 +123,9 @@
 		zs=Rails.application.config.site[:ca_server_cert]
 	       signDate =Rails.root.join('tmp', "signData.txt")
 	       cmd = "java -jar #{Rails.root.join('bin', 'mssg-sign-client-1.0.7-SNAPSHOT-clientAll.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} #{appid} #{type} #{random_content} #{keyID}  #{zs} #{signDate}"
-               result = `#{cmd}`
+               Rails.logger.error cmd
+	       result = `#{cmd}`
+	        Rails.logger.error result
                signDate =File.read(Rails.root.join('tmp', "signData.txt"))
 	     end
 	    # 返回值: [随机数, 服务器证书, 签名值]
@@ -139,7 +141,7 @@
 		if !File::exists?(Rails.root.join('tmp', "validate.txt") )
                     File.new(Rails.root.join('tmp', "validate.txt"),"w+")
                 end
-		appid= '9ff70fce51874b62a5f136fdda43c4b7'
+		appid= '932bae8aab4c4b279ff086bd0e321764'
 		type ='VERIFYCERT'
                 res =Rails.root.join('tmp', "validate.txt")
                 cmd = "java -jar #{Rails.root.join('bin', 'mssg-sign-client-1.0.7-SNAPSHOT-clientAll.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]}  #{appid} #{type} #{userCert}  #{res}"
@@ -151,7 +153,7 @@
                 if !File::exists?(Rails.root.join('tmp', "sign.txt") )
                     File.new(Rails.root.join('tmp', "sign.txt"),"w+")
                 end
-		appid= '9ff70fce51874b62a5f136fdda43c4b7'
+		appid= '932bae8aab4c4b279ff086bd0e321764'
 		type ='VERIFYSIGN'
 		text =random
 		text_gb2312 = text.encode 'gb2312','utf-8'
