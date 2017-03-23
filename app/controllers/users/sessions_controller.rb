@@ -22,7 +22,9 @@
   logger.error "random"
     logger.error @random
 =end
-#	@ca_login_info = Bjca::CaHelper.new.get_client_verify_random_info
+    if is_opne_ca
+      @ca_login_info = Bjca::CaHelper.new.get_client_verify_random_info
+    end
     super
   end
 

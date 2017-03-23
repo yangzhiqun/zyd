@@ -4,7 +4,7 @@ class BaosongB < ActiveRecord::Base
 
   validates_presence_of :baosong_a_id, :message => "报送分类A不可为空"
   validates_presence_of :name, :message => "名称不可为空"
-  validates_presence_of :file, :message => "Excel源文件不可为空"
+  validates_presence_of :file, :message => "Excel源文件不可为空", on: [:create]
 
   belongs_to :baosong_a
   has_many :a_categories, primary_key: :identifier, foreign_key: :identifier, dependent: :delete_all
@@ -98,14 +98,17 @@ class BaosongB < ActiveRecord::Base
         @BZZDYXXDW = row[19].to_s.delete("\n").strip unless row[19].nil?
         # 排出非合并项
         # @BZZDYXXDW = nil if (row[18].nil? and row.format(18).top != :none)
+	
+        # 备注
+        @BZ = row[25].to_s.delete("\n").strip unless row[25].nil?
 
-        @lines.push({A_category: @A_category, B_category: @B_category, C_category: @C_category, D_category: @D_category, JYXM: @JYXM, JGDW: @JGDW, PDYJ: @PDYJ, JYYJ: @JYYJ,JYYJJHB: @JYYJJHB, BZFFJCX: @BZFFJCX, BZFFJCXDW: @BZFFJCXDW, BZZXYXX: @BZZXYXX, BZZXYXXDW: @BZZXYXXDW, BZZDYXX: @BZZDYXX, BZZDYXXDW: @BZZDYXXDW})
+        @lines.push({A_category: @A_category, B_category: @B_category, C_category: @C_category, D_category: @D_category, JYXM: @JYXM, JGDW: @JGDW, PDYJ: @PDYJ, JYYJ: @JYYJ,JYYJJHB: @JYYJJHB, BZFFJCX: @BZFFJCX, BZFFJCXDW: @BZFFJCXDW, BZZXYXX: @BZZXYXX, BZZXYXXDW: @BZZXYXXDW, BZZDYXX: @BZZDYXX, BZZDYXXDW: @BZZDYXXDW,BZ: @BZ})
       end
 
       self.generate_identifier
 
       ActiveRecord::Base.transaction do
-        CheckItem.where(identifier: self.identifier).update_all({JGDW: nil, JYYJ: nil, PDYJ: nil, BZFFJCX: nil, BZFFJCXDW: nil, BZZXYXX: nil, BZZXYXXDW: nil, BZZDYXX: nil, BZZDYXXDW: nil})
+        CheckItem.where(identifier: self.identifier).update_all({JGDW: nil, JYYJ: nil, PDYJ: nil, BZFFJCX: nil, BZFFJCXDW: nil, BZZXYXX: nil, BZZXYXXDW: nil, BZZDYXX: nil, BZZDYXXDW: nil,BZ: nil})
 
         category_ids = {
             a_category_ids: [],
@@ -146,7 +149,7 @@ class BaosongB < ActiveRecord::Base
           item.BZZXYXXDW = (item.BZZXYXXDW || "").split("#").push(line[:BZZXYXXDW]).uniq.join("#") unless line[:BZZXYXXDW].blank?
           item.BZZDYXX = (item.BZZDYXX || "").split("#").push(line[:BZZDYXX]).uniq.join("#") unless line[:BZZDYXX].blank?
           item.BZZDYXXDW = (item.BZZDYXXDW || "").split("#").push(line[:BZZDYXXDW]).uniq.join("#") unless line[:BZZDYXXDW].blank?
-
+	  item.BZ= (item.BZ || "").split("#").push(line[:BZ]).join("#") unless line[:BZ].blank?
           item.save
           category_ids[:item_ids].push(item.id)
 

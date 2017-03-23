@@ -363,17 +363,21 @@ class TasksController < ApplicationController
 	  if @jg_bsb.jg_type ==1
       begin
         super_jg = JgBsbSuper.where(super_jg_bsb_id: @jg_bsb.id ).group("jg_bsb_id")
+logger.error super_jg.to_json
         jg_names=[]
         jg_names.push(@jg_bsb.jg_name)
         super_jg.each do |j|
+          if !j.jg_bsb.blank?
            jg_names.push(j.jg_bsb.jg_name)
+          end
         end
-      rescue
+     # rescue
       end
     elsif @jg_bsb.jg_type ==3
       jg_names=[@jg_bsb.jg_name]
     end
-
+logger.error @jg_bsb.id
+logger.error jg_names
     @rwly = all_super_departments 
     case params[:tab].to_i
       when 0
@@ -386,7 +390,11 @@ class TasksController < ApplicationController
         elsif is_county_level?
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::TMP_SAVE, :sp_s_2_1 => @rwly)
         else
+         if @jg_bsb.jg_type ==3 
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::TMP_SAVE, :sp_s_43 => jg_names)
+         else 
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::TMP_SAVE, :sp_s_43 => jg_names,:sp_s_35 => @jg_bsb.jg_name)
+         end
         end
       when 1
         if current_user.is_admin? || is_sheng?
@@ -396,7 +404,11 @@ class TasksController < ApplicationController
         elsif is_county_level?
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED], :sp_s_2_1 => @rwly)
         else 
-          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED], :sp_s_43 => jg_names)
+         if @jg_bsb.jg_type ==3
+           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED], :sp_s_43 => jg_names)
+         else
+           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED], :sp_s_43 => jg_names,:sp_s_35 => @jg_bsb.jg_name)
+         end
         end
       when 2
         if current_user.is_admin? || is_sheng?
@@ -405,9 +417,13 @@ class TasksController < ApplicationController
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED], :sp_s_2_1 => @rwly)
         elsif is_county_level?
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED], :sp_s_2_1 => @rwly)
-        else 
+        else
+         if @jg_bsb.jg_type ==3 
         @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED], :sp_s_43 => jg_names)
+        else
+        @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED], :sp_s_43 => jg_names,:sp_s_35 => @jg_bsb.jg_name)
         end
+         end
       when 3
         if current_user.is_admin? || is_sheng?
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::SAMPLE_REFUSED)
@@ -482,5 +498,13 @@ class TasksController < ApplicationController
     end
 
     @pad_sp_bsbs = @pad_sp_bsbs.paginate(:page => (params[:page].present? ? params[:page].to_i : 1), :per_page => 10).order("updated_at DESC")
+  end
+  def assign_validate
+    count= TaskJgBsb.where("jg_bsb_id = ? AND a_category_id = ? AND b_category_id=?  AND c_category_id=?  AND d_category_id =?",
+                    params[:jg_bsb_id],params[:a_category_id],params[:b_category_id],params[:c_category_id],params[:d_category_id] ).count
+      if count ==0
+        render :json => {status: 'ERR', msg: "请先部署！！"} and return
+      end
+      render :json => {status: 'OK', msg: "OK"}
   end
 end

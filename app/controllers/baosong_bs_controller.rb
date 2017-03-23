@@ -146,7 +146,7 @@ class BaosongBsController < ApplicationController
   # PUT /baosong_bs/1.json
   def update
     @baosong_b = BaosongB.find(params[:id])
-
+   logger.error @baosong_b.to_json
     respond_to do |format|
       if @baosong_b.update_attributes(baosong_b_params)
         format.html { redirect_to @baosong_b, notice: 'Baosong b was successfully updated.' }
