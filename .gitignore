@@ -10,7 +10,7 @@
 /public/assets
 .DS_Store
 bin/
-config/database.yml
+config/*.yml
 
 # Ignore the default SQLite database.
 /db/*.sqlite3
