@@ -9,6 +9,7 @@
 /.idea
 /public/assets
 .DS_Store
+/bin
 config/*.yml
 
 # Ignore the default SQLite database.
