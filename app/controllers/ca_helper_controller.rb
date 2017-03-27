@@ -114,7 +114,7 @@ end
      filename=Rails.root.join('tmp', "test.txt")
      reqMessage ={appId: Rails.application.config.site[:appid],policyType: 2}
      reqContent =Base64.strict_encode64(reqMessage.to_json)
-     cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client.jar')} 111.26.194.57 8081 113 #{reqContent} #{filename} "
+     cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 113 #{reqContent} #{filename} "
      result = `#{cmd}`
      nonceStr  =  File.read(Rails.root.join('tmp', "test.txt"))
      render json: {status: 'OK', msg: nonceStr}
