@@ -1,2 +1,4 @@
 #是否使用ca
 open_ca: false
+#屏蔽
+is_open: true
