@@ -294,12 +294,35 @@
     });
   }
   $(function () {
-		<% if [2,3,4, 5].include?(@sp_bsb.sp_i_state) %>
-			SetUserCertList('ca_sign_form.user_cert_list', CERT_TYPE_HARD);
+    $("#wt1").hide();
+    $("#wt2").hide();
+    $("#wt3").hide();	
+    if ($('#sp_bsb_sp_s_sfwtsc option:selected').val() == "是" ){
+      $("#wt1").show();
+      $("#wt2").show();
+      $("#wt3").show();
+      $("#ybz").attr("rowSpan","11");  
+    }
+   $('#sp_bsb_sp_s_sfwtsc').change(function () {
+      if ($('#sp_bsb_sp_s_sfwtsc option:selected').val() == "是" ){
+        $("#wt1").show();
+        $("#wt2").show();
+        $("#wt3").show();
+        $("#ybz").attr("rowSpan","11");  
+    }		
+   if ($('#sp_bsb_sp_s_sfwtsc option:selected').val() == "否" ){
+        $("#wt1").hide();
+        $("#wt2").hide();
+        $("#wt3").hide();
+        $("#ybz").attr("rowSpan","8");  
+      }
+    })
+    <% if [2,3,4, 5].include?(@sp_bsb.sp_i_state) %>
+	SetUserCertList('ca_sign_form.user_cert_list', CERT_TYPE_HARD);
     <% end %>
-		<% if [16].include?(@sp_bsb.sp_i_state) %>
-		SetUserCertList('sp_bsb_form.sp_user_cert_list', CERT_TYPE_HARD);
-		<% end %>
+    <% if [16].include?(@sp_bsb.sp_i_state) %>
+	SetUserCertList('sp_bsb_form.sp_user_cert_list', CERT_TYPE_HARD);
+    <% end %>
     if ($("#sp_bsb_sp_s_63").val() == "散装") {
       <%@check=[26,27,13,72,73,74]%>
       <%@check.each do |i|%>
@@ -420,9 +443,10 @@
       level2: "<%= @sp_bsb.sp_s_220 %>",
       level3: "<%= @sp_bsb.sp_s_221 %>"
     });
-		$(".region3").CfdaProvince_1({
-      level1: "<%= @sp_bsb.sp_s_52 %>",
-      level2: "<%= @sp_bsb.sp_s_city %>"
+    $(".region3").CfdaProvince({
+      level1: "<%= @sp_bsb.sp_s_wtsheng %>",
+      level2: "<%= @sp_bsb.sp_s_wtshi %>",
+      level3: "<%= @sp_bsb.sp_s_wtxian %>"
     });
 
     $("#sp_bsb_sp_d_22, /*#sp_bsb_sp_d_28 #sp_bsb_sp_d_38,*/ #sp_bsb_sp_d_46, #sp_bsb_sp_d_86, #sp_bsb_sp_s_209").datepicker({
@@ -2385,7 +2409,7 @@
           <td colspan="7"><%= f.text_field :sp_s_25, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
-          <td rowspan="7" colspan="3">预包装<br>产品*</td>
+          <td id="ybz" rowspan="7" colspan="3">预包装<br>产品*</td>
           <td colspan="5">样品规格*</td>
           <td colspan="8"><%= f.text_field :sp_s_26, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
           <td colspan="5">样品批号*</td>
@@ -2405,7 +2429,7 @@
         </tr>
         <td colspan="5">质量等级*</td>
         <td colspan="2"><%= f.text_field :sp_s_73, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
-        <td colspan="2">商标*</td>
+        <td colspan="2">样品商标*</td>
         <td colspan="4"><%= f.text_field :sp_s_74, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         <td colspan="2">单价*</td>
         <td colspan="3"><%= f.text_field :sp_s_204, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
@@ -2415,7 +2439,7 @@
         <tr>
           <td colspan="5">抽样基数/批量*</td>
           <td colspan="4"><%= f.text_field :sp_s_206, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
-          <td colspan="4">条形码</td>
+          <td colspan="4">样品条码</td>
           <td colspan="5"><%= f.text_field :sp_s_222, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
           <td colspan="4">备样数量*</td>
           <td colspan="5"><%= f.text_field :sp_s_208, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
@@ -2440,12 +2464,41 @@
           <td colspan="7"><%= f.text_field :sp_s_65, :class => "inputText", placeholder: '请填写详细地址', :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
-          <td colspan="5">标识生产企业名称*</td>
+          <td colspan="5">标示企业名称*</td>
           <td colspan="5"><%= f.text_field :sp_s_64, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
           <td colspan="4">生产企业联系人*</td>
           <td colspan="4"><%= f.text_field :sp_s_75, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
           <td colspan="4">生产企业电话*</td>
           <td colspan="5"><%= f.text_field :sp_s_76, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+	<tr>
+          <td colspan="5">是否进口</td>
+          <td colspan="5"><%= f.select :sp_s_sfjk, options_for_select([["请选择",nil], ["否", "否"], ["是", "是"]], @sp_bsb.sp_s_sfjk), {}, {:style => "width: 100%;"} %></td>
+          <td colspan="4">原产国</td>
+          <td colspan="4"><%= f.text_field :sp_s_ycg, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="4">是否委托生产</td>
+          <td colspan="5"><%= f.select :sp_s_sfwtsc, options_for_select([["请选择",nil], ["否", "否"], ["是", "是"]], @sp_bsb.sp_s_sfwtsc), {}, {:style => "width: 100%;"} %></td>
+        </tr>
+        <tr id="wt1">
+          <td colspan="5">委托企业地址</td>
+          <td colspan="15" class="region3" style="border-right:none;">
+            <%= f.select :sp_s_wtsheng, {} %>
+            <%= f.select :sp_s_wtshi, {} %>
+            <%= f.select :sp_s_wtxian, {} %>
+          </td>
+          <td colspan="7"><%= f.text_field :sp_s_qydz, :class => "inputText", placeholder: '请填写详细地址', :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr id="wt2">
+          <td colspan="5">委托企业名称</td>
+          <td colspan="8"><%= f.text_field :sp_s_qymc, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="5">委托生产许可证编号</td>
+          <td colspan="9"><%= f.text_field :sp_s_qs, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr id="wt3">
+          <td colspan="5">委托联系人</td>
+          <td colspan="8"><%= f.text_field :sp_s_lxr, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="5">委托电话</td>
+          <td colspan="9"><%= f.text_field :sp_s_tel, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
           <td rowspan="2" colspan="5">抽样时样品<br>存储状态*</td>
@@ -2453,7 +2506,7 @@
           <td rowspan="2" colspan="5">储存条件</td>
           <td colspan="4">温度(℃)</td>
           <td colspan="4"><%= f.number_field :sp_n_31, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
-          <td rowspan="2" colspan="4">抽样样品包装*</td>
+          <td rowspan="2" colspan="4">样品包装*</td>
           <td rowspan="2" colspan="5"><%= f.select :sp_s_33, @options[33], {}, :style => "width: 100%" %></td>
         </tr>
         <tr>

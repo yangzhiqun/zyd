@@ -72,6 +72,10 @@ class SpBsb < ActiveRecord::Base
     else
       @sp_bsbs = SpBsb.all
     end
+
+    if !YAML.load_file("config/use_ca.yml")["is_open"] 
+      @sp_bsbs = @sp_bsbs.where("sp_i_state != 1")  
+    end
     
     if !params[:sp_order].blank?
       @sp_bsbs = @sp_bsbs.order("#{params[:sp_order]} #{params[:sp_order_seq] || 'DESC'}")

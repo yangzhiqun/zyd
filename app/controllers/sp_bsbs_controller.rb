@@ -503,7 +503,7 @@ class SpBsbsController < ApplicationController
     end
 
     @sp_data = Spdatum.where(sp_bsb_id: params[:id])
-
+if is_open_production?
     unless @sp_bsb.sp_s_70.blank?
       @sp_s_67s = BaosongB.where(baosong_a_id: BaosongA.find_by_name(@sp_bsb.sp_s_70).id)
     else
@@ -513,7 +513,11 @@ class SpBsbsController < ApplicationController
     if !@sp_s_67s.blank? and !@sp_bsb.sp_s_67.blank?
       @sp_s_67 = @sp_s_67s.where(name: @sp_bsb.sp_s_67).first
     end
-
+else
+  if !@sp_bsb.sp_s_67.blank?
+        @sp_s_67 = BaosongB.where(name: @sp_bsb.sp_s_67).first
+  end 
+end
     unless @sp_s_67.nil?
       @a_categories = ACategory.where(:identifier => @sp_s_67.identifier)
     else
@@ -1662,7 +1666,8 @@ class SpBsbsController < ApplicationController
         :czb_reverted_flag,
         :czb_reverted_reason,
 	:synced, :ca_source, :ca_sign,
-	:inspection_basis, :decision_basis,:FX_jyyj_custom,:JDCJ_report_path,:FXJC_report_pah,:JDCJ_pdf_rules,:FXJC_pdf_rules
+	:inspection_basis, :decision_basis,:FX_jyyj_custom,:JDCJ_report_path,:FXJC_report_pah,:JDCJ_pdf_rules,:FXJC_pdf_rules,:sp_s_sfjk,:sp_s_ycg,:sp_s_sfwtsc,:sp_s_wtsheng,
+	:sp_s_wtshi,:sp_s_wtxian,:sp_s_qymc,:sp_s_qydz,:sp_s_qs,:sp_s_lxr,:sp_s_tel,:sp_s_pic,:sp_s_sign
     )
   end
 end
