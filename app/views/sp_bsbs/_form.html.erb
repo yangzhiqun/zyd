@@ -1756,6 +1756,25 @@
     $("#UserPwd").removeAttr("disabled");
      $("#keypic").removeAttr("disabled");
 		$('.ca-form *').removeAttr('disabled readonly');
+    <%elsif  @sp_bsb["sp_i_state"] ==1 or @sp_bsb["sp_i_state"] ==3 %>
+        <%@check=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,17,18,19,20,21,23,24,25,26,27,30,33,34,35,36,37,39,40,41,42,61,62,63,64,65,67,68,70,75,76,211,212,213,208,206,222,204,73,74,72,215,201,203,202,220,221]%>
+        <%@check.each do |i|%>
+            $("#sp_bsb_sp_s_" +<%=i%>).attr("disabled", "disabled");
+        <%end%>
+       <%@check=['n_15','n_29','n_31','n_32','d_28','d_38','s_2_1','s_bsfl','xkz','xkz_id','s_ycg','s_sfwtsc','s_wtsheng','s_wtshi','s_wtxian','s_qydz','s_qymc','s_qs','s_lxr','s_tel']%>
+         <%@check.each do |i|%>
+            $("#sp_bsb_sp_<%= "#{i}"%>").attr("disabled", "disabled");
+          <%end%>
+
+        /*
+        $("#sp_bsb_sp_d_28").attr("disabled", "disabled");
+        $("#sp_bsb_sp_d_38").attr("disabled", "disabled");
+        $("#sp_bsb_sp_s_2_1").attr("disabled", "disabled");
+        $("#sp_bsb_sp_s_bsfl").attr("disabled", "disabled");
+        $("#sp_bsb_sp_xkz").attr("disabled", "disabled");
+        $("#sp_bsb_sp_xkz_id").attr("disabled", "disabled");
+        $("#sp_bsb_sp_s_ycg").attr("disabled", "disabled");
+        */
     <%end%>
 
     $.each(jg_data, function () {

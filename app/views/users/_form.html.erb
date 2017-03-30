@@ -168,7 +168,7 @@
         <%= f.text_field :ca_uuid, :class => "form-control input-sm" %>
 
         <br>
-        <label>身份证号：</label><span class="id-card"><%= @user.id_card.blank? ? '无' : @user.id_card %></span><a class="btn text-danger btn-xs unbind" href="">解绑</a>
+        <label>CA唯一标示：</label><span class="id-card"><%= @user.id_card.blank? ? '无' : @user.id_card %></span><a class="btn text-danger btn-xs unbind" href="">解绑</a>
         <br>
         <%= f.hidden_field :id_card, :class => "form-control input-sm" %>
 
