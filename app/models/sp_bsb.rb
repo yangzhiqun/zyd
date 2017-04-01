@@ -919,7 +919,11 @@ class SpBsb < ActiveRecord::Base
       #抽检项
       @cjx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE '%合格项%' OR spdata_2 LIKE '%不合格项%')", self.id)
       @jyjy_struni = (@cjx.where('sp_bsb_id= ? and spdata_4 <> ?', self.id, '/').select('distinct spdata_4').limit(2).map { |s| s.spdata_4 }).uniq.join(",")
+
+      #@jyjy_FY = (@cjx.where("sp_bsb_id= ? and spdata_3 not in ('-','—', '/', '_')", self.id).select('distinct spdata_3').map { |s| s.spdata_3 }).uniq.join(';')
+
       @jyjy_FY = self.inspection_basis
+
       #风险项
       @fxx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE '%不判定项%' OR spdata_2 LIKE '%问题项%')", self.id)
       @fxx_FY = (@fxx.where('sp_bsb_id= ?', self.id).select('distinct spdata_3').map { |s| s.spdata_3 }).uniq.join(';')
@@ -933,8 +937,10 @@ class SpBsb < ActiveRecord::Base
       #检查封样人员      @padsplog_jcfy = PadSpLogs.where('sp_s_16 = ? AND remark = ?', self.sp_s_16, '接收样品').last
 
       @padsplog_jcfy = PadSpLogs.where('sp_s_16 = ? AND remark = ?', self.sp_s_16, '接收样品').last
+
      # @splog_jcfy = SpLog.with_deleted.where('sp_bsb_id = ? AND sp_i_state = ?', self.id, 2).first
       @splog_jcfy = SpLog.where('sp_bsb_id = ? AND sp_i_state = ?', self.id, 2).first
+
       @jcfy = '/'
 
       if !@splog_jcfy.nil?
@@ -1007,7 +1013,9 @@ class SpBsb < ActiveRecord::Base
       end
       # logger.error content.to_json
       content = Base64.strict_encode64(content.to_json)
+
       cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 105 #{content} #{tmp_file} #{self.absolute_report_path(preview && !force_generate)}"
+
 
       result = `#{cmd}`
       logger.error "result"
@@ -1041,6 +1049,7 @@ class SpBsb < ActiveRecord::Base
 	   content = Base64.strict_encode64(reqMessage.to_json)
       cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 114 #{content} #{tmp_file} #{new_ca_filepath}"
       result = `#{cmd}`
+     logger.error result
       if result.strip.include?('200')
 	return new_ca_filepath
       else

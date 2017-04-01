@@ -1739,7 +1739,7 @@
       });
       return false;
     });
-
+    //样品信息登记部分登记
     <%if current_user.user_d_authority==0&&current_user.user_d_authority_1==0%>
     $("select").attr("disabled", "disabled");
     $("input").attr("readonly", "readonly");
@@ -1756,25 +1756,15 @@
     $("#UserPwd").removeAttr("disabled");
      $("#keypic").removeAttr("disabled");
 		$('.ca-form *').removeAttr('disabled readonly');
-    <%elsif  @sp_bsb["sp_i_state"] ==1 or @sp_bsb["sp_i_state"] ==3 %>
-        <%@check=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,17,18,19,20,21,23,24,25,26,27,30,33,34,35,36,37,39,40,41,42,61,62,63,64,65,67,68,70,75,76,211,212,213,208,206,222,204,73,74,72,215,201,203,202,220,221]%>
-        <%@check.each do |i|%>
-            $("#sp_bsb_sp_s_" +<%=i%>).attr("disabled", "disabled");
+    <%elsif  [2,3,1].include?(@sp_bsb["sp_i_state"]) %>
+    <%@check=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,17,18,19,20,21,23,24,25,26,27,30,33,34,35,36,37,39,40,41,42,61,62,63,64,65,67,68,70,75,76,211,212,213,208,206,222,204,73,74,72,215,201,203,202,220,221]%>
+       <%@check.each do |i|%>
+        $("#sp_bsb_sp_s_" +<%=i%>).attr("disabled", "disabled");
         <%end%>
-       <%@check=['n_15','n_29','n_31','n_32','d_28','d_38','s_2_1','s_bsfl','xkz','xkz_id','s_ycg','s_sfwtsc','s_wtsheng','s_wtshi','s_wtxian','s_qydz','s_qymc','s_qs','s_lxr','s_tel']%>
-         <%@check.each do |i|%>
-            $("#sp_bsb_sp_<%= "#{i}"%>").attr("disabled", "disabled");
+       <%@check=['n_15','n_29','n_31','n_32','d_28','d_38','s_2_1','s_bsfl','xkz','xkz_id','s_sfjk','s_ycg','s_sfwtsc','s_wtsheng','s_wtshi','s_wtxian','s_qydz','s_qymc','s_qs','s_lxr','s_tel']%>
+          <%@check.each do |i|%>
+           $("#sp_bsb_sp_<%= "#{i}"%>").attr("disabled", "disabled");
           <%end%>
-
-        /*
-        $("#sp_bsb_sp_d_28").attr("disabled", "disabled");
-        $("#sp_bsb_sp_d_38").attr("disabled", "disabled");
-        $("#sp_bsb_sp_s_2_1").attr("disabled", "disabled");
-        $("#sp_bsb_sp_s_bsfl").attr("disabled", "disabled");
-        $("#sp_bsb_sp_xkz").attr("disabled", "disabled");
-        $("#sp_bsb_sp_xkz_id").attr("disabled", "disabled");
-        $("#sp_bsb_sp_s_ycg").attr("disabled", "disabled");
-        */
     <%end%>
 
     $.each(jg_data, function () {
@@ -1977,10 +1967,7 @@
   	  parentBody = parentFrame.find('body').addClass('box-overhide');
   	  if(parentFrame.find('#modalbox').length === 0){
   	    //如果不存在则创建模态层
-  	    var modalBox = "<div id='modalbox' style='display:block;overflow:hidden;background-color:rgba(0,0,0,0.3);position:absolute;top:0;left:0;right:0;bottom:0;'><img id='loadingPic' class='loadingpic' src='<%= asset_path('loading.png') %>' alert='加载...' /></div>";
-  	    parentBody.append(modalBox);
   	  } else {
-  	      parentFrame.find('#modalbox').show();
   	  }
 
   	  parentBody.find('#loadingPic').css('top',function(){
@@ -2321,7 +2308,7 @@
         <%= f.select :sp_s_70, options_for_select(BaosongA.where("name = ?", @sp_bsb.sp_s_70).map { |b| [b.name, b.name, {'parentid' => b.rwlylx}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_70), {}, {:style => "width: 167px;"} %>  
 	<%= f.select :sp_s_67, options_for_select(@sp_s_67s.map { |s| [s.name, s.name, {'data-identifier' => s.identifier}] }.unshift(["请选择", ""]), @sp_bsb.sp_s_67), {}, {:style => "width: 183px;"} %>
          <% else%>
-	 <%= @sp_bsb.sp_s_70 %>、<%= @sp_bsb.sp_s_67 %>
+   <%= f.text_field :sp_s_70, :class => "inputText", :style => "width: 36%; height: 16px",:readonly =>"readonly"%>、<%= f.text_field :sp_s_67, :class => "inputText", :style => "width: 61%; height: 19px",:readonly =>"readonly"%>
 	<% end %>
 	</td>
         </tr>
@@ -2428,7 +2415,7 @@
           <td colspan="7"><%= f.text_field :sp_s_25, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
-          <td id="ybz" rowspan="7" colspan="3">预包装<br>产品*</td>
+          <td id="ybz" rowspan="8" colspan="3">预包装<br>产品*</td>
           <td colspan="5">样品规格*</td>
           <td colspan="8"><%= f.text_field :sp_s_26, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
           <td colspan="5">样品批号*</td>
@@ -2450,10 +2437,8 @@
         <td colspan="2"><%= f.text_field :sp_s_73, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         <td colspan="2">样品商标*</td>
         <td colspan="4"><%= f.text_field :sp_s_74, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
-        <td colspan="2">单价*</td>
-        <td colspan="3"><%= f.text_field :sp_s_204, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
-        <td colspan="4">是否出口*</td>
-        <td colspan="5"><%= f.select :sp_s_205, @options[205], {}, {:style => "width: 100%;"} %></td>
+        <td colspan="5">单价*</td>
+        <td colspan="9"><%= f.text_field :sp_s_204, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
           <td colspan="5">抽样基数/批量*</td>
@@ -2476,9 +2461,9 @@
             </span>
           </td>-->
           <td colspan="15" class="region2" style="border-right:none;">
-            <%= f.select :sp_s_202, {} %>
-            <%= f.select :sp_s_220, {} %>
-            <%= f.select :sp_s_221, {} %>
+            <%= f.select :sp_s_202, {}, class: 'form-control input-sm' %>
+            <%= f.select :sp_s_220, {}, class: 'form-control input-sm' %>
+            <%= f.select :sp_s_221, {}, class: 'form-control input-sm' %>
           </td>
           <td colspan="7"><%= f.text_field :sp_s_65, :class => "inputText", placeholder: '请填写详细地址', :style => "width: 100%; height: 19px" %></td>
         </tr>
