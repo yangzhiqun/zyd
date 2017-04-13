@@ -1,4 +1,4 @@
 #是否使用ca
 open_ca: false
 #打开
-is_open: false
+is_open: true

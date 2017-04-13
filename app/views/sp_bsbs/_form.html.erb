@@ -45,18 +45,25 @@
       }
   }
   // 按检测名称查找已记录的检测项目
-  function find_sp_data_by_name(name) {
-    if (spdata == null) return null;
-    var ret = null;
+  function find_sp_data_by_name_or_check_item(name, cki_id) {
+     if (spdata == null) return null;
+         var ret = null;
     $.each(spdata, function (i, data) {
-      if (data.spdata_0 == name) {
-        ret = data;
-        return false;
-      }
+          if (data.check_item_id && data.check_item_id == cki_id) {
+                 ret = data;
+                 return false;
+            }
     });
+   if(ret == null) {
+        $.each(spdata, function (i, data) {
+                if (data.spdata_0 == name) {
+                     ret = data;
+                     return false;
+                 }
+        });
+   }
     return ret;
-  }
-
+ }
   // 生成待签名的原文
   function generateCAsrc() {
     var sp_bsb = {spdata: []};
@@ -92,10 +99,15 @@
 
     $.each(items, function (index, item) {
       var copied = row.clone();
-      var o = find_sp_data_by_name(item.name);
+      var o = find_sp_data_by_name_or_check_item(item.name, item.id);
 
       copied.css('display', 'table-row');
       copied.find('span.idx').text(index + 1 + "、");
+      copied.find('.CK-ITEM-ID').attr({'value': item.id});
+      var item_name = item.name;
+        if(o && o.spdata_0 != item_name) {
+          item_name = o.spdata_0;
+        }
       copied.find('.JYXM').attr({'value': item.name, 'title': item.name}).val(item.name);
 
       if (!!item.JYYJ)
@@ -2274,6 +2286,7 @@
     </td>
     <td colspan="2" align="left">
       <span><input class="inputText SM" name="spdata[][spdata_17]" style="width: 70px;"></span>
+      <%= hidden_field_tag "spdata[][check_item_id]", nil, class: 'CK-ITEM-ID' %>
       <%= select_tag "spdata[][spdata_19]", '', {style: "display: none;", class: "JYYJJHB tb_select"} %>
       <%= select_tag "spdata[][spdata_20]", '', {style: "display: none;", class: "BZ tb_select"} %>
     </td>
@@ -2808,10 +2821,15 @@
         <div style="clear:both"></div>
         <div>
           <% if @sp_bsb.cyd_file_path.present? %>
-              <a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @sp_bsb.id %>/cyd"><i class="glyphicon glyphicon-download-alt"></i>抽样单电子版</a>
+          <!--    <a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @sp_bsb.id %>/cyd"><i class="glyphicon glyphicon-download-alt"></i>抽样单电子版</a>-->
+           <a class="btn btn-default btn-xs" href="<%= @sp_bsb.cyd_file_path %>" target = "_black"><i class="glyphicon glyphicon-download-alt"></i>抽样单电子版</a>
           <% end %>
           <% if @sp_bsb.cyjygzs_file_path.present? %>
+            <% if is_open_production? %>
               <a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @sp_bsb.id %>/cyjygzs"><i class="glyphicon glyphicon-download-alt"></i>抽样检验告知书电子版</a>
+            <% else %>
+              <a class="btn btn-default btn-xs" href="<%= @sp_bsb. cyjygzs_file_path%>" target = "_black"><i class="glyphicon glyphicon-download-alt"></i>抽样检验告知书电子版</a>
+            <% end %>
           <% end %>
           <hr>
         </div>

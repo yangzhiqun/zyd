@@ -675,10 +675,6 @@ end
     ActiveRecord::Base.transaction do
       respond_to do |format|
         @original_updated_at = nil
-        p "-"*300
-        p params[:sp_bsb][:sp_i_state].to_i
-        p session[:change_js]
-        p "-"*300
 
         if (params[:sp_bsb][:sp_i_state].to_i == 9 && current_user.is_admin?)
           @role_name = '秘书处直接修改'
@@ -715,7 +711,9 @@ end
           end
           # 给我查查同步抽样状态
           if [1,2,5,9].include? sp_i_state
-            result = JSON(Net::HTTP.get_response(URI.parse("http://fooddrug.service-alpha.wochacha.cn/openapi/statusedit?sample_code=#{params[:sp_bsb][:sp_s_16]}&status=#{sp_i_state}&reason_back=#{params[:sp_bsb][:sp_s_55]}")).body)
+            url = URI.encode("http://fooddrug.service-alpha.wochacha.cn/openapi/statusedit?sample_code=#{params[:sp_bsb][:sp_s_16]}&status=#{sp_i_state}&reason_back=#{params[:sp_bsb][:sp_s_55]}")
+            result = JSON(Net::HTTP.get_response(URI.parse(url)).body)
+            logger.error result
             if result["status"] != 0
               raise result["msg"]
             end
@@ -760,7 +758,9 @@ end
           if @sp_bsb.save
            if params[:sp_bsb][:sp_i_state].to_i == 9 && session[:change_js] == 16
              sp_i_state = (params[:sp_bsb][:sp_s_71].include?"不合格样品") || (params[:sp_bsb][:sp_s_71].include?"问题样品") ? 2 : 1
-             result = JSON(Net::HTTP.get_response(URI.parse("http://fooddrug.service-alpha.wochacha.cn/openapi/statusedit?sample_code=#{params[:sp_bsb][:sp_s_16]}&status=#{sp_i_state}&reason_back=#{params[:sp_bsb][:sp_s_55]}")).body)
+             url = URI.encode("http://fooddrug.service-alpha.wochacha.cn/openapi/statusedit?sample_code=#{params[:sp_bsb][:sp_s_16]}&status=#{sp_i_state}&reason_back=#{params[:sp_bsb][:sp_s_55]}")
+             result = JSON(Net::HTTP.get_response(URI.parse(url)).body)
+
              if result["status"] != 0
                raise result["msg"]
              end
