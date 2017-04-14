@@ -175,7 +175,7 @@ class TasksController < ApplicationController
       end
 
       # 强制清除已经部署的与当前有冲突的任务
-      TaskProvince.where("identifier = ? and sys_province_id = ? and #{destroy_category_level} = ?", params[:identifier], params[:prov], @plan[destroy_category_level]).destroy_all
+      TaskProvince.where("identifier = ? and sys_province_id = ? and (#{destroy_category_level} is NULL or #{destroy_category_level} = ?)", params[:identifier], params[:prov], @plan[destroy_category_level]).destroy_all
 
       if @plan.save
         render json: {status: 'OK', msg: "成功！"}
@@ -220,7 +220,7 @@ class TasksController < ApplicationController
       end
 
       # 强制清除已经部署的与当前有冲突的任务
-      TaskJgBsb.where("identifier = ? and sys_province_id = #{sys_province_id} and jg_bsb_id = ? and  #{destroy_category_level} = ?", params[:identifier], params[:jg_id], @plan[destroy_category_level]).destroy_all
+      TaskJgBsb.where("identifier = ? and sys_province_id = #{sys_province_id} and jg_bsb_id = ? and (#{destroy_category_level} is NULL or #{destroy_category_level} = ?)", params[:identifier], params[:jg_id], @plan[destroy_category_level]).destroy_all
 
       if @plan.save
         render json: {status: 'OK', msg: '成功！'}
@@ -290,7 +290,7 @@ class TasksController < ApplicationController
       end
 
       # 强制清除已经部署的与当前有冲突的任务
-      TaskJgBsb.where("identifier = ? and sys_province_id = ? and jg_bsb_id = ? and  #{destroy_category_level} = ?", params[:identifier], @province.id, params[:jg_id], @plan[destroy_category_level]).destroy_all
+      TaskJgBsb.where("identifier = ? and sys_province_id = ? and jg_bsb_id = ? and (#{destroy_category_level} is NULL or #{destroy_category_level} = ?)", params[:identifier], @province.id, params[:jg_id], @plan[destroy_category_level]).destroy_all
 
       if @plan.save
         render json: {status: 'OK', msg: "成功！"}
@@ -390,7 +390,11 @@ logger.error jg_names
         elsif is_county_level?
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::TMP_SAVE, :sp_s_2_1 => @rwly)
         else
+         if @jg_bsb.jg_type ==3 
+          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::TMP_SAVE, :sp_s_43 => jg_names)
+         else 
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::TMP_SAVE, :sp_s_43 => jg_names,:sp_s_35 => @jg_bsb.jg_name)
+         end
         end
       when 1
         if current_user.is_admin? || is_sheng?
@@ -400,7 +404,11 @@ logger.error jg_names
         elsif is_county_level?
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED], :sp_s_2_1 => @rwly)
         else 
-          @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED], :sp_s_43 => jg_names,:sp_s_35 => @jg_bsb.jg_name)
+         if @jg_bsb.jg_type ==3
+           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED], :sp_s_43 => jg_names)
+         else
+           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::DEPLOYED, ::PadSpBsb::Step::ACCEPTED, ::PadSpBsb::Step::ARRIVED], :sp_s_43 => jg_names,:sp_s_35 => @jg_bsb.jg_name)
+         end
         end
       when 2
         if current_user.is_admin? || is_sheng?
@@ -409,9 +417,13 @@ logger.error jg_names
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED], :sp_s_2_1 => @rwly)
         elsif is_county_level?
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED], :sp_s_2_1 => @rwly)
-        else 
+        else
+         if @jg_bsb.jg_type ==3 
+        @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED], :sp_s_43 => jg_names)
+        else
         @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => [::PadSpBsb::Step::FINISHED, ::PadSpBsb::Step::FAILED, ::PadSpBsb::Step::SAMPLE_ACCEPTED, ::PadSpBsb::Step::SAMPLE_REFUSED], :sp_s_43 => jg_names,:sp_s_35 => @jg_bsb.jg_name)
         end
+         end
       when 3
         if current_user.is_admin? || is_sheng?
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::SAMPLE_REFUSED)
