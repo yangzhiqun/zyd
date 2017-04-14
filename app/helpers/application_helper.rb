@@ -229,7 +229,10 @@ module ApplicationHelper
   def is_opne_ca
     YAML.load_file("config/use_ca.yml")["open_ca"]
   end
-
+	
+  def is_open_production?
+    YAML.load_file("config/use_ca.yml")["is_open"]
+  end
   def sp_bsb_fields
     return {
         :bsb => {
