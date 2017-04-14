@@ -1,4 +1,4 @@
-#encoding=UTF-8
+﻿#encoding=UTF-8
 require 'csv'
 require 'net/http'
 require 'food/download_data'
@@ -364,8 +364,6 @@ class SpBsbsController < ApplicationController
   # GET /sp_bsbs/new
   # GET /sp_bsbs/new.json
   def new
-   # @sp_com = SpCompanyInfo.where(qylx: 0);
-    @sp_pd = SpProductionInfo.where(qylx: 0);
     @province_plus = "省"
     if ["北京", "天津", "上海", "重庆"].include?(current_user.user_s_province)
       @province_plus = "市"
@@ -452,12 +450,10 @@ class SpBsbsController < ApplicationController
 
   # GET /sp_bsbs/1/edit
   def edit
-   # @sp_com = SpCompanyInfo.where(qylx: 0);
-    @sp_pd = SpProductionInfo.where(qylx: 0);
     if current_user.is_admin?
       @jg_bsbs = JgBsb.select('id, jg_name, jg_contacts, jg_tel, jg_email','jg_type').where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province')
-   else
-     if current_user.jg_bsb.jg_type==1
+ else
+    if current_user.jg_bsb.jg_type==1
      super_jg= JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
         jg_names=[]
         jg_names.push(current_user.jg_bsb_id)
@@ -507,6 +503,7 @@ class SpBsbsController < ApplicationController
     end
 
     @sp_data = Spdatum.where(sp_bsb_id: params[:id])
+if is_open_production?
     unless @sp_bsb.sp_s_70.blank?
       @sp_s_67s = BaosongB.where(baosong_a_id: BaosongA.find_by_name(@sp_bsb.sp_s_70).id)
     else
@@ -516,7 +513,12 @@ class SpBsbsController < ApplicationController
     if !@sp_s_67s.blank? and !@sp_bsb.sp_s_67.blank?
       @sp_s_67 = @sp_s_67s.where(name: @sp_bsb.sp_s_67).first
     end
+else
+  if !@sp_bsb.sp_s_67.blank?
+          @sp_s_67 = BaosongB.where(name: @sp_bsb.sp_s_67).first    
+    end
 
+end
     unless @sp_s_67.nil?
       @a_categories = ACategory.where(:identifier => @sp_s_67.identifier)
     else
@@ -684,13 +686,13 @@ class SpBsbsController < ApplicationController
           @sp_bsb.sp_i_backtimes = @sp_bsb.sp_i_backtimes.to_i + 1
           @sp_bsb.sp_s_reason = "#{@sp_bsb.sp_s_reason.to_s}#{Time.now.to_s},#{@role_name}:#{params[:sp_bsb].delete(:sp_s_55)}\n"
         end
-
-
         if (params[:sp_bsb][:sp_i_state].to_i == 3 or params[:sp_bsb][:sp_i_state].to_i == 1) and !params[:sp_bsb][:sp_s_55].blank?
-          if current_user.is_admin?
+          #sp_i_state = params[:sp_bsb][:sp_i_state].to_i
+          if current_user.is_admin? && @sp_bsb.sp_i_state == 9
             @role_name = '秘书处退回'
 
             @sp_bsb.sp_i_backtimes = @sp_bsb.sp_i_backtimes.to_i + 1 if @sp_bsb.sp_i_state == 9
+            sp_i_state = 5
 
           elsif session[:change_js] == 2
 
@@ -698,12 +700,24 @@ class SpBsbsController < ApplicationController
 
           elsif session[:change_js] == 6
             @role_name = "检测机构_填报检验数据_#{current_user.name}_退回"
+            #sp_i_state = 9
           elsif session[:change_js] == 7
             @role_name = "检测机构_#{current_user.name}_退回"
           elsif session[:change_js] == 8
             @role_name = "牵头机构_#{current_user.name}_退回"
           end
-
+          if @sp_bsb.sp_i_state == 2 || @sp_bsb.sp_i_state == 3
+            sp_i_state = 9 
+          end
+          # 给我查查同步抽样状态
+          if [1,2,5,9].include? sp_i_state
+            url = URI.encode("http://fooddrug.service-alpha.wochacha.cn/openapi/statusedit?sample_code=#{params[:sp_bsb][:sp_s_16]}&status=#{sp_i_state}&reason_back=#{params[:sp_bsb][:sp_s_55]}")
+            result = JSON(Net::HTTP.get_response(URI.parse(url)).body)
+            logger.error result
+            if result["status"] != 0
+              raise result["msg"]
+            end
+          end
           @sp_bsb.sp_i_jgback = @sp_bsb.sp_i_jgback.to_i + 1
           @sp_bsb.sp_s_reason = "#{@sp_bsb.sp_s_reason.to_s}#{Time.now.to_s},#{@role_name}:#{params[:sp_bsb].delete(:sp_s_55)}\n"
         end
@@ -742,6 +756,16 @@ class SpBsbsController < ApplicationController
         else
 
           if @sp_bsb.save
+           if params[:sp_bsb][:sp_i_state].to_i == 9 && session[:change_js] == 16
+             sp_i_state = (params[:sp_bsb][:sp_s_71].include?"不合格样品") || (params[:sp_bsb][:sp_s_71].include?"问题样品") ? 2 : 1
+             url = URI.encode("http://fooddrug.service-alpha.wochacha.cn/openapi/statusedit?sample_code=#{params[:sp_bsb][:sp_s_16]}&status=#{sp_i_state}&reason_back=#{params[:sp_bsb][:sp_s_55]}")
+             result = JSON(Net::HTTP.get_response(URI.parse(url)).body)
+
+             if result["status"] != 0
+               raise result["msg"]
+             end
+           end
+
             # 如果original 存在，则回退updated_at时间
             if @original_updated_at.present?
               SpBsb.record_timestamps = false
@@ -832,6 +856,11 @@ class SpBsbsController < ApplicationController
         end
       end
     end
+    rescue => e
+      respond_to do |format|
+        format.html { render action: "edit" }
+        format.json { render json: {status: '保存出错!', msg: "修改不成功! #{e.to_s}"} }
+      end
   end
 
   # DELETE /sp_bsbs/1
@@ -1314,9 +1343,8 @@ class SpBsbsController < ApplicationController
  
   private
   def sp_bsb_params
-
-    params.require(:sp_bsb).permit(:sp_proid,
-        :ca_key_status,:report_path, :sp_s_1, :sp_s_2, :sp_s_3, :sp_s_4, :sp_s_5, :sp_s_6, :sp_s_7, :sp_s_8, :sp_s_9, :sp_s_10, :sp_s_11, :sp_s_12, :sp_s_13, :sp_s_14, :sp_n_15, :sp_s_16, :sp_s_17, :sp_s_18, :sp_s_19, :sp_s_20, :sp_s_21, :sp_d_22, :sp_s_23, :sp_s_24, :sp_s_25, :sp_s_26, :sp_s_27, :sp_d_28, :sp_n_29, :sp_s_30, :sp_n_31, :sp_n_32, :sp_s_33, :sp_s_34, :sp_s_35, :sp_s_36, :sp_s_37, :sp_d_38, :sp_s_39, :sp_s_40, :sp_s_41, :sp_s_42, :sp_s_43, :sp_s_44, :sp_s_45, :sp_d_46, :sp_d_47, :sp_s_48, :sp_s_49, :sp_s_50, :sp_s_51, :sp_s_52, :sp_s_53, :sp_s_54, :sp_s_55, :sp_s_56, :sp_s_57, :sp_s_58, :sp_s_59, :sp_s_60, :sp_s_61, :sp_s_62, :sp_s_63, :sp_s_64, :sp_s_65, :sp_s_66, :sp_s_67, :sp_s_68, :sp_s_69, :sp_s_70, :sp_s_71, :sp_s_72, :sp_s_73, :sp_s_74, :sp_s_75, :sp_s_76, :sp_s_77, :sp_s_78, :sp_s_79, :sp_s_80, :sp_s_81, :sp_s_82, :sp_s_83, :sp_s_84, :sp_s_85, :sp_d_86, :sp_s_87, :sp_s_88, :user_id, :uid,
+    params.require(:sp_bsb).permit(
+        :ca_key_status,:report_path, :sp_s_1, :sp_s_2, :sp_s_3, :sp_s_4, :sp_s_5, :sp_s_6, :sp_s_7, :sp_s_8, :sp_s_9, :sp_s_10, :sp_s_11, :sp_s_12, :sp_s_13, :sp_s_14, :sp_n_15, :sp_s_16, :sp_s_17, :sp_s_18, :sp_s_19, :sp_s_20, :sp_s_21, :sp_d_22, :sp_s_23, :sp_s_24, :sp_s_25, :sp_s_26, :sp_s_27, :sp_d_28, :sp_n_29, :sp_s_30, :sp_n_31, :sp_n_32, :sp_s_33, :sp_s_34, :sp_s_35, :sp_s_36, :sp_s_37, :sp_d_38, :sp_s_39, :sp_s_40, :sp_s_41, :sp_s_42, :sp_s_43, :sp_s_44, :sp_s_45, :sp_d_46, :sp_d_47, :sp_s_48, :sp_s_49, :sp_s_50, :sp_s_51, :sp_s_52, :sp_s_53, :sp_s_54, :sp_s_55, :sp_s_56, :sp_s_57, :sp_s_58, :sp_s_59, :sp_s_60, :sp_s_61, :sp_s_62, :sp_s_63, :sp_s_64, :sp_s_65, :sp_s_66, :sp_s_67, :sp_s_68, :sp_s_69, :sp_s_70, :sp_s_71, :sp_s_72, :sp_s_73, :sp_s_74, :sp_s_75, :sp_s_76, :sp_s_77, :sp_s_78, :sp_s_79, :sp_s_80, :sp_s_81, :sp_s_82, :sp_s_83, :sp_s_84, :sp_s_85, :sp_d_86, :sp_s_87, :sp_s_88,:sp_s_89, :user_id, :uid,
         :sp_n_jcxcount,
         :cyd_file, :cyjygzs_file,
         :yydj_enabled_by_admin_at,
@@ -1666,8 +1694,9 @@ class SpBsbsController < ApplicationController
         :czb_reverted_flag,
         :czb_reverted_reason,
 	:synced, :ca_source, :ca_sign,
-	:inspection_basis, :decision_basis,:FX_jyyj_custom,:JDCJ_report_path,:FXJC_report_pah,:JDCJ_pdf_rules,:FXJC_pdf_rules
+	:inspection_basis, :decision_basis,:FX_jyyj_custom,:JDCJ_report_path,:FXJC_report_pah,:JDCJ_pdf_rules,:FXJC_pdf_rules,
+	:sp_s_sfjk,:sp_s_ycg,:sp_s_sfwtsc,:sp_s_wtsheng,
+	:sp_s_wtshi,:sp_s_wtxian,:sp_s_qymc,:sp_s_qydz,:sp_s_qs,:sp_s_lxr,:sp_s_tel,:sp_s_pic,:sp_s_sign
     )
   end
 end
-
