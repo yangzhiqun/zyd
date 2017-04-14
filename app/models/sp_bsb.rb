@@ -537,7 +537,20 @@ class SpBsb < ActiveRecord::Base
   def is_wtyp_czb_processing?(user)
     WtypCzbPart.where("sp_bsb_id = ? AND current_state IN (1, 2, 3) AND ((wtyp_czb_type = #{::WtypCzbPart::Type::LT} AND bcydw_sheng = ?) OR (wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND bsscqy_sheng = ?))", self.id, user.user_s_province, user.user_s_province).count > 0
   end
-
+  
+  def user_despatcher
+      @log=SpLog.where(sp_bsb_id: self.id, sp_i_state: 16).order('id asc').last
+      unless @log.nil?
+       @user = User.find(@log.user_id)
+       if !@user.tname.blank?
+           return "#{@user.tname}"
+       else
+          return ""
+       end
+      else
+        return ""
+      end
+  end
   def user_sign_for(state)
     @log = SpLog.where(sp_bsb_id: self.id, sp_i_state: state, ca_key_status: 0).last
     unless @log.nil?
