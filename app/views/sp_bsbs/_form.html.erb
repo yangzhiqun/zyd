@@ -683,7 +683,7 @@
       return;
     });
 
-    <% if [2, 4, 5].include? @sp_bsb["sp_i_state"] %>
+    <% if [4, 5].include? @sp_bsb["sp_i_state"] || (@sp_bsb.wochacha_task_id.present? && @sp_bsb["sp_i_state"] == 2) %>
     // [2, 4, 5] 步骤无法修改基本信息
     $("#province").attr("disabled", "disabled");
 
@@ -1768,7 +1768,7 @@
     $("#UserPwd").removeAttr("disabled");
      $("#keypic").removeAttr("disabled");
 		$('.ca-form *').removeAttr('disabled readonly');
-    <%elsif  [2,3,1].include?(@sp_bsb["sp_i_state"]) %>
+    <% elsif [3,1].include?(@sp_bsb["sp_i_state"]) || (@sp_bsb.wochacha_task_id.present? && @sp_bsb["sp_i_state"] == 2) %>
     <%@check=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,17,18,19,20,21,23,24,25,26,27,30,33,34,35,36,37,39,40,41,42,61,62,63,64,65,67,68,70,75,76,211,212,213,208,206,222,204,73,74,72,215,201,203,202,220,221]%>
        <%@check.each do |i|%>
         $("#sp_bsb_sp_s_" +<%=i%>).attr("disabled", "disabled");
