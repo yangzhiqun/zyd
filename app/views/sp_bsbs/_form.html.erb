@@ -207,6 +207,8 @@
 
       if (o != null && is_previous_data()) {
         copied.find('.JYYJ').attr({'value': o.spdata_3, 'title': o.spdata_3}).val(o.spdata_3);
+        copied.find('.JYYJJHB').attr({'value': o.spdata_19}).val(o.spdata_19);
+        copied.find('.BZ').attr({'value': o.spdata_20}).val(o.spdata_20);
         copied.find('.PDYJ').attr({'value': o.spdata_4, 'title': o.spdata_4}).val(o.spdata_4);
         copied.find('.BZFFJCX').attr({'value': o.spdata_5, 'title': o.spdata_5}).val(o.spdata_5);
         copied.find('.BZJCXDW').attr({'value': o.spdata_6, 'title': o.spdata_6}).val(o.spdata_6);
@@ -683,7 +685,7 @@
       return;
     });
 
-    <% if [2, 4, 5].include? @sp_bsb["sp_i_state"] %>
+    <% if [2, 4, 5].include? @sp_bsb["sp_i_state"] && @sp_bsb.wochacha_task_id.present? %>
     // [2, 4, 5] 步骤无法修改基本信息
     $("#province").attr("disabled", "disabled");
 
@@ -1768,7 +1770,7 @@
     $("#UserPwd").removeAttr("disabled");
      $("#keypic").removeAttr("disabled");
 		$('.ca-form *').removeAttr('disabled readonly');
-    <%elsif  [2,3,1].include?(@sp_bsb["sp_i_state"]) %>
+    <% elsif [3,1,2].include?(@sp_bsb["sp_i_state"]) && @sp_bsb.wochacha_task_id.present? %>
     <%@check=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,17,18,19,20,21,23,24,25,26,27,30,33,34,35,36,37,39,40,41,42,61,62,63,64,65,67,68,70,75,76,211,212,213,208,206,222,204,73,74,72,215,201,203,202,220,221]%>
        <%@check.each do |i|%>
         $("#sp_bsb_sp_s_" +<%=i%>).attr("disabled", "disabled");
@@ -2606,7 +2608,7 @@
               <td colspan="3">报告日期*</td>
               <td colspan="8"><%= f.text_field :sp_d_47, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
               <td colspan="4">报告签发人*</td>
-              <td colspan="6"><%= f.text_field :sp_s_48, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+              <td colspan="6"><%= @sp_bsb.user_despatcher %></td>
           <% elsif [5].include? @sp_bsb["sp_i_state"] %>
               <td colspan="16"><%= f.text_field :sp_d_46, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
               <td colspan="3">报告日期*</td>
