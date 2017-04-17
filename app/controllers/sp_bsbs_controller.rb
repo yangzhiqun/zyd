@@ -710,7 +710,7 @@ end
             sp_i_state = 9 
           end
           # 给我查查同步抽样状态
-          if [1,2,5,9].include? sp_i_state
+           if [1,2,5,9].include? sp_i_state && @sp_bsb.wochacha_task_id.present?
             url = URI.encode("http://fooddrug.service-alpha.wochacha.cn/openapi/statusedit?sample_code=#{params[:sp_bsb][:sp_s_16]}&status=#{sp_i_state}&reason_back=#{params[:sp_bsb][:sp_s_55]}")
             result = JSON(Net::HTTP.get_response(URI.parse(url)).body)
             logger.error result
@@ -756,7 +756,7 @@ end
         else
 
           if @sp_bsb.save
-           if params[:sp_bsb][:sp_i_state].to_i == 9 && session[:change_js] == 16
+           if  params[:sp_bsb][:sp_i_state].to_i == 9 && session[:change_js] == 16 && @sp_bsb.wochacha_task_id.present?
              sp_i_state = (params[:sp_bsb][:sp_s_71].include?"不合格样品") || (params[:sp_bsb][:sp_s_71].include?"问题样品") ? 2 : 1
              url = URI.encode("http://fooddrug.service-alpha.wochacha.cn/openapi/statusedit?sample_code=#{params[:sp_bsb][:sp_s_16]}&status=#{sp_i_state}&reason_back=#{params[:sp_bsb][:sp_s_55]}")
              result = JSON(Net::HTTP.get_response(URI.parse(url)).body)
