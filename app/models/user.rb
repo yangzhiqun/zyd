@@ -612,7 +612,7 @@ class User < ActiveRecord::Base
  end
 
   def jgname
-    JgBsbName.where(jg_bsb_id: self.jg_bsb.id).order("updated_at desc").last
+    JgBsbName.where(jg_bsb_id: self.jg_bsb.id).order("updated_at asc").last
   end
   private
   # def password_non_blank
