@@ -2823,11 +2823,14 @@
         <div style="clear:both"></div>
         <div>
           <% if @sp_bsb.cyd_file_path.present? %>
-          <!--    <a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @sp_bsb.id %>/cyd"><i class="glyphicon glyphicon-download-alt"></i>抽样单电子版</a>-->
-           <a class="btn btn-default btn-xs" href="<%= @sp_bsb.cyd_file_path %>" target = "_black"><i class="glyphicon glyphicon-download-alt"></i>抽样单电子版</a>
+            <% if is_open_production? && @sp_bsb.wochacha_task_id.blank? %>
+              <a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @sp_bsb.id %>/cyd"><i class="glyphicon glyphicon-download-alt"></i>抽样单电子版</a>
+            <% else %>
+              <a class="btn btn-default btn-xs" href="<%= @sp_bsb.cyd_file_path %>" target = "_black"><i class="glyphicon glyphicon-download-alt"></i>抽样单电子版</a>
+            <% end %>
           <% end %>
           <% if @sp_bsb.cyjygzs_file_path.present? %>
-            <% if is_open_production? %>
+            <% if is_open_production? && @sp_bsb.wochacha_task_id.blank? %>
               <a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @sp_bsb.id %>/cyjygzs"><i class="glyphicon glyphicon-download-alt"></i>抽样检验告知书电子版</a>
             <% else %>
               <a class="btn btn-default btn-xs" href="<%= @sp_bsb. cyjygzs_file_path%>" target = "_black"><i class="glyphicon glyphicon-download-alt"></i>抽样检验告知书电子版</a>
