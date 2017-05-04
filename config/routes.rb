@@ -18,6 +18,13 @@ Rails.application.routes.draw do
   post 'ca_helper/client_sign_pdf'
   get "ca_helper/verify_report"
   post "ca_helper/verify_report"
+  resources :ca_helper do
+    collection do
+      get 'by_ca_info'
+      get 'print_pdf'
+    end
+  end
+
   get "beica_sso" => 'ca_helper#sso'
 	get "synchronize_info" => "ca_helper#account_sync"
   resources :xsbg_tt_data
@@ -275,6 +282,12 @@ Rails.application.routes.draw do
 			post "sp_bsbs/sync_sp_bsb"
 			post "spdata/sync_spdaum"
 			post "spdata/transfer"
+    end
+
+    # 我查查
+    namespace 'v3' do
+      post 'openapi/sample_add_or_edit' => 'openapi#sample_add_or_edit'
+      get  'user/login'
     end
   end
 

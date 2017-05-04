@@ -125,10 +125,12 @@ module ApplicationHelper
 			jg_type = current_user.jg_bsb.jg_type
 			super_jg = current_user.jg_bsb.jg_bsb_supers
 			super_jg.each{ |jg| jg_arr << jg.super_jg_bsb.jg_name}	
-			# 如果是监管部门显示自己
+			# 如果是监管部门显示自己跟上级局
 			if jg_type == 1
         jg_arr = []
 				jg_arr << current_user.jg_bsb.jg_name
+        super_jg = current_user.jg_bsb.jg_bsb_supers
+        super_jg.each{ |jg| jg_arr << jg.super_jg_bsb.jg_name}
 			end
 		end 
 		return jg_arr
@@ -229,7 +231,10 @@ module ApplicationHelper
   def is_opne_ca
     YAML.load_file("config/use_ca.yml")["open_ca"]
   end
-
+	
+  def is_open_production?
+    YAML.load_file("config/use_ca.yml")["is_open"]
+  end
   def sp_bsb_fields
     return {
         :bsb => {

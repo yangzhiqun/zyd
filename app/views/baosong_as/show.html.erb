@@ -60,9 +60,9 @@
           <td style="word-wrap: break-word;"><%= bs.identifier %></td>
           <td>
             <%= link_to "查看", bs, :class => "btn btn-xs btn-primary" %>
-            <%= link_to "编辑", "/baosong_bs/#{bs.id}/edit", :class => "btn btn-xs btn-primary" %>
+            <%= link_to "编辑", "/baosong_bs/#{bs.id}/edit", :class => "btn btn-xs btn-primary" if is_open_production? %>
             <% if current_user.is_admin? or is_sheng? %>
-            <%= link_to '删除', bs, :class => "btn btn-xs btn-danger", method: :delete, data: {confirm: '确定删除吗？此操作相当危险,可能导致报送表取值错误,删除前请确认承受风险的能力.'} %>
+            <%= link_to '删除', bs, :class => "btn btn-xs btn-danger", method: :delete, data: {confirm: '确定删除吗？此操作相当危险,可能导致报送表取值错误,删除前请确认承受风险的能力.'} if is_open_production? %>
             <% end %>
           </td>
         </tr>
@@ -94,7 +94,7 @@
         </div>
         <br>
         <div class="actions">
-          <%= f.submit "创建", :class => "btn btn-sm btn-primary" %>
+          <%= f.submit "创建", :class => "btn btn-sm btn-primary" if is_open_production? %>
         </div>
       <% end %>
     </div>
