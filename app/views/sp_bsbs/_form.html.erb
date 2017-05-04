@@ -2602,14 +2602,14 @@
               <td colspan="3">报告日期*</td>
               <td colspan="8"><%= f.text_field :sp_d_47, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
               <td colspan="4">报告签发人*</td>
-              <td colspan="6"><%= f.text_field :sp_s_48, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
-          <% elsif [9].include? @sp_bsb["sp_i_state"] %>
+                 <td colspan="6"><%= @sp_bsb.user_despatcher %></td>
+             <% elsif [9].include? @sp_bsb["sp_i_state"] %>
               <td colspan="6"><%= f.text_field :sp_d_46, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
               <td colspan="3">报告日期*</td>
               <td colspan="8"><%= f.text_field :sp_d_47, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
               <td colspan="4">报告签发人*</td>
               <td colspan="6"><%= @sp_bsb.user_despatcher %></td>
-          <% elsif [5].include? @sp_bsb["sp_i_state"] %>
+              <% elsif [5].include? @sp_bsb["sp_i_state"] %>
               <td colspan="16"><%= f.text_field :sp_d_46, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
               <td colspan="3">报告日期*</td>
               <td colspan="8"><%= f.text_field :sp_d_47, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
