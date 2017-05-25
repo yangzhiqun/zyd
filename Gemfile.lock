@@ -98,6 +98,7 @@ GEM
       activerecord (>= 2.3)
       ruby2ruby (~> 2.0)
       ruby_parser (~> 3.7)
+    hirb (0.7.3)
     httpi (2.4.1)
       rack
     i18n (0.7.0)
@@ -284,6 +285,7 @@ DEPENDENCIES
   devise
   devise-i18n
   hairtrigger
+  hirb
   importex
   jbuilder (~> 2.0)
   jquery-fileupload-rails

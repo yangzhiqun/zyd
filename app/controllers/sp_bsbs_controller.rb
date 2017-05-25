@@ -710,7 +710,7 @@ end
             sp_i_state = 9 
           end
           # 给我查查同步抽样状态
-           if ([1,2,5,9].include? @sp_bsb.sp_i_state) && @sp_bsb.wochacha_task_id.present?
+           if ([1,2,5,9].include? @sp_bsb.sp_i_state) && @sp_bsb.wochacha_task_id.present? && !([7,11].include? session[:change_js])
             url = URI.encode("https://openapi.wochacha.com/fooddrug/openapi/statusedit?sample_code=#{params[:sp_bsb][:sp_s_16]}&status=#{sp_i_state}&reason_back=#{params[:sp_bsb][:sp_s_55]}")
             result = JSON(Net::HTTP.get_response(URI.parse(url)).body)
             logger.error result

@@ -8,6 +8,12 @@ class Api::V3::OpenapiController < ApplicationController
       @logger.info params
       @logger.info "-"*100
 			bsb = SpBsb.find_by_sp_s_16(params[:subinfo][:sp_s_16])
+      if bsb.present?  
+        if ([3,4,5,6,9,16].include? bsb.sp_i_state) || bsb.wochacha_task_id.blank?
+          render json: { status: 1, msg: "老数据或者状态错误"}
+          return
+        end
+      end
 			if bsb.nil?
 				bsb = SpBsb.new(sp_s_16: params[:baseinfo][:sample_code])
       end
