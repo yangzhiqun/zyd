@@ -58,6 +58,14 @@
 		super
    end
 
+   def fsnip_sso
+     if session['cas'].present?
+       render layout: 'blank'
+     else
+       render layout: 'blank', status: 401
+     end
+   end
+
   protected
 
   # If you have extra params to permit, append them to the sanitizer.

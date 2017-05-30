@@ -288,6 +288,9 @@ Rails.application.routes.draw do
     namespace 'v3' do
       post 'openapi/sample_add_or_edit' => 'openapi#sample_add_or_edit'
       get  'user/login'
+      #食安云
+      post 'interface_user/new_user' => 'interface_user#new_user'
+      post 'interface_region/new_region' => 'interface_region#new_region'
     end
   end
 

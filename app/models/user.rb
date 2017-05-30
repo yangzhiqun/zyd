@@ -563,6 +563,23 @@ class User < ActiveRecord::Base
     return true
   end
 
+  def api_generate_uid
+    if self.province.nil?
+      return {"type" => false, "msg" => "用户省份不存在"}
+    end
+    if self.jg_bsb.nil?
+      return {"type" => false, "msg" =>"用户机构不存在"}
+    end
+    uid = "#{'%.2i' % self.province.code.to_i}#{'%.2i' % self.jg_bsb.code.to_i }"
+    existed_ids = User.where('uid LIKE ?', "#{uid}%").map { |u| u.uid[4..7].to_i }
+    available_ids = (1..99999).to_a - existed_ids
+    if available_ids.blank?
+      return {"type" => false, "msg" =>"满员"}
+    end
+    uid = "#{uid}#{'%.5i' % available_ids.first.to_i }"
+    return {"type" => true, "msg" => uid}
+  end
+
   API_URL = 'http://gw.api.taobao.com/router/rest?%s'
   TMPL_CODE = {
       SFYZ: 'SMS_6700288',

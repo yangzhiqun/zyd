@@ -117,8 +117,10 @@
                 <input type="hidden" class="form-control input-sm" placeholder="编号">
                 <input type="hidden" name="type" value="0">
                 <% if current_user.is_super? && is_open_production? %>
-                  <button class="submit btn btn-xs btn-primary" id="a1">添加</button>
-                  <button class="btn btn-xs btn-default" type="reset" id="a2">重置</button>
+                  <% if is_open_user_jg %>
+                    <button class="submit btn btn-xs btn-primary" id="a1">添加</button>
+                    <button class="btn btn-xs btn-default" type="reset" id="a2">重置</button>
+                  <% end %>
                 <% else %>
                 <br>
                 <% end %>
@@ -145,12 +147,14 @@
                 <input style="margin-bottom: 10px;" type="text" class="form-control input-sm" placeholder="别名">
                 <input type="hidden" class="form-control input-sm" placeholder="编号">
                 <input type="hidden" name="type" value="1">
-               <% if current_user.is_super? && is_open_production? %>
-                <button class="submit btn btn-xs btn-primary" id="b1">添加</button>
-                <button class="btn btn-xs btn-default" type="reset" id="b2">重置</button>
-               <%else%>
-               <br>
-               <%end%>
+                <% if current_user.is_super? && is_open_production? %>
+                  <% if is_open_user_jg %>
+                    <button class="submit btn btn-xs btn-primary" id="b1">添加</button>
+                    <button class="btn btn-xs btn-default" type="reset" id="b2">重置</button>
+                  <% end %>
+                <%else%>
+                  <br>
+                <%end%>
               </form>
             </div>
           </div>
@@ -169,8 +173,10 @@
                 <input type="hidden" class="form-control input-sm" placeholder="编号">
                 <input type="hidden" name="type" value="2">
                 <% if current_user.is_super? && is_open_production? %>
-                <button class="submit btn btn-xs btn-primary" id="c1">添加</button>
-                <button class="btn btn-xs btn-default" type="reset">重置</button>
+                  <% if is_open_user_jg %>
+                    <button class="submit btn btn-xs btn-primary" id="c1">添加</button>
+                    <button class="btn btn-xs btn-default" type="reset">重置</button>
+                  <% end %>
                 <%else%>
                   <br>
                 <%end%>

@@ -243,6 +243,11 @@ module ApplicationHelper
   def is_open_production?
     YAML.load_file("config/use_ca.yml")["is_open"]
   end
+
+  def is_open_user_jg
+    YAML.load_file("config/use_ca.yml")["is_user_jg"]
+  end
+
   def sp_bsb_fields
     return {
         :bsb => {
