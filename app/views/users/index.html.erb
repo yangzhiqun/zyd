@@ -118,9 +118,11 @@
               <td><%= user.prov_city == "-请选择-" ? "" : user.prov_city %></td>
               <td><%= user.last_sign_in_at %></td>
               <td>
-                <%= link_to '修改', edit_user_path(user), :class => "btn btn-info btn-xs", style: 'margin-bottom: 5px;' %>
-                <% if current_user.name.eql?('superadmin') or is_shengshi? %>
-                    <%= link_to '删除', user, :method => :delete, :confirm => "确认删除?", :class => "btn btn-danger btn-xs" %>
+                <% if is_open_user_jg %>
+                  <%= link_to '修改', edit_user_path(user), :class => "btn btn-info btn-xs", style: 'margin-bottom: 5px;' %>
+                  <% if current_user.name.eql?('superadmin') or is_shengshi? %>
+                      <%= link_to '删除', user, :method => :delete, :confirm => "确认删除?", :class => "btn btn-danger btn-xs" %>
+                  <% end %>
                 <% end %>
               </td>
             </tr>
@@ -136,7 +138,9 @@
       <div class="panel panel-default">
         <div class="panel-heading">添加用户</div>
         <div class="panel-body">
-          <%= link_to '新建用户', new_user_path, :class => 'btn btn-sm btn-success' %>
+          <% if is_open_user_jg %>
+            <%= link_to '新建用户', new_user_path, :class => 'btn btn-sm btn-success' %>
+          <% end %>
           <a href="/users_export_user_info" class="btn btn-sm btn-success" data-method="post">用户信息下载</a>
           <hr>
         <!--  <div class="well well-sm">

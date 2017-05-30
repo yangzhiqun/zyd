@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   devise_for :users, controllers: {sessions: 'users/sessions', registrations: 'users/registrations'}
 
   match 'update-account' => 'users#update_account', via: [:get, :post]
+  match 'fsnip/sso' => 'ca_helper#fsnip_sso', via: [:get, :post]
 
   resources :jg_bsb_stamps do
     get 'cover'
@@ -288,6 +289,11 @@ Rails.application.routes.draw do
     namespace 'v3' do
       post 'openapi/sample_add_or_edit' => 'openapi#sample_add_or_edit'
       get  'user/login'
+      #食安云
+      post 'interface_user/new_user' => 'interface_user#new_user'
+      post 'interface_user/update_user_uuid' => 'interface_user#update_user_uuid'
+      post 'interface_jg/handing_jg_bsb' => 'interface_jg#handing_jg_bsb'
+      post 'interface_region/new_region' => 'interface_region#new_region'
     end
   end
 
@@ -384,6 +390,7 @@ Rails.application.routes.draw do
 
   post "admin/login"
   get "admin/login"
+  
 
   post '/ca_login' => 'admin#ca_login'
   post '/ca_logout' => 'admin#logout'

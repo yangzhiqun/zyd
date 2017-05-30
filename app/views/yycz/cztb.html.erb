@@ -110,7 +110,7 @@ $(function(){
       </td>
       <td colspan="4">任务来源</td>
       <td colspan="6">
-        <%= select_tag :rwly, options_for_select([["请选择", ""], ["局本级", 1], ["中央转移地方", 2]], params[:rwly].to_i), :class => "form-control" %>
+        <%= select_tag "rwly", options_for_select(all_departments.map { |name| [name,name, {'parentid' => name}] }.unshift(["请选择", ""]), params[:rwly]), :style => "width: 185px;",:class => 'form-control input-sm' %>
       </td>
     </tr>
     <tr>
