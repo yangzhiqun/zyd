@@ -5,6 +5,9 @@
 </style>
 
 <script type="text/javascript">
+  //<% if is_open_user_jg %>
+   //window.location.replace("http://gcsso.fsnip.com");
+  //<% end %>
   <% if is_opne_ca %>
     strServerSignedData = "<%= @ca_login_info[:signed].split('#')[0] %>";
     strServerCert = "<%= @ca_login_info[:certificate] %>";
@@ -153,7 +156,7 @@
 
           <div class="form-group">
             <a href="#">忘记密码？</a>
-           <!-- <a href="/ca_helper/verify_report.html" class="login-style-switcher">报告有效性在线验证</a><br>-->
+            <a href="http://www.51jcfood.com/" class="login-style-switcher">报告有效性在线验证</a><br>
           </div>
 
           <div class="actions">

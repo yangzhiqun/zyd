@@ -487,12 +487,14 @@ class WtypCzbPart < ActiveRecord::Base
     end
 
     unless params[:rwly].blank?
-      case params[:rwly].to_i
-        when 1
-          wtyp_czbs = wtyp_czbs.where('cjbh LIKE ?', '____00%')
-        when 2
-          wtyp_czbs = wtyp_czbs.where('cjbh NOT LIKE ?', '____00%')
-      end
+      #case params[:rwly].to_i
+      #  when 1
+      #    wtyp_czbs = wtyp_czbs.where('cjbh LIKE ?', '____00%')
+      #  when 2
+      #    wtyp_czbs = wtyp_czbs.where('cjbh NOT LIKE ?', '____00%')
+      #end
+      cjbh_arr = SpBsb.where("sp_s_2_1 = ?",params[:rwly]).pluck(:sp_s_16)
+      wtyp_czbs = wtyp_czbs.where("cjbh in (?)",cjbh_arr)
     end
 
     params[:bgfl] = 'QB' if params[:bgfl].blank?

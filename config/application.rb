@@ -34,9 +34,9 @@ module DemoyjsRuby2X
 	:client_id       => "c8a47ee3aa4540dd3168f5151f3c1b754febe9dadf848895ef937eb04468302b",
 	:client_secret   => "3999b84e37789216440f39882437a89499aded574f18c721a666eb1d08a6c1b0",
 	:api_base        => "http://qzj.cfda.pub:8800/",
-        :ip              => "61.178.55.42",
+        :ip              => "113.207.120.167",
         :port            => "13001",
-	:appid           => "932bae8aab4c4b279ff086bd0e321764",
+	:appid           => "79116d1fd4744049a46251f32782dd9d",
         :ca_server_cert  => "MIIBwTCCAWagAwIBAgIJIBA0AAAAFX6sMAoGCCqBHM9VAYN1MD4xCzAJBgNVBAYMAkNOMQ0wCwYDVQQKDARCSkNBMQ8wDQYDVQQLDAZQRVJTT04xDzANBgNVBAMMBk1TU1BDQTAeFw0xNzAzMDYwNTA5MjZaFw0yMjAzMDYwNjA5MjZaMDwxCzAJBgNVBAYMAkNOMS0wKwYDVQQDDCRLRVlfODU2MTkxYjk0ODU3NDQ3ZmI4OGZkMDljYzQ4MzQyM2IwWTATBgcqhkjOPQIBBggqgRzPVQGCLQNCAAS5JKsfdSgnNJvH88CSYx6t/Wd0ZnT96yOE188F0xh7IH+eoK3DgE1wKRn6//+NmlxvpRpLwl4Nmoag3m3Yho/wo08wTTAfBgNVHSMEGDAWgBRzoYUmnPPjwFlc369eozVd+6nwXzAdBgNVHQ4EFgQUpjyF1IZKL7XAuM3ykXpHarMGM/cwCwYDVR0PBAQDAgeAMAoGCCqBHM9VAYN1A0kAMEYCIQDKIgCyaipH+yXV1ltfXuni3M5zy3PLuhFNUlEVJXlIGQIhAIQmQqL7NfzDUi4KpnMjghe+bHjqbcySCbvEUJEE1xTp"
 		    }
 
@@ -47,5 +47,6 @@ module DemoyjsRuby2X
     config.action_mailer.delivery_method = :sendmail
     config.action_mailer.perform_deliveries = true
     config.action_mailer.raise_delivery_errors = true
+    config.rack_cas.server_url = 'http://gcsso.fsnip.com'
   end
 end

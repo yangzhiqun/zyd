@@ -123,9 +123,8 @@
 		zs=Rails.application.config.site[:ca_server_cert]
 	       signDate =Rails.root.join('tmp', "signData.txt")
 	       cmd = "java -jar #{Rails.root.join('bin', 'mssg-sign-client-1.0.7-SNAPSHOT-clientAll.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} #{appid} #{type} #{random_content} #{keyID}  #{zs} #{signDate}"
-               Rails.logger.error cmd
-	       result = `#{cmd}`
-	        Rails.logger.error result
+               result = `#{cmd}`
+               Rails.logger.error result
                signDate =File.read(Rails.root.join('tmp', "signData.txt"))
 	     end
 	    # 返回值: [随机数, 服务器证书, 签名值]

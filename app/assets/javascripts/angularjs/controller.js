@@ -177,9 +177,12 @@ app.controller('PlanMakerCtrl', ['$scope', '$http', 'BaosongB', '$q', function (
             item.name = i.name;
             item.JGDW = i.JGDW;
             item.PDYJ = i.PDYJ.join("#");
-
+ 
             item.JYYJ = _.uniq(_.map(i.options, function (o) {
                 return o.JYYJ
+            })).join("#");
+            item.JYYJJHB = _.uniq(_.map(i.options, function (o) {
+                 return o.JYYJJHB
             })).join("#");
             item.BZFFJCX = _.uniq(_.map(i.options, function (o) {
                 return o.BZFFJCX
@@ -220,6 +223,14 @@ app.controller('PlanMakerCtrl', ['$scope', '$http', 'BaosongB', '$q', function (
                 if (max_$_count < item.JYYJ.length) {
                     max_$_count = item.JYYJ.length;
                 }
+            }
+
+            if (!!item.JYYJJHB) {
+              item.JYYJJHB = item.JYYJJHB.split("#")
+
+              if (max_$_count < item.JYYJJHB.length) {
+                max_$_count = item.JYYJJHB.length;
+              }
             }
 
             if (!!item.BZFFJCX) {
@@ -277,6 +288,12 @@ app.controller('PlanMakerCtrl', ['$scope', '$http', 'BaosongB', '$q', function (
                     option.JYYJ = item.JYYJ[n];
                 } else {
                     option.JYYJ = _.last(item.JYYJ);
+                }
+               
+                if (!!item.JYYJJHB[n]) {
+                  option.JYYJJHB = item.JYYJJHB[n];
+                } else {
+                  option.JYYJJHB = _.last(item.JYYJJHB);
                 }
 
                 if (!!item.BZFFJCX[n]) {

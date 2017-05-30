@@ -2602,14 +2602,14 @@
               <td colspan="3">报告日期*</td>
               <td colspan="8"><%= f.text_field :sp_d_47, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
               <td colspan="4">报告签发人*</td>
-              <td colspan="6"><%= f.text_field :sp_s_48, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
-          <% elsif [9].include? @sp_bsb["sp_i_state"] %>
+                 <td colspan="6"><%= @sp_bsb.user_despatcher %></td>
+             <% elsif [9].include? @sp_bsb["sp_i_state"] %>
               <td colspan="6"><%= f.text_field :sp_d_46, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
               <td colspan="3">报告日期*</td>
               <td colspan="8"><%= f.text_field :sp_d_47, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
               <td colspan="4">报告签发人*</td>
               <td colspan="6"><%= @sp_bsb.user_despatcher %></td>
-          <% elsif [5].include? @sp_bsb["sp_i_state"] %>
+              <% elsif [5].include? @sp_bsb["sp_i_state"] %>
               <td colspan="16"><%= f.text_field :sp_d_46, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
               <td colspan="3">报告日期*</td>
               <td colspan="8"><%= f.text_field :sp_d_47, :class => "inputText", :style => "width: 100%; height: 19px", :readonly => "readonly" %></td>
@@ -2864,6 +2864,12 @@
       <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<4&&current_user.user_d_authority_1==1 %>
           <%= f.submit(vaule="临时保存", options={"id" => "save_1", :class => "btn btn-xs btn-default"}) %>
           <%= f.submit(vaule="检测数据提交入库", options={"id" => "submit2", :class => "btn btn-xs btn-success"}) %>
+          <% if @sp_bsb.is_jiandu? %>
+             <a class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf?type=JYBG" target="_blank">监督抽检报告</a>
+          <% end %>
+          <% if @sp_bsb.is_jiance? %>
+             <a class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf?type=FXBG" target="_blank" >风险监测报告</a>
+          <% end %>
           <% if @sp_bsb.sp_i_state == 2 %>
               <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
 					<% end %>
