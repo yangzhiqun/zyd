@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170525174615) do
+ActiveRecord::Schema.define(version: 20170530133342) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -299,47 +299,37 @@ ActiveRecord::Schema.define(version: 20170525174615) do
     t.string   "scopes",            limit: 255
   end
 
+  add_index "oauth_access_grants", ["application_id"], name: "fk_rails_b4b53e07b8", using: :btree
   add_index "oauth_access_grants", ["token"], name: "index_oauth_access_grants_on_token", unique: true, using: :btree
 
   create_table "oauth_access_tokens", force: :cascade do |t|
-    t.integer  "resource_owner_id", limit: 4
-    t.integer  "application_id",    limit: 4
-    t.string   "token",             limit: 255, null: false
-    t.string   "refresh_token",     limit: 255
-    t.integer  "expires_in",        limit: 4
+    t.integer  "resource_owner_id",      limit: 4
+    t.integer  "application_id",         limit: 4
+    t.string   "token",                  limit: 255,              null: false
+    t.string   "refresh_token",          limit: 255
+    t.integer  "expires_in",             limit: 4
     t.datetime "revoked_at"
-    t.datetime "created_at",                    null: false
-    t.string   "scopes",            limit: 255
+    t.datetime "created_at",                                      null: false
+    t.string   "scopes",                 limit: 255
+    t.string   "previous_refresh_token", limit: 255, default: "", null: false
   end
 
+  add_index "oauth_access_tokens", ["application_id"], name: "fk_rails_732cb83ab7", using: :btree
   add_index "oauth_access_tokens", ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true, using: :btree
   add_index "oauth_access_tokens", ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id", using: :btree
   add_index "oauth_access_tokens", ["token"], name: "index_oauth_access_tokens_on_token", unique: true, using: :btree
 
   create_table "oauth_applications", force: :cascade do |t|
-    t.string   "name",         limit: 255,                   null: false
-    t.string   "uid",          limit: 255,                   null: false
-    t.string   "secret",       limit: 255,                   null: false
-    t.text     "redirect_uri", limit: 65535,                 null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "user_id",      limit: 4
-    t.string   "prov",         limit: 255
-    t.string   "jg",           limit: 255
-    t.boolean  "auto_submit",                default: false
+    t.string   "name",         limit: 255,                null: false
+    t.string   "uid",          limit: 255,                null: false
+    t.string   "secret",       limit: 255,                null: false
+    t.text     "redirect_uri", limit: 65535,              null: false
+    t.string   "scopes",       limit: 255,   default: "", null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
   end
 
   add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true, using: :btree
-
-  create_table "old_sys_provinces", force: :cascade do |t|
-    t.string   "name",       limit: 255
-    t.string   "note",       limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-    t.string   "code",       limit: 255
-    t.string   "level",      limit: 20
-    t.string   "fullname",   limit: 50
-  end
 
   create_table "pad_ca_signs", force: :cascade do |t|
     t.string   "sp_s_16",       limit: 255
@@ -789,7 +779,7 @@ ActiveRecord::Schema.define(version: 20170525174615) do
     t.string   "sp_s_4",                   limit: 60
     t.string   "sp_s_5",                   limit: 60
     t.string   "sp_s_6",                   limit: 60
-    t.string   "sp_s_7",                   limit: 255
+    t.text     "sp_s_7",                   limit: 65535
     t.string   "sp_s_8",                   limit: 60
     t.string   "sp_s_9",                   limit: 60
     t.string   "sp_s_10",                  limit: 60
@@ -1498,7 +1488,7 @@ ActiveRecord::Schema.define(version: 20170525174615) do
     t.datetime "updated_at",             null: false
     t.string   "code",       limit: 255
     t.string   "level",      limit: 20
-    t.string   "fullname",   limit: 50
+    t.string   "fullname",   limit: 20
   end
 
   create_table "task_jg_bsbs", force: :cascade do |t|
@@ -1886,8 +1876,6 @@ ActiveRecord::Schema.define(version: 20170525174615) do
     t.integer  "blr_user_id",         limit: 4
     t.integer  "tbr_user_id",         limit: 4
     t.integer  "shr_user_id",         limit: 4
-    t.string   "sp_s_4",              limit: 20
-    t.string   "sp_s_5",              limit: 20
     t.string   "sp_s_220",            limit: 20
     t.string   "sp_s_221",            limit: 20
     t.string   "SPDL",                limit: 255
@@ -1897,6 +1885,8 @@ ActiveRecord::Schema.define(version: 20170525174615) do
     t.string   "xc_attachment_path",  limit: 100
     t.string   "pc_attachment_path",  limit: 100
     t.string   "xz_attachment_path",  limit: 100
+    t.string   "sp_s_4",              limit: 20
+    t.string   "sp_s_5",              limit: 20
     t.date     "qdqk_sdrq"
     t.string   "qdqk_sfjs",           limit: 60
     t.text     "cpkzqk_wzhyy",        limit: 65535
@@ -2047,14 +2037,14 @@ ActiveRecord::Schema.define(version: 20170525174615) do
     t.string   "cydwsf",                 limit: 60
     t.string   "bsscqymc",               limit: 60
     t.datetime "scrq"
-    t.string   "sp_s_4",                 limit: 20
-    t.string   "sp_s_5",                 limit: 20
     t.string   "sp_s_220",               limit: 20
     t.string   "sp_s_221",               limit: 20
     t.string   "SPDL",                   limit: 255
     t.string   "SPYL",                   limit: 255
     t.string   "SPCYL",                  limit: 255
     t.string   "SPXL",                   limit: 255
+    t.string   "sp_s_4",                 limit: 20
+    t.string   "sp_s_5",                 limit: 20
     t.string   "bcydw_shi",              limit: 60
     t.string   "bcydw_xian",             limit: 60
     t.string   "bsscqy_shi",             limit: 60
@@ -2102,6 +2092,8 @@ ActiveRecord::Schema.define(version: 20170525174615) do
     t.datetime "updated_at"
   end
 
+  add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
+  add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   create_trigger("sp_bsbs_after_delete_row_tr", :generated => true, :compatibility => 1).
       on("sp_bsbs").
       after(:delete) do
