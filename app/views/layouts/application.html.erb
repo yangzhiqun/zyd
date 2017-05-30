@@ -711,13 +711,13 @@
           <span><img src="<%= asset_path('leftico12.png') %>"/></span><a href="/users">登录用户管理</a>
         </div>
       </dd>
-      <% if current_user.is_super? or is_sheng? %>
-      	<dd>
+      <%# if  false and (current_user.is_super? or is_sheng?) %>
+      	<!--<dd>
       	  <div class="title not-expand">
-      	    <span><img src="<%= asset_path('leftico10.png') %>"/></span><a href="/sys_provinces">区域维护</a>
+      	    <span><img src="<#%= asset_path('leftico10.png') %>"/></span><a href="/sys_provinces">区域维护</a>
       	  </div>
-      	</dd>
-      <% end %>
+      	</dd>-->
+      <%# end %>
       <% if current_user.is_admin? or is_shengshi? or current_user.is_account_manager %>
           <dd>
             <div class="title not-expand">

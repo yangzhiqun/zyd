@@ -26,7 +26,7 @@ class User < ActiveRecord::Base
   validates_confirmation_of :password
   # validate :password_non_blank
 
-  before_save :generate_uid
+  #before_save :generate_uid
   before_create :config_user_state
   after_create :cleanup_after_create
 
@@ -561,6 +561,23 @@ class User < ActiveRecord::Base
       Rails.logger.error "message send result: #{send_sms_msg({platform: "#{SysConfig.get(SysConfig::Key::PROV)}食品抽检报送平台",uid: self.uid}, TMPL_CODE[:SFYZ])}"
     end
     return true
+  end
+
+  def api_generate_uid
+    if self.province.nil?
+      return {"type" => false, "msg" => "用户省份不存在"}
+    end
+    if self.jg_bsb.nil?
+      return {"type" => false, "msg" =>"用户机构不存在"}
+    end
+    uid = "#{'%.2i' % self.province.code.to_i}#{'%.2i' % self.jg_bsb.code.to_i }"
+    existed_ids = User.where('uid LIKE ?', "#{uid}%").map { |u| u.uid[4..7].to_i }
+    available_ids = (1..99999).to_a - existed_ids
+    if available_ids.blank?
+      return {"type" => false, "msg" =>"满员"}
+    end
+    uid = "#{uid}#{'%.5i' % available_ids.first.to_i }"
+    return {"type" => true, "msg" => uid}
   end
 
   API_URL = 'http://gw.api.taobao.com/router/rest?%s'

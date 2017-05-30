@@ -8,6 +8,12 @@ class Api::V3::OpenapiController < ApplicationController
       @logger.info params
       @logger.info "-"*100
 			bsb = SpBsb.find_by_sp_s_16(params[:subinfo][:sp_s_16])
+      if bsb.present?  
+        if ([3,4,5,6,9,16].include? bsb.sp_i_state) || bsb.wochacha_task_id.blank?
+          render json: { status: 1, msg: "老数据或者状态错误"}
+          return
+        end
+      end
 			if bsb.nil?
 				bsb = SpBsb.new(sp_s_16: params[:baseinfo][:sample_code])
       end
@@ -25,7 +31,7 @@ class Api::V3::OpenapiController < ApplicationController
 			  bsb.sp_s_68 = params[:baseinfo][:pcname_hj]
 			  bsb.sp_s_2 = params[:baseinfo][:pcname_dd]
 			  bsb.sp_s_43 = params[:baseinfo][:check_org_name]
-			  bsb.sp_i_state = 2 # TODO: 
+			  bsb.sp_i_state = 2 # TODO:
 			  bsb.wochacha_task_id = params[:task_id]
 
 			  # 更新信息
@@ -34,6 +40,7 @@ class Api::V3::OpenapiController < ApplicationController
 			  	  bsb.send("#{field}=", value)
           end
 			  end
+        bsb.sp_s_36 = '省（区）级'
       end
 
 			if bsb.save
