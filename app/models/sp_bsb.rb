@@ -709,7 +709,7 @@ class SpBsb < ActiveRecord::Base
       # 条件: 3
       unless %w{/ 、 - \ 无}.include?(self.sp_s_13)
         pad_sp_bsbs = PadSpBsb.where("sp_s_70 NOT IN (?) AND sp_s_14 = ? AND sp_s_13 = ? AND sp_d_28 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", %w{抽检监测（总局本级一司） 抽检监测（三司专项）}, self.sp_s_14, self.sp_s_13, self.sp_d_28).where(created_at: now.all_quarter)
-        sp_bsb_count = SpBsb.where("sp_s_70 NOT IN (?) AND sp_s_16 NOT IN (?) AND sp_s_14 = ? AND sp_s_13 = ? AND sp_d_28 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购", %w{抽检监测（总局本级一司） 抽检监测（三司专项）}, self.sp_s_16, self.sp_s_14, self.sp_s_13, self.sp_d_28).where(created_at: now.all_quarter).count
+        sp_bsb_count = SpBsb.where("sp_s_70 NOT IN (?) AND sp_s_16 NOT IN (?) AND sp_s_14 = ? AND sp_s_13 = ? AND sp_d_28 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", %w{抽检监测（总局本级一司） 抽检监测（三司专项）}, self.sp_s_16, self.sp_s_14, self.sp_s_13, self.sp_d_28).where(created_at: now.all_quarter).count
 
         if (sp_bsb_count + pad_sp_bsbs.count > 0) and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
           errors.add(:base, '同一生产企业，当前季度内, 同一样品名称，同一生产日期，最多抽取1批')
