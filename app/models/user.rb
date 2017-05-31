@@ -26,7 +26,7 @@ class User < ActiveRecord::Base
   validates_confirmation_of :password
   # validate :password_non_blank
 
-  #before_save :generate_uid
+  before_save :generate_uid
   before_create :config_user_state
   after_create :cleanup_after_create
 
