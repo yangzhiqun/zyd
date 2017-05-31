@@ -43,15 +43,25 @@ class Api::V3::InterfaceJgController < ApplicationController
   end
 
   def handing_jgbsb_super
+    # type字段为机构关系操作类型 0：取消关系  1：建立关系
 		if params["jg_bsb_uuid"].present? && params["super_jg_bsb_uuid"]
       jg_bsb   = JgBsb.find_by_uuid(params["jg_bsb_uuid"]) 
       super_jg = JgBsb.find_by_uuid(params["super_jg_bsb_uuid"])
       if jg_bsb && super_jg
-        jg_bsb_super = JgBsbSuper.new(:jg_bsb_id => jg_bsb.id, :super_jg_bsb_id => super_jg.id)
-        if jg_bsb_super.save 
-				  render json: { status: 1, msg: "" }
-        else
-				  render json: { status: 0, msg: jg_bsb.errors.first.last }
+        if params["type"] == 0
+          jg_bsb_super = JgBsbSuper.new(:jg_bsb_id => jg_bsb.id, :super_jg_bsb_id => super_jg.id)
+          if jg_bsb_super.save 
+				    render json: { status: 1, msg: "" }
+          else
+				    render json: { status: 0, msg: jg_bsb.errors.first.last }
+          end
+        elsif params["type"] == 1
+          jg_bsb_super = JgBsbSuper.where(jg_bsb_id: jg_bsb.id, super_jg_bsb_id: super_jg.id).first
+          if jg_bsb_super.present?
+            jg_bsb_super.detete and render json: { status: 1, msg: "" }
+          else
+            render json: { status: 0, msg: "查无机构关系" }
+          end
         end
       else
         render json: { status: 0, msg: "jg_bsb_supers中查不到本级机构" } if jg_bsb.blank?
@@ -63,7 +73,6 @@ class Api::V3::InterfaceJgController < ApplicationController
   end
 
   def handing_jgbsb_stamps
-    ## 保存 jg_bsb_stamps
 		#if params["jg_bsb_stamps"].present? 
     #  
     #  params["jg_bsb_stamps"].each do |jg_bsb_stamps|
