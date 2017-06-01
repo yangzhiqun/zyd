@@ -136,6 +136,14 @@ module ApplicationHelper
 		return jg_arr
 	end
 
+  #获取全部机构
+  def all_departments
+    jg_arr  = []
+    all_jg = JgBsb.where(jg_type: 1)
+    all_jg.each{ |a| jg_arr << a.jg_name}
+    return jg_arr
+  end
+
   #市县管理员获取本机构及下级业务部门
   def all_own_subordinate 
     jg_arr  = []
@@ -235,6 +243,11 @@ module ApplicationHelper
   def is_open_production?
     YAML.load_file("config/use_ca.yml")["is_open"]
   end
+
+  def is_open_user_jg
+    YAML.load_file("config/use_ca.yml")["is_user_jg"]
+  end
+
   def sp_bsb_fields
     return {
         :bsb => {

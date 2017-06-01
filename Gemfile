@@ -79,4 +79,5 @@ gem 'virtus'
 gem 'unirest', '~>1.1.2'
 gem 'sinatra', :require => nil
 gem "paranoia", "~> 2.0"
-
+gem "hirb"
+gem "rack-cas"

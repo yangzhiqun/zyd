@@ -2864,6 +2864,12 @@
       <% if @sp_bsb["sp_i_state"]>=2&&@sp_bsb["sp_i_state"]<4&&current_user.user_d_authority_1==1 %>
           <%= f.submit(vaule="临时保存", options={"id" => "save_1", :class => "btn btn-xs btn-default"}) %>
           <%= f.submit(vaule="检测数据提交入库", options={"id" => "submit2", :class => "btn btn-xs btn-success"}) %>
+          <% if @sp_bsb.is_jiandu? %>
+             <a class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf?type=JYBG" target="_blank">监督抽检报告</a>
+          <% end %>
+          <% if @sp_bsb.is_jiance? %>
+             <a class="btn btn-xs btn-default" href="/sp_bsbs/<%= @sp_bsb.id %>/print.pdf?type=FXBG" target="_blank" >风险监测报告</a>
+          <% end %>
           <% if @sp_bsb.sp_i_state == 2 %>
               <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
 					<% end %>
