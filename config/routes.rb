@@ -8,6 +8,8 @@ Rails.application.routes.draw do
   devise_for :users, controllers: {sessions: 'users/sessions', registrations: 'users/registrations'}
 
   match 'update-account' => 'users#update_account', via: [:get, :post]
+  match 'fsnip/sso' => 'ca_helper#fsnip_sso', via: [:get, :post]
+  match 'fsnip/logout' => 'ca_helper#fsnip_logout', via: [:get, :post]
 
   resources :jg_bsb_stamps do
     get 'cover'
@@ -18,6 +20,13 @@ Rails.application.routes.draw do
   post 'ca_helper/client_sign_pdf'
   get "ca_helper/verify_report"
   post "ca_helper/verify_report"
+  resources :ca_helper do
+    collection do
+      get 'by_ca_info'
+      get 'print_pdf'
+    end
+  end
+
   get "beica_sso" => 'ca_helper#sso'
 	get "synchronize_info" => "ca_helper#account_sync"
   resources :xsbg_tt_data
@@ -276,6 +285,18 @@ Rails.application.routes.draw do
 			post "spdata/sync_spdaum"
 			post "spdata/transfer"
     end
+
+    # 我查查
+    namespace 'v3' do
+      post 'openapi/sample_add_or_edit' => 'openapi#sample_add_or_edit'
+      get  'user/login'
+      #食安云
+      post 'interface_user/new_user' => 'interface_user#new_user'
+      post 'interface_user/update_user_uuid' => 'interface_user#update_user_uuid'
+      post 'interface_jg/handing_jg_bsb' => 'interface_jg#handing_jg_bsb'
+      post 'interface_jg/handing_jgbsb_super' => 'interface_jg#handing_jgbsb_super'
+      post 'interface_region/new_region' => 'interface_region#new_region'
+    end
   end
 
   post "pad_sp_bsbs_spsearch" => "pad_sp_bsbs#spsearch"
@@ -371,6 +392,7 @@ Rails.application.routes.draw do
 
   post "admin/login"
   get "admin/login"
+  
 
   post '/ca_login' => 'admin#ca_login'
   post '/ca_logout' => 'admin#logout'

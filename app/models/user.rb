@@ -134,9 +134,9 @@ class User < ActiveRecord::Base
       '机构主检人' => 5,
       '机构审核人' => 6,
       '机构批准人' => 7,
-      '省局审核人' => 8,
-      # '牵头机构审核人' => 9,
-     # '核查处置安排人' => 10,
+      #'省局审核人' => 8,
+      #'牵头机构审核人' => 9,
+      #'核查处置安排人' => 10,
       '核查处置领取人' => 11,
       '核查处置审核人' => 12,
       '异议登记' => 13,
@@ -563,6 +563,23 @@ class User < ActiveRecord::Base
     return true
   end
 
+  def api_generate_uid
+    if self.province.nil?
+      return {"type" => false, "msg" => "用户省份不存在"}
+    end
+    if self.jg_bsb.nil?
+      return {"type" => false, "msg" =>"用户机构不存在"}
+    end
+    uid = "#{'%.2i' % self.province.code.to_i}#{'%.2i' % self.jg_bsb.code.to_i }"
+    existed_ids = User.where('uid LIKE ?', "#{uid}%").map { |u| u.uid[4..7].to_i }
+    available_ids = (1..99999).to_a - existed_ids
+    if available_ids.blank?
+      return {"type" => false, "msg" =>"满员"}
+    end
+    uid = "#{uid}#{'%.5i' % available_ids.first.to_i }"
+    return {"type" => true, "msg" => uid}
+  end
+
   API_URL = 'http://gw.api.taobao.com/router/rest?%s'
   TMPL_CODE = {
       SFYZ: 'SMS_6700288',
@@ -612,7 +629,7 @@ class User < ActiveRecord::Base
  end
 
   def jgname
-    JgBsbName.where(jg_bsb_id: self.jg_bsb.id).order("updated_at desc").last
+    JgBsbName.where(jg_bsb_id: self.jg_bsb.id).order("updated_at asc").last
   end
   private
   # def password_non_blank

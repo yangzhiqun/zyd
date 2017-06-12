@@ -134,13 +134,9 @@ class YyczController < ApplicationController
 			@yyczs = @yyczs.where("y.cjbh like ?", "%#{params[:cjbh]}%")
 		end
 
-		unless params[:rwly].blank?
-			case params[:rwly].to_i
-			when 1
-				@yyczs = @yyczs.where("y.cjbh LIKE ?", "____00%")
-			when 2
-				@yyczs = @yyczs.where("y.cjbh NOT LIKE ?", "____00%")
-			end
+		if !params[:rwly].blank? and params[:rwly] !="全部"
+      cjbh_arr = SpBsb.where("sp_s_2_1 = ?",params[:rwly]).pluck(:sp_s_16)
+      @yyczs = @yyczs.where("cjbh in (?)",cjbh_arr)
 		end 
   end
 
@@ -191,13 +187,9 @@ class YyczController < ApplicationController
 			@yyczs = @yyczs.where("y.cjbh like ?", "%#{params[:cjbh]}%")
 		end
 
-		unless params[:rwly].blank?
-			case params[:rwly].to_i
-			when 1
-				@yyczs = @yyczs.where("y.cjbh LIKE ?", "____00%")
-			when 2
-				@yyczs = @yyczs.where("y.cjbh NOT LIKE ?", "____00%")
-			end
+		if !params[:rwly].blank? and params[:rwly] !="全部"
+      cjbh_arr = SpBsb.where("sp_s_2_1 = ?",params[:rwly]).pluck(:sp_s_16)
+      @yyczs = @yyczs.where("cjbh in (?)",cjbh_arr)
 		end 
   end
 

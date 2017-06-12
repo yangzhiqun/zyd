@@ -134,7 +134,7 @@
         </div>-->
         <br>
         <div class="actions">
-          <%= f.submit "保存", :class => "btn-sm btn-primary btn" %>
+          <%= f.submit "保存", :class => "btn-sm btn-primary btn" if is_open_production? and (current_user.is_admin? or is_sheng?) %>
         </div>
     <% end %>
   </div>

@@ -7,7 +7,7 @@ module DownloadData
       @sp_bsbs = sp_data
       book = Spreadsheet::Workbook.new
       sheet = book.create_worksheet :name => "totles"
-      sheet.row(0).concat %w{ID 被抽样单位名称* 更新时间 抽样地点_2* 省(市、自治区)* 地区(市、州、盟) 县(市、区) 单位地址(被抽样单位)* 生产许可证号 样品名称 抽样数量 抽样编号* 食品大类 食品亚类 食品次亚类 食品细类 生产/加工/购进日期 样品规格* 样品批号* 生产日期* 保质期* 抽样单位名称* 单位级别* 抽样人员* 抽样时间* 检验机构名称* 检验目的* 报告书编号* 收检日期* 报告日期* 所在省份* 样品类型* 包装分类* 标识生产企业名称 标识生产企业地址* 报送分类-2* 单位地点_1* 报送分类-1* 结论* 商标 任务来源* 样品状态 区域类型* 标识生产企业省份 抽样基数/批量* 备样数量* 营业执照号 报告分类 检验项目* 检验结果* 结果判定* 检验依据* 判定依据* 标准方法检出限* 标准检出限单位* 方法检出限* 检出限单位* 标准最小允许限* 标准最小允许限单位* 最小允许限* 最小允许限单位* 标准最大允许限* 标准最大允许限单位* 最大允许限* 最大允许限单位* 说明 结果单位*}
+      sheet.row(0).concat %w{ID 被抽样单位名称* 更新时间 抽样地点_2* 省(市、自治区)* 地区(市、州、盟) 县(市、区) 单位地址(被抽样单位)* 生产许可证号 样品名称 抽样数量 抽样编号* 食品大类 食品亚类 食品次亚类 食品细类 生产/加工/购进日期 样品规格* 样品批号* 生产日期* 保质期* 抽样单位名称* 单位级别* 抽样人员* 抽样时间* 检验机构名称* 检验目的* 报告书编号* 收检日期* 报告日期* 所在省份* 样品类型* 包装分类* 标识生产企业名称 标识生产企业地址* 报送分类-2* 单位地点_1* 报送分类-1* 结论* 商标 任务来源* 样品状态 区域类型* 标识生产企业省份 标识生产企业市 标识生产企业县 执行标准/技术文件* 抽样基数/批量* 备样数量* 营业执照号 报告分类 检验项目* 检验结果* 结果判定* 检验依据* 判定依据* 标准方法检出限* 标准检出限单位* 方法检出限* 检出限单位* 标准最小允许限* 标准最小允许限单位* 最小允许限* 最小允许限单位* 标准最大允许限* 标准最大允许限单位* 最大允许限* 最大允许限单位* 说明 结果单位*}
       count_row = 1
       @sp_bsbs.each do |sp_bsb|
         if sp_bsb.spdata.blank?
@@ -70,31 +70,34 @@ module DownloadData
       sheet[count_row, 41] = SpBsb::SpState[sp_bsb.sp_i_state] #样品状态
       sheet[count_row, 42] = sp_bsb.sp_s_201 #区域类型 
       sheet[count_row, 43] = sp_bsb.sp_s_202 #标识生产企业省份
-      sheet[count_row, 44] = sp_bsb.sp_s_206 #抽样基数/批量
-      sheet[count_row, 45] = sp_bsb.sp_s_208 #备样数量 
-      sheet[count_row, 46] = sp_bsb.sp_s_215 #营业执照号
-      sheet[count_row, 47] = sp_bsb.bgfl     #报告分类
+      sheet[count_row, 44] = sp_bsb.sp_s_220 #标识生产企业市
+      sheet[count_row, 45] = sp_bsb.sp_s_221 #标识生产企业县
+      sheet[count_row, 46] = sp_bsb.sp_s_72 #执行标准/技术文件*
+      sheet[count_row, 47] = sp_bsb.sp_s_206 #抽样基数/批量
+      sheet[count_row, 48] = sp_bsb.sp_s_208 #备样数量 
+      sheet[count_row, 49] = sp_bsb.sp_s_215 #营业执照号
+      sheet[count_row, 50] = sp_bsb.bgfl     #报告分类
       #--------------检验数据-------------
       if data.present?
-        sheet[count_row, 48] = data.spdata_0 #检验项目
-        sheet[count_row, 49] = data.spdata_1 #检验结果
-        sheet[count_row, 50] = data.spdata_2 #结果判定 
-        sheet[count_row, 51] = data.spdata_3 #检验依据
-        sheet[count_row, 52] = data.spdata_4 #判定依据
-        sheet[count_row, 53] = data.spdata_5 #标准方法检出限
-        sheet[count_row, 54] = data.spdata_6 #标准检出限单位
-        sheet[count_row, 55] = data.spdata_7 #方法检出限
-        sheet[count_row, 56] = data.spdata_8 #检出限单位
-        sheet[count_row, 57] = data.spdata_9 #标准最小允许限
-        sheet[count_row, 58] = data.spdata_10 #标准最小允许限单位
-        sheet[count_row, 59] = data.spdata_11 #最小允许限
-        sheet[count_row, 60] = data.spdata_12 #最小允许限单位
-        sheet[count_row, 61] = data.spdata_13 #标准最大允许限
-        sheet[count_row, 62] = data.spdata_14 #标准最大允许限单位
-        sheet[count_row, 63] = data.spdata_15 #最大允许限
-        sheet[count_row, 64] = data.spdata_16 #最大允许限单位
-        sheet[count_row, 65] = data.spdata_17 #说明
-        sheet[count_row, 66] = data.spdata_18 #结果单位
+        sheet[count_row, 51] = data.spdata_0 #检验项目
+        sheet[count_row, 52] = data.spdata_1 #检验结果
+        sheet[count_row, 53] = data.spdata_2 #结果判定 
+        sheet[count_row, 54] = data.spdata_3 #检验依据
+        sheet[count_row, 55] = data.spdata_4 #判定依据
+        sheet[count_row, 56] = data.spdata_5 #标准方法检出限
+        sheet[count_row, 57] = data.spdata_6 #标准检出限单位
+        sheet[count_row, 58] = data.spdata_7 #方法检出限
+        sheet[count_row, 59] = data.spdata_8 #检出限单位
+        sheet[count_row, 60] = data.spdata_9 #标准最小允许限
+        sheet[count_row, 61] = data.spdata_10 #标准最小允许限单位
+        sheet[count_row, 62] = data.spdata_11 #最小允许限
+        sheet[count_row, 63] = data.spdata_12 #最小允许限单位
+        sheet[count_row, 64] = data.spdata_13 #标准最大允许限
+        sheet[count_row, 65] = data.spdata_14 #标准最大允许限单位
+        sheet[count_row, 66] = data.spdata_15 #最大允许限
+        sheet[count_row, 67] = data.spdata_16 #最大允许限单位
+        sheet[count_row, 68] = data.spdata_17 #说明
+        sheet[count_row, 69] = data.spdata_18 #结果单位
       end
       return sheet
     end

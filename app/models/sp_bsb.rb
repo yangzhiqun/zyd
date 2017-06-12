@@ -18,8 +18,8 @@ class SpBsb < ActiveRecord::Base
   validates_presence_of :sp_s_16, message: '请提供抽检单编号'
   validates_uniqueness_of :sp_s_16, message: '该单号已存在', allow_nil: true
 
-  before_save :check_bsb_validity
-  before_save :check_benji_company
+ # before_save :check_bsb_validity
+ # before_save :check_benji_company
   after_update :callback_when_updated
 
   SpState = {1 => "基本信息(填报中)", 2 => "检测数据(填报)", 3 => "检测数据(填报)", 4 => "检测数据(机构审核中)", 5 => "检测数据(机构批准中)", 6 => "待机构审核", 9 => "检测数据(已提交至秘书处)", 16 => "检测数据(报告发送人审核中)", 32 => "基本信息审核", 35 => "接收样品"} 
@@ -71,6 +71,10 @@ class SpBsb < ActiveRecord::Base
       @sp_bsbs = SpBsb.select("created_at,sp_d_38,JDCJ_report_path,FXJC_report_path,sp_s_44,sp_bsbs.ca_key_status,sp_bsbs.report_path,sp_bsbs.id, sp_bsbs.updated_at, sp_bsbs.sp_s_3, sp_bsbs.sp_s_4, sp_bsbs.sp_s_14, sp_bsbs.sp_s_16, sp_bsbs.sp_s_43, sp_bsbs.sp_s_214, sp_bsbs.sp_s_35, sp_bsbs.sp_s_71, sp_bsbs.sp_s_202, sp_bsbs.sp_i_state, sp_bsbs.fail_report_path, sp_bsbs.czb_reverted_flag,sp_bsbs.sp_s_2_1")
     else
       @sp_bsbs = SpBsb.all
+    end
+
+    if !YAML.load_file("config/use_ca.yml")["is_open"] 
+      @sp_bsbs = @sp_bsbs.where("sp_i_state != 1")  
     end
     
     if !params[:sp_order].blank?
@@ -143,7 +147,7 @@ class SpBsb < ActiveRecord::Base
     end
 
     # 任务来源
-    unless params[:s13].blank?
+    if !params[:s13].blank? and params[:s13] !="全部"
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_2_1 = ?", "#{params[:s13]}".gsub(/\s/,""))
     end
 
@@ -290,7 +294,7 @@ class SpBsb < ActiveRecord::Base
         end
       end
     else
-      if (change_js==2||change_js==3||change_js==4)&&params[:s8].present? #药监局数据审核
+      if (change_js==2||change_js==3||change_js==4) && (params[:s8].present? && params[:s8] != "1") #药监局数据审核
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3=? or (sp_bsbs.sp_s_202=? and (sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'))", current_user.user_s_province, current_user.user_s_province)
       elsif change_js==7 #数据审核
          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names)
@@ -315,7 +319,7 @@ class SpBsb < ActiveRecord::Base
     if params[:flag]=="tabs_7"
       @sp_bsbs = @sp_bsbs.where(sp_s_2_1: @rwly)
     elsif is_city || is_county_level || (current_user.is_account_manager && current_user.user_i_js == 1 && current_user.jg_bsb.jg_type==1)
-      if !current_user.is_admin? && !is_sheng && params[:s13].blank?
+      if !current_user.is_admin? && !is_sheng && (params[:s13].blank? || params[:s13] == "全部" )
         @sp_bsbs = @sp_bsbs.where(sp_s_2_1: @rwly)
       end
     end
@@ -485,7 +489,7 @@ class SpBsb < ActiveRecord::Base
           end
           Rails.logger.error "sending: #{form}"
 
-          response = RestClient.post(jg_bsb.api_ip_address, form)
+          response = RestClient.post(jg_bsb.api_ip_address, form.to_json)
           json = JSON.parse(response)
           if json['status'] == 'OK'
             self.update_attributes({:synced => true})
@@ -533,7 +537,29 @@ class SpBsb < ActiveRecord::Base
   def is_wtyp_czb_processing?(user)
     WtypCzbPart.where("sp_bsb_id = ? AND current_state IN (1, 2, 3) AND ((wtyp_czb_type = #{::WtypCzbPart::Type::LT} AND bcydw_sheng = ?) OR (wtyp_czb_type = #{::WtypCzbPart::Type::SC} AND bsscqy_sheng = ?))", self.id, user.user_s_province, user.user_s_province).count > 0
   end
+  
+    # 24小时限时报告
+  def xsbg_24h=(file)
+    self.xsbg_file_path = handle_uploaded_file('24h限时报告', file) unless file.blank?
+  end
 
+  def xsbg_24h
+    Rails.application.config.attachment_path + '/' + self.xsbg_file_path unless self.xsbg_file_path.blank?
+  end
+  
+  def user_despatcher
+      @log=SpLog.where(sp_bsb_id: self.id, sp_i_state: 16).order('id asc').last
+      unless @log.nil?
+       @user = User.find(@log.user_id)
+       if !@user.tname.blank?
+           return "#{@user.tname}"
+       else
+          return ""
+       end
+      else
+        return ""
+      end
+  end
   def user_sign_for(state)
     @log = SpLog.where(sp_bsb_id: self.id, sp_i_state: state, ca_key_status: 0).last
     unless @log.nil?
@@ -651,21 +677,20 @@ class SpBsb < ActiveRecord::Base
   # 4. 不看QS号,同一生产企业,一个季度(90天), 同一食品大类最多抽取3批
   def check_bsb_validity
     #return true #if self.sp_s_215.blank? or self.sp_s_13.blank? or %w{抽检监测（总局本级一司） 抽检监测（总局本级三司） 抽检监测（三司专项）}.include?(self.sp_s_70)
-    return true if self.sp_s_215.blank? or self.sp_s_13.blank? or %w{抽检监测（总局本级一司）}.include?(self.sp_s_70) or self.sp_s_64.blank? or self.sp_i_state == 18 or self.sp_s_2 == '网购' or %w{GC1600243697 GC1600243696 SC1622590001 SC1622590003 SC1622590004 SC1622590015 SC1622590016}.include?(self.sp_s_16)
-    #return true if self.sp_s_215.blank? or self.sp_s_13.blank? or self.sp_s_64.blank? or self.sp_i_state == 18 or self.sp_s_2 == '网购' or %w{GC1600333159 GC1600153105 GC1600153106 GC1600153103 GC1600153066 GC1600153070 GC1600333182 GC1600333183 GC1600333160 GC1600333179 GC1600333247 GC1600333202 GC1600333240 GC1600333249 GC1600333181 GC1600333034 GC1600333033 GC1600333180 GC1551022141 GC1500162095 GC1600153104 GC1600183151 GC1600183035 GC1600153104 GC1600153177 GC1600153037 GC1600153042 GC1600153044 GC1600153119 GC1600153118 GC1600183151 GC1600183035 GC1600333262 GC1600333261 GC1600333263 GC1600333239 GC1600333238 GC1600333237 GC1600333227 GC1600333270 GC1600333271 GC1600333272 GC160033145 GC1600333146 GC1600333147 GC1600333148 GC1600333151 GC1600333191 GC1600333195 GC1600333194 GC1600333193 GC1600333192 GC1600153045 GC1600153041 GC1600153075 GC1600183136 GC1600183137 GC1600183138 GC1600183139 GC1600183141 GC1600183142 GC1600183143 GC1600183144 GC1600183145 GC1600183146 GC1600183159 GC1600183160 GC1600183108 GC1600183109 GC1600183110 GC1600183111 GC1600183112 GC1600183113 GC1600183114 GC1600183116 GC1600183120 GC1600183121 GC1600181114 GC1600181115 GC1600153060 GC1600153059 GC1600153043 GC1600153041 GC1600153075 GC1600153151 GC1600153152 GC1600333040 GC1600333041 GC1600333043 GC1600333044 GC1600333049 GC1600333050 GC1600333051 GC1600333052 GC1600333053 GC1600333042 GC1600333080 GC1600333081 GC1600333082 GC1600333083 GC1600333084 GC1600333085 GC1600333086 GC1600333087 GC1600333088 GC1600333089 GC1642010066 GC1600333015 GC1600333016 GC1600333018 GC1600333019 GC1600333020 GC1600333024 GC1600333025 GC1600333026 GC1600333039 GC1600333017 GC1600333054 GC1600333055 GC1600333064 GC1600333065 GC1600333066 GC1600333067 GC1600333068 GC1600333069 GC1600333070 GC1600333071 GC1600333130 GC1600333131 GC1600333090 GC1600333091 GC1600333092 GC1600333093 GC1600333094 GC1600333095 GC1600333117 GC1600333128 GC1600333129 GC1600333184 GC1600333187 GC1600333210 GC1600333110 GC1600433038 GC1600433035 GC1600433045 GC1600433046 GC1600433041 GC1600433040 GC1600433036 GC1600433037 GC1600433039 GC1600433044 GC1600433043 GC1600433042 GC1600363243 GC1600363244 GC1600363211 GC1600153034 GC1600153052 GC1600153208 GC1600153210 GC1600153243 GC1600153074 GC1600153028 GC1600153010 GC1600153032 GC1600153033 GC1600153046 GC1600153038 GC1600153051 GC1637088004 GC1600343052 GC1600343075 GC1600343073 GC1600343072 GC1600343043 GC1600343068 GC1600153261 GC1600153262 GC1600153260 GC1600153027 GC1622014039 GC1622014040 GC1622014041 GC1622014042 GC1622014043 GC1622014044 GC1622014005 GC1622014006 GC1622014012 GC1622013979 GC1622014023 GC1600153006 GC1600153083 GC1600153242 GC1600153239 GC1600153017 GC1600153211 GC1622014236 GC1622013985 GC1661033016 GC1661033025 GC1661033027 GC1661013020 GC1661013023 GC1661013019}.include?(self.sp_s_16)
+    return true if !self.wochacha_task_id.blank? or self.sp_s_215.blank? or self.sp_s_13.blank? or %w{抽检监测（总局本级一司） 抽检监测（三司专项）}.include?(self.sp_s_70) or self.sp_s_64.blank? or self.sp_i_state == 18 or self.sp_s_2 == '网购' or %w{GC1600196327 GC1600196328 GC1600196329 GC1600196330 GC1600410629 GC1600410429 GC1600410628 GC1600196221 GC1600130546 GC1600130548 GC16000130546 GC16000130548 GC16000363718}.include?(self.sp_s_16)
     return true if self.sp_s_reason.present?
     if self.changes[:sp_i_state].present? and [0, 1].include?(self.changes['sp_i_state'][0]) and self.changes['sp_i_state'][1] == 2
       now = Time.now
 
       # 条件: 1
-      if !%w{餐饮 生产}.include?(self.sp_s_68.strip) and !%w{/ 、 - \ 无　／}.include?(self.sp_s_215.strip)
-        pad_sp_bsbs = PadSpBsb.where("sp_s_215 = ? AND sp_s_68 = '流通' AND sp_i_state NOT IN (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_215).where(created_at: now.all_quarter)
+      if !%w{餐饮 生产}.include?(self.sp_s_68.strip) and !%w{/ 、 - \ 无}.include?(self.sp_s_215.strip)
+        pad_sp_bsbs = PadSpBsb.where("sp_s_70 NOT IN (?) and sp_s_215 = ? AND sp_s_68 = '流通' AND sp_i_state NOT IN (1,14,16,18) AND sp_s_2 <> '网购'", %w{抽检监测（总局本级一司） 抽检监测（三司专项）}, self.sp_s_215).where(created_at: now.all_quarter)
 
-        sp_bsb_count = SpBsb.where("sp_s_16 NOT IN (?) AND sp_s_215 = ? AND sp_s_68 = '流通' AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_215).where(created_at: now.all_quarter).count
-    #    if sp_bsb_count + pad_sp_bsbs.count > 10 and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
-     #     errors.add(:base, '同一被抽样单位，当前季度内，流通环节，最多抽取10批')
-      #    return false
-      #  end
+        sp_bsb_count = SpBsb.where("sp_s_70 NOT IN (?) AND sp_s_16 NOT IN (?) AND sp_s_215 = ? AND sp_s_68 = '流通' AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", %w{抽检监测（总局本级一司） 抽检监测（三司专项）}, self.sp_s_16, self.sp_s_215).where(created_at: now.all_quarter).count
+        if sp_bsb_count + pad_sp_bsbs.count > 10 and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
+          errors.add(:base, '同一被抽样单位，当前季度内，流通环节，最多抽取10批')
+          return false
+        end
       end
 
       # 条件: 2
@@ -674,58 +699,43 @@ class SpBsb < ActiveRecord::Base
         pad_sp_bsbs = PadSpBsb.where("sp_s_13 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_13, self.sp_s_64).where(created_at: now.all_quarter)
 
         sp_bsb_count = SpBsb.where("sp_s_16 NOT IN (?) AND sp_s_13 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_13, self.sp_s_64).where(created_at: now.all_quarter).count
-       # end
+        if sp_bsb_count + pad_sp_bsbs.count > 5 and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
+          errors.add(:base, '同一生产企业，同一个抽样周期内, 无论环节，不同产品，最多抽取5批')
+          return false
+        end
       end
 =end
 
       # 条件: 3
-     # unless %w{/ 、 - \ 无}.include?(self.sp_s_13)
-      #  pad_sp_bsbs = PadSpBsb.where("sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_d_28 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_d_28).where(created_at: now.all_quarter)
-       # sp_bsb_count = SpBsb.where("sp_s_16 NOT IN (?) AND sp_s_14 = ? AND (sp_s_13 = ? AND sp_s_64 = ?) AND sp_d_28 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_14, self.sp_s_13, self.sp_s_64, self.sp_d_28).where(created_at: now.all_quarter).count
+      unless %w{/ 、 - \ 无}.include?(self.sp_s_13)
+        pad_sp_bsbs = PadSpBsb.where("sp_s_70 NOT IN (?) AND sp_s_14 = ? AND sp_s_13 = ? AND sp_d_28 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", %w{抽检监测（总局本级一司） 抽检监测（三司专项）}, self.sp_s_14, self.sp_s_13, self.sp_d_28).where(created_at: now.all_quarter)
+        sp_bsb_count = SpBsb.where("sp_s_70 NOT IN (?) AND sp_s_16 NOT IN (?) AND sp_s_14 = ? AND sp_s_13 = ? AND sp_d_28 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", %w{抽检监测（总局本级一司） 抽检监测（三司专项）}, self.sp_s_16, self.sp_s_14, self.sp_s_13, self.sp_d_28).where(created_at: now.all_quarter).count
 
-#        if (sp_bsb_count + pad_sp_bsbs.count > 0) and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
- #         errors.add(:base, '同一生产企业，当前季度内, 同一样品名称，同一生产日期，最多抽取1批')
-  #        return false
-   #     end
-    #  end
-
-      # 条件: 3
-      unless %w{/ 、 - \ 无　／}.include?(self.sp_s_13)
-        pad_sp_bsbs = PadSpBsb.where("sp_s_14 = ? AND sp_s_13 = ? AND sp_d_28 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_14, self.sp_s_13, self.sp_d_28).where(created_at: now.all_quarter)
-        sp_bsb_count = SpBsb.where("sp_s_16 NOT IN (?) AND sp_s_14 = ? AND sp_s_13 = ? AND sp_d_28 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_14, self.sp_s_13, self.sp_d_28).where(created_at: now.all_quarter).count
-
-        #if (sp_bsb_count + pad_sp_bsbs.count > 0) and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
-         # errors.add(:base, '同一生产企业，当前季度内, 同一样品名称，同一生产日期，最多抽取1批')
-       # end
+        if (sp_bsb_count + pad_sp_bsbs.count > 0) and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
+          errors.add(:base, '同一生产企业，当前季度内, 同一样品名称，同一生产日期，最多抽取1批')
+          return false
+        end
       end
 
       # --> 条件: 4
-     # unless %w{/ 、 - \ 无}.include?(self.sp_s_64)
-      #  pad_sp_bsbs = PadSpBsb.where("sp_s_17 = ? AND sp_s_64 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_17, self.sp_s_64).where(created_at: now.all_quarter)
-       # sp_bsb_count = SpBsb.where("sp_s_16 NOT IN (?) AND sp_s_17 = ? AND sp_s_64 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_17, self.sp_s_64).where(created_at: now.all_quarter).count
+      unless %w{/ 、 - \ 无}.include?(self.sp_s_13)
+        pad_sp_bsbs = PadSpBsb.where("sp_s_70 NOT IN (?) AND sp_s_17 = ? AND sp_s_13 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", %w{抽检监测（总局本级一司） 抽检监测（三司专项）}, self.sp_s_17, self.sp_s_13).where(created_at: now.all_quarter)
+        sp_bsb_count = SpBsb.where("sp_s_70 NOT IN (?) AND sp_s_16 NOT IN (?) AND sp_s_17 = ? AND sp_s_13 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", %w{抽检监测（总局本级一司） 抽检监测（三司专项）}, self.sp_s_16, self.sp_s_17, self.sp_s_13).where(created_at: now.all_quarter).count
 
-        #if (sp_bsb_count + pad_sp_bsbs.count > 3) and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
-         # errors.add(:base, '同一生产企业, 当前季度内, 同一食品大类最多抽取3批')
-         # return false
-        #end
-      #end
-      # <-- 条件: 4
-
-      # --> 条件: 4
-      unless %w{/ 、 - \ 无　／}.include?(self.sp_s_13)
-        pad_sp_bsbs = PadSpBsb.where("sp_s_17 = ? AND sp_s_13 = ? AND sp_i_state not in (1,14,16,18) AND sp_s_2 <> '网购'", self.sp_s_17, self.sp_s_13).where(created_at: now.all_quarter)
-        sp_bsb_count = SpBsb.where("sp_s_16 NOT IN (?) AND sp_s_17 = ? AND sp_s_13 = ? AND sp_i_state NOT IN (0, 1) AND sp_s_2 <> '网购'", pad_sp_bsbs.pluck(:sp_s_16), self.sp_s_17, self.sp_s_13).where(created_at: now.all_quarter).count
-
-        #if (sp_bsb_count + pad_sp_bsbs.count > 3) and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
-         # errors.add(:base, '同一生产企业, 当前季度内, 同一食品大类最多抽取3批')
-         # return false
-       # end
+        if (sp_bsb_count + pad_sp_bsbs.count > 3) and PadSpBsb.where(sp_s_16: self.sp_s_16).count == 0
+          errors.add(:base, '同一生产企业, 当前季度内, 同一食品大类最多抽取3批')
+          return false
+        end
       end
       # <-- 条件: 4
+
     end
   end
 
   def check_benji_company
+
+    return true if %w{GC1600410629 GC1600410429 GC1600410628 GC16000373457 GC16000373456 GC1600130546 GC1600130548}.include?(self.sp_s_16)
+
     if self.sp_s_70.eql?('抽检监测（地方）') and SpProductionInfo.where('benji_only = 1').pluck(:qymc).include?(self.sp_s_64)
       if self.sp_s_reason.blank? and (self.changes[:sp_i_state].present? and [2, 15].include?(self.changes[:sp_i_state][1]))
         self.errors.add(:base, '该大型企业仅限局本级抽检')
@@ -915,7 +925,11 @@ class SpBsb < ActiveRecord::Base
       #抽检项
       @cjx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE '%合格项%' OR spdata_2 LIKE '%不合格项%')", self.id)
       @jyjy_struni = (@cjx.where('sp_bsb_id= ? and spdata_4 <> ?', self.id, '/').select('distinct spdata_4').limit(2).map { |s| s.spdata_4 }).uniq.join(",")
+
+      #@jyjy_FY = (@cjx.where("sp_bsb_id= ? and spdata_3 not in ('-','—', '/', '_')", self.id).select('distinct spdata_3').map { |s| s.spdata_3 }).uniq.join(';')
+
       @jyjy_FY = self.inspection_basis
+
       #风险项
       @fxx = Spdatum.where("sp_bsb_id = ? AND (spdata_2 LIKE '%不判定项%' OR spdata_2 LIKE '%问题项%')", self.id)
       @fxx_FY = (@fxx.where('sp_bsb_id= ?', self.id).select('distinct spdata_3').map { |s| s.spdata_3 }).uniq.join(';')
@@ -929,8 +943,10 @@ class SpBsb < ActiveRecord::Base
       #检查封样人员      @padsplog_jcfy = PadSpLogs.where('sp_s_16 = ? AND remark = ?', self.sp_s_16, '接收样品').last
 
       @padsplog_jcfy = PadSpLogs.where('sp_s_16 = ? AND remark = ?', self.sp_s_16, '接收样品').last
+
      # @splog_jcfy = SpLog.with_deleted.where('sp_bsb_id = ? AND sp_i_state = ?', self.id, 2).first
       @splog_jcfy = SpLog.where('sp_bsb_id = ? AND sp_i_state = ?', self.id, 2).first
+
       @jcfy = '/'
 
       if !@splog_jcfy.nil?
@@ -1003,7 +1019,9 @@ class SpBsb < ActiveRecord::Base
       end
       # logger.error content.to_json
       content = Base64.strict_encode64(content.to_json)
+
       cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 105 #{content} #{tmp_file} #{self.absolute_report_path(preview && !force_generate)}"
+
 
       result = `#{cmd}`
       logger.error "result"
@@ -1037,6 +1055,7 @@ class SpBsb < ActiveRecord::Base
 	   content = Base64.strict_encode64(reqMessage.to_json)
       cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 114 #{content} #{tmp_file} #{new_ca_filepath}"
       result = `#{cmd}`
+     logger.error result
       if result.strip.include?('200')
 	return new_ca_filepath
       else

@@ -125,13 +125,13 @@ class DCategoriesController < ApplicationController
           item_ids.push(item[:id])
 
           unless check_item.update_attributes(
-              item.permit(:identifier, :BZFFJCX, :BZFFJCXDW, :BZZDYXX, :BZZDYXXDW, :BZZXYXX, :BZZXYXXDW, :JGDW, :JYYJ, :PDYJ, :a_category_id, :b_category_id, :c_category_id, :d_category_id, :name)
+              item.permit(:BZ,:JYYJJHB,:identifier, :BZFFJCX, :BZFFJCXDW, :BZZDYXX, :BZZDYXXDW, :BZZXYXX, :BZZXYXXDW, :JGDW, :JYYJ, :PDYJ, :a_category_id, :b_category_id, :c_category_id, :d_category_id, :name)
           )
             raise ActiveRecord::Rollback, checK_item.errors.first.last
           end
         rescue ActiveRecord::RecordNotFound
           check_item = CheckItem.new
-          check_item.assign_attributes(item.permit(:identifier, :BZFFJCX, :BZFFJCXDW, :BZZDYXX, :BZZDYXXDW, :BZZXYXX, :BZZXYXXDW, :JGDW, :JYYJ, :PDYJ, :a_category_id, :b_category_id, :c_category_id, :d_category_id, :name))
+          check_item.assign_attributes(item.permit(:BZ,:JYYJJHB,:identifier, :BZFFJCX, :BZFFJCXDW, :BZZDYXX, :BZZDYXXDW, :BZZXYXX, :BZZXYXXDW, :JGDW, :JYYJ, :PDYJ, :a_category_id, :b_category_id, :c_category_id, :d_category_id, :name))
           check_item.a_category_id = @d_category.a_category_id
           check_item.b_category_id = @d_category.b_category_id
           check_item.c_category_id = @d_category.c_category_id

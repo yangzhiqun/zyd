@@ -251,6 +251,7 @@ class UsersController < ApplicationController
     respond_to do |format|
       if @user.update_attributes(u_params)
         flash[:notice] = "用户信息修改成功"
+        logger.error @user.hcz_admin
         if params['account-pass-request'].to_i == 1
           format.html { redirect_to('/users/pending') }
         else

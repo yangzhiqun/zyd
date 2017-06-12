@@ -1,4 +1,4 @@
-#encoding=UTF-8
+﻿#encoding=UTF-8
 require 'csv'
 require 'net/http'
 require 'food/download_data'
@@ -503,9 +503,14 @@ class SpBsbsController < ApplicationController
     end
 
     @sp_data = Spdatum.where(sp_bsb_id: params[:id])
-
+if is_open_production?
     unless @sp_bsb.sp_s_70.blank?
-      @sp_s_67s = BaosongB.where(baosong_a_id: BaosongA.find_by_name(@sp_bsb.sp_s_70).id)
+      @baosong_a = BaosongA.find_by_name(@sp_bsb.sp_s_70)
+      if @baosong_a.blank?
+        @sp_s_67s = []
+      else
+        @sp_s_67s = BaosongB.where(baosong_a_id: @baosong_a.id)
+      end
     else
       @sp_s_67s = []
     end
@@ -513,7 +518,12 @@ class SpBsbsController < ApplicationController
     if !@sp_s_67s.blank? and !@sp_bsb.sp_s_67.blank?
       @sp_s_67 = @sp_s_67s.where(name: @sp_bsb.sp_s_67).first
     end
+else
+  if !@sp_bsb.sp_s_67.blank?
+          @sp_s_67 = BaosongB.where(name: @sp_bsb.sp_s_67).first    
+    end
 
+end
     unless @sp_s_67.nil?
       @a_categories = ACategory.where(:identifier => @sp_s_67.identifier)
     else
@@ -681,26 +691,42 @@ class SpBsbsController < ApplicationController
           @sp_bsb.sp_i_backtimes = @sp_bsb.sp_i_backtimes.to_i + 1
           @sp_bsb.sp_s_reason = "#{@sp_bsb.sp_s_reason.to_s}#{Time.now.to_s},#{@role_name}:#{params[:sp_bsb].delete(:sp_s_55)}\n"
         end
-
-
         if (params[:sp_bsb][:sp_i_state].to_i == 3 or params[:sp_bsb][:sp_i_state].to_i == 1) and !params[:sp_bsb][:sp_s_55].blank?
-          if current_user.is_admin?
+          #sp_i_state = params[:sp_bsb][:sp_i_state].to_i
+          if current_user.is_admin? && @sp_bsb.sp_i_state == 9
             @role_name = '秘书处退回'
 
             @sp_bsb.sp_i_backtimes = @sp_bsb.sp_i_backtimes.to_i + 1 if @sp_bsb.sp_i_state == 9
+            sp_i_state = 5
 
           elsif session[:change_js] == 2
 
-            @role_name = "药监局_#{current_user.name}_退回"
+            @role_name = "药监局_#{current_user.uid}_退回"
 
           elsif session[:change_js] == 6
-            @role_name = "检测机构_填报检验数据_#{current_user.name}_退回"
+            @role_name = "检测机构_填报检验数据_#{current_user.uid}_退回"
+            #sp_i_state = 9
           elsif session[:change_js] == 7
-            @role_name = "检测机构_#{current_user.name}_退回"
+            @role_name = "检测机构_审核检验数据_#{current_user.uid}_退回"
           elsif session[:change_js] == 8
-            @role_name = "牵头机构_#{current_user.name}_退回"
+            @role_name = "牵头机构_#{current_user.uid}_退回"
+          elsif session[:change_js] == 11
+            @role_name = "检测机构_批准检验数据_#{current_user.uid}_退回"
+          elsif session[:change_js] == 16
+            @role_name = "检测机构_报告发送人_#{current_user.uid}_退回"
           end
-
+          if @sp_bsb.sp_i_state == 2 || @sp_bsb.sp_i_state == 3
+            sp_i_state = 9 
+          end
+          # 给我查查同步抽样状态
+           if ([1,2,5,9].include? @sp_bsb.sp_i_state) && @sp_bsb.wochacha_task_id.present? && !([7,11].include? session[:change_js])
+            url = URI.encode("https://openapi.wochacha.com/fooddrug/openapi/statusedit?sample_code=#{params[:sp_bsb][:sp_s_16]}&status=#{sp_i_state}&reason_back=#{params[:sp_bsb][:sp_s_55]}")
+            result = JSON(Net::HTTP.get_response(URI.parse(url)).body)
+            logger.error result
+            if result["status"] != 0
+              raise result["msg"]
+            end
+          end
           @sp_bsb.sp_i_jgback = @sp_bsb.sp_i_jgback.to_i + 1
           @sp_bsb.sp_s_reason = "#{@sp_bsb.sp_s_reason.to_s}#{Time.now.to_s},#{@role_name}:#{params[:sp_bsb].delete(:sp_s_55)}\n"
         end
@@ -739,6 +765,16 @@ class SpBsbsController < ApplicationController
         else
 
           if @sp_bsb.save
+           if  params[:sp_bsb][:sp_i_state].to_i == 9 && session[:change_js] == 16 && @sp_bsb.wochacha_task_id.present?
+             sp_i_state = (params[:sp_bsb][:sp_s_71].include?"不合格样品") || (params[:sp_bsb][:sp_s_71].include?"问题样品") ? 2 : 1
+             url = URI.encode("https://openapi.wochacha.com/fooddrug/openapi/statusedit?sample_code=#{params[:sp_bsb][:sp_s_16]}&status=#{sp_i_state}&reason_back=#{params[:sp_bsb][:sp_s_55]}")
+             result = JSON(Net::HTTP.get_response(URI.parse(url)).body)
+
+             if result["status"] != 0
+               raise result["msg"]
+             end
+           end
+
             # 如果original 存在，则回退updated_at时间
             if @original_updated_at.present?
               SpBsb.record_timestamps = false
@@ -829,6 +865,11 @@ class SpBsbsController < ApplicationController
         end
       end
     end
+    rescue => e
+      respond_to do |format|
+        format.html { render action: "edit" }
+        format.json { render json: {status: '保存出错!', msg: "修改不成功! #{e.to_s}"} }
+      end
   end
 
   # DELETE /sp_bsbs/1
@@ -1662,8 +1703,9 @@ class SpBsbsController < ApplicationController
         :czb_reverted_flag,
         :czb_reverted_reason,
 	:synced, :ca_source, :ca_sign,
-	:inspection_basis, :decision_basis,:FX_jyyj_custom,:JDCJ_report_path,:FXJC_report_pah,:JDCJ_pdf_rules,:FXJC_pdf_rules
+	:inspection_basis, :decision_basis,:FX_jyyj_custom,:JDCJ_report_path,:FXJC_report_pah,:JDCJ_pdf_rules,:FXJC_pdf_rules,
+	:sp_s_sfjk,:sp_s_ycg,:sp_s_sfwtsc,:sp_s_wtsheng,
+	:sp_s_wtshi,:sp_s_wtxian,:sp_s_qymc,:sp_s_qydz,:sp_s_qs,:sp_s_lxr,:sp_s_tel,:sp_s_pic,:sp_s_sign
     )
   end
 end
-

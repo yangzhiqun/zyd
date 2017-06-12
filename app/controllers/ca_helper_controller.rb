@@ -25,6 +25,48 @@ class CaHelperController < ApplicationController
     end
   end
 
+  def fsnip_sso
+    logger.error session.as_json
+    if session['cas'].blank?
+      render text: 'no sso session', status: 401
+    else
+      user = User.find_by_ca_uuid(session['cas']['user'])
+      if user.nil?
+        render text: "用户不存在或未登记, uuid: #{session['cas']['user']}"
+      else
+        if current_user.nil?
+          sign_in(user)
+        else
+          if current_user.id != user.id
+            sign_out(current_user)
+            sign_in(user)
+          end
+        end
+        redirect_to '/'
+      end
+    end
+  end
+
+  def fsnip_logout 
+    if params["ca_uuid"].blank?
+      render text: '没有传值'
+    else
+      user = User.find_by_ca_uuid(params["ca_uuid"])
+      if user.nil?
+        render text: "用户不存在或未登记, uuid: #{params["ca_uuid"]}"
+      else
+        if current_user.nil?
+          sign_out(user)
+        else
+          if current_user.id == user.id
+            sign_out(current_user)
+          end
+        end
+        redirect_to '/'
+      end
+    end
+  end
+
   def verify_report
 
     if request.post?
@@ -114,7 +156,7 @@ end
      filename=Rails.root.join('tmp', "test.txt")
      reqMessage ={appId: Rails.application.config.site[:appid],policyType: 2}
      reqContent =Base64.strict_encode64(reqMessage.to_json)
-     cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client.jar')} 111.26.194.57 8081 113 #{reqContent} #{filename} "
+     cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 113 #{reqContent} #{filename} "
      result = `#{cmd}`
      nonceStr  =  File.read(Rails.root.join('tmp', "test.txt"))
      render json: {status: 'OK', msg: nonceStr}
