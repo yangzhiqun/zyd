@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 
   match 'update-account' => 'users#update_account', via: [:get, :post]
   match 'fsnip/sso' => 'ca_helper#fsnip_sso', via: [:get, :post]
+  match 'fsnip/logout' => 'ca_helper#fsnip_logout', via: [:get, :post]
 
   resources :jg_bsb_stamps do
     get 'cover'
@@ -293,6 +294,7 @@ Rails.application.routes.draw do
       post 'interface_user/new_user' => 'interface_user#new_user'
       post 'interface_user/update_user_uuid' => 'interface_user#update_user_uuid'
       post 'interface_jg/handing_jg_bsb' => 'interface_jg#handing_jg_bsb'
+      post 'interface_jg/handing_jgbsb_super' => 'interface_jg#handing_jgbsb_super'
       post 'interface_region/new_region' => 'interface_region#new_region'
     end
   end

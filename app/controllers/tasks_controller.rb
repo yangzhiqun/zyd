@@ -437,7 +437,7 @@ logger.error jg_names
     end
 
 		# 任务来源	
-		unless params[:rwly].blank?	
+		if  !params[:rwly].blank? and params[:rwly] !="全部"
 			@pad_sp_bsbs = @pad_sp_bsbs.where("sp_s_2_1 LIKE ?", "%#{params[:rwly]}%")	
     end
 
