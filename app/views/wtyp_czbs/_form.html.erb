@@ -286,7 +286,11 @@
       <tr>
         <th colspan="4">抽检编号</th>
         <td colspan="26"><%= @wtyp_czb.cjbh %>&nbsp;&nbsp;&nbsp;&nbsp;
-       <a target="_blank" href="/sp_bsbs/<%= @wtyp_czb.wtyp_sp_bsbs_id %>/cyd">抽样单</a>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="/sp_bsbs/<%= @wtyp_czb.wtyp_sp_bsbs_id %>/cyjygzs">抽样检验告知书</a>
+        <% if @sp_bsb.wochacha_task_id.present? %>
+          <a target="_blank" href=<%= @sp_bsb.cyd_file_path %>>抽样单</a>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href=<%= @sp_bsb.cyjygzs_file_path %>>抽样检验告知书</a>
+        <% else %>
+          <a target="_blank" href="/sp_bsbs/<%= @wtyp_czb.wtyp_sp_bsbs_id %>/cyd">抽样单</a>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="/sp_bsbs/<%= @wtyp_czb.wtyp_sp_bsbs_id %>/cyjygzs">抽样检验告知书</a>
+        <% end %>
         </td>
       </tr>
       <tr>

@@ -48,17 +48,21 @@ class Api::V3::InterfaceJgController < ApplicationController
       jg_bsb   = JgBsb.find_by_uuid(params["jg_bsb_uuid"]) 
       super_jg = JgBsb.find_by_uuid(params["super_jg_bsb_uuid"])
       if jg_bsb && super_jg
-        if params["type"] == 0
-          jg_bsb_super = JgBsbSuper.new(:jg_bsb_id => jg_bsb.id, :super_jg_bsb_id => super_jg.id)
-          if jg_bsb_super.save 
-				    render json: { status: 1, msg: "" }
+        jg_bsb_super = JgBsbSuper.where(jg_bsb_id: jg_bsb.id, super_jg_bsb_id: super_jg.id).first
+        if params["type"] == 1
+          if jg_bsb_super.blank?
+            jg_bsb_super = JgBsbSuper.new(:jg_bsb_id => jg_bsb.id, :super_jg_bsb_id => super_jg.id)
+            if jg_bsb_super.save 
+				      render json: { status: 1, msg: "" }
+            else
+				      render json: { status: 0, msg: jg_bsb.errors.first.last }
+            end
           else
-				    render json: { status: 0, msg: jg_bsb.errors.first.last }
+            render json: { status: 1, msg: "" }
           end
-        elsif params["type"] == 1
-          jg_bsb_super = JgBsbSuper.where(jg_bsb_id: jg_bsb.id, super_jg_bsb_id: super_jg.id).first
+        elsif params["type"] == 0
           if jg_bsb_super.present?
-            jg_bsb_super.detete and render json: { status: 1, msg: "" }
+            jg_bsb_super.delete and render json: { status: 1, msg: "" }
           else
             render json: { status: 0, msg: "查无机构关系" }
           end

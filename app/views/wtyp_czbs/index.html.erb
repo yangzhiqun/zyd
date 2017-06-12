@@ -122,6 +122,7 @@
       }
     });
 
+    $('#rwly').select2({theme: 'bootstrap', placeholder: '任务来源'});
     $('.yycz-list tbody .dopreview').click(function () {
       var o = $(this);
       $('#preview').attr("src", "/wtyp_czbs/" + o.attr('data-id') + "/edit?preview=true");
@@ -171,7 +172,7 @@
       </td>
       <td colspan="4">任务来源</td>
       <td colspan="6">
-        <%= select_tag "rwly", options_for_select(all_departments.map { |name| [name,name, {'parentid' => name}] }.unshift(["请选择", ""]), params[:rwly]), :style => "width: 185px;",:class => 'form-control input-sm' %>
+        <%= select_tag "rwly", options_for_select(all_departments.map { |name| [name,name, {'parentid' => name}] }.unshift(["全部", "全部"]), params[:rwly]), :style => "width: 185px;",:class => 'form-control input-sm' %>
       </td>
     </tr>
     <tr>
@@ -196,7 +197,7 @@
       <td colspan="4">报告分类</td>
       <td colspan="6"><%= select_tag 'bgfl', options_for_select([%w{全部 QB}, %w{一般不合格报告 YBBHG}, %w{24小时限时报告 24H}, %w{一般问题报告 YBWTBG}], params[:bgfl]), {class: 'form-control input-sm'} %></td>
       <td colspan="4">环节</td>
-      <td colspan="6"><%= select_tag :hccz_type, options_for_select([%w{生产 SC}, %w{经营 JY}], params[:hccz_type]), class: 'form-control input-sm' %></td>
+      <td colspan="6"><%= select_tag :hccz_type, options_for_select([%w{全部 QB},%w{生产 SC}, %w{经营 JY}], params[:hccz_type]), class: 'form-control input-sm' %></td>
       <td colspan="4"></td>
       <td colspan="6"></td>
     </tr>
@@ -309,7 +310,7 @@
                     <% end %>
                   </td>
                   <td><%= wtyp_czb.scqy_info %><br><%= wtyp_czb.bhg_item_info %><br><%= wtyp_czb.spxl_info %></td>
-                  <td><%= wtyp_czb.cydd %></td>
+                  <td><%= wtyp_czb.wtyp_czb_type_desc %></td>
                   <td><%= wtyp_czb.ypmc %></td>
                   <td><%= wtyp_czb.bsscqy_sheng %></td>
                   <td><%= wtyp_czb.sp_s_220 or wtyp_czb.bsscqy_shi %></td>

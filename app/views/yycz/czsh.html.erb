@@ -77,7 +77,8 @@ $(function(){
       }, 'json');
     }
   });
-
+  
+   $('#rwly').select2({theme: 'bootstrap', placeholder: '任务来源'});
   $('.yycz-list tbody tr').click(function(){
     var o = $(this);
     $('#preview').attr("src", "/yycz/" + o.attr('data-id') + "?preview=true");
@@ -116,7 +117,7 @@ $(function(){
       </td>
       <td colspan="4">任务来源</td>
       <td colspan="6">
-        <%= select_tag "rwly", options_for_select(all_departments.map { |name| [name,name, {'parentid' => name}] }.unshift(["请选择", ""]), params[:rwly]), :style => "width: 185px;",:class => 'form-control input-sm' %>
+        <%= select_tag "rwly", options_for_select(all_departments.map { |name| [name,name, {'parentid' => name}] }.unshift(["全部", "全部"]), params[:rwly]), :style => "width: 185px;",:class => 'form-control input-sm' %>
       </td>
     </tr>
     <tr>
