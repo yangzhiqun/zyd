@@ -279,6 +279,7 @@
                     <th>标准最大允许限</th>
                     <th>标准最大允许限单位</th>
                     <th>检验依据简化版</th>
+                    <th>备注</th>
 		    <% if is_open_production? %>
                     <th>#</th>
 		   <% end%>
@@ -310,7 +311,9 @@
                     <td>
                       <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.JYYJJHB}}" data-ng-model="option.JYYJJHB">
                     </td>
-
+                    <td>
+                      <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.BZ}}" data-ng-model="option.BZ">
+                    </td>
 	           <% if is_open_production?%>
                     <td>
                       <a x-ng-click="removeOption(check_item.options, $index)" class="btn btn-xs btn-danger" href="javascript:void(0);">移除</a>
@@ -321,7 +324,7 @@
                   <tfoot>
 		 <% if is_open_production? %>
                   <tr>
-                    <td colspan="8">
+                    <td colspan="10">
                       <a class="btn btn-success btn-xs" x-ng-click="check_item.options.push({})" href="javascript:void(0);"><i class="glyphicon glyphicon-plus"></i>添加检验依据</a>
                     </td>
                   </tr>
@@ -352,7 +355,7 @@
     <h3>报送分类模板更新</h3>
     <%= form_for @baosong_b do |f| %>
         <div class="form-group">
-          <%= f.label '模板文件' %> <a href="/baosong_tmpl.xls">导入模板下载</a>
+          <%= f.label '模板文件' %> <a href="http://bbs.cfda.pub:8080/app/doc/baosong_tmpl.xls">导入模板下载</a>
           <%= f.file_field :file, :class => "form-control input-sm" %>
         </div>
 	<% if is_open_production?%>

@@ -184,6 +184,9 @@ app.controller('PlanMakerCtrl', ['$scope', '$http', 'BaosongB', '$q', function (
             item.JYYJJHB = _.uniq(_.map(i.options, function (o) {
                  return o.JYYJJHB
             })).join("#");
+            item.BZ = _.uniq(_.map(i.options, function (o) {
+                 return o.BZ
+            })).join("#");
             item.BZFFJCX = _.uniq(_.map(i.options, function (o) {
                 return o.BZFFJCX
             })).join("#");
@@ -232,6 +235,14 @@ app.controller('PlanMakerCtrl', ['$scope', '$http', 'BaosongB', '$q', function (
                 max_$_count = item.JYYJJHB.length;
               }
             }
+            
+            if (!!item.BZ) {
+              item.BZ = item.BZ.split("#")
+
+            if (max_$_count < item.BZ.length) {
+               max_$_count = item.BZ.length;
+             }
+           }
 
             if (!!item.BZFFJCX) {
                 item.BZFFJCX = item.BZFFJCX.split("#")
@@ -295,6 +306,12 @@ app.controller('PlanMakerCtrl', ['$scope', '$http', 'BaosongB', '$q', function (
                 } else {
                   option.JYYJJHB = _.last(item.JYYJJHB);
                 }
+                
+                if (!!item.BZ[n]) {
+                   option.BZ = item.BZ[n];
+                 } else {
+                   option.BZ = _.last(item.BZ);
+                 }   
 
                 if (!!item.BZFFJCX[n]) {
                     option.BZFFJCX = item.BZFFJCX[n];

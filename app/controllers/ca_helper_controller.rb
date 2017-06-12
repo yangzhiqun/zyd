@@ -47,6 +47,26 @@ class CaHelperController < ApplicationController
     end
   end
 
+  def fsnip_logout 
+    if params["ca_uuid"].blank?
+      render text: '没有传值'
+    else
+      user = User.find_by_ca_uuid(params["ca_uuid"])
+      if user.nil?
+        render text: "用户不存在或未登记, uuid: #{params["ca_uuid"]}"
+      else
+        if current_user.nil?
+          sign_out(user)
+        else
+          if current_user.id == user.id
+            sign_out(current_user)
+          end
+        end
+        redirect_to '/'
+      end
+    end
+  end
+
   def verify_report
 
     if request.post?

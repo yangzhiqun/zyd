@@ -47,8 +47,8 @@ class PadSpBsb < ActiveRecord::Base
   has_many :sp_bsb_pictures, :foreign_key => 'sp_bsb_id'
   after_save :generate_id_number
 
-  before_save :check_bsb_validity
-  before_save :check_benji_company
+ # before_save :check_bsb_validity
+ # before_save :check_benji_company
   after_save :callback_when_updated
 
   module Step
