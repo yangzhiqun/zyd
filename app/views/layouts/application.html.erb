@@ -718,7 +718,7 @@
       	  </div>
       	</dd>-->
       <%# end %>
-      <% if current_user.is_admin? or is_shengshi? or current_user.is_account_manager %>
+      <% if (current_user.is_admin? or is_shengshi? or current_user.is_account_manager) && is_open_user_jg %>
           <dd>
             <div class="title not-expand">
               <span><img src="<%= asset_path('leftico12.png') %>"/></span><a href="/users/pending">用户审核</a>
@@ -734,12 +734,14 @@
         	</dd>
       	<% end %>
       <% end %>
-      <% if current_user.is_super? %>
-              <dd>
-                <div class="title not-expand">
-                  <span><img src="<%= asset_path('leftico20.png') %>"/></span><a href="/data/index">信息管理</a>
-                </div>
-              </dd>
+      <% if is_open_user_jg %>
+        <% if current_user.is_admin? %>
+          <dd>
+            <div class="title not-expand">
+              <span><img src="<%= asset_path('leftico20.png') %>"/></span><a href="/data/index">信息管理</a>
+            </div>
+          </dd>
+        <% end %>
       <% end %>
       <% if current_user.user_d_authority_1 == 1 or current_user.is_super? %>
 				<% if !is_city? %>

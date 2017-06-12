@@ -60,10 +60,8 @@
           <td style="word-wrap: break-word;"><%= bs.identifier %></td>
           <td>
             <%= link_to "查看", bs, :class => "btn btn-xs btn-primary" %>
-            <%= link_to "编辑", "/baosong_bs/#{bs.id}/edit", :class => "btn btn-xs btn-primary" if is_open_production? %>
-            <% if current_user.is_admin? or is_sheng? %>
-            <%= link_to '删除', bs, :class => "btn btn-xs btn-danger", method: :delete, data: {confirm: '确定删除吗？此操作相当危险,可能导致报送表取值错误,删除前请确认承受风险的能力.'} if is_open_production? %>
-            <% end %>
+            <%= link_to "编辑", "/baosong_bs/#{bs.id}/edit", :class => "btn btn-xs btn-primary" if is_open_production? and( current_user.is_admin? or is_sheng?) %>
+            <%= link_to '删除', bs, :class => "btn btn-xs btn-danger", method: :delete, data: {confirm: '确定删除吗？此操作相当危险,可能导致报送表取值错误,删除前请确认承受风险的能力.'} if is_open_production? and(current_user.is_admin? or is_sheng?) %>
           </td>
         </tr>
         <% end %>
@@ -89,12 +87,12 @@
         <%= f.hidden_field :baosong_a_id %>
 
         <div class="field">
-          <%= f.label "模板文件" %> <a href="/baosong_tmpl.xls">导入模板下载</a>
+          <%= f.label "模板文件" %> <a href="http://bbs.cfda.pub:8080/app/doc/baosong_tmpl.xls">导入模板下载</a>
           <%= f.file_field :file, :class => "form-control input-sm" %>
         </div>
         <br>
         <div class="actions">
-          <%= f.submit "创建", :class => "btn btn-sm btn-primary" if is_open_production? %>
+          <%= f.submit "创建", :class => "btn btn-sm btn-primary" if is_open_production? and (current_user.is_admin? or is_sheng?) %>
         </div>
       <% end %>
     </div>
