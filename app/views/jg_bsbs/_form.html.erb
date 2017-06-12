@@ -182,12 +182,18 @@
         <th colspan="6">机构名称</th>
         <td colspan="34">
           <p class="current_name">
+           <% if current_user.is_admin? or is_sheng? or  current_user.is_jg_manager? %>
             <% if @jg_bsb.new_record? %>
                 <i class="text-info">新建的机构信息请保存后再设置</i>
             <% else %>
                 <%= @jg_bsb.current.name unless @jg_bsb.current.nil? %>
-                <a href="" id="btn-modify" class="pull-right btn btn-link btn-xs">修改名称</a>
+                <% if is_open_user_jg %>
+                  <a href="" id="btn-modify" class="pull-right btn btn-link btn-xs">修改名称</a>
+                <% end %>
             <% end %>
+            <% else%>
+              <%= @jg_bsb.current.name unless @jg_bsb.current.nil? %>
+           <% end %>
           </p>
           <% unless @jg_bsb.new_record? %>
               <div class="modify-name-ctner hidden">
@@ -369,12 +375,18 @@
       <tr>
         <th colspan="10">检验报告签章规则号</th>
         <td colspan="30">
+        <% if current_user.is_admin? or is_sheng? or  current_user.is_jg_manager?  %>
           <% if @jg_bsb.new_record? %>
               <i class="text-info">请新建保存后再管理机构签章</i>
           <% else %>
               <p><%= @jg_bsb.pdf_sign_rules %></p>
-              <a href="/jg_bsb_stamps?jg_bsb_id=<%= @jg_bsb.id %>">机构签章管理<i class="glyphicon glyphicon-arrow-right"></i></a>
+              <% if is_open_user_jg %>
+                <a href="/jg_bsb_stamps?jg_bsb_id=<%= @jg_bsb.id %>">机构签章管理<i class="glyphicon glyphicon-arrow-right"></i></a>
+              <% end %>
           <% end %>
+         <% else%>
+            <p><%= @jg_bsb.pdf_sign_rules %></p>
+        <% end %>
         </td>
       </tr>
       <tr>
@@ -397,7 +409,7 @@
           </ul>
         </td>
       </tr>
-      <% if current_user.is_admin? or is_shengshi? %>
+      <% if current_user.is_admin? or is_sheng? or current_user.is_jg_manager? and is_open_user_jg %>
           <tr>
             <td colspan="40">
               <%= f.submit(vaule='保存并退出', options={id: 'save_and_exit', class: 'btn btn-sm btn-success'}) %>

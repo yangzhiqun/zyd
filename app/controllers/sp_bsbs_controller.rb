@@ -505,7 +505,12 @@ class SpBsbsController < ApplicationController
     @sp_data = Spdatum.where(sp_bsb_id: params[:id])
 if is_open_production?
     unless @sp_bsb.sp_s_70.blank?
-      @sp_s_67s = BaosongB.where(baosong_a_id: BaosongA.find_by_name(@sp_bsb.sp_s_70).id)
+      @baosong_a = BaosongA.find_by_name(@sp_bsb.sp_s_70)
+      if @baosong_a.blank?
+        @sp_s_67s = []
+      else
+        @sp_s_67s = BaosongB.where(baosong_a_id: @baosong_a.id)
+      end
     else
       @sp_s_67s = []
     end
@@ -696,15 +701,19 @@ end
 
           elsif session[:change_js] == 2
 
-            @role_name = "药监局_#{current_user.name}_退回"
+            @role_name = "药监局_#{current_user.uid}_退回"
 
           elsif session[:change_js] == 6
-            @role_name = "检测机构_填报检验数据_#{current_user.name}_退回"
+            @role_name = "检测机构_填报检验数据_#{current_user.uid}_退回"
             #sp_i_state = 9
           elsif session[:change_js] == 7
-            @role_name = "检测机构_#{current_user.name}_退回"
+            @role_name = "检测机构_审核检验数据_#{current_user.uid}_退回"
           elsif session[:change_js] == 8
-            @role_name = "牵头机构_#{current_user.name}_退回"
+            @role_name = "牵头机构_#{current_user.uid}_退回"
+          elsif session[:change_js] == 11
+            @role_name = "检测机构_批准检验数据_#{current_user.uid}_退回"
+          elsif session[:change_js] == 16
+            @role_name = "检测机构_报告发送人_#{current_user.uid}_退回"
           end
           if @sp_bsb.sp_i_state == 2 || @sp_bsb.sp_i_state == 3
             sp_i_state = 9 
