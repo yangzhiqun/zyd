@@ -36,7 +36,7 @@ task :update_all_region, [:csv_file] => :environment do |t, args|
   User.all.each do |user|
     user.user_s_province = @hash[user.user_s_province][0] if result(0,@hash,user.user_s_province)
     user.prov_city = @hash[user.prov_city][0] if result(1,@hash,user.prov_city)
-    user.prov_country = @hash[prov_country][0] if result(2,@hash,user.prov_country)
+    user.prov_country = @hash[user.prov_country][0] if result(2,@hash,user.prov_country)
     if user.changed?
       user.save
     else
