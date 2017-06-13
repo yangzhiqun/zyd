@@ -1,5 +1,5 @@
 #是否使用ca
-open_ca: true
+open_ca: false
 #打开
 is_open: true
 #是否打开用户、机构、区域新增修改删除
