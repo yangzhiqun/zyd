@@ -341,7 +341,12 @@ class PadSpBsbsController < ApplicationController
     @sp_data=Spdatum.where(sp_bsb_id: params[:id])
 
     unless @sp_bsb.sp_s_70.blank?
-      @sp_s_67s = BaosongB.where(baosong_a_id: BaosongA.find_by_name(@sp_bsb.sp_s_70).id)
+       @baosong_a = BaosongA.find_by_name(@sp_bsb.sp_s_70)
+      if @baosong_a.blank?
+         @sp_s_67s = []
+      else
+         @sp_s_67s = BaosongB.where(baosong_a_id: @baosong_a.id)
+      end
     else
       @sp_s_67s = []
     end
@@ -356,19 +361,19 @@ class PadSpBsbsController < ApplicationController
       @a_categories = []
     end
 
-    if !@sp_bsb.sp_s_17.blank? and !@sp_bsb.sp_s_17.eql?("请选择")
+    if !@sp_bsb.sp_s_17.blank? and !@sp_bsb.sp_s_17.eql?("请选择") and !@sp_s_67.blank?
       @b_categories = BCategory.where(:identifier => @sp_s_67.identifier, a_category_id: @a_categories.where(name: @sp_bsb.sp_s_17).first.id)
     else
       @b_categories = []
     end
 
-    if !@sp_bsb.sp_s_18.blank? and !@sp_bsb.sp_s_18.eql?("请选择")
+    if !@sp_bsb.sp_s_18.blank? and !@sp_bsb.sp_s_18.eql?("请选择") and !@sp_s_67.blank?
       @c_categories = CCategory.where(:identifier => @sp_s_67.identifier, b_category_id: @b_categories.where(name: @sp_bsb.sp_s_18).first.id)
     else
       @c_categories = []
     end
 
-    if !@sp_bsb.sp_s_19.blank? and !@sp_bsb.sp_s_19.eql?("请选择")
+    if !@sp_bsb.sp_s_19.blank? and !@sp_bsb.sp_s_19.eql?("请选择") and !@sp_s_67.blank?
       @d_categories = DCategory.where(:identifier => @sp_s_67.identifier, c_category_id: @c_categories.where(name: @sp_bsb.sp_s_19).first.id)
     else
       @d_categories = []
