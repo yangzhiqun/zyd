@@ -8,14 +8,17 @@ require "logger"
 #       sp_s_202 sp_s_220 sp_s_221
 # WtypCzb bsscqy_sheng sp_s_220(bsscqy_shi) sp_s_221(bsscqy_xian)
 #         bcydw_sheng  bcydw_shi(sp_s_4) bcydw_xian(sp_s_5)
+# WtypCzbPart bsscqy_sheng sp_s_220(bsscqy_shi) sp_s_221(bsscqy_xian)
+#         bcydw_sheng  bcydw_shi(sp_s_4) bcydw_xian(sp_s_5)
 desc '刷新各表区域字段'
 task :update_all_region, [:csv_file] => :environment do |t, args|
   unless File.exist?(args[:csv_file]) and File.extname(args[:csv_file]) == ".csv"
     p "没有该文件或者文件类型错误" and return
   end
-  @logger = Logger.new("tmp/tongji.log")
+  @logger = Logger.new("tmp/cache/tongji.log")
   @hash = {}
   @csv = CSV.open(args[:csv_file]).read
+                 #原字段       新字段 编号
   @csv.each{ |c| @hash[c[0]] = [c[1],c[2]] }
   p "----------------------START---------------------"
   JgBsb.all.each do |jg_bsb|
@@ -57,27 +60,30 @@ task :update_all_region, [:csv_file] => :environment do |t, args|
   end
   @logger.info { "3"*80 }
   p "**************基本信息更新结束**************"
-  WtypCzb.all.each do |wtyp_czb|
-    wtyp_czb.bsscqy_sheng = @hash[wtyp_czb.bsscqy_sheng][0] if result(0,@hash,wtyp_czb.bsscqy_sheng)
-    wtyp_czb.bsscqy_shi   = @hash[wtyp_czb.bsscqy_shi][0]   if result(1,@hash,wtyp_czb.bsscqy_shi)
-    wtyp_czb.bsscqy_xian  = @hash[wtyp_czb.bsscqy_xian][0]  if result(2,@hash,wtyp_czb.bsscqy_xian)
-    wtyp_czb.sp_s_220     = @hash[wtyp_czb.sp_s_220][0]     if result(1,@hash,wtyp_czb.sp_s_220)
-    wtyp_czb.sp_s_221     = @hash[wtyp_czb.sp_s_221][0]     if result(2,@hash,wtyp_czb.sp_s_221)
+  arr = ["WtypCzb","WtypCzbPart"]  
+  arr.each do |ar|
+    ar.constantize.all.each do |wtyp_czb|
+      wtyp_czb.bsscqy_sheng = @hash[wtyp_czb.bsscqy_sheng][0] if result(0,@hash,wtyp_czb.bsscqy_sheng)
+      wtyp_czb.bsscqy_shi   = @hash[wtyp_czb.bsscqy_shi][0]   if result(1,@hash,wtyp_czb.bsscqy_shi)
+      wtyp_czb.bsscqy_xian  = @hash[wtyp_czb.bsscqy_xian][0]  if result(2,@hash,wtyp_czb.bsscqy_xian)
+      wtyp_czb.sp_s_220     = @hash[wtyp_czb.sp_s_220][0]     if result(1,@hash,wtyp_czb.sp_s_220)
+      wtyp_czb.sp_s_221     = @hash[wtyp_czb.sp_s_221][0]     if result(2,@hash,wtyp_czb.sp_s_221)
 
-    wtyp_czb.bcydw_sheng  = @hash[wtyp_czb.bcydw_sheng][0] if result(0,@hash,wtyp_czb.bcydw_sheng)
-    wtyp_czb.bcydw_shi    = @hash[wtyp_czb.bcydw_shi][0]   if result(1,@hash,wtyp_czb.bcydw_shi)
-    wtyp_czb.bcydw_xian   = @hash[wtyp_czb.bcydw_xian][0]  if result(2,@hash,wtyp_czb.bcydw_xian)
-    wtyp_czb.sp_s_4       = @hash[wtyp_czb.sp_s_4][0]      if result(1,@hash,wtyp_czb.sp_s_4)
-    wtyp_czb.sp_s_5       = @hash[wtyp_czb.sp_s_5][0]      if result(2,@hash,wtyp_czb.sp_s_5)
-    if wtyp_czb.changed?
-      wtyp_czb.save
-    else
-      @logger.info { "WtypCzb >>> id:#{wtyp_czb.id},#{wtyp_czb.bsscqy_sheng},#{wtyp_czb.bsscqy_shi},#{wtyp_czb.bsscqy_xian}" } 
+      wtyp_czb.bcydw_sheng  = @hash[wtyp_czb.bcydw_sheng][0] if result(0,@hash,wtyp_czb.bcydw_sheng)
+      wtyp_czb.bcydw_shi    = @hash[wtyp_czb.bcydw_shi][0]   if result(1,@hash,wtyp_czb.bcydw_shi)
+      wtyp_czb.bcydw_xian   = @hash[wtyp_czb.bcydw_xian][0]  if result(2,@hash,wtyp_czb.bcydw_xian)
+      wtyp_czb.sp_s_4       = @hash[wtyp_czb.sp_s_4][0]      if result(1,@hash,wtyp_czb.sp_s_4)
+      wtyp_czb.sp_s_5       = @hash[wtyp_czb.sp_s_5][0]      if result(2,@hash,wtyp_czb.sp_s_5)
+      if wtyp_czb.changed?
+        wtyp_czb.save
+      else
+        @logger.info { "#{ar} >>> id:#{wtyp_czb.id},#{wtyp_czb.bsscqy_sheng},#{wtyp_czb.bsscqy_shi},#{wtyp_czb.bsscqy_xian}" } 
+      end
     end
   end
   @logger.info { "4"*80 }
   p "**************核查处置更新结束**************"
-  p "---------------------END---------------------"
+  p "-----------------------END----------------------"
 end
 
 # 判断是否可以更改字段
