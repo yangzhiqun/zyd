@@ -47,6 +47,6 @@ module DemoyjsRuby2X
     config.action_mailer.delivery_method = :sendmail
     config.action_mailer.perform_deliveries = true
     config.action_mailer.raise_delivery_errors = true
-    config.rack_cas.server_url = 'http://gcsso.fsnip.com'
+    config.rack_cas.server_url = 'http://223.71.250.35'
   end
 end
