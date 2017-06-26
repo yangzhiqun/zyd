@@ -21,7 +21,7 @@
     <td>
       <%= link_to '修改', edit_baosong_b_path(baosong_b), :class => "btn btn-xs btn-primary" %>
       <% if current_user.is_admin? or is_sheng? %>
-      <%= link_to '删除', baosong_b, :class => "btn btn-xs btn-danger", method: :delete, data: { confirm: '你确定要删除?此操作相当危险,可能导致报送表取值错误,删除前请确认承受风险的能力' } if is_open_production? %>
+      <%= link_to '删除', baosong_b, :class => "btn btn-xs btn-danger", method: :delete, data: { confirm: '你确定要删除?此操作相当危险,可能导致报送表取值错误,删除前请确认承受风险的能力' } %>
       <% end %>
     </td>
   </tr>
@@ -30,4 +30,4 @@
 
 <br />
 
-<%= link_to '新建报送分类B', new_baosong_b_path, :class => "btn btn-xs btn-primary" if is_open_production? %>
+<%= link_to '新建报送分类B', new_baosong_b_path, :class => "btn btn-xs btn-primary"  %>

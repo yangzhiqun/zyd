@@ -248,6 +248,10 @@ module ApplicationHelper
     !YAML.load_file("config/use_ca.yml")["is_user_jg"]
   end
 
+  def is_open_to_wochacha
+    YAML.load_file("config/use_ca.yml")["is_open_to_wochacha"]
+  end
+
   def sp_bsb_fields
     return {
         :bsb => {

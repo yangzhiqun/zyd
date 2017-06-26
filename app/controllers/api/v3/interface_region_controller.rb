@@ -3,7 +3,7 @@ class Api::V3::InterfaceRegionController < ApplicationController
 
 	def new_region
 		if params[:id].present? and params[:name].present? and params[:level].present?
-      @logger = Logger.new("log/shianyun_new_interface.log")
+      @logger = Logger.new("log/shianyun_new_regin.log")
       @logger.info params
       @logger.info "-"*100
 			prov = SysProvince.find(params[:id])
