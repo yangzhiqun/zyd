@@ -26,7 +26,7 @@
     <td><%= (baosong_a.created_at + 8.hours).strftime("%Y-%m-%d %H:%M:%S")%></td>
     <td>
       <%= link_to '查看', baosong_a, :class => "btn btn-xs btn-primary" %>
-     <% if  is_open_production? %>
+     <% if   current_user.is_admin? or is_sheng? %>
       <%= link_to '编辑', edit_baosong_a_path(baosong_a), class: 'btn btn-default btn-xs' %>
       <% if ( current_user.is_admin? or is_sheng?) %>
       <%= link_to '删除', baosong_a, :class => "btn btn-xs btn-danger", method: :delete, data: {confirm: '确定删除吗？此操作相当危险,可能导致报送表取值错误,删除前请确认承受风险的能力.'} %>
@@ -37,4 +37,4 @@
   <% end %>
 </table>
 <br>
-<%= link_to '添加报送分类', new_baosong_a_path, :class => "btn btn-sm btn-primary" if is_open_production? and (current_user.is_admin? or is_sheng?) %>
+<%= link_to '添加报送分类', new_baosong_a_path, :class => "btn btn-sm btn-primary" if  current_user.is_admin? or is_sheng? %>

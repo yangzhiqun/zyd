@@ -36,10 +36,12 @@ class CaHelperController < ApplicationController
       else
         if current_user.nil?
           sign_in(user)
+          after_sign_in_path_for(user)
         else
           if current_user.id != user.id
             sign_out(current_user)
             sign_in(user)
+            after_sign_in_path_for(user)
           end
         end
         redirect_to '/'

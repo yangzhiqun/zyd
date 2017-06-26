@@ -1,6 +1,8 @@
 <script>
 $(document).ready(function(){
+  <% unless  session[:change_js].blank?%>
   $("#r"+<%=session[:change_js]%>).attr("checked","checked");
+  <% end %>
 });
 </script>
 <h3 class="text-center">请切换角色</h3>
@@ -92,7 +94,7 @@ $(document).ready(function(){
         </label>
       <%end%>
       <hr>
-      <%= submit_tag("确定", :class => 'btn btn-primary btn-sm') %>
+      <%= submit_tag("确定", :class => 'btn btn-primary btn-sm') unless session[:change_js].blank? %>
     <%end%>
   </div>
 </div>
