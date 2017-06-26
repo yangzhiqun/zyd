@@ -684,14 +684,20 @@
       }
       return;
     });
-
-    <% if ([2, 4, 5].include? @sp_bsb["sp_i_state"]) && @sp_bsb.wochacha_task_id.present? %>
-    // [2, 4, 5] 步骤无法修改基本信息
+	//如果跟我查查对接
+    <% if is_open_to_wochacha %>
+	//判断是否平台过来的数据，根据taskid，如果有值，并且状态为2,4,5,16 不允许修改，反之不处理
+    <% if ([2,3, 4, 5, 16].include? @sp_bsb["sp_i_state"]) && @sp_bsb.wochacha_task_id.present? %>
+    // [2, 4, 5 ,16] 步骤无法修改基本信息
     $("#province").attr("disabled", "disabled");
-
-    <%@check=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,17,18,19,20,21,23,24,25,26,27,30,33,34,35,36,37,39,40,41,42,61,62,63,64,65,67,68,70]%>
+    $("#sp_bsb_sp_s_2_1").attr("disabled", "disabled");
+    <%@check=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,17,18,19,20,21,23,24,25,26,27,30,33,34,35,36,37,39,40,41,42,61,62,63,64,65,67,68,70,72,73,74,75,76,201,202,220,221,203,204,206,208,222,211,212,213,215]%>
     <%@check.each do |i|%>
     $("#sp_bsb_sp_s_" +<%=i%>).attr("disabled", "disabled");
+    <%end%>
+	<%@check=['sfjk','ycg','sfwtsc','wtsheng','wtshi','wtxian','qydz','qymc','qs','lxr','tel','bsfl']%>
+    <%@check.each do |i|%>
+    $("#sp_bsb_sp_s_<%= "#{i}"%>").attr("disabled", "disabled");
     <%end%>
 
     <%@check=[22,28,38]%>
@@ -706,7 +712,34 @@
 
     $('#sp_bsb_sp_xkz, #sp_bsb_sp_xkz_id').attr("disabled", "disabled");
     <% end %>
+	//如果没有对接
+	<% else %>
+	//根据主检人状态后的数据不允许修改数据（所有数据）
+	<% if ([2,3, 4, 5, 16].include? @sp_bsb["sp_i_state"])%>
+    // [2, 4, 5, 16] 步骤无法修改基本信息
+    $("#province").attr("disabled", "disabled");
+    $("#sp_bsb_sp_s_2_1").attr("disabled", "disabled");
+    <%@check=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,17,18,19,20,21,23,24,25,26,27,30,33,34,35,36,37,39,40,41,42,61,62,63,64,65,67,68,70,72,73,74,75,76,201,202,220,221,203,204,206,208,222,211,212,213,215]%>
+    <%@check.each do |i|%>
+    $("#sp_bsb_sp_s_" +<%=i%>).attr("disabled", "disabled");
+    <%end%>
+	<%@check=['sfjk','ycg','sfwtsc','wtsheng','wtshi','wtxian','qydz','qymc','qs','lxr','tel','bsfl']%>
+    <%@check.each do |i|%>
+    $("#sp_bsb_sp_s_<%= "#{i}"%>").attr("disabled", "disabled");
+    <%end%>
+    <%@check=[22,28,38]%>
+    <%@check.each do |i|%>
+    $("#sp_bsb_sp_d_" +<%=i%>).attr("disabled", "disabled");
+    <%end%>
 
+    <%@check=[15,29,31,32]%>
+    <%@check.each do |i|%>
+    $("#sp_bsb_sp_n_" +<%=i%>).attr("disabled", "disabled");
+    <%end%>
+
+    $('#sp_bsb_sp_xkz, #sp_bsb_sp_xkz_id').attr("disabled", "disabled");
+    <% end %>
+    <% end %>
     index68 = $('#sp_bsb_sp_s_68 option').index($('#sp_bsb_sp_s_68 option:selected'));
 
     if (index68 != -1) {
@@ -1745,8 +1778,8 @@
         dataType: "json",
         success: function (message) {
           if (message.status == '保存成功!') {
-            alert(message.msg);
-            if (SP.sp_bsb.sp_i_state != parseInt($('#sp_bsb_sp_i_state').val())) {
+           alert(message.msg);
+            if (SP.sp_bsb.sp_i_state != parseInt($('#sp_bsb_sp_i_state').val()) || (SP.sp_bsb.sp_i_state ==1 || SP.sp_bsb.sp_i_state ==2) ) {
               location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
             }
           } else if (message.status == '保存出错!') {
@@ -1774,15 +1807,17 @@
     $("#UserPwd").removeAttr("disabled");
      $("#keypic").removeAttr("disabled");
 		$('.ca-form *').removeAttr('disabled readonly');
-    <% elsif ([3,1,2].include? @sp_bsb["sp_i_state"]) && @sp_bsb.wochacha_task_id.present? %>
-    <%@check=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,17,18,19,20,21,23,24,25,26,27,30,33,34,35,36,37,39,40,41,42,61,62,63,64,65,67,68,70,75,76,211,212,213,208,206,222,204,73,74,72,215,201,203,202,220,221]%>
-       <%@check.each do |i|%>
-        $("#sp_bsb_sp_s_" +<%=i%>).attr("disabled", "disabled");
-        <%end%>
-       <%@check=['n_15','n_29','n_31','n_32','d_28','d_38','s_2_1','s_bsfl','xkz','xkz_id','s_sfjk','s_ycg','s_sfwtsc','s_wtsheng','s_wtshi','s_wtxian','s_qydz','s_qymc','s_qs','s_lxr','s_tel']%>
-          <%@check.each do |i|%>
-           $("#sp_bsb_sp_<%= "#{i}"%>").attr("disabled", "disabled");
-          <%end%>
+    <% elsif ([3,1,2].include? @sp_bsb["sp_i_state"]) %>
+		<% if is_open_to_wochacha && @sp_bsb.wochacha_task_id.present? %>
+			<%@check=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,17,18,19,20,21,23,24,25,26,27,30,33,34,35,36,37,39,40,41,42,61,62,63,64,65,67,68,70,75,76,211,212,213,208,206,222,204,73,74,72,215,201,203,202,220,221]%>
+			   <%@check.each do |i|%>
+				$("#sp_bsb_sp_s_" +<%=i%>).attr("disabled", "disabled");
+				<%end%>
+			   <%@check=['n_15','n_29','n_31','n_32','d_28','d_38','s_2_1','s_bsfl','xkz','xkz_id','s_sfjk','s_ycg','s_sfwtsc','s_wtsheng','s_wtshi','s_wtxian','s_qydz','s_qymc','s_qs','s_lxr','s_tel']%>
+				  <%@check.each do |i|%>
+				   $("#sp_bsb_sp_<%= "#{i}"%>").attr("disabled", "disabled");
+				  <%end%>
+		<%end%>  
     <%end%>
 
     $.each(jg_data, function () {
@@ -2500,7 +2535,7 @@
 	<tr>
           <td colspan="5">是否进口</td>
           <td colspan="5"><%= f.select :sp_s_sfjk, options_for_select([["请选择",nil], ["否", "否"], ["是", "是"]], @sp_bsb.sp_s_sfjk), {}, {:style => "width: 100%;"} %></td>
-          <td colspan="4">原产国</td>
+          <td colspan="4">原产地</td>
           <td colspan="4"><%= f.text_field :sp_s_ycg, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
           <td colspan="4">是否委托生产</td>
           <td colspan="5"><%= f.select :sp_s_sfwtsc, options_for_select([["请选择",nil], ["否", "否"], ["是", "是"]], @sp_bsb.sp_s_sfwtsc), {}, {:style => "width: 100%;"} %></td>

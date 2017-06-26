@@ -1,6 +1,8 @@
 #是否使用ca
 open_ca: true
 #打开
-is_open: true
+is_open: false
 #是否打开用户、机构、区域新增修改删除
 is_user_jg: true
+#是否对接我查查
+is_open_to_wochacha: true
