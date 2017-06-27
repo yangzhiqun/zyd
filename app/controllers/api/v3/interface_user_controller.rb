@@ -22,7 +22,7 @@ class Api::V3::InterfaceUserController < ApplicationController
         end
 			end
       #除了重庆 其他省都用这个
-      user.jbxx_sh = params[:bgsfr]
+      user.jbxx_sh = params[:bgfsr]
 
       jg_bsb = JgBsb.find_by_uuid(params["jg_bsb_id"])
       if jg_bsb.nil?
