@@ -74,7 +74,7 @@ class SpBsb < ActiveRecord::Base
     end
 
     if !YAML.load_file("config/use_ca.yml")["is_open"] 
-      @sp_bsbs = @sp_bsbs.where("sp_i_state != 1")  
+     # @sp_bsbs = @sp_bsbs.where("sp_i_state != 1")  
     end
     
     if !params[:sp_order].blank?
