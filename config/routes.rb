@@ -397,6 +397,9 @@ Rails.application.routes.draw do
   post '/ca_login' => 'admin#ca_login'
   post '/ca_logout' => 'admin#logout'
 
+  get 'switch' => 'switch#index'
+  get 'switch/update_radio' => 'switch#update_radio'
+
   post "admin/logout"
   get "admin/logout"
 
