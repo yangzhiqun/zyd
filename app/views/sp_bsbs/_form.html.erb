@@ -1872,9 +1872,15 @@
     });
 
     $('#stamp-dlg .ok').click(function () {
+     $("#sp_bsb_sp_s_16").removeAttr("disabled");
+     $("#sp_bsb_sp_s_55").removeAttr("disabled");
+     $("#sp_bsb_sp_s_56").removeAttr("disabled");
+     $("#sp_bsb_sp_s_70").removeAttr("disabled");
+     $("#sp_bsb_sp_s_20").removeAttr("disabled");
       check_stamp_selector(false);
     });
     $('#stamp-dlg .preview').click(function () {
+     $("#sp_bsb_sp_s_16").removeAttr("disabled");
       var o = $(this);
       var nos = [];
       $.each(o.parents('.well').find('ul .selected'), function (i, sel) {
@@ -2048,6 +2054,7 @@
   	}
 		 // 主检人授权
     $('#ca_stamp-dlg .ok').click(function () {
+    $("#sp_bsb_sp_s_16").removeAttr("disabled");
 	cur_cert_id = ca_sign_form.user_cert_list.value;//证书ID
       var key_password = $('#ca_sign_pwd').val(); //  密码：
       if (!key_password) {
