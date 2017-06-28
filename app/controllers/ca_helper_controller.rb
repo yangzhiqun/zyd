@@ -166,6 +166,7 @@ end
    logger.error cmd
     logger.error result
      nonceStr  =  File.read(Rails.root.join('tmp', "test.txt"))
+     logger.error "result: #{result}"
      render json: {status: 'OK', msg: nonceStr}
   end
 

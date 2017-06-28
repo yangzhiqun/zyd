@@ -715,7 +715,7 @@
 	//如果没有对接
 	<% else %>
 	//根据主检人状态后的数据不允许修改数据（所有数据）
-	<% if ([2,3, 4, 5, 16].include? @sp_bsb["sp_i_state"])%>
+	<% if ([2,3, 4, 5,16].include? @sp_bsb["sp_i_state"])%>
     // [2, 4, 5, 16] 步骤无法修改基本信息
     $("#province").attr("disabled", "disabled");
     $("#sp_bsb_sp_s_2_1").attr("disabled", "disabled");
@@ -1696,6 +1696,11 @@
     });
       //盖章人通过
      $('#save_16').click(function () {
+     $("#sp_bsb_sp_s_16").removeAttr("disabled");
+     $("#sp_bsb_sp_s_55").removeAttr("disabled");
+     $("#sp_bsb_sp_s_56").removeAttr("disabled");
+     $("#sp_bsb_sp_s_70").removeAttr("disabled");
+     $("#sp_bsb_sp_s_20").removeAttr("disabled");
      $('#sp_bsb_sp_i_state').val("9");
      $("#ca_sign_pwd").removeAttr("readonly");
      $("#sp_ca_sign_pwd").removeAttr("readonly");
@@ -1867,9 +1872,15 @@
     });
 
     $('#stamp-dlg .ok').click(function () {
+     $("#sp_bsb_sp_s_16").removeAttr("disabled");
+     $("#sp_bsb_sp_s_55").removeAttr("disabled");
+     $("#sp_bsb_sp_s_56").removeAttr("disabled");
+     $("#sp_bsb_sp_s_70").removeAttr("disabled");
+     $("#sp_bsb_sp_s_20").removeAttr("disabled");
       check_stamp_selector(false);
     });
     $('#stamp-dlg .preview').click(function () {
+     $("#sp_bsb_sp_s_16").removeAttr("disabled");
       var o = $(this);
       var nos = [];
       $.each(o.parents('.well').find('ul .selected'), function (i, sel) {
@@ -2043,6 +2054,7 @@
   	}
 		 // 主检人授权
     $('#ca_stamp-dlg .ok').click(function () {
+    $("#sp_bsb_sp_s_16").removeAttr("disabled");
 	cur_cert_id = ca_sign_form.user_cert_list.value;//证书ID
       var key_password = $('#ca_sign_pwd').val(); //  密码：
       if (!key_password) {
