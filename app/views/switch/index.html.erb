@@ -1,0 +1,11 @@
+<%= form_for :switch, url: '/switch/update_radio', method: :get do |f| %>
+  <% @switchs.each do |key,value| %>
+    <p>
+      <%= key %><%= value %>
+      <label><input name=<%= key %> type="radio" value="true" <%= "checked='true'" if value == true %> />开启 </label>
+      <label><input name=<%= key %> type="radio" value="false" <%= "checked='true'" if value == false %> />关闭 </label>
+    <p>
+  <% end %>
+  <%= f.submit %>
+<% end %>
+
