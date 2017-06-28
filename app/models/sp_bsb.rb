@@ -74,7 +74,7 @@ class SpBsb < ActiveRecord::Base
     end
 
     if !YAML.load_file("config/use_ca.yml")["is_open"] 
-      @sp_bsbs = @sp_bsbs.where("sp_i_state != 1")  
+     # @sp_bsbs = @sp_bsbs.where("sp_i_state != 1")  
     end
     
     if !params[:sp_order].blank?
@@ -1055,6 +1055,7 @@ class SpBsb < ActiveRecord::Base
 	   content = Base64.strict_encode64(reqMessage.to_json)
       cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 114 #{content} #{tmp_file} #{new_ca_filepath}"
       result = `#{cmd}`
+     logger.error "cmd: #{cmd}"
      logger.error result
       if result.strip.include?('200')
 	return new_ca_filepath

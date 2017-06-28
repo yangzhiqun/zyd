@@ -1,0 +1,24 @@
+<div class="panel panel-primary">
+  <div class="panel-heading">开关控制选项</div>
+    <div class="panel-body">
+      <%= form_for :switch, url: '/switch/update_radio', method: :get do |f| %>
+        <fieldset style="padding: 5px 10px;">
+          <table style="table-layout: fixed;" class="search-form table table-bordered table-condensed table-bordered-black">
+            <% @switchs.each do |key,value| %>
+              <tr>
+                <td colspan="2"><%= key %></td>
+                <td colspan="6">
+                  <label><input name=<%= key %> type="radio" value="true" <%= "checked='true'" if value == true %> />开启 </label>
+                  <label><input name=<%= key %> type="radio" value="false" <%= "checked='true'" if value == false %> />关闭 </label>
+                </td>
+              </tr>
+            <% end %>
+          </table>
+          <div class="form-inline">
+            <input type="submit" class="btn btn-primary btn-sm" value="提交">
+          </div>
+        </fieldset>
+      <% end %>
+    </div>
+  </div>
+</div>

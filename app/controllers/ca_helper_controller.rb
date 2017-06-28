@@ -161,6 +161,7 @@ end
      cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 113 #{reqContent} #{filename} "
      result = `#{cmd}`
      nonceStr  =  File.read(Rails.root.join('tmp', "test.txt"))
+     logger.error "result: #{result}"
      render json: {status: 'OK', msg: nonceStr}
   end
 
