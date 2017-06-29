@@ -21,7 +21,7 @@ class User < ActiveRecord::Base
  # validates_exclusion_of :jg_type,  :in => [0] ,  :message  => '请选择机构类型'
   validates_uniqueness_of :id_card, message: "该身份证号已绑定", allow_nil: true, allow_blank: true
   #validates_format_of :id_card, with: /(^\d{15}$)|(^\d{17}([0-9]|X)$)/i, message: '身份证格式不正确', allow_blank: true, allow_nil: true
-  validates_format_of :mobile, with: /(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}/i, message: '手机号格式不正确', allow_nil: true
+  validates_format_of :mobile, with: /(0|86|17951)?(13[0-9]|15[012356789]|17[3678]|18[0-9]|14[57])[0-9]{8}/i, message: '手机号格式不正确', allow_nil: true
   validates_uniqueness_of :user_sign, message: "签名已存在", allow_nil: true, allow_blank: true
   validates_confirmation_of :password
   # validate :password_non_blank
