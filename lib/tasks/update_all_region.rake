@@ -19,12 +19,21 @@ task :update_all_region, [:csv_file] => :environment do |t, args|
   @hash = {}
   @csv = CSV.open(args[:csv_file]).read
                  #原字段       新字段 编号
-  @csv.each{ |c| @hash[c[0]] = [c[1],c[2]] }
+  #@csv.each{ |c| @hash[c[0]] = [c[1],c[2]] }
+  @csv.each do |c|
+    if @hash.has_key?(c[0])
+      # 针对实现可能重名的情况
+      @hash[c[0]+"#"] = [c[1],c[2]]
+    else
+      @hash[c[0]] = [c[1],c[2]]
+    end
+  end
+
   p "----------------------START---------------------"
   JgBsb.all.each do |jg_bsb|
-    jg_bsb.jg_province = @hash[jg_bsb.jg_province][0] if result(0,@hash,jg_bsb.jg_province)
-    jg_bsb.city = @hash[jg_bsb.city][0] if result(1,@hash,jg_bsb.city)
-    jg_bsb.country = @hash[jg_bsb.country][0] if result(2,@hash,jg_bsb.country)
+    jg_bsb.jg_province = @hash[remove_space(jg_bsb.jg_province)][0] if result(0,@hash,remove_space(jg_bsb.jg_province))
+    jg_bsb.city = @hash[remove_space(jg_bsb.city)+choose_result(1,@hash,remove_space(jg_bsb.city))][0] if result(1,@hash,remove_space(jg_bsb.city))
+    jg_bsb.country = @hash[remove_space(jg_bsb.country)+choose_result(2,@hash,remove_space(jg_bsb.country))][0] if result(2,@hash,remove_space(jg_bsb.country))
     if jg_bsb.changed?
       jg_bsb.save
       @logger.info { "JgBsb >>> id:#{jg_bsb.id},jg_province:#{jg_bsb.jg_province},city:#{jg_bsb.city},country:#{jg_bsb.country}" } 
@@ -33,9 +42,9 @@ task :update_all_region, [:csv_file] => :environment do |t, args|
   @logger.info { "1"*80 }
   p "****************机构更新结束****************"
   User.all.each do |user|
-    user.user_s_province = @hash[user.user_s_province][0] if result(0,@hash,user.user_s_province)
-    user.prov_city = @hash[user.prov_city][0] if result(1,@hash,user.prov_city)
-    user.prov_country = @hash[user.prov_country][0] if result(2,@hash,user.prov_country)
+    user.user_s_province = @hash[remove_space(user.user_s_province)][0] if result(0,@hash,remove_space(user.user_s_province))
+    user.prov_city = @hash[remove_space(user.prov_city)+choose_result(1,@hash,remove_space(user.prov_city))][0] if result(1,@hash,remove_space(user.prov_city))
+    user.prov_country = @hash[remove_space(user.prov_country)+choose_result(2,@hash,remove_space(user.prov_country))][0] if result(2,@hash,remove_space(user.prov_country))
     if user.changed?
       user.save
       @logger.info { "User >>> id:#{user.id},user_s_province:#{user.user_s_province},prov_city:#{user.prov_city}," } 
@@ -45,11 +54,11 @@ task :update_all_region, [:csv_file] => :environment do |t, args|
   p "****************用户更新结束****************"
   SpBsb.all.each do |sp_bsb|
     sp_bsb.sp_s_3   = @hash[sp_bsb.sp_s_3][0] if result(0,@hash,sp_bsb.sp_s_3)
-    sp_bsb.sp_s_4   = @hash[sp_bsb.sp_s_4][0] if result(1,@hash,sp_bsb.sp_s_4)
-    sp_bsb.sp_s_5   = @hash[sp_bsb.sp_s_5][0] if result(2,@hash,sp_bsb.sp_s_5)
+    sp_bsb.sp_s_4   = @hash[remove_space(sp_bsb.sp_s_4)+choose_result(1,@hash,remove_space(sp_bsb.sp_s_4))][0] if result(1,@hash,remove_space(sp_bsb.sp_s_4))
+    sp_bsb.sp_s_5   = @hash[remove_space(sp_bsb.sp_s_5)+choose_result(2,@hash,remove_space(sp_bsb.sp_s_5))][0] if result(2,@hash,remove_space(sp_bsb.sp_s_5))
     sp_bsb.sp_s_202 = @hash[sp_bsb.sp_s_202][0] if result(0,@hash,sp_bsb.sp_s_202)
-    sp_bsb.sp_s_220 = @hash[sp_bsb.sp_s_220][0] if result(1,@hash,sp_bsb.sp_s_220)
-    sp_bsb.sp_s_221 = @hash[sp_bsb.sp_s_221][0] if result(2,@hash,sp_bsb.sp_s_221)
+    sp_bsb.sp_s_220 = @hash[remove_space(sp_bsb.sp_s_220)+choose_result(1,@hash,remove_space(sp_bsb.sp_s_220))][0] if result(1,@hash,remove_space(sp_bsb.sp_s_220))
+    sp_bsb.sp_s_221 = @hash[remove_space(sp_bsb.sp_s_221)+choose_result(2,@hash,remove_space(sp_bsb.sp_s_221))][0] if result(2,@hash,remove_space(sp_bsb.sp_s_221))
     if sp_bsb.changed?
       sp_bsb.save
       @logger.info { "SpBsb >>> id:#{sp_bsb.id},#{sp_bsb.sp_s_3},#{sp_bsb.sp_s_4},#{sp_bsb.sp_s_5},#{sp_bsb.sp_s_202},#{sp_bsb.sp_s_220},#{sp_bsb.sp_s_221}" } 
@@ -61,16 +70,16 @@ task :update_all_region, [:csv_file] => :environment do |t, args|
   arr.each do |ar|
     ar.constantize.all.each do |wtyp_czb|
       wtyp_czb.bsscqy_sheng = @hash[wtyp_czb.bsscqy_sheng][0] if result(0,@hash,wtyp_czb.bsscqy_sheng)
-      wtyp_czb.bsscqy_shi   = @hash[wtyp_czb.bsscqy_shi][0]   if result(1,@hash,wtyp_czb.bsscqy_shi)
-      wtyp_czb.bsscqy_xian  = @hash[wtyp_czb.bsscqy_xian][0]  if result(2,@hash,wtyp_czb.bsscqy_xian)
-      wtyp_czb.sp_s_220     = @hash[wtyp_czb.sp_s_220][0]     if result(1,@hash,wtyp_czb.sp_s_220)
-      wtyp_czb.sp_s_221     = @hash[wtyp_czb.sp_s_221][0]     if result(2,@hash,wtyp_czb.sp_s_221)
+      wtyp_czb.bsscqy_shi   = @hash[remove_space(wtyp_czb.bsscqy_shi)+choose_result(1,@hash,remove_space(wtyp_czb.bsscqy_shi))][0] if result(1,@hash,remove_space(wtyp_czb.bsscqy_shi))
+      wtyp_czb.bsscqy_xian  = @hash[remove_space(wtyp_czb.bsscqy_xian)+choose_result(2,@hash,remove_space(wtyp_czb.bsscqy_xian))][0] if result(2,@hash,remove_space(wtyp_czb.bsscqy_xian))
+      wtyp_czb.sp_s_220     = @hash[remove_space(wtyp_czb.sp_s_220)+choose_result(1,@hash,remove_space(wtyp_czb.sp_s_220))][0] if result(1,@hash,remove_space(wtyp_czb.sp_s_220))
+      wtyp_czb.sp_s_221     = @hash[remove_space(wtyp_czb.sp_s_221)+choose_result(2,@hash,remove_space(wtyp_czb.sp_s_221))][0] if result(2,@hash,remove_space(wtyp_czb.sp_s_221))
 
       wtyp_czb.bcydw_sheng  = @hash[wtyp_czb.bcydw_sheng][0] if result(0,@hash,wtyp_czb.bcydw_sheng)
-      wtyp_czb.bcydw_shi    = @hash[wtyp_czb.bcydw_shi][0]   if result(1,@hash,wtyp_czb.bcydw_shi)
-      wtyp_czb.bcydw_xian   = @hash[wtyp_czb.bcydw_xian][0]  if result(2,@hash,wtyp_czb.bcydw_xian)
-      wtyp_czb.sp_s_4       = @hash[wtyp_czb.sp_s_4][0]      if result(1,@hash,wtyp_czb.sp_s_4)
-      wtyp_czb.sp_s_5       = @hash[wtyp_czb.sp_s_5][0]      if result(2,@hash,wtyp_czb.sp_s_5)
+      wtyp_czb.bcydw_shi    = @hash[remove_space(wtyp_czb.bcydw_shi)+choose_result(1,@hash,remove_space(wtyp_czb.bcydw_shi))][0] if result(1,@hash,remove_space(wtyp_czb.bcydw_shi))
+      wtyp_czb.bcydw_xian   = @hash[remove_space(wtyp_czb.bcydw_xian)+choose_result(2,@hash,remove_space(wtyp_czb.bcydw_xian))][0] if result(2,@hash,remove_space(wtyp_czb.bcydw_xian))
+      wtyp_czb.sp_s_4       = @hash[remove_space(wtyp_czb.sp_s_4)+choose_result(1,@hash,remove_space(wtyp_czb.sp_s_4))][0] if result(1,@hash,remove_space(wtyp_czb.sp_s_4))
+      wtyp_czb.sp_s_5       = @hash[remove_space(wtyp_czb.sp_s_5)+choose_result(2,@hash,remove_space(wtyp_czb.sp_s_5))][0] if result(2,@hash,remove_space(wtyp_czb.sp_s_5))
       if wtyp_czb.changed?
         wtyp_czb.save
         @logger.info { "#{ar} >>> id:#{wtyp_czb.id},#{wtyp_czb.bsscqy_sheng},#{wtyp_czb.bsscqy_shi},#{wtyp_czb.bsscqy_xian}" } 
@@ -85,12 +94,25 @@ end
 # 判断是否可以更改字段
 # 0省 1市 2县
 def result(num,hash,name)
-  if hash.has_key?(name)  
-    if hash[name][1].scan(/\./).length == num 
-      return true
-    end 
-  end 
+  unless name.nil?
+    if hash.has_key?(name)
+      if hash[name][1].scan(/\./).length == num
+        return true
+      elsif hash.has_key?(name+"#")
+        return true if hash[name+"#"][1].scan(/\./).length == num
+      end
+    end
+  end
   return false
+end
+
+def choose_result(num,hash,name)
+  hash[name+"#"][1].scan(/\./).length == num ? "#" : ""
+end
+
+def remove_space(str)
+  result = str.nil? ? nil : str.gsub(/\s|　/,"")
+  return result
 end
 
 # csv 第一列：老数据;第二列：新数据;第三列：level
