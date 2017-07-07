@@ -7,6 +7,7 @@ development:
   reconnect: false
   database: jilin_ceshi
   pool: 25
+  #host: '10.0.39.208'
   username: root
   password: BJzyd82510
 
@@ -15,7 +16,7 @@ production:
   encoding: utf8
   collation: utf8_unicode_ci
   reconnect: false
-  database: jilin_ceshi
+  database: jilin_cehsi
   pool: 25
   #host: '10.0.39.208'
   username: root
