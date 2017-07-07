@@ -363,7 +363,6 @@ class TasksController < ApplicationController
 	  if @jg_bsb.jg_type ==1
       begin
         super_jg = JgBsbSuper.where(super_jg_bsb_id: @jg_bsb.id ).group("jg_bsb_id")
-logger.error super_jg.to_json
         jg_names=[]
         jg_names.push(@jg_bsb.jg_name)
         super_jg.each do |j|
@@ -376,8 +375,6 @@ logger.error super_jg.to_json
     elsif @jg_bsb.jg_type ==3
       jg_names=[@jg_bsb.jg_name]
     end
-logger.error @jg_bsb.id
-logger.error jg_names
     @rwly = all_super_departments 
     case params[:tab].to_i
       when 0
@@ -435,7 +432,7 @@ logger.error jg_names
           @pad_sp_bsbs = PadSpBsb.where(:sp_i_state => ::PadSpBsb::Step::SAMPLE_REFUSED, :sp_s_43 => jg_names)
         end
      end
-
+    
     unless params[:begin_time].blank?
       @begin_time = DateTime.parse(params[:begin_time]).beginning_of_day
     else

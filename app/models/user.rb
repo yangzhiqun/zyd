@@ -21,7 +21,7 @@ class User < ActiveRecord::Base
  # validates_exclusion_of :jg_type,  :in => [0] ,  :message  => '请选择机构类型'
   validates_uniqueness_of :id_card, message: "该身份证号已绑定", allow_nil: true, allow_blank: true
   #validates_format_of :id_card, with: /(^\d{15}$)|(^\d{17}([0-9]|X)$)/i, message: '身份证格式不正确', allow_blank: true, allow_nil: true
-  validates_format_of :mobile, with: /(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}/i, message: '手机号格式不正确', allow_nil: true
+  validates_format_of :mobile, with: /(0|86|17951)?(13[0-9]|15[012356789]|17[3678]|18[0-9]|14[57])[0-9]{8}/i, message: '手机号格式不正确', allow_nil: true
   validates_uniqueness_of :user_sign, message: "签名已存在", allow_nil: true, allow_blank: true
   validates_confirmation_of :password
   # validate :password_non_blank
@@ -346,7 +346,7 @@ class User < ActiveRecord::Base
   # 后处理 处置安排
   def hcz_czap
     (self.hcz_permission & HczPermission::CZAP > 0) ? 1 : 0
-  end
+ end
 
   # 后处理 处置安排
   def hcz_czap=(v)
@@ -626,6 +626,11 @@ class User < ActiveRecord::Base
 
  def is_sheng?
    self.is_account_manager && self.user_i_js == 1 && self.admin_level == 1
+ end
+
+ #省市县管理员
+ def is_shengshixian?
+   self.is_account_manager && self.user_i_js == 1 && self.admin_level >0
  end
 
   def jgname

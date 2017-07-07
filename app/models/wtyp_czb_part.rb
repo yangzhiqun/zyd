@@ -422,37 +422,37 @@ class WtypCzbPart < ActiveRecord::Base
 
       # 筛选 流通/餐饮
       if params[:hccz_type].eql?('SC') #current_user.hccz_type == User::HcczType::SC
-        wtyp_czbs = wtyp_czbs.where('wtyp_czb_type IN (?)', [::WtypCzbPart::Type::SC])
+        wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.wtyp_czb_type IN (?)', [::WtypCzbPart::Type::SC])
         # 筛选 省\市\县
         if current_user.hccz_level == User::HcczLevel::Sheng
-          wtyp_czbs = wtyp_czbs.where('bsscqy_sheng = ?', current_user.user_s_province)
+          wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.bsscqy_sheng = ?', current_user.user_s_province)
         elsif current_user.hccz_level == User::HcczLevel::Shi
-          wtyp_czbs = wtyp_czbs.where('sp_s_220 = ? or sp_s_4 = ? or bsscqy_shi = ? or bcydw_shi = ?',current_user.prov_city, current_user.prov_city,current_user.prov_city,current_user.prov_city)
+          wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.sp_s_220 = ? or wtyp_czb_parts.sp_s_4 = ? or wtyp_czb_parts.bsscqy_shi = ? or wtyp_czb_parts.bcydw_shi = ?',current_user.prov_city, current_user.prov_city,current_user.prov_city,current_user.prov_city)
         elsif current_user.hccz_level == User::HcczLevel::Xian
-           wtyp_czbs = wtyp_czbs.where('sp_s_221 = ? or sp_s_5 = ? or bcydw_xian = ? or bsscqy_xian=?',current_user.prov_country, current_user.prov_country,current_user.prov_country,current_user.prov_country)
+           wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.sp_s_221 = ? or wtyp_czb_parts.sp_s_5 = ? or wtyp_czb_parts.bcydw_xian = ? or wtyp_czb_parts.bsscqy_xian=?',current_user.prov_country, current_user.prov_country,current_user.prov_country,current_user.prov_country)
         else
           wtyp_czbs = wtyp_czbs.where('1=3')
         end
       elsif params[:hccz_type].eql?('JY') #current_user.hccz_type == User::HcczType::CY
-        wtyp_czbs = wtyp_czbs.where('wtyp_czb_type IN (?)', [::WtypCzbPart::Type::LT, ::WtypCzbPart::Type::CY])
+        wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.wtyp_czb_type IN (?)', [::WtypCzbPart::Type::LT, ::WtypCzbPart::Type::CY])
 
         # 筛选 省\市\县
         if current_user.hccz_level == User::HcczLevel::Sheng
-          wtyp_czbs = wtyp_czbs.where('bcydw_sheng = ?', current_user.user_s_province)
+          wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.bcydw_sheng = ?', current_user.user_s_province)
         elsif current_user.hccz_level == User::HcczLevel::Shi
-          wtyp_czbs = wtyp_czbs.where('sp_s_220 = ? or sp_s_4 = ? or bsscqy_shi = ? or bcydw_shi = ?',current_user.prov_city, current_user.prov_city,current_user.prov_city,current_user.prov_city)
+          wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.sp_s_220 = ? or wtyp_czb_parts.sp_s_4 = ? or wtyp_czb_parts.bsscqy_shi = ? or wtyp_czb_parts.bcydw_shi = ?',current_user.prov_city, current_user.prov_city,current_user.prov_city,current_user.prov_city)
         elsif current_user.hccz_level == User::HcczLevel::Xian
-          wtyp_czbs = wtyp_czbs.where('sp_s_221 = ? or sp_s_5 = ? or bcydw_xian = ? or bsscqy_xian=?',current_user.prov_country, current_user.prov_country,current_user.prov_country,current_user.prov_country)
+          wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.sp_s_221 = ? or wtyp_czb_parts.sp_s_5 = ? or wtyp_czb_parts.bcydw_xian = ? or wtyp_czb_parts.bsscqy_xian=?',current_user.prov_country, current_user.prov_country,current_user.prov_country,current_user.prov_country)
        else
           wtyp_czbs = wtyp_czbs.where('1=4')
        end
      elsif params[:hccz_type].eql?('QB')
        if current_user.hccz_level == User::HcczLevel::Sheng
-         wtyp_czbs = wtyp_czbs.where('bsscqy_sheng = ?', current_user.user_s_province)
+         wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.bsscqy_sheng = ?', current_user.user_s_province)
        elsif current_user.hccz_level == User::HcczLevel::Shi
-         wtyp_czbs = wtyp_czbs.where('sp_s_220 = ? or sp_s_4 = ? or bsscqy_shi = ? or bcydw_shi = ?',current_user.prov_city, current_user.prov_city,current_user.prov_city,current_user.prov_city)
+         wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.sp_s_220 = ? or wtyp_czb_parts.sp_s_4 = ? or wtyp_czb_parts.bsscqy_shi = ? or wtyp_czb_parts.bcydw_shi = ?',current_user.prov_city, current_user.prov_city,current_user.prov_city,current_user.prov_city)
        elsif current_user.hccz_level == User::HcczLevel::Xian
-         wtyp_czbs = wtyp_czbs.where('sp_s_221 = ? or sp_s_5 = ? or bcydw_xian = ? or bsscqy_xian=?',current_user.prov_country, current_user.prov_country,current_user.prov_country,    current_user.prov_country)
+         wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.sp_s_221 = ? or wtyp_czb_parts.sp_s_5 = ? or wtyp_czb_parts.bcydw_xian = ? or wtyp_czb_parts.bsscqy_xian=?',current_user.prov_country, current_user.prov_country,current_user.prov_country,    current_user.prov_country)
        else
          wtyp_czbs = wtyp_czbs.where('1=5') 
        end
@@ -468,40 +468,47 @@ class WtypCzbPart < ActiveRecord::Base
     end
 =end
     if params[:hccz_type].eql?('SC')
-      wtyp_czbs = wtyp_czbs.where('wtyp_czb_type IN (?)', [::WtypCzbPart::Type::SC])
+      wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.wtyp_czb_type IN (?)', [::WtypCzbPart::Type::SC])
     elsif params[:hccz_type].eql?('JY')
-      wtyp_czbs = wtyp_czbs.where('wtyp_czb_type IN (?)', [::WtypCzbPart::Type::LT, ::WtypCzbPart::Type::CY])
+      wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.wtyp_czb_type IN (?)', [::WtypCzbPart::Type::LT, ::WtypCzbPart::Type::CY])
     end
     # 时间范围筛选
-    wtyp_czbs = wtyp_czbs.where('updated_at between ? and ?', params[:begin_at], params[:end_at])
+    wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.updated_at between ? and ?', params[:begin_at], params[:end_at])
 
     # 样品名称
     unless params[:ypmc].blank?
-      wtyp_czbs = wtyp_czbs.where('ypmc like ?', "%#{params[:ypmc]}%")
+      wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.ypmc like ?', "%#{params[:ypmc]}%")
     end
 
     # 被抽样单位名称
     unless params[:bcydwmc].blank?
-      wtyp_czbs = wtyp_czbs.where('bcydwmc like ?', "%#{params[:bcydwmc]}%")
+      wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.bcydwmc like ?', "%#{params[:bcydwmc]}%")
+    end
+    
+    if !params[:sp_bsa].blank? and params[:sp_bsa]!="请选择"
+      wtyp_czbs =wtyp_czbs.joins(:sp_bsb).where("sp_bsbs.sp_s_70 = ?", params[:sp_bsa]) 
     end
 
+    if !params[:sp_bsb].blank? and params[:sp_bsb]!="请选择"
+     wtyp_czbs =wtyp_czbs.joins(:sp_bsb).where("sp_bsbs.sp_s_67 = ?", params[:sp_bsb])
+    end
     # 被抽样单位市区
     unless params[:bcydw_shi].blank?
-      wtyp_czbs = wtyp_czbs.where('bcydw_shi = ? or sp_s_4=?',params[:bcydw_shi],params[:bcydw_shi])
+      wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.bcydw_shi = ? or sp_s_4=?',params[:bcydw_shi],params[:bcydw_shi])
     end
 
     # 表示生产企业名称
     unless params[:bsscqymc].blank?
-      wtyp_czbs = wtyp_czbs.where('bsscqymc like ?', "%#{params[:bsscqymc]}%")
+      wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.bsscqymc like ?', "%#{params[:bsscqymc]}%")
     end
 
     # 表示生产企业市区
     unless params[:bsscqy_shi].blank?
-      wtyp_czbs = wtyp_czbs.where('bsscqy_shi = ? or sp_s_220 = ?' , params[:bsscqy_shi] ,params[:bsscqy_shi] )
+      wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.bsscqy_shi = ? or wtyp_czb_parts.sp_s_220 = ?' , params[:bsscqy_shi] ,params[:bsscqy_shi] )
     end
 
     unless params[:cjbh].blank?
-      wtyp_czbs = wtyp_czbs.where('cjbh like ?', "%#{params[:cjbh]}%")
+      wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.cjbh like ?', "%#{params[:cjbh]}%")
     end
 
     if !params[:rwly].blank? and  params[:rwly] !="全部"

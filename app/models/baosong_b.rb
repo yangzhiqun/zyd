@@ -153,11 +153,11 @@ class BaosongB < ActiveRecord::Base
           item.save
           category_ids[:item_ids].push(item.id)
 
-          ACategory.where('id NOT IN (?) AND identifier = ?', category_ids[:a_category_ids], self.identifier).destroy_all
-          BCategory.where('id NOT IN (?) AND identifier = ?', category_ids[:b_category_ids], self.identifier).destroy_all
-          CCategory.where('id NOT IN (?) AND identifier = ?', category_ids[:c_category_ids], self.identifier).destroy_all
-          DCategory.where('id NOT IN (?) AND identifier = ?', category_ids[:d_category_ids], self.identifier).destroy_all
-          CheckItem.where('id NOT IN (?) AND identifier = ?', category_ids[:item_ids], self.identifier).destroy_all
+          ACategory.where('id NOT IN (?) AND identifier = ?', category_ids[:a_category_ids].uniq, self.identifier).destroy_all
+          BCategory.where('id NOT IN (?) AND identifier = ?', category_ids[:b_category_ids].uniq, self.identifier).destroy_all
+          CCategory.where('id NOT IN (?) AND identifier = ?', category_ids[:c_category_ids].uniq, self.identifier).destroy_all
+          DCategory.where('id NOT IN (?) AND identifier = ?', category_ids[:d_category_ids].uniq, self.identifier).destroy_all
+          CheckItem.where('id NOT IN (?) AND identifier = ?', category_ids[:item_ids].uniq, self.identifier).destroy_all
 
         end
       end
