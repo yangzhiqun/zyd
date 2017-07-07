@@ -1411,6 +1411,21 @@
         return false;
       }
       <%end%>
+      <%@check=["bgfl"]%>
+      <%@check.each do |i|%>
+      if ($.trim($("#sp_bsb_sp_" + "<%=i%>").val()).length == 0) {
+       var info = "";
+       info = "<%=i%>";
+       if(info=="bgfl"){
+        info = "报告分类";
+       }
+       modalHide();
+       alert(info + " ,该项为必填项");
+       $("#sp_bsb_sp_" + "<%=i%>").focus();
+       return false;
+      }
+     <%end%>
+
       varDate = $("#sp_bsb_sp_d_86").val();
       varData = varDate.split("-")
       varDate = new Date(varData[0], varData[1] - 1, varData[2]);
@@ -2994,9 +3009,11 @@
       <% elsif @sp_bsb["sp_i_state"]==8&&session[:change_js]==8 %>
           <%= f.submit(vaule="牵头单位审核通过", options={"id" => "save_4", :class => "btn btn-xs btn-success"}) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
-      <% elsif @sp_bsb["sp_i_state"]==9&&current_user.is_admin? %>
+      <% elsif @sp_bsb["sp_i_state"]==9&&(current_user.is_admin?||current_user.is_shengshixian?) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
+          <% if current_user.is_admin?  %>
           <%= f.submit(vaule="秘书处修改", options={"id" => "admin_alter", :class => "btn btn-xs btn-primary"}) %>
+          <% end%>
       <% elsif @sp_bsb["sp_i_state"]==10 %>
           <%= f.submit(vaule="临时保存", options={"id" => "save", :class => "btn btn-xs btn-default"}) %>
           <%= f.submit(vaule="基本信息提交入库", options={"id" => "submit1", :class => "btn btn-xs btn-success"}) %>
@@ -3006,7 +3023,8 @@
     <br>
     <br>
 <% end %>
-<% if @sp_bsb.is_bad_report? and !is_opne_ca %>
+<%# if @sp_bsb.is_bad_report? and !is_opne_ca %>
+<% if @sp_bsb.is_bad_report? %>
     <br>
     <hr>
     <br>

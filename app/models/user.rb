@@ -346,7 +346,7 @@ class User < ActiveRecord::Base
   # 后处理 处置安排
   def hcz_czap
     (self.hcz_permission & HczPermission::CZAP > 0) ? 1 : 0
-  end
+ end
 
   # 后处理 处置安排
   def hcz_czap=(v)
@@ -626,6 +626,11 @@ class User < ActiveRecord::Base
 
  def is_sheng?
    self.is_account_manager && self.user_i_js == 1 && self.admin_level == 1
+ end
+
+ #省市县管理员
+ def is_shengshixian?
+   self.is_account_manager && self.user_i_js == 1 && self.admin_level >0
  end
 
   def jgname

@@ -121,7 +121,8 @@
         }
       }
     });
-
+    $('#sp_bsa').select2({theme: 'bootstrap', placeholder: '报送A类'});
+    $('#sp_bsb').select2({theme: 'bootstrap', placeholder: '报送B类'}); 
     $('#rwly').select2({theme: 'bootstrap', placeholder: '任务来源'});
     $('.yycz-list tbody .dopreview').click(function () {
       var o = $(this);
@@ -133,6 +134,28 @@
     $("#preview").load(function () {
       $(this).height($(this).contents().find("body").height());
     });
+   $('#sp_bsa').change(function () {
+      var o = $(this);
+      if (o.val() != '') {
+        $.get('/baosong_bs/by_name.json', {a_name: o.val()}, function (data) {
+          if (data.status == 'OK') {
+           $('#sp_bsb,#sp_dl, #s6').empty();
+           $("<option>").text("请选择").appendTo($('#sp_bsb'));
+           $.each(data.data, function () {
+            $("<option>").attr('data-identifier', this.identifier).attr("value", this.name).text(this.name).appendTo($('#sp_bsb'));
+           });
+           if (("<%= params[:sp_bsa] %>" != "请选择") && ("<%= params[:sp_bsa] %>".length != 0)) {
+           $("#sp_bsb").val("<%= params[:sp_bsb] %>");
+           $('#sp_bsb').change();
+           }
+          }
+        }, "json")
+      }
+     });
+   if (("<%= params[:sp_bsa] %>" != "请选择") && ("<%= params[:sp_bsa] %>".length != 0)){
+         $('#sp_bsa').change();
+   };
+
   });
 </script>
 
@@ -194,13 +217,27 @@
       </td>
     </tr>
     <tr>
-      <td colspan="4">报告分类</td>
-      <td colspan="6"><%= select_tag 'bgfl', options_for_select([%w{全部 QB}, %w{一般不合格报告 YBBHG}, %w{24小时限时报告 24H}, %w{一般问题报告 YBWTBG}], params[:bgfl]), {class: 'form-control input-sm'} %></td>
-      <td colspan="4">环节</td>
+     <td colspan="4"> 报告分类 </td>
+      <td colspan="6">
+      <%= select_tag 'bgfl', options_for_select([%w{全部 QB}, %w{一般不合格报告 YBBHG}, %w{24小时限时报告 24H}, %w{一般问题报告 YBWTBG}], params[:bgfl]),:class => 'form-control input-sm' %></td>
+      </td>
+      <td colspan="4">
+        <span>环节</span>
+      </td>
       <td colspan="6"><%= select_tag :hccz_type, options_for_select([%w{全部 QB},%w{生产 SC}, %w{经营 JY}], params[:hccz_type]), class: 'form-control input-sm' %></td>
       <td colspan="4"></td>
       <td colspan="6"></td>
     </tr>
+    <tr>
+      <td colspan="4"> 报送A类 </td>
+      <td colspan="6">
+      <%= select_tag 'sp_bsa', options_for_select(BaosongA.all.map { |b| [b.name, b.name, {'parentid' => b.rwlylx}] }.unshift(["请选择", "请选择"]), params[:sp_bsa]),:class => 'form-control input-sm' %>
+      </td>
+      <td colspan="4"> 报送B类 </td>
+      <td colspan="6"><%= select_tag 'sp_bsb','', :class=>"form-control input-sm" %></td>
+      <td colspan="4"></td>
+      <td colspan="6"></td>
+   </tr>
   </table>
   <input type="hidden" value="<%= params[:current_tab] %>" name="current_tab">
   <button type="submit" class="btn btn-primary btn-sm">搜索</button>
@@ -246,7 +283,7 @@
   <% if @wtyp_czbs.nil? %>
       <p>暂无未安排数据</p>
   <% else %>
-      <% if WtypCzbPart.revert_enabled?(params[:current_tab], params[:state].to_i, current_user) %>
+      <% if WtypCzbPart.revert_enabled?(params[:current_tab], params[:state].to_i, current_user) and  params[:state].to_i!=0 %>
           <div class="well well-sm">
             <div class="input-group">
               <input type="text" class="form-control" name="thyy" width="300px;" id="thyy" placeholder="请填写退回原因">
@@ -262,6 +299,8 @@
         <tr>
           <th width="30" align="center"><input type="checkbox" id="select-all"></th>
           <th>采样编号</th>
+          <th>领取单位</th>
+          <th>领取时间&emsp;&emsp;</th>
           <th>预警信息&emsp;&emsp;&emsp;&emsp;&emsp;</th>
           <th>抽样环节</th>
           <th>样品名称</th>
@@ -309,6 +348,8 @@
                         <span class="label label-danger">未行政处罚</span>
                     <% end %>
                   </td>
+                  <td><%= wtyp_czb.blbm %></td>
+                  <td><%= wtyp_czb.blsj.strftime("%Y-%m-%d") if !wtyp_czb.blsj.nil? %></td>
                   <td><%= wtyp_czb.scqy_info %><br><%= wtyp_czb.bhg_item_info %><br><%= wtyp_czb.spxl_info %></td>
                   <td><%= wtyp_czb.wtyp_czb_type_desc %></td>
                   <td><%= wtyp_czb.ypmc %></td>

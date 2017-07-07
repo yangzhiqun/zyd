@@ -693,8 +693,8 @@ end
         end
         if (params[:sp_bsb][:sp_i_state].to_i == 3 or params[:sp_bsb][:sp_i_state].to_i == 1) and !params[:sp_bsb][:sp_s_55].blank?
           #sp_i_state = params[:sp_bsb][:sp_i_state].to_i
-          if current_user.is_admin? && @sp_bsb.sp_i_state == 9
-            @role_name = '秘书处退回'
+          if (current_user.is_admin?||current_user.is_shengshixian? )&& @sp_bsb.sp_i_state == 9
+            @role_name = "秘书处_#{current_user.uid}_退回"
 
             @sp_bsb.sp_i_backtimes = @sp_bsb.sp_i_backtimes.to_i + 1 if @sp_bsb.sp_i_state == 9
             sp_i_state = 5
