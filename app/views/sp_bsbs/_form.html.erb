@@ -1413,15 +1413,15 @@
       <%end%>
       <%@check=["bgfl"]%>
       <%@check.each do |i|%>
-      if ($.trim($("#sp_bsb_sp_" + "<%=i%>").val()).length == 0) {
-       var info = "";
+      if ($.trim($("#sp_bsb_<%= "#{i}"%>").val()).length == 0) {
+        var info = "";
        info = "<%=i%>";
        if(info=="bgfl"){
         info = "报告分类";
        }
        modalHide();
        alert(info + " ,该项为必填项");
-       $("#sp_bsb_sp_" + "<%=i%>").focus();
+       $("#sp_bsb_<%= "#{i}"%>").focus();
        return false;
       }
      <%end%>
