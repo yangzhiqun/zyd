@@ -219,6 +219,29 @@
         });
     }
     $(function () {
+            $("#wt1").hide();
+            $("#wt2").hide();
+            $("#wt3").hide(); 
+            if ($('#sp_bsb_sp_s_sfwtsc option:selected').val() == "是" ){
+                $("#wt1").show();
+                $("#wt2").show();
+                $("#wt3").show();
+                $("#ybz").attr("rowSpan","11");  
+             }
+        $('#sp_bsb_sp_s_sfwtsc').change(function () {
+           if ($('#sp_bsb_sp_s_sfwtsc option:selected').val() == "是" ){
+               $("#wt1").show();
+               $("#wt2").show();
+               $("#wt3").show();
+               $("#ybz").attr("rowSpan","11");  
+           }   
+           if ($('#sp_bsb_sp_s_sfwtsc option:selected').val() == "否" ){
+               $("#wt1").hide();
+               $("#wt2").hide();
+               $("#wt3").hide();
+               $("#ybz").attr("rowSpan","8");  
+           }
+       })
 
         // 查看标准
         $('body').delegate('.check-detail', 'click', function (e) {
@@ -938,7 +961,7 @@
           <td colspan="7"><%= @sp_bsb.sp_s_25 %></td>
         </tr>
         <tr>
-          <td rowspan="7" colspan="3">预包装<br>产品*</td>
+          <td id="ybz" rowspan="8" colspan="3">预包装<br>产品*</td>
           <td colspan="5">样品规格*</td>
           <td colspan="8"><%= @sp_bsb.sp_s_26 %></td>
           <td colspan="5">样品批号*</td>
@@ -962,8 +985,6 @@
         <td colspan="4"><%= @sp_bsb.sp_s_74 %></td>
         <td colspan="2">单价*</td>
         <td colspan="3"><%= @sp_bsb.sp_s_204 %></td>
-        <td colspan="4">是否出口*</td>
-        <td colspan="5"><%= @sp_bsb.sp_s_205 %></td>
         </tr>
         <tr>
           <td colspan="5">抽样基数/批量*</td>
@@ -992,6 +1013,39 @@
           <td colspan="4"><%= @sp_bsb.sp_s_75 %></td>
           <td colspan="4">生产企业电话*</td>
           <td colspan="5"><%= @sp_bsb.sp_s_76 %></td>
+        </tr>
+        <tr>
+          <td colspan="5">是否进口</td>
+          <td colspan="5"><%= f.select :sp_s_sfjk, options_for_select([["请选择",nil], ["否", "否"], ["是", "是"]], @sp_bsb.sp_s_sfjk), {}, {:style => "width: 100%;"} %></td>
+          <td colspan="4">原产地</td>
+          <td colspan="4"><%= f.text_field :sp_s_ycg, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="4">是否委托生产</td>
+          <td colspan="5"><%= f.select :sp_s_sfwtsc, options_for_select([["请选择",nil], ["否", "否"], ["是", "是"]], @sp_bsb.sp_s_sfwtsc), {}, {:style => "width: 100%;"} %></td>
+        </tr>
+        <tr id="wt1">
+          <td colspan="5">委托企业地址</td>
+          <td colspan="5" style="border-right:none;">
+              省：<%= @sp_bsb.sp_s_wtsheng %>
+          </td>
+          <td colspan="5" style="border-right:none; border-left:none">
+              市：<%= @sp_bsb.sp_s_wtshi %>
+          </td>
+          <td colspan="5" style="border-left:none;">
+              县：<%= @sp_bsb.sp_s_wtxian %>
+          </td>
+          </td>
+          <td colspan="7"><%= f.text_field :sp_s_qydz, :class => "inputText", placeholder: '请填写详细地址', :style => "width: 100%; height: 19px" %></td>
+        <tr id="wt2">
+          <td colspan="5">委托企业名称</td>
+          <td colspan="8"><%= f.text_field :sp_s_qymc, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="5">委托生产许可证编号</td>
+          <td colspan="9"><%= f.text_field :sp_s_qs, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr id="wt3">
+          <td colspan="5">委托联系人</td>
+          <td colspan="8"><%= f.text_field :sp_s_lxr, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="5">委托电话</td>
+          <td colspan="9"><%= f.text_field :sp_s_tel, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
           <td rowspan="2" colspan="5">抽样时样品<br>存储状态*</td>
@@ -1068,7 +1122,7 @@
               <td colspan="3">报告日期*</td>
               <td colspan="8"><%= @sp_bsb.sp_d_47 %></td>
               <td colspan="4">报告签发人*</td>
-              <td colspan="6"><%= @sp_bsb.sp_s_48 %></td>
+              <td colspan="6"><%= @sp_bsb.user_despatcher %></td>
           <% else %>
               <td colspan="27"><%= @sp_bsb.sp_d_46 %></td>
           <% end %>
@@ -1083,14 +1137,18 @@
         </tr>
         <tr>
           <td colspan="3">结论*</td>
-          <td colspan="6"><%= @sp_bsb.sp_s_71 %></td>
-          <td colspan="3">确认情况</td>
-          <td colspan="8"><%= @sp_bsb.sp_s_214 %></td>
-          <td colspan="4">备注</td>
-          <td colspan="6"><%= @sp_bsb.sp_s_84 %></td>
+          <td colspan="11"><%= @sp_bsb.sp_s_71 %></td>
+          <td colspan="5">确认情况</td>
+          <td colspan="11"><%= @sp_bsb.sp_s_214 %></td>
         </tr>
         <tr>
-          <td colspan="3">填报人*</td>
+          <td colspan="3">监督抽检报告备注</td>
+          <td colspan="11"><%= f.text_field :sp_s_84, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="5">风险监测报告备注</td>
+          <td colspan="11"><%= f.text_field :sp_s_89, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr>
+          <td colspan="3">检查封样人*</td>
           <td colspan="3"><%= @sp_bsb.sp_s_85 %></td>
           <td colspan="3">填报日期*</td>
           <td colspan="3"><%= @sp_bsb.sp_d_86 %></td>

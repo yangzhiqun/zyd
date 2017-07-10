@@ -1,6 +1,5 @@
-#是否使用ca
-open_ca: true
-#打开
+---
+open_ca: false
 is_open: true
-#是否打开用户、机构、区域新增修改删除
 is_user_jg: false
+is_open_to_wochacha: true

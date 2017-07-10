@@ -74,7 +74,7 @@ class SpBsb < ActiveRecord::Base
     end
 
     if !YAML.load_file("config/use_ca.yml")["is_open"] 
-      @sp_bsbs = @sp_bsbs.where("sp_i_state != 1")  
+     # @sp_bsbs = @sp_bsbs.where("sp_i_state != 1")  
     end
     
     if !params[:sp_order].blank?
@@ -273,24 +273,24 @@ class SpBsb < ActiveRecord::Base
 
     if params[:s8]=='9'
       if current_user.is_admin? || change_js==10||is_sheng
-        @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'")
+        @sp_bsbs = @sp_bsbs.where(" sp_bsbs.sp_i_state = 9 AND (sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%')")
       else
         if (change_js==1&&params[:flag]=="tabs_7")||change_js==2||change_js==3||change_js==4 #药监局数据审核
-          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3 = ? or sp_bsbs.sp_s_202 = ?", current_user.user_s_province, current_user.user_s_province).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'")
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_3 = ? or sp_bsbs.sp_s_202 = ?", current_user.user_s_province, current_user.user_s_province).where("sp_bsbs.sp_i_state = 9 AND (sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%')")
         elsif change_js==7 || change_js==6 || change_js==11 #数据审核 #数据填报 #批准 
-          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'")
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_i_state = 9 AND (sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%' )")
         elsif change_js==1||change_js==5 #填报
           if params[:flag]!="tabs_7" && !is_shengshi
-            @sp_bsbs = @sp_bsbs.where('sp_bsbs.user_id = ?', current_user.id).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'")
+            @sp_bsbs = @sp_bsbs.where('sp_bsbs.user_id = ?', current_user.id).where("sp_bsbs.sp_i_state = 9 AND (sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%')")
           end
         elsif change_js==16 #数据填报
-         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'")
+         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names).where("sp_bsbs.sp_i_state = 9 AND (sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%')")
         elsif change_js==9
-          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 AND sp_bsbs.sp_s_70 LIKE '%一司%' AND sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'")
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 AND (sp_bsbs.sp_s_70 LIKE '%一司%' AND sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%')")
         elsif change_js==10
-          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 AND sp_bsbs.sp_s_70 NOT LIKE '%一司%' AND sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'")
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 AND (sp_bsbs.sp_s_70 NOT LIKE '%一司%' AND sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%')")
         elsif change_js.nil? && params[:s8].present?
-          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%'")
+          @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9 AND (sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%')")
         end
       end
     else
@@ -316,12 +316,12 @@ class SpBsb < ActiveRecord::Base
     end
 
     @rwly = all_super_departments
-    if params[:flag]=="tabs_7"
-      @sp_bsbs = @sp_bsbs.where(sp_s_2_1: @rwly)
-    elsif is_city || is_county_level || (current_user.is_account_manager && current_user.user_i_js == 1 && current_user.jg_bsb.jg_type==1)
-      if !current_user.is_admin? && !is_sheng && (params[:s13].blank? || params[:s13] == "全部" )
-        @sp_bsbs = @sp_bsbs.where(sp_s_2_1: @rwly)
-      end
+    if params[:flag]=="tabs_1"
+     if is_city
+       @sp_bsbs = @sp_bsbs.where("sp_s_4 = ? or sp_s_220=?",current_user.prov_city,current_user.prov_city)
+     elsif is_county_level
+       @sp_bsbs = @sp_bsbs.where("(sp_s_4 = ? and sp_s_5 = ?) or (sp_s_220 = ? and sp_s_221 = ? )",current_user.prov_city,current_user.prov_country,current_user.prov_city,current_user.prov_country)
+     end
     end
     return @sp_bsbs, @ending_time, @begin_time
   end
@@ -1055,6 +1055,7 @@ class SpBsb < ActiveRecord::Base
 	   content = Base64.strict_encode64(reqMessage.to_json)
       cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 114 #{content} #{tmp_file} #{new_ca_filepath}"
       result = `#{cmd}`
+     logger.error "cmd: #{cmd}"
      logger.error result
       if result.strip.include?('200')
 	return new_ca_filepath
@@ -1086,6 +1087,7 @@ class SpBsb < ActiveRecord::Base
     #filename = Rails.root.join('tmp', "sp_bsbs_#{self.id}.txt")
     cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 108  #{reqMessage} #{pdfpath} #{filename}"
     signSeal_result = `#{cmd}`
+    logger.error "signSeal_result: #{signSeal_result}"
      return signSeal_result
   end
 

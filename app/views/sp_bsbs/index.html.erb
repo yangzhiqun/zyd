@@ -120,6 +120,10 @@
    // $('#sp_dl').select2({theme: 'bootstrap', placeholder: '食品大类'});
     $('#sp_sf').select2({theme: 'bootstrap', placeholder: '市/区'});
     $('#s13').select2({theme: 'bootstrap', placeholder: '任务来源'});
+    $('#sp_bsa').select2({theme: 'bootstrap', placeholder: '报送A类'});
+    $('#sp_bsb').select2({theme: 'bootstrap', placeholder: '报送B类'});
+    $('#sp_dl').select2({theme: 'bootstrap', placeholder: '食品A类'});
+    $('#s6').select2({theme: 'bootstrap', placeholder: '食品B类'});
     //$('#sp_bsa').select2({theme: 'bootstrap', placeholder: '报送A'});
    // $('#sp_bsb').select2({theme: 'bootstrap', placeholder: '报送B'});
    // $('#s6').select2({theme: 'bootstrap', placeholder: '食品亚类'}); 
@@ -265,13 +269,13 @@
           <tr>
          <td colspan="4">报送A类</td>
             <td colspan="6">
-             <%= select_tag 'sp_bsa', options_for_select(BaosongA.all.map { |b| [b.name, b.name, {'parentid' => b.rwlylx}] }.unshift(["请选择", ""]), params[:sp_bsa]), :style => "width: 123px;",:class => 'form-control input-sm' %>
+             <%= select_tag 'sp_bsa', options_for_select(BaosongA.all.map { |b| [b.name, b.name, {'parentid' => b.rwlylx}] }.unshift(["请选择", "请选择"]), params[:sp_bsa]),:class => 'form-control input-sm' %>
 	    </td>
           <td colspan="4">
             报送B类  
           </td>
            <td colspan="6">
-           <select class="form-control input-sm" type="text" id="sp_bsb" name="sp_bsb" style="width:123px"></select>
+           <%= select_tag 'sp_bsb','', :class=>"form-control input-sm" %></select>
             </td>
             <td colspan="4">被抽样单位省市/区</td>
             <td colspan="6" class="td_city">
@@ -302,8 +306,8 @@
                 </td>
             <% end %>
             <td colspan="4">食品亚类</td>
-            <td colspan="6"> 
-            <select class="form-control input-sm"  id="s6" name="s6" style="width:123px"></select>   
+            <td colspan="6">
+             <%= select_tag 's6','', class: 'form-control input-sm'  %>
             </td>
             <td colspan="4">抽样编号</td>
             <td colspan="6">

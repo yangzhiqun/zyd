@@ -36,10 +36,12 @@ class CaHelperController < ApplicationController
       else
         if current_user.nil?
           sign_in(user)
+          after_sign_in_path_for(user)
         else
           if current_user.id != user.id
             sign_out(current_user)
             sign_in(user)
+            after_sign_in_path_for(user)
           end
         end
         redirect_to '/'
@@ -153,12 +155,18 @@ def hash_client_sign
 		
 end
   def create_text
+     if !File::exists?(Rails.root.join('tmp', "test.txt") )
+       File.new(Rails.root.join('tmp', "test.txt"),"w+")
+     end
      filename=Rails.root.join('tmp', "test.txt")
      reqMessage ={appId: Rails.application.config.site[:appid],policyType: 2}
      reqContent =Base64.strict_encode64(reqMessage.to_json)
      cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 113 #{reqContent} #{filename} "
      result = `#{cmd}`
+   logger.error cmd
+    logger.error result
      nonceStr  =  File.read(Rails.root.join('tmp', "test.txt"))
+     logger.error "result: #{result}"
      render json: {status: 'OK', msg: nonceStr}
   end
 

@@ -157,6 +157,9 @@ class SpBsbsController < ApplicationController
            fxbg_file =  File.read(Rails.root.join('tmp', "sp_bsbs_fxbg_#{@spbsb.id}.txt"))
 	   res[:FXJC]= fxbg_file
 	   pdf_path[:FXJC]=pdfpath
+  elsif fxbg_result.strip.include?('6002')
+    res[:FXJC]= fxbg_file
+    pdf_path[:FXJC]=""
 	else
 	  render json: {status: 'ERR', msg:  fxbg_result} and return
 	end
@@ -204,13 +207,18 @@ class SpBsbsController < ApplicationController
     if @spbsb.is_jiance? and params[:sign_data][:FXJC].present?
       type='FXBG'
       pdfpath=  params[:pdfpath][:FXJC]
+      sp_status=params[:sp_status]
+      if pdfpath.blank?
+       @spbsb.update_attributes({:ca_key_status => sp_status,:sp_s_48 =>current_user.tname,:FXJC_report_path => pdfpath})
+       SpLog.create(:sp_bsb_id => @spbsb.id, :sp_i_state => sp_status, :remark => "", :user_id => current_user.id,:ca_key_status => 1)
+       res[:FXJC] = {t: 'FXJC', status: 'OK'}
+      else
       sign_data=params[:sign_data][:FXJC][:hash]
           File.write(Rails.root.join('tmp', "yang.req"),sign_data)
       writeJson= Rails.root.join('tmp', "yang.req")
       result = `java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 199  #{reqMessage} #{writeJson} #{pdfpath}`
       logger.error result
       if  result.strip.include?('200')
-        sp_status=params[:sp_status]
         #@spbsb.update_attributes({:sp_i_state =>sp_status})
         @spbsb.update_attributes({:ca_key_status => sp_status,:sp_s_48 =>current_user.tname,:FXJC_report_path => pdfpath})
         SpLog.create(:sp_bsb_id => @spbsb.id, :sp_i_state => sp_status, :remark => "", :user_id => current_user.id,:ca_key_status => 1)
@@ -218,7 +226,9 @@ class SpBsbsController < ApplicationController
         res[:FXJC] = {t: 'FXJC', status: 'OK'}
        else
         render json: {status: 'ERR', msg: result} and return
-       end             
+       end
+
+     end
    end
    render json: {status: 'OK', msg: '成功',res: res}
 =begin
@@ -693,8 +703,8 @@ end
         end
         if (params[:sp_bsb][:sp_i_state].to_i == 3 or params[:sp_bsb][:sp_i_state].to_i == 1) and !params[:sp_bsb][:sp_s_55].blank?
           #sp_i_state = params[:sp_bsb][:sp_i_state].to_i
-          if current_user.is_admin? && @sp_bsb.sp_i_state == 9
-            @role_name = '秘书处退回'
+          if (current_user.is_admin?||current_user.is_shengshixian? )&& @sp_bsb.sp_i_state == 9
+            @role_name = "秘书处_#{current_user.uid}_退回"
 
             @sp_bsb.sp_i_backtimes = @sp_bsb.sp_i_backtimes.to_i + 1 if @sp_bsb.sp_i_state == 9
             sp_i_state = 5

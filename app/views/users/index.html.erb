@@ -123,6 +123,8 @@
                   <% if current_user.name.eql?('superadmin') or is_shengshi? %>
                       <%= link_to '删除', user, :method => :delete, :confirm => "确认删除?", :class => "btn btn-danger btn-xs" %>
                   <% end %>
+                <% else %>
+                  <%= link_to '详情', edit_user_path(user), :class => "btn btn-info btn-xs", style: 'margin-bottom: 5px;' %>
                 <% end %>
               </td>
             </tr>

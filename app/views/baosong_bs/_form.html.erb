@@ -65,7 +65,7 @@
 <div data-ng-controller="PlanMakerCtrl">
   <div class="form-group">
     <label>名称：</label>
-   <% if is_open_production? %>
+   <% if  current_user.is_admin? or is_sheng? %>
     <a href="javascript:void(0);" onbeforesave="updateBaosongB('name', $data)" e-style="width: 400px;" editable-text="baosong_b.name">{{baosong_b.name}}</a>
    <% else%>
     <a>{{baosong_b.name}}</a>
@@ -73,7 +73,7 @@
   </div>
   <div class="form-group">
      <label>所在区域：</label>
-      <% if is_open_production? %>
+      <% if current_user.is_admin? or is_sheng? %>
 	<a href="#" id="department"   e-style="width: 400px;" >{{baosong_b.prov || '无限制'}}</a>
       <% else %>
         <a href="#"   e-style="width: 400px;" >{{baosong_b.prov || '无限制'}}</a>
@@ -81,7 +81,7 @@
  </div>
   <div class="form-group">
     <label>备注：</label>
-   <% if is_open_production? %>
+   <% if current_user.is_admin? or is_sheng? %>
     <a href="javascript:void(0);" onbeforesave="updateBaosongB('note', $data)" e-style="width: 400px;" e-rows="10" editable-textarea="baosong_b.note">{{baosong_b.note || '无备注'}}</a>
    <% else %>
     <a href="#"   e-style="width: 400px;" >{{baosong_b.note || '无备注'}}</a>
@@ -91,25 +91,25 @@
     <div style="margin: 0;" class="row">
       <h5 class="col-md-3 col-xs-3">
         食品大类
-	<% if is_open_production? %>
+	<% if current_user.is_admin? or is_sheng? %>
         <a href="javascript:void(0);" x-ng-click="is_editing_a = !is_editing_a" x-ng-show="!is_editing_a" class="btn btn-link btn-xs pull-right">编辑</a>
         <a href="javascript:void(0);" x-ng-click="is_editing_a = !is_editing_a" x-ng-show="is_editing_a" class="btn btn-link btn-xs pull-right">完成</a>
      	<% end %>
       </h5>
       <h5 class="col-md-3 col-xs-3">食品亚类
-	<% if is_open_production? %>
+	<% if current_user.is_admin? or is_sheng? %>
         <a href="javascript:void(0);" x-ng-click="is_editing_b = !is_editing_b" x-ng-show="!is_editing_b" class="btn btn-link btn-xs pull-right">编辑</a>
         <a href="javascript:void(0);" x-ng-click="is_editing_b = !is_editing_b" x-ng-show="is_editing_b" class="btn btn-link btn-xs pull-right">完成</a>
       	<% end %>
       </h5>
       <h5 class="col-md-3 col-xs-3">食品次亚类
-	<%  if is_open_production? %>
+	<%  if current_user.is_admin? or is_sheng? %>
         <a href="javascript:void(0);" x-ng-click="is_editing_c = !is_editing_c" x-ng-show="!is_editing_c" class="btn btn-link btn-xs pull-right">编辑</a>
         <a href="javascript:void(0);" x-ng-click="is_editing_c = !is_editing_c" x-ng-show="is_editing_c" class="btn btn-link btn-xs pull-right">完成</a>
        <% end %>
       </h5>
       <h5 class="col-md-3 col-xs-3">食品细类
-      <% if is_open_production? %>
+      <% if current_user.is_admin? or is_sheng? %>
         <a href="javascript:void(0);" x-ng-click="is_editing_d = !is_editing_d" x-ng-show="!is_editing_d" class="btn btn-link btn-xs pull-right">编辑</a>
         <a href="javascript:void(0);" x-ng-click="is_editing_d = !is_editing_d" x-ng-show="is_editing_d" class="btn btn-link btn-xs pull-right">完成</a>
      <% end %> 
@@ -207,7 +207,7 @@
         <div class="list-group-item-heading">
           <h5>
 	     <span x-ng-click="toggleItem(check_item)">{{$index + 1}}. {{check_item.name}}</span>
-	 <% if is_open_production? %> 
+	 <% if current_user.is_admin? or is_sheng?%> 
             <a x-ng-if="current_item == check_item" x-ng-click="deleteItem($index)" class="btn text-danger btn-xs pull-right" href="javascript:void(0);">移除该检测项</a>
           <% end %>
 	  </h5>
@@ -216,7 +216,7 @@
           <table class="table table-bordered table-condensed">
             <tr>
               <th style="text-align: center; vertical-align: middle;" width="80">名称</th>
-	     <% if is_open_production? %>
+	     <% if current_user.is_admin? or is_sheng? %>
 	     <td><a href="#" editable-text="check_item.name">{{check_item.name || '单击编辑'}}</a></td>
 	     <% else%>
 		<td><a>{{check_item.name || '单击编辑'}}</a></td>
@@ -224,7 +224,7 @@
 	    </tr>
             <tr>
               <th style="text-align: center; vertical-align: middle;" width="80">结果单位</th>
-	     <% if is_open_production? %>
+	     <% if current_user.is_admin? or is_sheng? %>
               <td><a href="#" editable-text="check_item.JGDW">{{check_item.JGDW || '单击编辑'}}</a></td>
               <% else%>
                 <td><a>{{check_item.JGDW || '单击编辑'}}</a></td>
@@ -233,7 +233,7 @@
             <tr>
               <th width="80" style="vertical-align: middle; text-align: center;">判定依据</th>
               <td>
-	      <% if is_open_production? %>
+	      <% if current_user.is_admin? or is_sheng? %>
                 <ol style="padding-left: 30px;" class="pdyj-list">
                   <li data-ng-repeat="pdyj in check_item.PDYJ track by $index">
                     <a href="#" editable-text="check_item.PDYJ[$index]">{{pdyj || '点击编辑'}}</a></li>
@@ -251,7 +251,7 @@
        <tr>
           <th width="80" style="vertical-align: middle; text-align: center;">检验依据简化版</th>
            <td>
-            <% if is_open_production? %>
+            <% if  current_user.is_admin? or is_sheng? %>
              <ol style="padding-left: 30px;" class="jyyjjhb-list">
                <li data-ng-repeat="jyyjjhb in check_item.JYYJJHB track by $index">
                <a href="#" editable-text="check_item.JYYJJHB[$index]">{{jyyjjhb || '点击编辑'}}</a></li>
@@ -280,7 +280,7 @@
                     <th>标准最大允许限单位</th>
                     <th>检验依据简化版</th>
                     <th>备注</th>
-		    <% if is_open_production? %>
+		    <% if current_user.is_admin? or is_sheng? %>
                     <th>#</th>
 		   <% end%>
                   </tr>
@@ -314,7 +314,7 @@
                     <td>
                       <input class="form-control input-sm" type="text" tooltip-placement="top" tooltip="{{option.BZ}}" data-ng-model="option.BZ">
                     </td>
-	           <% if is_open_production?%>
+	           <% if current_user.is_admin? or is_sheng? %>
                     <td>
                       <a x-ng-click="removeOption(check_item.options, $index)" class="btn btn-xs btn-danger" href="javascript:void(0);">移除</a>
                     </td>
@@ -322,7 +322,7 @@
                   </tr>
                   </tbody>
                   <tfoot>
-		 <% if is_open_production? %>
+		 <% if current_user.is_admin? or is_sheng? %>
                   <tr>
                     <td colspan="10">
                       <a class="btn btn-success btn-xs" x-ng-click="check_item.options.push({})" href="javascript:void(0);"><i class="glyphicon glyphicon-plus"></i>添加检验依据</a>
@@ -337,7 +337,7 @@
         </div>
       </div>
     </div>
-   <% if is_open_production? %>
+   <% if current_user.is_admin? or is_sheng?  %>
     <div class="actions">
       <a href="javascript:void(0);" x-ng-click="addCheckItem()" class="btn btn-xs btn-default"><i class="glyphicon glyphicon-plus"></i>添加检测项目</a>
     </div>
@@ -345,7 +345,7 @@
   </div>
   <div x-ng-if="!!selected.d_category_id">
     <hr>
-   <% if is_open_production? %>
+   <% if current_user.is_admin? or is_sheng? %>
     <button x-ng-click="doSave(selected.d_category_id)" class="btn btn-success btn-sm">保存</button>
    <% end%>
    </div>
@@ -358,7 +358,7 @@
           <%= f.label '模板文件' %> <a href="http://bbs.cfda.pub:8080/app/doc/baosong_tmpl.xls">导入模板下载</a>
           <%= f.file_field :file, :class => "form-control input-sm" %>
         </div>
-	<% if is_open_production?%>
+	<% if current_user.is_admin? or is_sheng? %>
         <div class="actions">
           <%= f.submit "提交", :class => "btn btn-sm btn-primary", 'data-confirm' => '确定提交报送分类的更新模板吗?此操作比较危险,可能会导致数据的取值问题,提交前请确认风险承受能力.' %>
         </div>
