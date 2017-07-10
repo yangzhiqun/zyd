@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170628113720) do
+ActiveRecord::Schema.define(version: 20170710134229) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -164,8 +164,8 @@ ActiveRecord::Schema.define(version: 20170628113720) do
     t.string   "identifier",    limit: 255
     t.boolean  "enable",                      default: true
     t.datetime "deleted_at"
-    t.string   "JYYJJHB",       limit: 512
-    t.string   "BZ",            limit: 512
+    t.text     "JYYJJHB",       limit: 65535
+    t.text     "BZ",            limit: 65535
   end
 
   add_index "check_items", ["deleted_at"], name: "index_check_items_on_deleted_at", using: :btree

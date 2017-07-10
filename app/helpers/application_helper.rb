@@ -113,7 +113,7 @@ module ApplicationHelper
 	def all_super_departments
 		#jg_type : 1 => 监管部门, 2 => 检验机构
 		jg_arr  = []
-		if is_sheng? || current_user.is_admin? #如果是省级管理员和最高全选显示全部机构
+		if is_sheng? || current_user.is_admin? || is_city? || is_county_level? #如果是省级管理员和最高全选显示全部机构
       #if is_sheng?
       #  all_jg = JgBsb.where("id = ? and jg_type = ?",current_user.jg_bsb.id,1)
       #end

@@ -425,7 +425,7 @@ class WtypCzbPart < ActiveRecord::Base
         wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.wtyp_czb_type IN (?)', [::WtypCzbPart::Type::SC])
         # 筛选 省\市\县
         if current_user.hccz_level == User::HcczLevel::Sheng
-          wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.bsscqy_sheng = ?', current_user.user_s_province)
+          wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.bsscqy_sheng = ? ', current_user.user_s_province)
         elsif current_user.hccz_level == User::HcczLevel::Shi
           wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.sp_s_220 = ? or wtyp_czb_parts.sp_s_4 = ? or wtyp_czb_parts.bsscqy_shi = ? or wtyp_czb_parts.bcydw_shi = ?',current_user.prov_city, current_user.prov_city,current_user.prov_city,current_user.prov_city)
         elsif current_user.hccz_level == User::HcczLevel::Xian
@@ -448,7 +448,7 @@ class WtypCzbPart < ActiveRecord::Base
        end
      elsif params[:hccz_type].eql?('QB')
        if current_user.hccz_level == User::HcczLevel::Sheng
-         wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.bsscqy_sheng = ?', current_user.user_s_province)
+         wtyp_czbs = wtyp_czbs.where(' (wtyp_czb_parts.bsscqy_sheng = ? or wtyp_czb_parts.bcydw_sheng =? )', current_user.user_s_province,current_user.user_s_province)
        elsif current_user.hccz_level == User::HcczLevel::Shi
          wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.sp_s_220 = ? or wtyp_czb_parts.sp_s_4 = ? or wtyp_czb_parts.bsscqy_shi = ? or wtyp_czb_parts.bcydw_shi = ?',current_user.prov_city, current_user.prov_city,current_user.prov_city,current_user.prov_city)
        elsif current_user.hccz_level == User::HcczLevel::Xian
@@ -524,13 +524,13 @@ class WtypCzbPart < ActiveRecord::Base
 
     params[:bgfl] = 'QB' if params[:bgfl].blank?
     if params[:bgfl].eql?('24H')
-      wtyp_czbs = wtyp_czbs.where("bgfl = '24小时限时报告'")
+      wtyp_czbs = wtyp_czbs.where("wtyp_czb_parts.bgfl = '24小时限时报告'")
     elsif params[:bgfl].eql?('YBBHG')
-      wtyp_czbs = wtyp_czbs.where("jyjl like '%不合格%'")
+      wtyp_czbs = wtyp_czbs.where("wtyp_czb_parts.jyjl like '%不合格%'")
     elsif params[:bgfl].eql?('YBWTBG')
-      wtyp_czbs = wtyp_czbs.where("jyjl like '%问题%'")
+      wtyp_czbs = wtyp_czbs.where("wtyp_czb_parts.jyjl like '%问题%'")
     elsif params[:bgfl].eql?('QB')
-      wtyp_czbs = wtyp_czbs.where("jyjl like '%问题%' or jyjl like '%不合格%'")
+      wtyp_czbs = wtyp_czbs.where("wtyp_czb_parts.jyjl like '%问题%' or wtyp_czb_parts.jyjl like '%不合格%'")
     end
 
     wtyp_czbs = wtyp_czbs.paginate(:page => params[:page], :per_page => 30)
@@ -552,22 +552,22 @@ class WtypCzbPart < ActiveRecord::Base
         # 待处理列表中仅显示属于自己的信息
 
         if params[:current_tab].eql?('DBL')
-          wtyp_czbs = wtyp_czbs.where('czfzr = ?', current_user.id)
+          wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.czfzr = ?', current_user.id)
           wtyp_czbs = wtyp_czbs.where(current_state: WtypCzb::State::ASSIGNED)
         elsif params[:current_tab].eql?('BLZ')
-          wtyp_czbs = wtyp_czbs.where('czfzr = ?', current_user.id)
-          wtyp_czbs = wtyp_czbs.where(current_state: WtypCzb::State::ASSIGNED).where('part_submit_flag1 = 1 or part_submit_flag2 = 1 or part_submit_flag3 = 1 or part_submit_flag4=1 or part_submit_flag5=1 or part_submit_flag6=1 or part_submit_flag7=1')
+          wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.czfzr = ?', current_user.id)
+          wtyp_czbs = wtyp_czbs.where(current_state: WtypCzb::State::ASSIGNED).where('wtyp_czb_parts.part_submit_flag1 = 1 or wtyp_czb_parts.part_submit_flag2 = 1 or wtyp_czb_parts.part_submit_flag3 = 1 or wtyp_czb_parts.part_submit_flag4=1 or wtyp_czb_parts.part_submit_flag5=1 or wtyp_czb_parts.part_submit_flag6=1 or wtyp_czb_parts.part_submit_flag7=1')
         elsif params[:current_tab].eql?('BLZ.QT')
-          wtyp_czbs = wtyp_czbs.where('czfzr <> ?', current_user.id)
+          wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.czfzr <> ?', current_user.id)
           wtyp_czbs = wtyp_czbs.where(current_state: WtypCzb::State::ASSIGNED)
         elsif params[:current_tab].eql?('YBJ')
-          wtyp_czbs = wtyp_czbs.where('czfzr = ?', current_user.id)
+          wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.czfzr = ?', current_user.id)
           wtyp_czbs = wtyp_czbs.where(current_state: WtypCzb::State::FILLED)
         elsif params[:current_tab].eql?('DB')
-          wtyp_czbs = wtyp_czbs.where('czfzr = ?', current_user.id)
+          wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.czfzr = ?', current_user.id)
           wtyp_czbs = wtyp_czbs.where(current_state: WtypCzb::State::ASSIGNED, wtyp_dbtype: 1)
         elsif params[:current_tab].eql?('ZDDB')
-          wtyp_czbs = wtyp_czbs.where('czfzr = ?', current_user.id)
+          wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.czfzr = ?', current_user.id)
           wtyp_czbs = wtyp_czbs.where(current_state: WtypCzb::State::ASSIGNED, wtyp_dbtype: 2)
         elsif params[:current_tab].eql?('CZWB')
           wtyp_czbs = wtyp_czbs.where(current_state: WtypCzb::State::PASSED)
