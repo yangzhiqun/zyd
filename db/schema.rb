@@ -11,11 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
-ActiveRecord::Schema.define(version: 20170215074439) do
-=======
 ActiveRecord::Schema.define(version: 20170710134229) do
->>>>>>> 4f174d7b788011f0082570553b6f621e0b113195
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -229,6 +225,7 @@ ActiveRecord::Schema.define(version: 20170710134229) do
     t.string   "image_path", limit: 255
     t.string   "name",       limit: 255
     t.string   "stamp_type", limit: 10
+    t.string   "uuid",       limit: 255
   end
 
   create_table "jg_bsb_supers", force: :cascade do |t|

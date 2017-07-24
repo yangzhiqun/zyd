@@ -107,7 +107,11 @@ def result(num,hash,name)
 end
 
 def choose_result(num,hash,name)
-  hash[name+"#"][1].scan(/\./).length == num ? "#" : ""
+  if hash.has_key?(name+"#")
+    hash[name+"#"][1].scan(/\./).length == num ? "#" : ""
+  else
+    ""
+  end
 end
 
 def remove_space(str)

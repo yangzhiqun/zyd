@@ -55,7 +55,6 @@ class SpBsbsController < ApplicationController
   end
   def preview_ca_pdf
 	@spbsb = SpBsb.find(params[:id])
-	
 	respond_to do |format|
 	 format.html {
 		signData =params[:signData]
@@ -1715,7 +1714,7 @@ end
 	:synced, :ca_source, :ca_sign,
 	:inspection_basis, :decision_basis,:FX_jyyj_custom,:JDCJ_report_path,:FXJC_report_pah,:JDCJ_pdf_rules,:FXJC_pdf_rules,
 	:sp_s_sfjk,:sp_s_ycg,:sp_s_sfwtsc,:sp_s_wtsheng,
-	:sp_s_wtshi,:sp_s_wtxian,:sp_s_qymc,:sp_s_qydz,:sp_s_qs,:sp_s_lxr,:sp_s_tel,:sp_s_pic,:sp_s_sign
+	:sp_s_wtshi,:sp_s_wtxian,:sp_s_qymc,:sp_s_qydz,:sp_s_qs,:sp_s_lxr,:sp_s_tel,:sp_s_pic,:sp_s_sign,:rainbowcode_url
     )
   end
 end

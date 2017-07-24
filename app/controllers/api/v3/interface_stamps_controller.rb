@@ -2,7 +2,7 @@ class Api::V3::InterfaceStampsController < ApplicationController
   skip_before_filter :session_expiry, :verify_authenticity_token, :authenticate_user!
 
   def jg_bsb_stamps_sync
-    render json: {status: 0, msg: 'uuid为空'} and return if params["uuid"].blank? && params["type"].blank? 
+    render json: {status: 0, msg: 'uuid为空'} and return if params["uuid"].blank? || params["type"].blank? 
     @logger = Logger.new("log/shianyun_jg_bsb_stamps.log")
     @logger.info params
     @logger.info "-"*100

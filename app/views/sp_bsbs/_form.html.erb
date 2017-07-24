@@ -1930,7 +1930,7 @@
       foo.push('JDCJ');
       <% end %>
 
-      <% if @sp_bsb.is_jiance? %>
+      <% if @sp_bsb.is_jiance? and @sp_bsb.FXJC_report_path.present?  %>
       foo.push('FXJC');
       <% end %>
       $.each(foo, function (i, item) {
@@ -3009,7 +3009,7 @@
       <% elsif @sp_bsb["sp_i_state"]==8&&session[:change_js]==8 %>
           <%= f.submit(vaule="牵头单位审核通过", options={"id" => "save_4", :class => "btn btn-xs btn-success"}) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
-      <% elsif @sp_bsb["sp_i_state"]==9&&(current_user.is_admin?||current_user.is_shengshixian?) %>
+      <% elsif @sp_bsb["sp_i_state"]==9&&(current_user.is_admin?||is_sheng?||((is_city? || is_county_level?)&&current_user.jg_bsb.jg_name==@sp_bsb.sp_s_2_1)) %>
           <%= f.submit(vaule="退修", options={"id" => "back_1", :class => "btn btn-xs btn-danger"}) %>
           <% if current_user.is_admin?  %>
           <%= f.submit(vaule="秘书处修改", options={"id" => "admin_alter", :class => "btn btn-xs btn-primary"}) %>
@@ -3113,7 +3113,7 @@
                        </div> 
 		   </div>
 		<% end %>
-		<% if @sp_bsb.is_jiance? %>
+		<% if @sp_bsb.is_jiance? and @sp_bsb.FXJC_report_path.present? %>
 		<div class="well well-sm FXJC">
               <label for="">风险监测报告:</label>
               <ul class="stamp-selector-list FXJC">
