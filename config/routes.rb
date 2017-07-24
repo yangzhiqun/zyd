@@ -296,6 +296,7 @@ Rails.application.routes.draw do
       post 'interface_jg/handing_jg_bsb' => 'interface_jg#handing_jg_bsb'
       post 'interface_jg/handing_jgbsb_super' => 'interface_jg#handing_jgbsb_super'
       post 'interface_region/new_region' => 'interface_region#new_region'
+      post 'interface_stamps/jg_bsb_stamps_sync' => 'interface_stamps#jg_bsb_stamps_sync'
     end
   end
 
