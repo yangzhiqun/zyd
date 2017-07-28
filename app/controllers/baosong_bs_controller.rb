@@ -190,6 +190,6 @@ class BaosongBsController < ApplicationController
   end
 
   def baosong_b_params
-    params.require(:baosong_b).permit(:baosong_a_id, :name, :note, :identifier, :file, :prov)
+    params.require(:baosong_b).permit(:baosong_a_id, :name, :note, :identifier, :file, :prov,:genxin)
   end
 end

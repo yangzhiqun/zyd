@@ -207,6 +207,10 @@ module ApplicationHelper
 		return jg.jg_province != "-请选择-" && jg.city != "-请选择-" && jg.country != "-请选择-"
 	end
 
+  def is_tuixiu
+      (is_city? || is_county_level?)   
+  end
+
   def is_shi_deploy?
     (is_city?&&jg_is_city?) || jg_is_city?
   end

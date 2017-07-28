@@ -11,7 +11,8 @@
 .DS_Store
 /bin
 config/*.yml
-
+app/assets/javascripts/provincesdata.js
+config/application.rb
 # Ignore the default SQLite database.
 /db/*.sqlite3
 
