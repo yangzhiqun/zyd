@@ -26,12 +26,10 @@ class BaosongB < ActiveRecord::Base
   end
 
   def file
-    logger.error "1"
     @file
   end
 
   def file=(file)
-    logger.error "2"
     @file = file
     unless file.nil?
       book = Spreadsheet.open(file.path)

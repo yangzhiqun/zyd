@@ -178,31 +178,31 @@ app.controller('PlanMakerCtrl', ['$scope', '$http', 'BaosongB', '$q', function (
             item.JGDW = i.JGDW;
             item.PDYJ = i.PDYJ.join("#");
  
-            item.JYYJ = _.uniq(_.map(i.options, function (o) {
+            item.JYYJ = (_.map(i.options, function (o) {
                 return o.JYYJ
             })).join("#");
-            item.JYYJJHB = _.uniq(_.map(i.options, function (o) {
+            item.JYYJJHB = (_.map(i.options, function (o) {
                  return o.JYYJJHB
             })).join("#");
-            item.BZ = _.uniq(_.map(i.options, function (o) {
+            item.BZ = (_.map(i.options, function (o) {
                  return o.BZ
             })).join("#");
-            item.BZFFJCX = _.uniq(_.map(i.options, function (o) {
+            item.BZFFJCX = (_.map(i.options, function (o) {
                 return o.BZFFJCX
             })).join("#");
-            item.BZFFJCXDW = _.uniq(_.map(i.options, function (o) {
+            item.BZFFJCXDW = (_.map(i.options, function (o) {
                 return o.BZFFJCXDW
             })).join("#");
-            item.BZZXYXX = _.uniq(_.map(i.options, function (o) {
+            item.BZZXYXX = (_.map(i.options, function (o) {
                 return o.BZZXYXX
             })).join("#");
-            item.BZZXYXXDW = _.uniq(_.map(i.options, function (o) {
+            item.BZZXYXXDW = (_.map(i.options, function (o) {
                 return o.BZZXYXXDW
             })).join("#");
-            item.BZZDYXX = _.uniq(_.map(i.options, function (o) {
+            item.BZZDYXX = (_.map(i.options, function (o) {
                 return o.BZZDYXX
             })).join("#");
-            item.BZZDYXXDW = _.uniq(_.map(i.options, function (o) {
+            item.BZZDYXXDW = (_.map(i.options, function (o) {
                 return o.BZZDYXXDW
             })).join("#");
 
