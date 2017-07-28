@@ -70,7 +70,7 @@ class Api::V1::UsersController < ApplicationController
       if @user.blank? or !@user.valid_password?(params[:password])
         respond_to do |format|
           format.json {
-            render :json => {:status => 'ERR', :msg => '非法访问'}
+            render :json => {:status => 'ERR', :msg => '无效的用户名或密码'}
             return
           }
         end
@@ -78,7 +78,7 @@ class Api::V1::UsersController < ApplicationController
     else
       respond_to do |format|
         format.json {
-          render :json => {:status => 'ERR', :msg => '参数无效'}
+          render :json => {:status => 'ERR', :msg => '请输入用户名或密码'}
           return
         }
       end
