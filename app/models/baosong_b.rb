@@ -254,7 +254,6 @@ class BaosongB < ActiveRecord::Base
            item.BZZDYXXDW = (item.BZZDYXXDW || "").split("#").push(line[:BZZDYXXDW]).join("#")
         end
 
-        logger.error "JYYJJHB: #{line[:JYYJJHB]},BZ:#{line[:BZ]},line: #{line.to_json}"
          # item.JYYJJHB = (item.JYYJJHB || "").split("#").push(line[:JYYJJHB]).uniq.join("#") unless line[:JYYJJHB].blank?
          if line[:JYYJJHB] =="/"
           item.JYYJJHB = (item.JYYJJHB || "").split("#").push("/").join("#")
@@ -267,8 +266,6 @@ class BaosongB < ActiveRecord::Base
          else
           item.BZ= (item.BZ || "").split("#").push(line[:BZ]).join("#")
          end
-         logger.error "item.BZ: #{item.BZ},line[:BZ]:#{line[:BZ]}"
-         logger.error "self: #{self.to_json}"
          item.save
           category_ids[:item_ids].push(item.id)
 
