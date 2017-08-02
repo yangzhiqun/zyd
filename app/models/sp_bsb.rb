@@ -159,7 +159,7 @@ class SpBsb < ActiveRecord::Base
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_4 LIKE ? ",  "%#{params[:sp_sf]}%")
     end
     if params[:flag]=="tabs_4" #只判断完全提交的数据
-      @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name)
+      @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",current_user.jg_bsb.all_names)
     end
     if current_user.is_admin? || change_js==10 || is_shengshi || params[:flag]=="tabs_7"
       case params[:s8].to_i
@@ -227,7 +227,7 @@ class SpBsb < ActiveRecord::Base
     elsif change_js==16&&params[:flag]=="tabs_4"
      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9")
     elsif change_js==16&&params[:flag]=="tabs_2"
-     @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state =9 and sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name )
+     @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state =9 and sp_bsbs.sp_s_43 in (?)",current_user.jg_bsb.all_names )
     end
     if params[:flag]=="tabs_5"
       @sp_bsbs =@sp_bsbs.where("sp_bsbs.sp_s_reason IS NOT NULL")
@@ -303,7 +303,7 @@ class SpBsb < ActiveRecord::Base
       elsif change_js==6 #数据填报
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names)
       elsif change_js==16 #数据填报
-        @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43  in (?)",current_user.jg_bsb.jg_name)
+        @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43  in (?)",current_user.jg_bsb.all_names)
       elsif change_js==1||change_js==5 #填报
         if params[:flag]!="tabs_7" && !is_shengshi
           @sp_bsbs = @sp_bsbs.where('sp_bsbs.user_id  in (?)', current_user.id)
