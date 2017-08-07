@@ -7,7 +7,7 @@ class WtypCzb < ActiveRecord::Base
 
   has_many :wtyp_czb_parts, :dependent => :destroy
   has_many :sp_hcz_spdatas, :dependent => :destroy
-
+  belongs_to :sp_bsb,foreign_key: "wtyp_sp_bsbs_id"
   # validates_uniqueness_of :wtyp_sp_bsbs_id
 
   def yyczjg

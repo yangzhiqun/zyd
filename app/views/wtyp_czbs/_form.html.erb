@@ -342,6 +342,12 @@
         <td colspan="11"><%= @wtyp_czb.jymd %></td>
       </tr>
       <tr>
+       <th colspan="4">生产日期</th>
+       <th colspan="11"><%= @wtyp_czb.scrq.strftime("%Y-%m-%d") if @wtyp_czb.scrq.present? %></th>
+       <th colspan="4">抽样日期</th>
+       <th colspan="11"><%= @wtyp_czb.sp_bsb.sp_d_38 %></th>
+      </tr>
+      <tr>
         <th colspan="4">检验结论</th>
         <td colspan="26"><%= @wtyp_czb.jyjl %></td>
       </tr>

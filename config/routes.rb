@@ -289,6 +289,7 @@ Rails.application.routes.draw do
     # 我查查
     namespace 'v3' do
       post 'openapi/sample_add_or_edit' => 'openapi#sample_add_or_edit'
+      post 'openapi/delete_sp_bsb' => 'openapi#delete_sp_bsb'
       get  'user/login'
       #食安云
       post 'interface_user/new_user' => 'interface_user#new_user'
