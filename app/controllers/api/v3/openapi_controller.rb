@@ -64,4 +64,21 @@ class Api::V3::OpenapiController < ApplicationController
 			render json: { status: 1, msg: "baseinfoorsubinfonotexists"}
 		end
 	end
+
+  def delete_sp_bsb
+    render json: {status: 1, msg: '参数为空'} and return if params["sample_code"].blank?
+    @sp_bsb = SpBsb.find_by_sp_s_16(params["sample_code"]) 
+    render json: {status: 1, msg: "没有找到(#{params["sample_code"]})"} and return if @sp_bsb.blank?
+    if @sp_bsb.wochacha_task_id.blank?
+      render json: {status: 1, msg: "非大平台数据，不允许删除！"}
+    else
+      if @sp_bsb.delete
+        @logger = Logger.new("log/delete_sp_bsb.log")
+        @logger.info params["sample_code"] + "  |  " + params["reason"]
+        render json: { status: 0, msg: "删除成功" } 
+      else
+        render json: { status: 1, msg: @sp_bsb.errors.first.last } 
+      end
+    end
+  end
 end

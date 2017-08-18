@@ -877,7 +877,7 @@ end
     rescue => e
       respond_to do |format|
         format.html { render action: "edit" }
-        format.json { render json: {status: '保存出错!', msg: "修改不成功! #{e.to_s}"} }
+        format.json { render json: {status: '保存出错!', msg: "修改不成功!! #{e.to_s}"} }
       end
   end
 
@@ -1714,7 +1714,8 @@ end
 	:synced, :ca_source, :ca_sign,
 	:inspection_basis, :decision_basis,:FX_jyyj_custom,:JDCJ_report_path,:FXJC_report_pah,:JDCJ_pdf_rules,:FXJC_pdf_rules,
 	:sp_s_sfjk,:sp_s_ycg,:sp_s_sfwtsc,:sp_s_wtsheng,
-	:sp_s_wtshi,:sp_s_wtxian,:sp_s_qymc,:sp_s_qydz,:sp_s_qs,:sp_s_lxr,:sp_s_tel,:sp_s_pic,:sp_s_sign,:rainbowcode_url
+	:sp_s_wtshi,:sp_s_wtxian,:sp_s_qymc,:sp_s_qydz,:sp_s_qs,:sp_s_lxr,:sp_s_tel,:sp_s_pic,:sp_s_sign,:rainbowcode_url,:sp_s_dwwz,
+  :sp_s_wcmc,:sp_s_wcyyzzh,:sp_s_wcicp,:sp_s_wcsheng,:sp_s_wcshi,:sp_s_wcxian,:sp_s_wcdz,:sp_s_wcwz,:sp_s_wclxr,:sp_s_wctel,:sp_s_wcbh
     )
   end
 end

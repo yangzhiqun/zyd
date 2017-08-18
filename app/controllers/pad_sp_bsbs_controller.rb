@@ -997,7 +997,8 @@ class PadSpBsbsController < ApplicationController
                                        :sp_xkz_id,
                                        :updated_at,
                                        :czb_reverted_flag,
-                                       :synced, :ca_source, :ca_sign,:sp_s_220,:sp_s_221,:sp_s_222
+                                       :synced, :ca_source, :ca_sign,:sp_s_220,:sp_s_221,:sp_s_222,
+                                       :sp_s_wcmc,:sp_s_wcyyzzh,:sp_s_wcicp,:sp_s_wcsheng,:sp_s_wcshi,:sp_s_wcxian,:sp_s_wcdz,:sp_s_wcwz,:sp_s_wclxr,:sp_s_wctel,:sp_s_wcbh
 
     )
 

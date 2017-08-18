@@ -1,6 +1,7 @@
 class SwitchController < ApplicationController
   def index
    @switchs = YAML.load_file("config/use_ca.yml")
+   @hash = {"open_ca"=>"启用CA电子检验报告", "is_open"=>"开启样品数据录入", "is_user_jg"=>"对接统一登录", "is_open_to_wochacha"=>"对接抽样平台"}
    respond_to do |format|
      unless current_user.is_admin?
        format.html { render :text => "您没有该权限" }

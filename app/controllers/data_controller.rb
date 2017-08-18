@@ -6,7 +6,7 @@ class DataController < ApplicationController
   # GET /data_controller
   # GET /data_controller.json
   def index
-    @sp_bsbs = SpBsb.order("updated_at desc").paginate(page: params[:page], per_page: 20)
+    @sp_bsbs = SpBsb.order("updated_at desc").where("wochacha_task_id is ? OR wochacha_task_id = ?",nil,"").paginate(page: params[:page], per_page: 20)
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @sp_bsbs }
@@ -17,9 +17,9 @@ class DataController < ApplicationController
   # POST /data_controller/1.json
   def seach
     if params[:sp_s_16].blank? or params[:sp_s_16].nil?
-      @sp_bsbs = SpBsb.order("updated_at desc").paginate(page: params[:page], per_page: 20)
+      @sp_bsbs = SpBsb.order("updated_at desc").where("wochacha_task_id is ? OR wochacha_task_id = ?",nil,"").paginate(page: params[:page], per_page: 20)
     else
-      @sp_bsbs = SpBsb.where("sp_s_16 = ? ",params[:sp_s_16]).paginate(page: params[:page], per_page: 20)
+      @sp_bsbs = SpBsb.where("sp_s_16 = ? ",params[:sp_s_16]).where("wochacha_task_id is ? OR wochacha_task_id = ?",nil,"").paginate(page: params[:page], per_page: 20)
     end
     respond_to do |format|
       format.html {render action: "index"}

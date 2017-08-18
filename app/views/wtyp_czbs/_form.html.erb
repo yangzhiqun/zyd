@@ -342,6 +342,12 @@
         <td colspan="11"><%= @wtyp_czb.jymd %></td>
       </tr>
       <tr>
+       <th colspan="4">生产日期</th>
+       <th colspan="11"><%= @wtyp_czb.scrq.strftime("%Y-%m-%d") if @wtyp_czb.scrq.present? %></th>
+       <th colspan="4">抽样日期</th>
+       <th colspan="11"><%= @wtyp_czb.sp_bsb.sp_d_38 %></th>
+      </tr>
+      <tr>
         <th colspan="4">检验结论</th>
         <td colspan="26"><%= @wtyp_czb.jyjl %></td>
       </tr>
@@ -427,12 +433,16 @@
     <input type="hidden" id="part-submit" name="part_submit">
 
     <!-- 生产 -->
-    <% if @part_sc.present? and @part_sc.visible_for_user?(current_user, ::WtypCzbPart::Type::SC) %>
+    <% if @part_sc.present? and @part_sc.visible_for_user?(current_user, ::WtypCzbPart::Type::SC)%>
         <%= render "form_part", :czb => @part_sc, :title => "生产环节核查处置情况" %>
         <hr>
     <% end %>
     <!-- 流通/餐饮 -->
-    <% if @part_lt_cy.present? and @part_lt_cy.visible_for_user?(current_user, ::WtypCzbPart::Type::LT) %>
+    <% if @part_lt_cy.present? and @part_lt_cy.visible_for_user?(current_user, ::WtypCzbPart::Type::LT)%>
         <%= render "form_part", :czb => @part_lt_cy, :title => "经营环节核查处置情况" %>
     <% end %>
+    <!-- 网抽 -->
+    <% if @part_wc.present? and @part_wc.visible_for_user?(current_user, ::WtypCzbPart::Type::WC) and @part_wc.wtyp_czb_type.eql?(::WtypCzbPart::Type::WC) %>
+       <%= render "form_part", :czb => @part_wc, :title => "网抽环节核查处置情况" %>
+    <% end %>   
 <% end %>

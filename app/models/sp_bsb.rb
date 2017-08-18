@@ -1,4 +1,4 @@
-#encoding: utf-8
+﻿#encoding: utf-8
 class SpBsb < ActiveRecord::Base
   include ApplicationHelper
 
@@ -159,7 +159,7 @@ class SpBsb < ActiveRecord::Base
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_4 LIKE ? ",  "%#{params[:sp_sf]}%")
     end
     if params[:flag]=="tabs_4" #只判断完全提交的数据
-      @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name)
+      @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)",current_user.jg_bsb.all_names)
     end
     if current_user.is_admin? || change_js==10 || is_shengshi || params[:flag]=="tabs_7"
       case params[:s8].to_i
@@ -227,7 +227,7 @@ class SpBsb < ActiveRecord::Base
     elsif change_js==16&&params[:flag]=="tabs_4"
      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state = 9")
     elsif change_js==16&&params[:flag]=="tabs_2"
-     @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state =9 and sp_bsbs.sp_s_43 = ?",current_user.jg_bsb.jg_name )
+     @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_i_state =9 and sp_bsbs.sp_s_43 in (?)",current_user.jg_bsb.all_names )
     end
     if params[:flag]=="tabs_5"
       @sp_bsbs =@sp_bsbs.where("sp_bsbs.sp_s_reason IS NOT NULL")
@@ -303,7 +303,7 @@ class SpBsb < ActiveRecord::Base
       elsif change_js==6 #数据填报
         @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_43 in (?)", current_user.jg_bsb.all_names)
       elsif change_js==16 #数据填报
-        @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43  in (?)",current_user.jg_bsb.jg_name)
+        @sp_bsbs= @sp_bsbs.where("sp_bsbs.sp_s_43  in (?)",current_user.jg_bsb.all_names)
       elsif change_js==1||change_js==5 #填报
         if params[:flag]!="tabs_7" && !is_shengshi
           @sp_bsbs = @sp_bsbs.where('sp_bsbs.user_id  in (?)', current_user.id)
@@ -796,9 +796,15 @@ class SpBsb < ActiveRecord::Base
         wtyp_czb.SPYL = self.sp_s_18
         wtyp_czb.SPCYL = self.sp_s_19
         wtyp_czb.SPXL = self.sp_s_20
+        logger.error "111: #{sp_s_wcxian},#{self.sp_s_wcshi},#{self.sp_s_wcsheng}"
+        wtyp_czb.wc_sheng = self.sp_s_wcsheng
+        wtyp_czb.wc_shi = self.sp_s_wcshi
+        wtyp_czb.wc_xian =self.sp_s_wcxian
+        logger.error "333: #{wtyp_czb.wc_sheng},#{wtyp_czb.wc_shi},#{wtyp_czb.wc_xian}"
         # TODO: 要做好事务处理 2015-04-25
         if wtyp_czb.save
           @spdata = []
+          logger.error "133: #{wtyp_czb.wc_shi},#{wtyp_czb.wc_sheng},#{wtyp_czb.wc_xian}"
           self.spdata.each do |data|
             if data.spdata_2.include? "问题" or data.spdata_2.include? "不合格"
               hczdata = SpHczSpdata.new
@@ -827,7 +833,7 @@ class SpBsb < ActiveRecord::Base
           end
         end
       end
-
+     
       # 生产部分
       # 生产部分核查处置仅包含：生产 & 流通
       if !self.sp_s_68.eql?('餐饮') or (self.sp_s_68.eql?('餐饮') and self.sp_s_63.eql?('预包装'))
@@ -864,6 +870,9 @@ class SpBsb < ActiveRecord::Base
           @part_sc.SPYL = self.sp_s_18
           @part_sc.SPCYL = self.sp_s_19
           @part_sc.SPXL = self.sp_s_20
+          #@part_sc.wc_sheng =self.sp_s_wcsheng
+          #@part_sc.wc_shi =self.sp_s_wcshi
+          #@part_sc.wc_xian = self.sp_s_wcxian
           @part_sc.save
         end
       end
@@ -873,8 +882,9 @@ class SpBsb < ActiveRecord::Base
         @lt_cy_type = WtypCzbPart::Type::LT
       elsif self.sp_s_68.eql?('餐饮')
         @lt_cy_type = WtypCzbPart::Type::CY
+     # elsif self.sp_s_68.eql?('流通') and self.sp_s_2.eql?('网购')
+      #  @lt_cy_type = WtypCzbPart::Type::WC
       end
-
       @part_lt_cy = WtypCzbPart.where(wtyp_czb_type: @lt_cy_type, wtyp_czb_id: wtyp_czb.id).first
       # #47 第10条，如果抽样环节是生产，则只处理生产，不处理流通
       if @part_lt_cy.nil? and !self.sp_s_68.eql?('生产')
@@ -907,11 +917,55 @@ class SpBsb < ActiveRecord::Base
         @part_lt_cy.SPDL = self.sp_s_17
         @part_lt_cy.SPYL = self.sp_s_18
         @part_lt_cy.SPCYL = self.sp_s_19
-        @part_lt_cy.SPXL = self.sp_s_20
+        @part_lt_cy.SPXL = self.sp_s_20 
+        #@part_lt_cy.wc_sheng =self.sp_s_wcsheng
+        #@part_lt_cy.wc_shi =self.sp_s_wcshi
+        #@part_lt_cy.wc_xian = self.sp_s_wcxian
         @part_lt_cy.save
       end
+	#餐饮
+    if self.sp_s_68.eql?('流通') and self.sp_s_2.eql?('网购')
+	 @part_wc = WtypCzbPart.where(wtyp_czb_type: WtypCzbPart::Type::WC, wtyp_czb_id: wtyp_czb.id).first
+	end
+    
+	if @part_wc.nil? and self.sp_s_68.eql?('流通') and self.sp_s_2.eql?('网购')
+	   @part_wc = WtypCzbPart.new(wtyp_czb_type: WtypCzbPart::Type::WC, wtyp_czb_id: wtyp_czb.id)
+        @part_wc.sp_bsb_id = self.id
+        @part_wc.cjbh = self.sp_s_16
+        @part_wc.ypmc = self.sp_s_14
+        @part_wc.ypgg = self.sp_s_26
+        @part_wc.ypph = self.sp_s_27
+        @part_wc.bcydwmc = self.sp_s_1
+        @part_wc.bcydw_sheng = self.sp_s_3
+        @part_wc.bcydw_shi = self.sp_s_4
+        @part_wc.bcydw_xian = self.sp_s_5
+        @part_wc.cydwmc = self.sp_s_35
+        @part_wc.cydwsf = self.sp_s_52
+        @part_wc.bsscqymc = self.sp_s_64
+        @part_wc.bsscqy_sheng = self.sp_s_202
+        @part_wc.sp_s_220 = self.sp_s_220
+        @part_wc.sp_s_221 = self.sp_s_221
+        @part_wc.scrq = self.sp_d_28
+        @part_wc.bgfl = self.bgfl
+        @part_wc.jyjl = self.sp_s_71
+        @part_wc.bgsbh = self.sp_s_45
+        @part_wc.cydd = self.sp_s_68
+        @part_wc.bcydwdz = self.sp_s_7
+        @part_wc.bsscqydz = self.sp_s_65
+        @part_wc.cyjs = self.sp_s_206
+        @part_wc.jymd = self.sp_s_44
+        @part_wc.current_state = 0
+        @part_wc.SPDL = self.sp_s_17
+        @part_wc.SPYL = self.sp_s_18
+        @part_wc.SPCYL = self.sp_s_19
+        @part_wc.SPXL = self.sp_s_20 
+        @part_wc.wc_sheng =self.sp_s_wcsheng
+        @part_wc.wc_shi =self.sp_s_wcshi
+        @part_wc.wc_xian = self.sp_s_wcxian
+        @part_wc.save
+      end
     end
-  end
+ end
   # 生成检验报告
   def generate_bsb_report_pdf(pdf_rules, preview=true, user_id=nil, force_generate=false)
    
