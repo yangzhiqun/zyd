@@ -1,5 +1,5 @@
 ---
-open_ca: true
+open_ca: false
 is_open: true
-is_user_jg: false
+is_user_jg: true
 is_open_to_wochacha: true
