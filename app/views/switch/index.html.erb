@@ -6,7 +6,7 @@
           <table style="table-layout: fixed;" class="search-form table table-bordered table-condensed table-bordered-black">
             <% @switchs.each do |key,value| %>
               <tr>
-                <td colspan="2"><%= key %></td>
+                <td colspan="2"><%= @hash[key] %></td>
                 <td colspan="6">
                   <label><input name=<%= key %> type="radio" value="true" <%= "checked='true'" if value == true %> />开启 </label>
                   <label><input name=<%= key %> type="radio" value="false" <%= "checked='true'" if value == false %> />关闭 </label>

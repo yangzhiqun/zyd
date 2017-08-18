@@ -49,6 +49,7 @@ class WtypCzbPart < ActiveRecord::Base
     SC = 1
     LT = 2
     CY = 3
+    WC = 4
   end
 
   def wtyp_czb_type_desc
@@ -59,8 +60,62 @@ class WtypCzbPart < ActiveRecord::Base
         '流通'
       when Type::CY
         '餐饮'
+      when Type::WC
+        '网抽'
     end
   end
+
+ def wtyp_czb_qymc_mould
+   case self.wtyp_czb_type
+     when Type::SC
+      '标识生产企业名称'
+     when Type::LT
+       '被抽样单位名称'
+     when Type::CY
+       '被抽样单位名称'
+     when Type::WC
+       '网络平台名称'
+    end    
+ end
+
+ def wtyp_czb_qymc
+   case self.wtyp_czb_type
+    when Type::SC
+      self.bsscqymc
+    when Type::LT
+      self.bcydwmc
+    when Type::CY
+      self.bcydwmc
+    when Type::WC
+      self.sp_bsb.sp_s_wcmc
+    end
+ end
+
+ def wtyp_czb_szdz
+  case self.wtyp_czb_type
+   when Type::SC
+    self.bsscqydz
+   when Type::LT
+    self.bcydwdz
+   when Type::CY
+    self.bcydwdz 
+   when Type::WC
+    self.sp_bsb.sp_s_wcdz
+   end 
+ end
+
+ def wtyp_czb_szsf
+  case self.wtyp_czb_type
+   when Type::SC
+     self.bsscqy_sheng
+   when Type::LT
+     self.bcydw_sheng
+   when Type::CY
+     self.bcydw_sheng
+   when Type::WC
+     self.wc_sheng
+   end
+ end 
 
   def czfzr_desc
     if self.czfzr.blank?
@@ -196,7 +251,7 @@ class WtypCzbPart < ActiveRecord::Base
       when ::WtypCzb::State::ASSIGNED
       info = ( user.hcz_admin != 1 and user.hcz_czbl == 1 \
       and self.czfzr.to_i == user.id \
-			and ((self.wtyp_czb_type == ::WtypCzbPart::Type::SC && self.bsscqy_sheng.eql?(user.user_s_province)) or ([::WtypCzbPart::Type::LT, ::WtypCzbPart::Type::CY].include?(self.wtyp_czb_type) && self.bcydw_sheng.eql?(user.user_s_province))))
+			and ((self.wtyp_czb_type == ::WtypCzbPart::Type::SC && self.bsscqy_sheng.eql?(user.user_s_province)) or ([::WtypCzbPart::Type::LT, ::WtypCzbPart::Type::CY].include?(self.wtyp_czb_type) && self.bcydw_sheng.eql?(user.user_s_province)) or (self.wtyp_czb_type == ::WtypCzbPart::Type::WC && self.wc_sheng.eql?(user.user_s_province))))
         if(info.class==FalseClass) then
           return false
         else
@@ -204,7 +259,8 @@ class WtypCzbPart < ActiveRecord::Base
         end
       when ::WtypCzb::State::FILLED
        info = ( user.hcz_admin != 1 and user.hcz_czsh == 1 \
-			and ((self.wtyp_czb_type == ::WtypCzbPart::Type::SC && self.bsscqy_sheng.eql?(user.user_s_province)) or ([::WtypCzbPart::Type::LT, ::WtypCzbPart::Type::CY].include?(self.wtyp_czb_type) && self.bcydw_sheng.eql?(user.user_s_province))))
+			and ((self.wtyp_czb_type == ::WtypCzbPart::Type::SC && self.bsscqy_sheng.eql?(user.user_s_province)) or ([::WtypCzbPart::Type::LT, ::WtypCzbPart::Type::CY].include?(self.wtyp_czb_type) && self.bcydw_sheng.eql?(user.user_s_province)) or (self.wtyp_czb_type == ::WtypCzbPart::Type::WC && self.wc_sheng.eql?(user.user_s_province))))
+     #   logger.error "info: #{self.wtyp_czb_type},, #{self.czfzr.to_i},#{user.id},#{self.wtyp_czb_type == ::WtypCzbPart::Type::WC && self.wc_sheng.eql?(user.user_s_province)}"
         if(info.class==FalseClass) then
           return false
         else
@@ -219,11 +275,11 @@ class WtypCzbPart < ActiveRecord::Base
     #logger.error self.sp_s_220
     #logger.error self.sp_s_4
     if user.hccz_level == User::HcczLevel::Sheng
-      ((self.wtyp_czb_type == ::WtypCzbPart::Type::SC && self.bsscqy_sheng.eql?(user.user_s_province)) or ([::WtypCzbPart::Type::LT, ::WtypCzbPart::Type::CY].include?(self.wtyp_czb_type) && self.bcydw_sheng.eql?(user.user_s_province)))
+      ((self.wtyp_czb_type == ::WtypCzbPart::Type::SC && self.bsscqy_sheng.eql?(user.user_s_province)) or ([::WtypCzbPart::Type::LT, ::WtypCzbPart::Type::CY].include?(self.wtyp_czb_type) && self.bcydw_sheng.eql?(user.user_s_province)) or (self.wtyp_czb_type == ::WtypCzbPart::Type::WC && self.wc_sheng.eql?(user.user_s_province)))
     elsif user.hccz_level == User::HcczLevel::Shi
-      ((self.wtyp_czb_type == ::WtypCzbPart::Type::SC && (self.sp_s_220.eql?(user.prov_city) || self.bsscqy_shi.eql?(user.prov_city))) or ([::WtypCzbPart::Type::LT, ::WtypCzbPart::Type::CY].include?(self.wtyp_czb_type) && (self.bcydw_shi.eql?(user.prov_city) || self.sp_s_4.eql?(user.prov_city))))
+      ((self.wtyp_czb_type == ::WtypCzbPart::Type::SC && (self.sp_s_220.eql?(user.prov_city) || self.bsscqy_shi.eql?(user.prov_city))) or ([::WtypCzbPart::Type::LT, ::WtypCzbPart::Type::CY].include?(self.wtyp_czb_type) && (self.bcydw_shi.eql?(user.prov_city) || self.sp_s_4.eql?(user.prov_city))) or (self.wtyp_czb_type == ::WtypCzbPart::Type::WC && self.wc_shi.eql?(user.prov_city)))
     elsif user.hccz_level == User::HcczLevel::Xian
-      ((self.wtyp_czb_type == ::WtypCzbPart::Type::SC && (self.sp_s_221.eql?(user.prov_country)||self.bsscqy_xian.eql?(user.prov_country))) or ([::WtypCzbPart::Type::LT, ::WtypCzbPart::Type::CY].include?(self.wtyp_czb_type) && (self.bcydw_xian.eql?(user.prov_country) || self.sp_s_5.eql?(user.prov_country))))
+      ((self.wtyp_czb_type == ::WtypCzbPart::Type::SC && (self.sp_s_221.eql?(user.prov_country)||self.bsscqy_xian.eql?(user.prov_country))) or ([::WtypCzbPart::Type::LT, ::WtypCzbPart::Type::CY].include?(self.wtyp_czb_type) && (self.bcydw_xian.eql?(user.prov_country) || self.sp_s_5.eql?(user.prov_country))) or (self.wtyp_czb_type == ::WtypCzbPart::Type::WC && self.wc_xian.eql?(user.prov_country)))
     else
       false
     end
@@ -448,13 +504,23 @@ class WtypCzbPart < ActiveRecord::Base
        end
      elsif params[:hccz_type].eql?('QB')
        if current_user.hccz_level == User::HcczLevel::Sheng
-         wtyp_czbs = wtyp_czbs.where(' (wtyp_czb_parts.bsscqy_sheng = ? or wtyp_czb_parts.bcydw_sheng =? )', current_user.user_s_province,current_user.user_s_province)
+         wtyp_czbs = wtyp_czbs.where(' (wtyp_czb_parts.bsscqy_sheng = ? or wtyp_czb_parts.bcydw_sheng =? or wtyp_czb_parts.wc_sheng = ? )', current_user.user_s_province,current_user.user_s_province,current_user.user_s_province)
        elsif current_user.hccz_level == User::HcczLevel::Shi
-         wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.sp_s_220 = ? or wtyp_czb_parts.sp_s_4 = ? or wtyp_czb_parts.bsscqy_shi = ? or wtyp_czb_parts.bcydw_shi = ?',current_user.prov_city, current_user.prov_city,current_user.prov_city,current_user.prov_city)
+         wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.sp_s_220 = ? or wtyp_czb_parts.sp_s_4 = ? or wtyp_czb_parts.bsscqy_shi = ? or wtyp_czb_parts.bcydw_shi =? or wtyp_czb_parts.wc_shi =  ?',current_user.prov_city, current_user.prov_city,current_user.prov_city,current_user.prov_city,current_user.prov_city)
        elsif current_user.hccz_level == User::HcczLevel::Xian
-         wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.sp_s_221 = ? or wtyp_czb_parts.sp_s_5 = ? or wtyp_czb_parts.bcydw_xian = ? or wtyp_czb_parts.bsscqy_xian=?',current_user.prov_country, current_user.prov_country,current_user.prov_country,    current_user.prov_country)
+         wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.sp_s_221 = ? or wtyp_czb_parts.sp_s_5 = ? or wtyp_czb_parts.bcydw_xian = ? or wtyp_czb_parts.bsscqy_xian=? or wtyp_czb_parts.wc_xian =?',current_user.prov_country, current_user.prov_country,current_user.prov_country,current_user.prov_country,current_user.prov_country)
        else
          wtyp_czbs = wtyp_czbs.where('1=5') 
+       end
+     elsif params[:hccz_type].eql?('WC')
+       if current_user.hccz_level == User::HcczLevel::Sheng
+         wtyp_czbs = wtyp_czbs.where(' (wtyp_czb_parts.wc_sheng = ? )', current_user.user_s_province)
+       elsif current_user.hccz_level == User::HcczLevel::Shi
+         wtyp_czbs = wtyp_czbs.where(' (wtyp_czb_parts.wc_shi = ? )', current_user.prov_city)
+       elsif current_user.hccz_level == User::HcczLevel::Xian
+         wtyp_czbs = wtyp_czbs.where(' (wtyp_czb_parts.wc_xian = ? or wtyp_czb_parts.wc_shi = ?  )', current_user.prov_country,current_user.prov_city)
+       else
+        wtyp_czbs = wtyp_czbs.where('1=9')
        end
      end    
     end
@@ -471,6 +537,8 @@ class WtypCzbPart < ActiveRecord::Base
       wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.wtyp_czb_type IN (?)', [::WtypCzbPart::Type::SC])
     elsif params[:hccz_type].eql?('JY')
       wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.wtyp_czb_type IN (?)', [::WtypCzbPart::Type::LT, ::WtypCzbPart::Type::CY])
+    elsif params[:hccz_type].eql?('WC')
+     wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.wtyp_czb_type IN (?)', [::WtypCzbPart::Type::WC])
     end
     # 时间范围筛选
     wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.updated_at between ? and ?', params[:begin_at], params[:end_at])
