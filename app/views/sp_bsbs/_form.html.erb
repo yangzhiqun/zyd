@@ -331,6 +331,21 @@
         $("#ybz").attr("rowSpan","8");  
       }
     })
+	//网抽部分显示与隐藏
+    $("#wc1,#wc2,#wc3,#wc4").hide();
+    if ($('#sp_bsb_sp_s_2 option:selected').val() == "网购" ){
+      $("#wc1,#wc2,#wc3,#wc4").show();
+    }
+    $('#sp_bsb_sp_s_2').change(function () {
+      if ($('#sp_bsb_sp_s_2 option:selected').val() == "网购" ){
+        $("#wc1,#wc2,#wc3,#wc4").show();
+      }
+      if ($('#sp_bsb_sp_s_2 option:selected').val() != "网购" ){
+        $("#wc1,#wc2,#wc3,#wc4").hide();
+      }
+    });
+	
+	
     <% if [2,3,4, 5].include?(@sp_bsb.sp_i_state) %>
 	SetUserCertList('ca_sign_form.user_cert_list', CERT_TYPE_HARD);
     <% end %>
@@ -362,6 +377,27 @@
         }
         <%end%>
       }
+    });
+     //流通方式为网购时若干选项置为/
+    $("#sp_bsb_sp_s_2").change(function () {
+      var checkText = $("#sp_bsb_sp_s_2").find("option:selected").text();
+      if (checkText == "网购") {
+        $("#wc1,#wc2,#wc3,#wc4").show();
+        <%@check=[23,'bsfl',10,8,9,11,12]%>
+        <%@check.each do |i|%>
+        if ($.trim($("#sp_bsb_sp_s_" + "<%=i%>").val()).length == 0) {
+         $("#sp_bsb_sp_s_" + "<%=i%>").val('/');
+        }
+       <%end%>
+     } else if (checkText != "网购") {
+     $("#wc1,#wc2,#wc3,#wc4").hide();
+       <%@check=[23,'bsfl',10,8,9,11,12]%>
+       <%@check.each do |i|%>
+      if ($.trim($("#sp_bsb_sp_s_" + "<%=i%>").val()) == '/') {
+        $("#sp_bsb_sp_s_" + "<%=i%>").val('');
+       }
+        <%end%>
+       }
     });
     //根据任务来源过滤报送分类A
     //$("#sp_bsb_sp_s_2_1").unbind("change", eDropLangChange).bind("change", eDropLangChange);
@@ -462,6 +498,11 @@
       level2: "<%= @sp_bsb.sp_s_wtshi %>",
       level3: "<%= @sp_bsb.sp_s_wtxian %>"
     });
+     $(".region4").CfdaProvince({
+       level1: "<%= @sp_bsb.sp_s_wcsheng %>",
+       level2: "<%= @sp_bsb.sp_s_wcshi %>",
+       level3: "<%= @sp_bsb.sp_s_wcxian %>"
+     });
 
     $("#sp_bsb_sp_d_22, /*#sp_bsb_sp_d_28 #sp_bsb_sp_d_38,*/ #sp_bsb_sp_d_46, #sp_bsb_sp_d_86, #sp_bsb_sp_s_209").datepicker({
       dateFormat: "yy-mm-dd",
@@ -695,7 +736,7 @@
     <%@check.each do |i|%>
     $("#sp_bsb_sp_s_" +<%=i%>).attr("disabled", "disabled");
     <%end%>
-	<%@check=['sfjk','ycg','sfwtsc','wtsheng','wtshi','wtxian','qydz','qymc','qs','lxr','tel','bsfl']%>
+	<%@check=['sfjk','ycg','sfwtsc','wtsheng','wtshi','wtxian','qydz','qymc','qs','lxr','tel','bsfl','dwwz','wcicp','wcmc','wcyyzzh','wcsheng','wcshi','wcxian','wcbh','wcwz','wcdz']%>
     <%@check.each do |i|%>
     $("#sp_bsb_sp_s_<%= "#{i}"%>").attr("disabled", "disabled");
     <%end%>
@@ -723,7 +764,7 @@
     <%@check.each do |i|%>
     $("#sp_bsb_sp_s_" +<%=i%>).attr("disabled", "disabled");
     <%end%>
-	<%@check=['sfjk','ycg','sfwtsc','wtsheng','wtshi','wtxian','qydz','qymc','qs','lxr','tel','bsfl']%>
+	<%@check=['sfjk','ycg','sfwtsc','wtsheng','wtshi','wtxian','qydz','qymc','qs','lxr','tel','bsfl','dwwz','wcicp','wcmc','wcyyzzh','wcsheng','wcshi','wcxian','wcbh','wcwz','wcdz']%>
     <%@check.each do |i|%>
     $("#sp_bsb_sp_s_<%= "#{i}"%>").attr("disabled", "disabled");
     <%end%>
@@ -748,6 +789,13 @@
       });
     }
     $("#sp_bsb_sp_s_2").val('<%=@sp_bsb["sp_s_2"]%>');
+
+    if ($('#sp_bsb_sp_s_2 option:selected').val() == "网购" ){
+      $("#wc1,#wc2,#wc3,#wc4").show();
+    }
+     if ($('#sp_bsb_sp_s_2 option:selected').val() != "网购" ){
+       $("#wc1,#wc2,#wc3,#wc4").hide();
+    }
 
     $("#sp_bsb_sp_s_68").change(function () {
       $("#sp_bsb_sp_s_2").get(0).options.length = 0;
@@ -1087,6 +1135,54 @@
         $("#sp_bsb_sp_d_" +<%=i%>).focus();
         return false;
       }
+      <%end%>
+      
+      <%@check=['dwwz','wcicp','wcmc','wcyyzzh','wcsheng','wcshi','wcxian','wcbh','wcwz','wcdz']%>
+      <%@check.each do |i|%>
+       if(($.trim($("#sp_bsb_sp_s_" +"<%=i%>").val()).length == 0 || $("#sp_bsb_sp_s_" +"<%=i%>").val() == '请选择')&&($("#sp_bsb_sp_s_2").val()=='网购')){
+         var info = "";
+         info = "<%=i%>";
+         if(info=="dwwz"){
+            info = "网店网址";
+         }
+         if(info=="wcicp"){
+            info ="入网许可证号或ICP经营许可证"
+         }
+         if(info=="wcmc"){
+            info ="网络平台名称"
+         }
+         if(info =="wcyyzzh"){
+            info ="平台营业执照号"
+         }
+         if(info =="wcsheng"){
+            info ="网购平台省份"
+         }
+         if(info =="wcshi"){
+            info ="网购平台市"
+         }
+         if(info =="wcxian"){
+            info ="网购平台县"
+         }
+         if(info =="wcbh"){
+            info ="平台订单编号"
+         }
+         if(info =="wcwz"){
+            info ="平台网址"
+         }
+         if(info =="wcdz"){
+           info ="平台地址"
+         }
+         if(info =="wclxr"){
+          info ="平台联系人"
+         }
+         if(info =="wctel"){
+          info ="平台联系电话"
+         }
+         modalHide();
+        alert(info + " ,该项为必填项");
+        $("#sp_bsb_sp_s_" + "<%=i%>").focus();
+        return false;
+       }
       <%end%>
 
       <%@check=[15]%>
@@ -2432,6 +2528,10 @@
           </td>
           <td colspan="12"><%= f.text_field :sp_s_7, :class => "inputText", placeholder: '请填写详细地址', :style => "width: 100%; height: 19px" %></td>
         </tr>
+        <tr id="wc4">
+          <td colspan="3">网店网址*</td>
+          <td colspan="27"><%= f.text_field :sp_s_dwwz, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+       </tr>
         <tr>
           <td colspan="3">邮编</td>
           <td colspan="4"><%= f.text_field :sp_s_10, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
@@ -2448,6 +2548,33 @@
           <td colspan="3">许可证*</td>
           <td colspan="4"><%= f.select :sp_xkz, @xkz_options, {}, {:style => "width: 100%;"} %></td>
           <td colspan="5"><%= f.text_field :sp_xkz_id, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+		<tr id="wc1">
+          <td colspan="7">入网许可证号或ICP经营许可证*</td>
+          <td colspan="3"><%= f.text_field :sp_s_wcicp, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">网络平台名称*</td>
+          <td colspan="5"><%= f.text_field :sp_s_wcmc, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">平台营业执照号*</td>
+          <td colspan="9"><%= f.text_field :sp_s_wcyyzzh, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr id="wc2">
+          <td colspan="3" style="width: 73px">平台地址*</td>
+          <td colspan="15" style="border-right:none;" class="region4">
+            <%= f.select :sp_s_wcsheng, {}, class: 'form-control input-sm' %>
+            <%= f.select :sp_s_wcshi, {}, class: 'form-control input-sm' %>
+            <%= f.select :sp_s_wcxian, {}, class: 'form-control input-sm' %>
+          </td>
+          <td colspan="12"><%= f.text_field :sp_s_wcdz, :class => "inputText", placeholder: '请填写详细地址', :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr id="wc3">
+          <td colspan="3">平台订单编号*</td>
+          <td colspan="7"><%= f.text_field :sp_s_wcbh, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">平台联系人</td>
+          <td colspan="5"><%= f.text_field :sp_s_wclxr, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">平台联系电话</td>
+          <td colspan="4"><%= f.text_field :sp_s_wctel, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="2">平台网址*</td>
+          <td colspan="3"><%= f.text_field :sp_s_wcwz, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
         <tr>
           <td colspan="3">样品名称*</td>

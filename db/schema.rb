@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170710134229) do
+ActiveRecord::Schema.define(version: 20170818133505) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -150,11 +150,11 @@ ActiveRecord::Schema.define(version: 20170710134229) do
     t.text     "JYYJ",          limit: 65535
     t.text     "PDYJ",          limit: 65535
     t.text     "BZFFJCX",       limit: 65535
-    t.string   "BZFFJCXDW",     limit: 255
-    t.string   "BZZXYXX",       limit: 255
-    t.string   "BZZXYXXDW",     limit: 255
+    t.text     "BZFFJCXDW",     limit: 65535
+    t.text     "BZZXYXX",       limit: 65535
+    t.text     "BZZXYXXDW",     limit: 65535
     t.text     "BZZDYXX",       limit: 65535
-    t.string   "BZZDYXXDW",     limit: 255
+    t.text     "BZZDYXXDW",     limit: 65535
     t.integer  "d_category_id", limit: 4
     t.integer  "a_category_id", limit: 4
     t.integer  "b_category_id", limit: 4
@@ -485,6 +485,18 @@ ActiveRecord::Schema.define(version: 20170710134229) do
     t.string   "sp_s_222",          limit: 20
     t.datetime "deleted_at"
     t.text     "sp_s_city",         limit: 65535
+    t.text     "sp_s_dwwz",         limit: 65535
+    t.string   "sp_s_wcmc",         limit: 255
+    t.string   "sp_s_wcyyzzh",      limit: 255
+    t.string   "sp_s_wcicp",        limit: 255
+    t.string   "sp_s_wcsheng",      limit: 255
+    t.string   "sp_s_wcshi",        limit: 255
+    t.string   "sp_s_wcxian",       limit: 255
+    t.string   "sp_s_wcdz",         limit: 255
+    t.string   "sp_s_wcwz",         limit: 255
+    t.string   "sp_s_wclxr",        limit: 255
+    t.string   "sp_s_wctel",        limit: 255
+    t.string   "sp_s_wcbh",         limit: 255
   end
 
   add_index "pad_sp_bsbs", ["deleted_at"], name: "index_pad_sp_bsbs_on_deleted_at", using: :btree
@@ -952,6 +964,18 @@ ActiveRecord::Schema.define(version: 20170710134229) do
     t.string   "barcode",                  limit: 13
     t.string   "rainbowcode",              limit: 12
     t.string   "rainbowcode_url",          limit: 255
+    t.text     "sp_s_dwwz",                limit: 65535
+    t.string   "sp_s_wcmc",                limit: 255
+    t.string   "sp_s_wcyyzzh",             limit: 255
+    t.string   "sp_s_wcicp",               limit: 255
+    t.string   "sp_s_wcsheng",             limit: 255
+    t.string   "sp_s_wcshi",               limit: 255
+    t.string   "sp_s_wcxian",              limit: 255
+    t.string   "sp_s_wcdz",                limit: 255
+    t.string   "sp_s_wcwz",                limit: 255
+    t.string   "sp_s_wclxr",               limit: 255
+    t.string   "sp_s_wctel",               limit: 255
+    t.string   "sp_s_wcbh",                limit: 255
   end
 
   add_index "sp_bsbs", ["application_id"], name: "index_sp_bsbs_on_application_id", using: :btree
@@ -1813,8 +1837,8 @@ ActiveRecord::Schema.define(version: 20170710134229) do
     t.string   "jyjgzt",              limit: 255
     t.date     "qdhcczrq"
     t.date     "czwbrq"
-    t.string   "fxpj_1",              limit: 255
-    t.string   "fxpj_2",              limit: 255
+    t.string   "fxpj_1",              limit: 30
+    t.string   "fxpj_2",              limit: 30
     t.string   "fxpj_3",              limit: 255
     t.string   "cpkzqk_1",            limit: 255
     t.string   "cpkzqk_2",            limit: 255
@@ -1843,26 +1867,26 @@ ActiveRecord::Schema.define(version: 20170710134229) do
     t.text     "pczgfc_6",            limit: 65535
     t.string   "pczgfc_7",            limit: 255
     t.string   "pczgfc_8",            limit: 255
-    t.text     "xzcfqk_1",            limit: 65535
-    t.text     "xzcfqk_2",            limit: 65535
-    t.text     "xzcfqk_3",            limit: 65535
-    t.text     "xzcfqk_4",            limit: 65535
-    t.text     "xzcfqk_5",            limit: 65535
+    t.text     "xzcfqk_1",            limit: 255
+    t.text     "xzcfqk_2",            limit: 255
+    t.text     "xzcfqk_3",            limit: 255
+    t.text     "xzcfqk_4",            limit: 255
+    t.text     "xzcfqk_5",            limit: 255
     t.date     "xzcfqk_6"
-    t.text     "xzcfqk_7",            limit: 65535
+    t.text     "xzcfqk_7",            limit: 255
     t.date     "xzcfqk_8"
-    t.text     "xzcfqk_9",            limit: 65535
-    t.text     "xzcfqk_10",           limit: 65535
-    t.text     "xzcfqk_11",           limit: 65535
-    t.text     "xzcfqk_12",           limit: 65535
-    t.text     "xzcfqk_13",           limit: 65535
-    t.text     "xzcfqk_14",           limit: 65535
-    t.text     "xzcfqk_15",           limit: 65535
-    t.text     "xzcfqk_16",           limit: 65535
-    t.text     "xzcfqk_17",           limit: 65535
-    t.text     "xzcfqk_18",           limit: 65535
-    t.text     "xzcfqk_19",           limit: 65535
-    t.text     "xzcfqk_20",           limit: 65535
+    t.text     "xzcfqk_9",            limit: 255
+    t.text     "xzcfqk_10",           limit: 255
+    t.text     "xzcfqk_11",           limit: 255
+    t.text     "xzcfqk_12",           limit: 255
+    t.text     "xzcfqk_13",           limit: 255
+    t.text     "xzcfqk_14",           limit: 255
+    t.text     "xzcfqk_15",           limit: 255
+    t.text     "xzcfqk_16",           limit: 255
+    t.text     "xzcfqk_17",           limit: 255
+    t.text     "xzcfqk_18",           limit: 255
+    t.text     "xzcfqk_19",           limit: 255
+    t.text     "xzcfqk_20",           limit: 255
     t.date     "xzcfqk_21"
     t.integer  "hccz_type",           limit: 4,     default: -1
     t.text     "pczgfc_9",            limit: 65535
@@ -1941,9 +1965,12 @@ ActiveRecord::Schema.define(version: 20170710134229) do
     t.integer  "yypc_yylbxs",         limit: 4
     t.integer  "wtyp_dbtype",         limit: 4
     t.string   "qd_attachment_path",  limit: 100
-    t.boolean  "part_submit_flag5",                 default: false
+    t.integer  "part_submit_flag5",   limit: 1
     t.boolean  "part_submit_flag6",                 default: false
     t.boolean  "part_submit_flag7",                 default: false
+    t.string   "wc_sheng",            limit: 60
+    t.string   "wc_shi",              limit: 60
+    t.string   "wc_xian",             limit: 60
   end
 
   add_index "wtyp_czb_parts", ["cjbh"], name: "index_wtyp_czb_parts_on_cjbh", using: :btree
@@ -2065,6 +2092,9 @@ ActiveRecord::Schema.define(version: 20170710134229) do
     t.boolean  "part_submit_flag5",                    default: false
     t.boolean  "part_submit_flag6",                    default: false
     t.boolean  "part_submit_flag7",                    default: false
+    t.string   "wc_sheng",               limit: 255
+    t.string   "wc_shi",                 limit: 255
+    t.string   "wc_xian",                limit: 255
   end
 
   add_index "wtyp_czbs", ["bsscqymc"], name: "index_wtyp_czbs_on_bsscqymc", using: :btree

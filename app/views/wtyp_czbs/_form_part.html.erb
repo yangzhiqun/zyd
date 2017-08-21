@@ -92,16 +92,16 @@
 
     <table class="table table-bordered table-bordered-black" id="tblGrid">
       <tr>
-        <th colspan="3">处置环节</th>
-        <td colspan="12"><%= czb.wtyp_czb_type == ::WtypCzbPart::Type::SC ? "生产" : "消费" %></td>
-        <th colspan="3"><%= czb.wtyp_czb_type == ::WtypCzbPart::Type::SC ? "标识生产企业名称" : "被抽样单位名称" %></th>
-        <td colspan="12"><%= czb.wtyp_czb_type == ::WtypCzbPart::Type::SC ? czb.bsscqymc : czb.bcydwmc %></td>
+        <th colspan="3">处置环节<%= czb.wtyp_czb_type%></th>
+        <td colspan="12"><%= czb.wtyp_czb_type_desc %></td>
+        <th colspan="3"><%= czb.wtyp_czb_qymc_mould %></th>
+        <td colspan="12"><%= czb.wtyp_czb_qymc %></td>
       </tr>
       <tr>
         <th colspan="3">所在省份</th>
-        <td colspan="12"><%= czb.wtyp_czb_type == ::WtypCzbPart::Type::SC ? czb.bsscqy_sheng : czb.bcydw_sheng %></td>
+        <td colspan="12"><%= czb.wtyp_czb_szsf %></td>
         <th colspan="3">地址</th>
-        <td colspan="12"><%= czb.wtyp_czb_type == ::WtypCzbPart::Type::SC ? czb.bsscqydz : czb.bcydwdz %></td>
+        <td colspan="12"><%= czb.wtyp_czb_szdz %></td>
       </tr>
       <tr>
         <th colspan="3">核查处置单位、部门</th>
@@ -598,11 +598,11 @@
     </table>
   </div>
   <div class="panel-footer">
-    <% if czb.enable_operation?(current_user) || czb.current_state == ::WtypCzb::State::LOGGED %>
+    <% if czb.enable_operation?(current_user) || czb.current_state == ::WtypCzb::State::LOGGED  %>
         <input type="hidden" name="parts[][save_me]" class="save-me">
     <% end %>
 
-    <% if czb.enable_operation?(current_user) %>
+    <% if czb.enable_operation?(current_user) and czb.type_prov_enabled?(current_user) %>
         <input type="hidden" name="parts[][tmp_save]" class="tmp-save-tag">
         <input type="hidden" name="parts[][part_submit]" class="part-submit">
         <button class="btn btn-success btn-sm save" type="submit">提交信息入库</button>

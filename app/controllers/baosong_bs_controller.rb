@@ -132,12 +132,16 @@ class BaosongBsController < ApplicationController
     @baosong_b = BaosongB.new(baosong_b_params)
 
     respond_to do |format|
-      if @baosong_b.save
-        format.html { redirect_to :back, notice: '创建成功' }
-        format.json { render json: @baosong_b, status: :created, location: @baosong_b }
+      if baosong_b_params["file"].nil?
+        format.html { redirect_to :back, notice: "Excel源文件不可为空" }
       else
-        format.html { redirect_to :back, notice: @baosong_b.errors.first.last }
-        format.json { render json: @baosong_b.errors, status: :unprocessable_entity }
+        if @baosong_b.save
+          format.html { redirect_to :back, notice: '创建成功' }
+          format.json { render json: @baosong_b, status: :created, location: @baosong_b }
+        else
+          format.html { redirect_to :back, notice: @baosong_b.errors.first.last }
+          format.json { render json: @baosong_b.errors, status: :unprocessable_entity }
+        end
       end
     end
   end

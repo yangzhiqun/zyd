@@ -9,8 +9,22 @@
     ///////////////////
 
     $(function () {
+     // 网抽部分显示与隐藏
+     // $("#wc1,#wc2,#wc3,#wc4").hide();
+     // alert($('#pad_sp_bsb_sp_s_2 option:selected').val());
+     // if ($('#pad_sp_bsb_sp_s_2 option:selected').val() == "网购" ){
+      // $("#wc1,#wc2,#wc3,#wc4").show();
+     // }
+     // $('#pad_sp_bsb_sp_s_2').change(function () {
+      // if ($('#pad_sp_bsb_sp_s_2 option:selected').val() == "网购" ){
+       // $("#wc1,#wc2,#wc3,#wc4").show();
+        //}
+       //if ($('#pad_sp_bsb_sp_s_2 option:selected').val() != "网购" ){
+       // $("#wc1,#wc2,#wc3,#wc4").hide();
+      // }
+      // });
      // $("#pad_sp_bsb_sp_s_16").val('<%= @id_partssum%>')
-      //包装分类选为散装时若干项自动置为/
+      //包装分类选为散装时若干项自动置为
       if ($("#pad_sp_bsb_sp_s_63").val() == "散装") {
         <%@check=[26,27,13,72,73,74]%>
         <%@check.each do |i|%>
@@ -41,6 +55,7 @@
       $("#pad_sp_bsb_sp_s_2").change(function () {
         var checkText = $("#pad_sp_bsb_sp_s_2").find("option:selected").text();
         if (checkText == "网购") {
+          $("#wc1,#wc2,#wc3,#wc4").show();
           <%@check=[23,'bsfl',10,8,9,11,12]%>
           <%@check.each do |i|%>
           if ($.trim($("#pad_sp_bsb_sp_s_" + "<%=i%>").val()).length == 0) {
@@ -48,6 +63,7 @@
           }
           <%end%>
         } else if (checkText != "网购") {
+         $("#wc1,#wc2,#wc3,#wc4").hide();
           <%@check=[23,'bsfl',10,8,9,11,12]%>
           <%@check.each do |i|%>
           if ($.trim($("#pad_sp_bsb_sp_s_" + "<%=i%>").val()) == '/') {
@@ -80,6 +96,12 @@
 				  level1: "<%= @sp_bsb.sp_s_52 %>",
           level2: "<%= @sp_bsb.sp_s_city %>"
     		});
+        $(".region4").CfdaProvince({
+          level1: "<%= @sp_bsb.sp_s_wcsheng %>",
+          level2: "<%= @sp_bsb.sp_s_wcshi %>",
+          level3: "<%= @sp_bsb.sp_s_wcxian %>"
+       }); 
+
         $("#pad_sp_bsb_sp_d_22").datepicker({
             dateFormat: "yy-mm-dd",
             changeMonth: true,
@@ -233,6 +255,13 @@
             $("#pad_sp_bsb_sp_s_2").append("<option value='" + data + "'>" + data + "</option>");
         });
         $("#pad_sp_bsb_sp_s_2").val('<%=@sp_bsb["sp_s_2"]%>');
+        if ($('#sp_bsb_sp_s_2 option:selected').val() == "网购" ){
+         $("#wc1,#wc2,#wc3,#wc4").show();
+        }
+       
+        if ($('#sp_bsb_sp_s_2 option:selected').val() != "网购" ){
+         $("#wc1,#wc2,#wc3,#wc4").hide();
+         }
 
         $("#pad_sp_bsb_sp_s_68").change(function () {
             $("#pad_sp_bsb_sp_s_2").get(0).options.length = 0;
@@ -440,6 +469,19 @@
         $("#jg_jg_id").val("<%= @sp_bsb.sp_s_43 %>")
         <% end %>
         $('#jg_jg_id').trigger('change');
+        $("#wc1,#wc2,#wc3,#wc4").hide();
+       if ($('#pad_sp_bsb_sp_s_2 option:selected').val() == "网购" ){
+        $("#wc1,#wc2,#wc3,#wc4").show();
+       }
+       $('#pad_sp_bsb_sp_s_2').change(function () {
+       if ($('#pad_sp_bsb_sp_s_2 option:selected').val() == "网购" ){
+        $("#wc1,#wc2,#wc3,#wc4").show();
+       }
+       if ($('#pad_sp_bsb_sp_s_2 option:selected').val() != "网购" ){
+        $("#wc1,#wc2,#wc3,#wc4").hide();
+       }
+       });
+
     });
 </script>
 <style type="text/css">
@@ -540,6 +582,10 @@
           </td>
           <td colspan="14"><%= f.text_field :sp_s_7, :class => "inputText", placeholder: '请填写详细地址', :style => "width: 100%; height: 19px" %></td>
         </tr>
+        <tr id="wc4">
+           <td colspan="3">网店网址*</td>
+           <td colspan="27"><%= f.text_field :sp_s_dwwz, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
         <tr>
           <td colspan="3">邮编</td>
           <td colspan="4"><%= f.text_field :sp_s_10, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
@@ -557,6 +603,33 @@
           <td colspan="4"><%= f.select :sp_xkz, @xkz_options, {}, {:style => "width: 100%;"} %></td>
           <td colspan="5"><%= f.text_field :sp_xkz_id, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
         </tr>
+        <tr id="wc1">
+          <td colspan="7">入网许可证号或ICP经营许可证*</td>
+          <td colspan="3"><%= f.text_field :sp_s_wcicp, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">网络平台名称*</td>
+          <td colspan="5"><%= f.text_field :sp_s_wcmc, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">平台营业执照号*</td>
+          <td colspan="9"><%= f.text_field :sp_s_wcyyzzh, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+        </tr>
+        <tr id="wc2">
+          <td colspan="3" style="width: 73px">平台地址*</td>
+          <td colspan="15" style="border-right:none;" class="region4">
+          <%= f.select :sp_s_wcsheng, {}, class: 'form-control input-sm' %>
+          <%= f.select :sp_s_wcshi, {}, class: 'form-control input-sm' %>
+          <%= f.select :sp_s_wcxian, {}, class: 'form-control input-sm' %>
+          </td>
+         <td colspan="12"><%= f.text_field :sp_s_wcdz, :class => "inputText", placeholder: '请填写详细地址', :style => "width: 100%; height: 19px" %></td>
+         </tr>
+         <tr id="wc3">
+          <td colspan="3">平台订单编号*</td>
+          <td colspan="7"><%= f.text_field :sp_s_wcbh, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">平台联系人</td>
+          <td colspan="5"><%= f.text_field :sp_s_wclxr, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="3">平台联系电话</td>
+          <td colspan="4"><%= f.text_field :sp_s_wctel, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          <td colspan="2">平台网址*</td>
+          <td colspan="3"><%= f.text_field :sp_s_wcwz, :class => "inputText", :style => "width: 100%; height: 19px" %></td>
+          </tr>
         <tr>
           <td colspan="3">样品名称*</td>
           <td colspan="7"><%= f.text_field :sp_s_14, :class => "inputText", :style => "width: 100%; height: 19px" %></td>

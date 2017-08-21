@@ -192,19 +192,19 @@ module ApplicationHelper
 	#机构是否是省
 	def jg_is_province?
 		jg = current_user.jg_bsb	
-		return jg.jg_province != "-请选择-" && (jg.city == "-请选择-" || jg.country == "-请选择-")
+		return jg.jg_province != "-请选择-" && (jg.city == "-请选择-" || jg.city.blank?)
 	end
 	
 	#机构是否是市
 	def jg_is_city?
 		jg = current_user.jg_bsb
-		return jg.jg_province != "-请选择-" && jg.city != "-请选择-" && jg.country == "-请选择-"
+		return jg.jg_province != "-请选择-" && (jg.city != "-请选择-" || jg.city !="" )&& (jg.country == "-请选择-"  || jg.country =="")
 	end
 
 	#机构是否是县
 	def jg_is_country?
 		jg = current_user.jg_bsb
-		return jg.jg_province != "-请选择-" && jg.city != "-请选择-" && jg.country != "-请选择-"
+		return jg.jg_province != "-请选择-" && (jg.city != "-请选择-" || jg.city !="" )&& (jg.country != "-请选择-" || jg.country !="")
 	end
 
   def is_tuixiu
@@ -212,11 +212,11 @@ module ApplicationHelper
   end
 
   def is_shi_deploy?
-    (is_city?&&jg_is_city?) || jg_is_city?
+    (is_city?&&jg_is_city?)
   end
 
   def is_xian_deploy?
-    (is_county_level?&&jg_is_country?) || jg_is_country?
+    (is_county_level?&&jg_is_country?)
   end
  def is_level?
      return "省级"  if  is_sheng?
