@@ -10,9 +10,9 @@
 /public/assets
 .DS_Store
 /bin
-config/*.yml
-app/assets/javascripts/provincesdata.js
-config/application.rb
+#config/*.yml
+#app/assets/javascripts/provincesdata.js
+#config/application.rb
 # Ignore the default SQLite database.
 /db/*.sqlite3
 
@@ -35,5 +35,5 @@ excel/*
 dump.rdb
 *.sql
 docker_database/data/
-*/database.yml
+#*/database.yml
 access_token
