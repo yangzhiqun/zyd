@@ -128,7 +128,7 @@
           <td align="left"><p style="font-size:14pt">№：<%= @spbsb.sp_s_45 %></p>
           </td>
           <td>
-            <p style="font-size:14pt; word-spacing:10px;" align="right">共<%= ((@cjx.count - 16).to_f / 16).ceil + 2 %>页 第1页</p>
+            <p style="font-size:14pt; word-spacing:10px;" align="right">共<%= ((@cjx.count - 10).to_f / 10).ceil + 2 %>页 第1页</p>
           </td>
         </tr>
       </table>
@@ -139,7 +139,7 @@
           <th>商标</th>
           <td><%= @spbsb.sp_s_74 %></td>
           <th>规格型号</th>
-          <td align="left"><%= @spbsb.sp_s_26 %></td>
+          <td align="left" style="<%= auto_adjust_text_size(@spbsb.sp_s_26, 5) %>"><%= @spbsb.sp_s_26 %></td>
         </tr>
         <tr height="30">
           <th colspan="2">生产日期</th>
@@ -260,7 +260,7 @@
         <tr>
           <td align="left"><p style="font-size:14pt">№：<%= @spbsb.sp_s_45 %></p></td>
           <td>
-            <p style="font-size:14pt; word-spacing:10px;" align="right">共<%= ((@cjx.count - 16).to_f / 16).ceil + 2 %>
+            <p style="font-size:14pt; word-spacing:10px;" align="right">共<%= ((@cjx.count - 10).to_f / 10).ceil + 2 %>
               页 第2页</p></td>
         </tr>
       </table>
@@ -274,7 +274,7 @@
           <th>检验依据</th>
           <th width="80">备注</th>
         </tr>
-        <% @cjx.limit(16).each_with_index do |product, index| %>
+        <% @cjx.limit(10).each_with_index do |product, index| %>
             <tr>
               <td align="center" height="45"><%= index + 1 %></td>
               <td colspan="2" style="<%= auto_adjust_text_size(product.spdata_0+product.spdata_18, 5) %>"><%= product.spdata_0 %>
@@ -311,7 +311,7 @@
                 <% end %></td>
             </tr>
         <% end %>
-        <% if 16 > @cjx.count %>
+        <% if 10 > @cjx.count %>
             <tr>
               <td align="center"></td>
               <td colspan="2" valign="top">以下空白</td>
@@ -325,7 +325,7 @@
       </table>
     </div>
   </div>
-  <% products_print_pager @cjx.offset(16), 16, 17 do |products, start_index, current_page, is_last_page, total_page| %>
+  <% products_print_pager @cjx.offset(10), 10, 11 do |products, start_index, current_page, is_last_page, total_page| %>
       <div class="page">
         <div class="subpage">
           <p align="center" style="font-size:18pt"><%= @spbsb.sp_s_43 %></p>
@@ -388,7 +388,7 @@
                     <% end %></td>
                 </tr>
             <% end %>
-            <% if (17 > products.count) and ((total_page + 2) == (current_page +3)) %>
+            <% if (11 > products.count) and ((total_page + 2) == (current_page +3)) %>
                 <tr>
                   <td align="center"></td>
                   <td colspan="2" valign="top">以下空白</td>
