@@ -27,7 +27,7 @@ class Api::V3::InterfaceBaosongController < ApplicationController
          ## 检验项目
          create_obj("CheckItem", @type_name) 
        elsif params["type"] == "update"
-          
+         update_obj       
        end
      end
      @logger.info "创建成功"
@@ -94,5 +94,12 @@ class Api::V3::InterfaceBaosongController < ApplicationController
      end
    end
    type_name
+ end
+
+ def update_obj
+   data = params["check_item"]
+   baosong_b = BaosongA.find_by_name(params["baosong_as"]["name"]).baosong_bs.find_by_identifier(params["baosong_bs"]["identifier"])
+   b_category = baosong_b.a_categories.find_by_name(data["a_category"]).b_categories.find_by_name(data["b_category"])
+   c_category = CCategory.where(b_category_id: b_category.id, name: data["c_category"])
  end
 end
