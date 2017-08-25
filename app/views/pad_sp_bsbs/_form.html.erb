@@ -382,7 +382,52 @@
               return false;
             }
           <%end%>
-
+          <%@check=['dwwz','wcicp','wcmc','wcyyzzh','wcsheng','wcshi','wcxian','wcbh','wcwz','wcdz']%>
+          <%@check.each do |i|%>
+          if(($.trim($("#pad_sp_bsb_sp_s_" +"<%=i%>").val()).length == 0 || $("#pad_sp_bsb_sp_s_" +"<%=i%>").val() == '请选择')&&($("#pad_sp_bsb_sp_s_2").val()=='网购')){
+           var info = "";
+           info = "<%=i%>";
+         if(info=="dwwz"){
+             info = "网店网址";
+         }
+         if(info=="wcicp"){
+             info ="入网许可证号或ICP经营许可证"
+         }
+         if(info=="wcmc"){
+             info ="网络平台名称"
+         }
+         if(info =="wcyyzzh"){
+             info ="平台营业执照号"
+         }
+         if(info =="wcsheng"){
+            info ="网购平台省份"
+         }
+         if(info =="wcshi"){
+             info ="网购平台市"
+         }
+         if(info =="wcxian"){
+            info ="网购平台县"
+         }
+         if(info =="wcbh"){
+            info ="平台订单编号"
+         }
+         if(info =="wcwz"){
+            info ="平台网址"
+         }
+         if(info =="wcdz"){
+           info ="平台地址"
+         }
+         if(info =="wclxr"){
+           info ="平台联系人"
+         }
+         if(info =="wctel"){
+            info ="平台联系电话"
+         }
+          alert(info + " ,该项为必填项");
+          $("#pad_sp_bsb_sp_s_" +"<%=i%>").focus();
+          return false;
+         }
+         <%end%>
             return true;
         });
 

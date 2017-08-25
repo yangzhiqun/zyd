@@ -3224,7 +3224,7 @@
                         <% @jg_bsb.jg_bsb_stamps.where("stamp_type not in ('FX1')").each do |stamp| %>
 			  <li>
                              <a href="javascript:void(0);" data-stamp-no="<%= stamp.stamp_no %>" class="stamp-selector">
-                             <% if stamp.image_path.include?("http") %>
+                             <% if !stamp.image_path.nil? && stamp.image_path.include?("http") %>
                                <img src="<%= stamp.image_path %>" class="img-thumbnail" alt="<%= stamp.stamp_no %>">
                              <% else %>
                                <img src="/jg_bsb_stamps/<%= stamp.id %>/cover" class="img-thumbnail" alt="<%= stamp.stamp_no %>">
