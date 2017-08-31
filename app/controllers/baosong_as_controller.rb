@@ -18,7 +18,7 @@ class BaosongAsController < ApplicationController
         end
       end
       if jg_is_city?
-        @baosong_as = BaosongA.where("id in (?) and rwlylx = ?",baosongids,"市/区局").order("created_at desc")
+        @baosong_as = BaosongA.where("id in (?) and rwlylx in (?)", baosongids,["市/区局","县"]).order("created_at desc")
       end
       if jg_is_country?
         @baosong_as = BaosongA.where("id in (?) and rwlylx = ?",baosongids,"县").order("created_at desc")

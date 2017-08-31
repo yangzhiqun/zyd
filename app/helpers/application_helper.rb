@@ -198,13 +198,13 @@ module ApplicationHelper
 	#机构是否是市
 	def jg_is_city?
 		jg = current_user.jg_bsb
-		return jg.jg_province != "-请选择-" && (jg.city != "-请选择-" || jg.city !="" )&& (jg.country == "-请选择-"  || jg.country =="")
+		return jg.jg_province != "-请选择-" && (jg.city != "-请选择-" || jg.city !="" )&& (jg.country == "-请选择-"  || jg.country.blank?)
 	end
 
 	#机构是否是县
 	def jg_is_country?
 		jg = current_user.jg_bsb
-		return jg.jg_province != "-请选择-" && (jg.city != "-请选择-" || jg.city !="" )&& (jg.country != "-请选择-" || jg.country !="")
+		return jg.jg_province != "-请选择-" && (jg.city != "-请选择-" || !jg.city.blank? ) && (jg.country != "-请选择-" && !jg.country.blank?)
 	end
 
   def is_tuixiu
