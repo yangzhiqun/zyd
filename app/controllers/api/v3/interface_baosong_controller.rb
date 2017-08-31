@@ -27,7 +27,7 @@ class Api::V3::InterfaceBaosongController < ApplicationController
          ## 检验项目
          create_obj("CheckItem", @type_name) 
        elsif params["type"] == "update"
-         update_obj
+         update_obj       
        end
      end
      @logger.info ">>>>>成功<<<<<"
