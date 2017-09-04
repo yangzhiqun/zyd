@@ -31,9 +31,10 @@
     }, 500);
     <% end %>
 
-    SetUserCertList('login_form_ca.user_cert_list', CERT_TYPE_HARD);
+    <% is_opne_ca %>
+      SetUserCertList('login_form_ca.user_cert_list', CERT_TYPE_HARD);
+    <% end %>
     
-
     $('#cert-login').click(function () {
     var ep = new EventProxy();
      var cur_cert_id = login_form_ca.user_cert_list.value
