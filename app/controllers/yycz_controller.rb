@@ -7,7 +7,10 @@ class YyczController < ApplicationController
   end
 
   def create
+    @yydjb = SpYydjb.find_by_cjbh(params[:yycz][:cjbh])
+    if @yydjb.nil?
     @yydjb = SpYydjb.new(yydjb_params)
+    end
     # @yydjb.current_state = SpYydjb::State::LOGGED
     @yydjb.yytcsj = Time.now
     @yydjb.yysdsj = Time.now
@@ -38,10 +41,10 @@ class YyczController < ApplicationController
     if Time.now - @bsb.updated_at >= 5.days
       @yydjb.dj_delayed = true
     end
-
     if @yydjb.save
       if @yydjb.fjsqqk == 1
         @spdata = @bsb.spdata
+        @yydjb.sp_yydjb_spdata.destroy_all
         @spdata.each do |data|
           if data.spdata_2.include? "问题" or data.spdata_2.include? "不合格"
             yydata = SpYydjbSpdata.new
