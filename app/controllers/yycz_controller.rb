@@ -10,6 +10,8 @@ class YyczController < ApplicationController
     @yydjb = SpYydjb.find_by_cjbh(params[:yycz][:cjbh])
     if @yydjb.nil?
     @yydjb = SpYydjb.new(yydjb_params)
+    else
+    @yydjb.update_attributes(yydjb_params)
     end
     # @yydjb.current_state = SpYydjb::State::LOGGED
     @yydjb.yytcsj = Time.now
