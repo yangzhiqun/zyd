@@ -1,0 +1,90 @@
+<div class='statistical-title'>
+  <h2>任务统计</h2>
+  <p>以任务类别、食品类别、抽样地点、生产单位所在省等为条件，对省抽、市抽、县抽任务完成情况进行查询统计。 统计各市、县任务数、抽样数、检验数、不合格数、合格数、已处置、处置中等数据。</p>
+</div>
+<ul class="nav nav-tabs">
+  <li role="presentation" class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+      筛选条件
+      <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu">
+      <li>
+        <a>任务类别</a>
+      </li>
+      <li>
+        <a>食品类别</a>
+      </li>
+      <li>
+        <a>抽样地点</a>
+      </li>
+      <li>
+        <a>生产单位</a>
+      </li>
+      <li></li>
+    </ul>
+  </li>
+</ul>
+<div class="statistics-image">
+  <div class="row">
+    <div class="col-md-9" style="border-right: 1px solid #ddd;">
+      <div id="main" style="width: 800px; height: 500px; margin-left: 20px;"></div>
+    </div>
+    <div class="col-md-3" style="height: 502px; overflow: scroll;">
+      <table>
+        <tr style="font-size: 16px;">
+          <th style="padding: 10px;">大类</th>
+          <th style="padding: 10px;">不合格批次</th>
+        </tr>
+        <% @item_counts.each do |k, v| %>
+          <tr style="font-size: 12px;">
+            <td style="padding: 10px;"><%= k %></td>
+            <td style="padding: 10px;"><%= v %></td>
+          </tr>
+        <% end %>
+      </table>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $('body').scrollspy({ target: '#navbar-example' })
+  var myChart = echarts.init(document.getElementById('main'));
+  var option = {
+    color: ['#3398DB'],
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow' 
+      }
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    xAxis: [
+      {
+        type: 'category',
+        data: <%= raw @item_counts.keys.first(10) %>,
+        axisTick: {
+          alignWithLabel: true
+        }
+      }
+    ],
+    yAxis: [
+      {
+        type: 'value'
+      }
+    ],
+    series: [
+      {
+        name: '直接访问',
+        type: 'bar',
+        barWidth: '60%',
+        data: <%= @item_counts.values.first(10) %>
+      }
+    ]
+  };
+  myChart.setOption(option);
+</script>

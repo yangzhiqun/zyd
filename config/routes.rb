@@ -395,7 +395,7 @@ Rails.application.routes.draw do
 
   post "admin/login"
   get "admin/login"
-  
+
 
   post '/ca_login' => 'admin#ca_login'
   post '/ca_logout' => 'admin#logout'
@@ -415,6 +415,18 @@ Rails.application.routes.draw do
   get "data/seach"
   delete "del_data/:id" =>"data#destroy"
   root :to => 'welcome_notices#index'
+
+  #数据统计
+  get 'statistics' => 'statistics#statistics'
+  get 'task_statistics' => 'statistics#task_statistics'
+  get 'food_statistics' => 'statistics#food_statistics'
+  get 'nonconformity_statistics' => 'statistics#nonconformity_statistics'
+  get 'unit_statistics' => 'statistics#unit_statistics'
+  get 'overtime_statistics' => 'statistics#overtime_statistics'
+  get 'disposal_statistics' => 'statistics#disposal_statistics'
+  get 'enterprise_statistics' => 'statistics#enterprise_statistics'
+  get 'early_warning' => 'statistics#early_warning'
+  get 'composite_statistics' => 'statistics#composite_statistics'
 
 
 end
