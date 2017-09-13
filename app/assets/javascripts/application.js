@@ -75,9 +75,12 @@
 //= require react_ujs
 //= require components
 //= require eventproxy
+//= require echarts
+//= require china
+//= require anhui
 $(function(){
   $('#preview').iframeAutoHeight({debug: false});
-  
+
   $( ".datepicker" ).datepicker({dateFormat:"yy-mm-dd",
     changeMonth: true,
     changeYear: true
