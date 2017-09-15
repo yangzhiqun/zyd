@@ -757,6 +757,13 @@
             </div>
           </dd>
       <% end %>
+      <%# if current_user.is_admin? or is_shengshi? %>
+        <dd>
+          <div class="title not-expand">
+            <span><img src="<%= asset_path('leftico11.png') %>"/></span><a href="/log_management/index">日志查询</a>
+          </div>
+        </dd>
+      <%# end %>
     </dl>
 
   </div>

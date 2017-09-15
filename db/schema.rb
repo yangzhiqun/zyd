@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170907081713) do
+ActiveRecord::Schema.define(version: 20170816171705) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -785,15 +785,6 @@ ActiveRecord::Schema.define(version: 20170907081713) do
     t.integer  "current_state", limit: 4,     default: 0
   end
 
-  create_table "sp_bsb_stamp_rules", force: :cascade do |t|
-    t.integer  "user_id",     limit: 4
-    t.string   "pdf_rules",   limit: 255
-    t.integer  "sp_bsb_id",   limit: 4
-    t.string   "report_path", limit: 4096
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
-  end
-
   create_table "sp_bsbs", force: :cascade do |t|
     t.string   "sp_s_1",                   limit: 255,                  default: ""
     t.datetime "created_at",                                                            null: false
@@ -930,7 +921,7 @@ ActiveRecord::Schema.define(version: 20170907081713) do
     t.string   "czb_reverted_reason",      limit: 255
     t.string   "sp_s_220",                 limit: 50
     t.string   "sp_s_221",                 limit: 50
-    t.string   "sp_s_222",                 limit: 60
+    t.string   "sp_s_222",                 limit: 20
     t.integer  "user_id",                  limit: 4
     t.string   "uid",                      limit: 20
     t.integer  "sp_s_37_user_id",          limit: 4

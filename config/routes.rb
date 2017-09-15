@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
 
+  get 'log_management/index'
+  get 'log_management/search'
+
   match 'config/init_site', via: [:get, :post]
   get 'site-logo' => 'config#site_logo'
 

@@ -1,5 +1,6 @@
 #encoding: utf-8
 class JgBsb < ActiveRecord::Base
+  audited
   #validates_presence_of :jg_address, message: '请填写机构地址'
   validates_presence_of :jg_province, message: '请填写机构省份'
   # validates_uniqueness_of :jg_address, message: '机构地址重复'

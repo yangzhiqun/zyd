@@ -1,0 +1,140 @@
+<%= stylesheet_link_tag 'log_management' %>
+<script>
+//点击翻页的事件
+function flip(str) {
+  request_ajax(false,str);
+}
+
+function obtain_value(){
+  var hash = {}
+  $(".value_btn").each(function(){
+    if($(this).css("display") == "block"){
+      hash[$(this).attr("name")] = $(this).val()
+    }
+  })
+  return hash
+}
+
+function request_ajax(is_btn,str) {
+  var url  = "/log_management/search";
+  var data = obtain_value();
+  if(!is_btn){
+    url = str;
+    data = {};
+  }
+  $.ajax({
+    type: "get",
+    url:  url,
+    data: data,
+    success: function(data){
+      $("#zml").html(data);
+      replace_a_s();
+      _titNa = $(".titNa");   
+      dianji(_titNa);
+    }
+  });
+}
+
+//批量更换翻页元素
+function replace_a_s() {
+  if($(".pagination").length > 0){
+    $(".pagination").find("a").each(function(){
+      replace_a($(this));
+    })
+  }
+}
+
+function replace_a(obj) {
+  obj.attr("params",obj.attr("href"));
+  obj.attr("onclick","flip("+"'"+obj.attr("href")+"'"+")");
+  obj.attr("href","javascript:void(0)");
+}
+
+function dianji(arr) {
+  arr.each(function(){
+    var pageJudge = false;  // 默认内容关闭状态
+    $(this).siblings().hide();
+    $(this).click(function(e){
+      e.preventDefault();
+      if(pageJudge == true){
+        $(this).addClass("iconTop").removeClass("iconBtm");
+        $(this).siblings().hide("fast");
+        pageJudge = false;
+      }else if(pageJudge == false){
+        $(this).addClass("iconBtm").removeClass("iconTop");
+        $(this).siblings().show("fast");
+        pageJudge = true;
+      }
+      return false;
+    })
+  })     
+}
+
+$(document).ready(function(){
+  var _titNa = $(".titNa");
+  //点击遍历更改元素
+
+  $(".search").click(function(){
+    request_ajax(true,"");
+  })
+
+  dianji($(".titNa"));
+  type_btn();
+
+  $("#type").change(function(){
+    type_btn();
+  })
+
+  function type_btn(){
+    if($("#type").val() == 1){
+      $("td.Con2").hide();
+      $("td.Con1").show();
+      $("td.Con2").children().hide();
+      $("td.Con1").children().show();
+    }else if($("#type").val() == 2){
+      $("td.Con2").show();
+      $("td.Con1").hide();
+      $("td.Con1").children().hide();
+      $("td.Con2").children().show();
+    }
+  }
+  $('#jg_id').select2({theme: 'bootstrap', placeholder: '请选择机构省份',width: "200px"});
+  $("#begin_time, #ending_time").datepicker({
+    dateFormat: "yy-mm-dd",
+    changeMonth: true,
+    changeYear: true
+  });
+})
+</script>
+<form action="/log_management/search" method="GET">
+  <table class="table table-bordered">
+    <tr>
+      <td width="50">类型</td>
+      <td width="100">
+        <select id="type" name="type" class="form-control input-sm value_btn">
+          <option value=1>用户</option>
+          <option value=2>机构</option>
+        </select>
+      </td>
+      <!-- 用户 -->
+      <td width="80" class="Con1">UID</td>
+      <td width="200" class="Con1"><input name="uid" class="form-control input-sm value_btn" id="uid" type="text"></td>
+      <!-- 机构 -->
+      <td width="80" class="Con2">机构名称</td>
+      <td width="200" class="Con2">
+        <%= select_tag "jg_id", options_for_select(JgBsb.all.map { |jg| [jg.jg_name, jg.id] }), :class => "form-control input-sm value_btn" %> 
+      </td>
+      <td width="80">起始日期</td>
+      <td width="200"><input type="text" class="form-control input-sm value_btn" id="begin_time" name="begin_time" value=<%= (Time.now-12.months).strftime("%Y-%m-%d") %>></td>
+      <td width="80">结束日期</td>
+      <td width="200"><input type="text" class="form-control input-sm value_btn" id="ending_time" name="ending_time" value=<%= Time.now.strftime("%Y-%m-%d") %>></td>
+      <td>
+        <input type="button" value="搜索" class="btn btn-sm btn-primary search">
+      </td>
+    </tr>
+  </table>
+</form>
+<br>
+<div id="zml">
+  <%= render :partial => "index_show_list", :locals => {:logs => @logs} %>
+</div>
