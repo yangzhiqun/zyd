@@ -5,6 +5,7 @@ class SpYydjb < ActiveRecord::Base
 
 	validates_presence_of :cjbh, message: "抽样单号务必填写"
  belongs_to :sp_bsb,class_name: SpBsb, foreign_key: "id"
+ has_many :sp_yydjb_spdata,class_name: SpYydjbSpdata, foreign_key: "sp_yydjb_id"
   module State
     # 问题样品处置流程结束，终止异议处置流程
     HALTED_1 = -2

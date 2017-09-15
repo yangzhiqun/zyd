@@ -562,7 +562,7 @@ class WtypCzbPart < ActiveRecord::Base
     end
     # 被抽样单位市区
     unless params[:bcydw_shi].blank?
-      wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.bcydw_shi = ? or sp_s_4=?',params[:bcydw_shi],params[:bcydw_shi])
+      wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.bcydw_shi = ? or wtyp_czb_parts.sp_s_4=?',params[:bcydw_shi],params[:bcydw_shi])
     end
 
     # 表示生产企业名称

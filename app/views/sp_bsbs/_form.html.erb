@@ -346,11 +346,11 @@
     });
 	
 	
-    <% if [2,3,4, 5].include?(@sp_bsb.sp_i_state) %>
-	SetUserCertList('ca_sign_form.user_cert_list', CERT_TYPE_HARD);
+    <% if [2,3,4, 5].include?(@sp_bsb.sp_i_state) && is_opne_ca %>
+	    SetUserCertList('ca_sign_form.user_cert_list', CERT_TYPE_HARD);
     <% end %>
-    <% if [16].include?(@sp_bsb.sp_i_state) %>
-	SetUserCertList('sp_bsb_form.sp_user_cert_list', CERT_TYPE_HARD);
+    <% if 16 == @sp_bsb.sp_i_state && is_opne_ca %>
+	    SetUserCertList('sp_bsb_form.sp_user_cert_list', CERT_TYPE_HARD);
     <% end %>
     if ($("#sp_bsb_sp_s_63").val() == "散装") {
       <%@check=[26,27,13,72,73,74]%>
@@ -3224,7 +3224,7 @@
                         <% @jg_bsb.jg_bsb_stamps.where("stamp_type not in ('FX1')").each do |stamp| %>
 			  <li>
                              <a href="javascript:void(0);" data-stamp-no="<%= stamp.stamp_no %>" class="stamp-selector">
-                             <% if stamp.image_path.include?("http") %>
+                             <% if !stamp.image_path.nil? && stamp.image_path.include?("http") %>
                                <img src="<%= stamp.image_path %>" class="img-thumbnail" alt="<%= stamp.stamp_no %>">
                              <% else %>
                                <img src="/jg_bsb_stamps/<%= stamp.id %>/cover" class="img-thumbnail" alt="<%= stamp.stamp_no %>">

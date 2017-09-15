@@ -27,11 +27,11 @@ class Api::V3::InterfaceBaosongController < ApplicationController
          ## 检验项目
          create_obj("CheckItem", @type_name) 
        elsif params["type"] == "update"
-          
+         update_obj       
        end
      end
-     @logger.info "创建成功"
-     render json: { status: 1, msg: "全部创建完成" }
+     @logger.info ">>>>>成功<<<<<"
+     render json: { status: 1, msg: "全部完成" }
    rescue => e
      @logger.error "ERROR: #{$!}"
      @logger.error e.class.to_s
@@ -84,15 +84,35 @@ class Api::V3::InterfaceBaosongController < ApplicationController
      obj.save!
      case name 
        when "ACategory"
-         type_name[category["name"]] = obj.id
+         hash_key = category["name"]
        when "BCategory"
-         type_name[[category["a_category"],category["name"]].join("-")] = obj.id
+         hash_key = [category["a_category"],category["name"]].join("-")
        when "CCategory"  
-         type_name[[category["a_category"],category["b_category"],category["name"]].join("-")] = obj.id
+         hash_key = [category["a_category"],category["b_category"],category["name"]].join("-")
        when "DCategory"  
-         type_name[[category["a_category"],category["b_category"],category["c_category"],category["name"]].join("-")] = obj.id
+         hash_key = [category["a_category"],category["b_category"],category["c_category"],category["name"]].join("-")
+     end
+     unless type_name.has_key?(hash_key)
+       type_name[hash_key] = obj.id
+     else
+       raise "#{hash_key} >> 重复!" 
      end
    end
    type_name
+ end
+
+ def update_obj
+   data = params["check_item"]
+   baosong_b = BaosongA.find_by_name(params["baosong_as"]["name"]).baosong_bs.find_by_identifier(params["baosong_bs"]["identifier"])
+   b_category = baosong_b.a_categories.find_by_name(data["a_category"]).b_categories.find_by_name(data["b_category"])
+   c_category = CCategory.where(b_category_id: b_category.id, name: data["c_category"]).first
+   d_category = DCategory.where(c_category_id: c_category.id, name: data["d_category"]).first
+   check_item = CheckItem.where(d_category_id: d_category.id, name: data["name"]).first
+   data.each do |field, value|
+     if check_item.respond_to?(field)
+       check_item.send("#{field}=", value)
+     end
+   end
+   data.save!
  end
 end

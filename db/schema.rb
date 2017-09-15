@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170818133505) do
+ActiveRecord::Schema.define(version: 20170816171705) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -215,6 +215,8 @@ ActiveRecord::Schema.define(version: 20170818133505) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "jg_bsb_names", ["name"], name: "name", unique: true, using: :btree
 
   create_table "jg_bsb_stamps", force: :cascade do |t|
     t.integer  "jg_bsb_id",  limit: 4
@@ -783,15 +785,6 @@ ActiveRecord::Schema.define(version: 20170818133505) do
     t.integer  "current_state", limit: 4,     default: 0
   end
 
-  create_table "sp_bsb_stamp_rules", force: :cascade do |t|
-    t.integer  "user_id",     limit: 4
-    t.string   "pdf_rules",   limit: 255
-    t.integer  "sp_bsb_id",   limit: 4
-    t.string   "report_path", limit: 4096
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
-  end
-
   create_table "sp_bsbs", force: :cascade do |t|
     t.string   "sp_s_1",                   limit: 255,                  default: ""
     t.datetime "created_at",                                                            null: false
@@ -928,7 +921,7 @@ ActiveRecord::Schema.define(version: 20170818133505) do
     t.string   "czb_reverted_reason",      limit: 255
     t.string   "sp_s_220",                 limit: 50
     t.string   "sp_s_221",                 limit: 50
-    t.string   "sp_s_222",                 limit: 60
+    t.string   "sp_s_222",                 limit: 20
     t.integer  "user_id",                  limit: 4
     t.string   "uid",                      limit: 20
     t.integer  "sp_s_37_user_id",          limit: 4
@@ -986,7 +979,6 @@ ActiveRecord::Schema.define(version: 20170818133505) do
   add_index "sp_bsbs", ["sp_s_1"], name: "index_sp_bsbs_on_sp_s_1", using: :btree
   add_index "sp_bsbs", ["sp_s_14"], name: "index_on_sp_s_14", using: :btree
   add_index "sp_bsbs", ["sp_s_16"], name: "index_sp_bsbs_on_sp_s_16", using: :btree
-  add_index "sp_bsbs", ["sp_s_16"], name: "sp_s_16", unique: true, using: :btree
   add_index "sp_bsbs", ["sp_s_202"], name: "index_sp_bsbs_on_sp_s_202", using: :btree
   add_index "sp_bsbs", ["sp_s_214"], name: "index_on_sp_s_214", using: :btree
   add_index "sp_bsbs", ["sp_s_3"], name: "index_sp_bsbs_on_sp_s_3", using: :btree
@@ -1063,8 +1055,8 @@ ActiveRecord::Schema.define(version: 20170818133505) do
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
     t.integer  "user_id",       limit: 4
-    t.datetime "deleted_at"
     t.integer  "ca_key_status", limit: 4,   default: 0
+    t.datetime "deleted_at"
   end
 
   add_index "sp_logs", ["deleted_at"], name: "index_sp_logs_on_deleted_at", using: :btree
@@ -1837,12 +1829,12 @@ ActiveRecord::Schema.define(version: 20170818133505) do
     t.string   "jyjgzt",              limit: 255
     t.date     "qdhcczrq"
     t.date     "czwbrq"
-    t.string   "fxpj_1",              limit: 30
-    t.string   "fxpj_2",              limit: 30
+    t.string   "fxpj_1",              limit: 255
+    t.string   "fxpj_2",              limit: 255
     t.string   "fxpj_3",              limit: 255
-    t.string   "cpkzqk_1",            limit: 255
-    t.string   "cpkzqk_2",            limit: 255
-    t.string   "cpkzqk_3",            limit: 255
+    t.string   "cpkzqk_1",            limit: 100
+    t.string   "cpkzqk_2",            limit: 100
+    t.string   "cpkzqk_3",            limit: 100
     t.string   "cpkzqk_4",            limit: 255
     t.string   "cpkzqk_5",            limit: 255
     t.string   "cpkzqk_6",            limit: 255
@@ -1965,7 +1957,7 @@ ActiveRecord::Schema.define(version: 20170818133505) do
     t.integer  "yypc_yylbxs",         limit: 4
     t.integer  "wtyp_dbtype",         limit: 4
     t.string   "qd_attachment_path",  limit: 100
-    t.integer  "part_submit_flag5",   limit: 1
+    t.boolean  "part_submit_flag5",                 default: false
     t.boolean  "part_submit_flag6",                 default: false
     t.boolean  "part_submit_flag7",                 default: false
     t.string   "wc_sheng",            limit: 60
