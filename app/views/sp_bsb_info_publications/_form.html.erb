@@ -1,0 +1,97 @@
+<%= form_for(@sp_bsb_info_publication) do |f| %>
+  <% if @sp_bsb_info_publication.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@sp_bsb_info_publication.errors.count, "error") %> prohibited this sp_bsb_info_publication from being saved:</h2>
+
+      <ul>
+      <% @sp_bsb_info_publication.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :cjbh %><br>
+    <%= f.text_field :cjbh %>
+  </div>
+  <div class="field">
+    <%= f.label :sjid %><br>
+    <%= f.text_field :sjid %>
+  </div>
+  <div class="field">
+    <%= f.label :bcscqymc %><br>
+    <%= f.text_field :bcscqymc %>
+  </div>
+  <div class="field">
+    <%= f.label :bcscqydz %><br>
+    <%= f.text_field :bcscqydz %>
+  </div>
+  <div class="field">
+    <%= f.label :bcydwmc %><br>
+    <%= f.text_field :bcydwmc %>
+  </div>
+  <div class="field">
+    <%= f.label :bcydwdz %><br>
+    <%= f.text_field :bcydwdz %>
+  </div>
+  <div class="field">
+    <%= f.label :bcydwsf %><br>
+    <%= f.text_field :bcydwsf %>
+  </div>
+  <div class="field">
+    <%= f.label :spmc %><br>
+    <%= f.text_field :spmc %>
+  </div>
+  <div class="field">
+    <%= f.label :ggxh %><br>
+    <%= f.text_field :ggxh %>
+  </div>
+  <div class="field">
+    <%= f.label :sb %><br>
+    <%= f.text_field :sb %>
+  </div>
+  <div class="field">
+    <%= f.label :scrq %><br>
+    <%= f.text_field :scrq %>
+  </div>
+  <div class="field">
+    <%= f.label :bhgxm %><br>
+    <%= f.text_area :bhgxm %>
+  </div>
+  <div class="field">
+    <%= f.label :fl %><br>
+    <%= f.text_field :fl %>
+  </div>
+  <div class="field">
+    <%= f.label :ggh %><br>
+    <%= f.text_field :ggh %>
+  </div>
+  <div class="field">
+    <%= f.label :ggrq %><br>
+    <%= f.date_select :ggrq %>
+  </div>
+  <div class="field">
+    <%= f.label :rwly %><br>
+    <%= f.text_field :rwly %>
+  </div>
+  <div class="field">
+    <%= f.label :bz %><br>
+    <%= f.text_field :bz %>
+  </div>
+  <div class="field">
+    <%= f.label :sfhg %><br>
+    <%= f.text_field :sfhg %>
+  </div>
+  <div class="field">
+    <%= f.label :userid %><br>
+    <%= f.text_field :userid %>
+  </div>
+  <div class="field">
+    <%= f.label :user_s_province %><br>
+    <%= f.text_field :user_s_province %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
