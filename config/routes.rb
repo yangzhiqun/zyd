@@ -417,6 +417,7 @@ Rails.application.routes.draw do
   root :to => 'welcome_notices#index'
 
   #数据统计
+  resources :statistics
   get 'statistics' => 'statistics#statistics'
   get 'task_statistics' => 'statistics#task_statistics'
   get 'food_statistics' => 'statistics#food_statistics'
