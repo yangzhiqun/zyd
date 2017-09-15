@@ -5,7 +5,6 @@ class SpBsbInfoPublicationsController < ApplicationController
   # GET /sp_bsb_info_publications
   # GET /sp_bsb_info_publications.json
   def index
-    logger.error "=========================="
     redirect_to "/spsearch_publish?#{session[:query]}"
   end
 
