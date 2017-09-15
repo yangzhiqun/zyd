@@ -318,9 +318,9 @@ class SpBsb < ActiveRecord::Base
     @rwly = all_super_departments
     if params[:flag]=="tabs_1"
      if is_city
-       @sp_bsbs = @sp_bsbs.where("sp_s_4 = ? or sp_s_220=?",current_user.prov_city,current_user.prov_city)
+       @sp_bsbs = @sp_bsbs.where("sp_s_4 = ? or sp_s_220=? or sp_s_wcshi = ?",current_user.prov_city,current_user.prov_city,current_user.prov_city)
      elsif is_county_level
-       @sp_bsbs = @sp_bsbs.where("(sp_s_4 = ? and sp_s_5 = ?) or (sp_s_220 = ? and sp_s_221 = ? )",current_user.prov_city,current_user.prov_country,current_user.prov_city,current_user.prov_country)
+       @sp_bsbs = @sp_bsbs.where("(sp_s_4 = ? and sp_s_5 = ?) or (sp_s_220 = ? and sp_s_221 = ? ) or (sp_s_wcshi =? and sp_s_wcxian= ?)",current_user.prov_city,current_user.prov_country,current_user.prov_city,current_user.prov_country,current_user.prov_city,current_user.prov_country)
      end
     end
     return @sp_bsbs, @ending_time, @begin_time

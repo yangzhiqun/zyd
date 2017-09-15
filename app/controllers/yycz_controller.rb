@@ -7,7 +7,12 @@ class YyczController < ApplicationController
   end
 
   def create
+    @yydjb = SpYydjb.find_by_cjbh(params[:yycz][:cjbh])
+    if @yydjb.nil?
     @yydjb = SpYydjb.new(yydjb_params)
+    else
+    @yydjb.update_attributes(yydjb_params)
+    end
     # @yydjb.current_state = SpYydjb::State::LOGGED
     @yydjb.yytcsj = Time.now
     @yydjb.yysdsj = Time.now
@@ -38,10 +43,10 @@ class YyczController < ApplicationController
     if Time.now - @bsb.updated_at >= 5.days
       @yydjb.dj_delayed = true
     end
-
     if @yydjb.save
       if @yydjb.fjsqqk == 1
         @spdata = @bsb.spdata
+        @yydjb.sp_yydjb_spdata.destroy_all
         @spdata.each do |data|
           if data.spdata_2.include? "问题" or data.spdata_2.include? "不合格"
             yydata = SpYydjbSpdata.new
@@ -101,9 +106,9 @@ class YyczController < ApplicationController
      end 
   else
     if params[:current_tab].to_i == 0
-      @yyczs = @yyczs.where("y.current_state = ? and (bcydws =? or bsscqys =?)", SpYydjb::State::ASSIGNED,current_user.prov_city,current_user.prov_city).order("y.created_at ASC")
+      @yyczs = @yyczs.where("y.current_state = ? and (bcydws =? or bsscqys =? or sp_s_wcshi = ?)", SpYydjb::State::ASSIGNED,current_user.prov_city,current_user.prov_city,current_user.prov_city).order("y.created_at ASC")
     else
-      @yyczs = @yyczs.where("y.current_state = ? and (bcydws =? or bsscqys =?)", SpYydjb::State::FILLED,current_user.prov_city,current_user.prov_city).order("y.created_at ASC")
+      @yyczs = @yyczs.where("y.current_state = ? and (bcydws =? or bsscqys =? or sp_s_wcshi =?)", SpYydjb::State::FILLED,current_user.prov_city,current_user.prov_city,current_user.prov_city).order("y.created_at ASC")
     end
    end
     # 样品名称
@@ -153,9 +158,9 @@ class YyczController < ApplicationController
      end
      else
       if params[:current_tab].to_i == 0
-      @yyczs = @yyczs.where("y.current_state = ? and (bcydws =? or bsscqys =?)", SpYydjb::State::FILLED,current_user.prov_city,current_user.prov_city).order("y.created_at ASC")
+      @yyczs = @yyczs.where("y.current_state = ? and (bcydws =? or bsscqys =? or sp_s_wcshi = ?)", SpYydjb::State::FILLED,current_user.prov_city,current_user.prov_city,current_user.prov_city).order("y.created_at ASC")
     else
-      @yyczs = @yyczs.where("y.current_state = ? and (bcydws =? or bsscqys =?)", SpYydjb::State::PASSED,current_user.prov_city,current_user.prov_city).order("y.created_at ASC")
+      @yyczs = @yyczs.where("y.current_state = ? and (bcydws =? or bsscqys =? or sp_s_wcshi =?)", SpYydjb::State::PASSED,current_user.prov_city,current_user.prov_city,current_user.prov_city).order("y.created_at ASC")
     end
 
     end
@@ -202,9 +207,9 @@ class YyczController < ApplicationController
       if current_user.yyadmin !=1 
        if is_shi_deploy?
        # @sp_bsbs = @sp_bsbs.where("s.sp_s_4 = ? OR s.sp_s_220 = ?", current_user.user_s_province, current_user.user_s_province)
-       	@sp_bsbs = @sp_bsbs.where("s.sp_s_4 = ? OR s.sp_s_220 = ? ", current_user.jg_bsb.city, current_user.jg_bsb.city)
+       	@sp_bsbs = @sp_bsbs.where("s.sp_s_4 = ? OR s.sp_s_220 = ?  OR s.sp_s_wcshi =?", current_user.jg_bsb.city, current_user.jg_bsb.city,current_user.jg_bsb.city)
 				elsif is_xian_deploy?
-         @sp_bsbs = @sp_bsbs.where("s.sp_s_5 = ? OR s.sp_s_221 = ? ",current_user.jg_bsb.country,current_user.jg_bsb.country)
+         @sp_bsbs = @sp_bsbs.where("s.sp_s_5 = ? OR s.sp_s_221 = ?  OR s.sp_s_wcxian =? ",current_user.jg_bsb.country,current_user.jg_bsb.country,current_user.jg_bsb.city)
        end
       end
 		end
