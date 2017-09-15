@@ -81,3 +81,4 @@ gem 'sinatra', :require => nil
 gem "paranoia", "~> 2.0"
 gem "hirb"
 gem "rack-cas"
+gem "audited", "~> 4.5"
