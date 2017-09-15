@@ -1,0 +1,25 @@
+<div style="text-align: center; margin: 10px;">
+  <h2>抽样及检验超期统计</h2>
+  <p>统计出各抽样单位或检验单位抽样及超期统计数。</p>
+</div>
+
+<div class="statistical-table">
+  <table>
+    <tr>
+      <th>序号</th>
+      <th>总批次</th>
+      <th>完成抽样批次</th>
+      <th>不合格样本批次</th>
+      <th>核查处置率</th>
+    </tr>
+    <% @a_categories.each_with_index do |ac, i| %>
+      <tr>
+        <td><%= i + 1 %></td>
+        <td><%= SpBsb.where(sp_s_17: ac.name).all.count %></td>
+        <td><%= ac.id %></td>
+        <td><%= ac.id %></td>
+        <td><%= ac.id %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>

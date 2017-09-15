@@ -1,0 +1,30 @@
+<div style="text-align: center; margin: 10px;">
+  <h2>食品类别统计</h2>
+  <p>以食品大类、次类、次亚类、细类等为条件，查询统计省抽、市抽、县抽任务中完成情况，如：统计食品大类、次类、次亚类、细类、任务数、抽样数、检验数、不合格数、合格数、已处置、处置中等。</p>
+</div>
+<div class="statistical-table">
+  <table>
+    <tr>
+      <th>食品大类</th>
+      <th>总批次</th>
+      <th>监督抽检批次</th>
+      <th>不合格批次</th>
+      <th>不合格样品率</th>
+      <th>风险监测批次</th>
+      <th>问题样品批次</th>
+      <th>问题样品率</th>
+    </tr>
+    <% @a_categories.each do |ac| %>
+      <tr>
+        <td><%= ac.name %></td>
+        <td><%= SpBsb.where(sp_s_17: ac.name).all.count %></td>
+        <td><%= ac.id %></td>
+        <td><%= ac.id %></td>
+        <td><%= ac.id %></td>
+        <td><%= ac.id %></td>
+        <td><%= ac.id %></td>
+        <td><%= ac.id %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>

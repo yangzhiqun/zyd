@@ -738,6 +738,40 @@
             </div>
           </dd>
       <% end %>
+      <dd>
+        <div class="title">
+          <span><img src="<%= asset_path('leftico04.png') %>"/></span>统计分析
+        </div>
+        <ul class="menuson" style="<%= "display: block;" if controller?("statistics") %>">
+          <li class="<%= "active" if action?("task_statistics") %>">
+            <cite></cite><a href="/task_statistics">任务统计</a><i></i>
+          </li>
+          <li class="<%= "active" if action?("food_statistics") %>">
+            <cite></cite><a href="/food_statistics">食品类别统计</a><i></i>
+          </li>
+          <li class="<%= "active" if action?("nonconformity_statistics") %>">
+            <cite></cite><a href="/nonconformity_statistics">不合格项目统计</a><i></i>
+          </li>
+          <li class="<%= "active" if action?("unit_statistics") %>">
+            <cite></cite><a href="/unit_statistics">承检单位统计</a><i></i>
+          </li>
+          <li class="<%= "active" if action?("overtime_statistics") %>">
+            <cite></cite><a href="/overtime_statistics">抽样及检验超期统计</a><i></i>
+          </li>
+          <li class="<%= "active" if action?("disposal_statistics") %>">
+            <cite></cite><a href="/disposal_statistics">核查处置统计</a><i></i>
+          </li>
+          <li class="<%= "active" if action?("enterprise_statistics") %>">
+            <cite></cite><a href="/enterprise_statistics">企业覆盖率统计</a><i></i>
+          </li>
+          <li class="<%= "active" if action?("early_warning") %>">
+            <cite></cite><a href="/early_warning">不合格样品及问题样品预警</a><i></i>
+          </li>
+          <li class="<%= "active" if action?("composite_statistics") %>">
+            <cite></cite><a href="/composite_statistics">复合查询统计</a><i></i>
+          </li>
+        </ul>
+      </dd>
       <% if current_user.user_i_js == 1 %>
 				<% if !is_city?  and !is_county_level?  %>
         	<dd>
@@ -770,6 +804,7 @@
             </div>
           </dd>
       <% end %>
+
     </dl>
 
   </div>
