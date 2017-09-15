@@ -1,0 +1,12 @@
+<%= form_tag '', multipart: true, method: 'post' do %>
+    <label for="">请上传要验重的Excel列表，<a href="/查重模板.xls">验重模板</a></label>
+    <p class="text-danger"><%= flash[:error] %></p>
+    <%= file_field_tag 'file' %>
+    <br>
+    <% if false %><label>
+      <%= check_box_tag 'is_pub'%>将文件中的抽样单号标示为已发布
+    </label><% end %>
+    <br>
+    <br>
+    <button class="btn btn-primary btn-xs">提交验重</button>
+<% end %>

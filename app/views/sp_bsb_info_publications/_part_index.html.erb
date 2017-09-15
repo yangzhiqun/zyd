@@ -1,0 +1,49 @@
+<style type="text/css">
+  .btn-xs {
+    font-size: 12px;
+    margin-bottom: 5px;
+  }
+  .list thead {
+    cursor: pointer;
+  }
+</style>
+
+<table class="list table table-bordered table-hover">
+  <thead>
+    <tr>
+      <td width="20">-</td>
+      <th data-field="created_at">创建时间</th>
+      <th data-field="cjbh">抽检编号</th>
+      <th data-field="sjid">序号</th>
+      <th data-field="bcscqymc">标称生产企业名称</th>
+      <th data-field="bcydwmc">被抽样单位名称</th>
+      <th data-field="spmc">食品名称</th>
+      <th data-field="scrq">生产日期</th>
+      <th data-field="ggh">公告号</th>
+      <th data-field="ggrq">公告日期</th>
+      <th data-field="sfhg">结论</th>
+    </tr>
+  </thead>
+  <tbody>
+  <% (@sp_bsb_info_publications || []).each_with_index do |sp_bsb_info_publication,index| %>
+      <tr>
+        <td><%= index + 1 %></td>
+        <td><%= sp_bsb_info_publication.created_at.strftime("%Y-%m-%d") %></td>
+        <td><a style="color: blue;" href="/sp_bsb_info_publications/<%= sp_bsb_info_publication.id %>"><%= sp_bsb_info_publication.cjbh %></a></td>
+        <td><%= sp_bsb_info_publication.sjid %></td>
+        <td><%= sp_bsb_info_publication.bcscqymc %></td>
+        <td><%= sp_bsb_info_publication.bcydwmc %></td>
+        <td><%= sp_bsb_info_publication.spmc %></td>
+        <td><%= sp_bsb_info_publication.scrq %></td>
+        <td><%= sp_bsb_info_publication.ggh %></td>
+        <td><%= sp_bsb_info_publication.ggrq.strftime("%Y.%m.%d")%></td>
+        <% if sp_bsb_info_publication.sfhg.to_i == 1 %>
+            <td>合格</td>
+        <% else %>
+            <td>不合格</td>
+        <% end %>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
+
