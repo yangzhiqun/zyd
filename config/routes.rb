@@ -369,7 +369,22 @@ Rails.application.routes.draw do
       get 'pending'
     end
   end
-
+  resources :sp_bsb_info_publications do
+    collection do
+       get 'spsearch_publish'
+       post 'upload_hege_excel'
+       post 'upload_buhege_excel'
+       get 'check_duplicate'
+       get 'spsearch_publish_check' =>"sp_bsb_info_publications#spsearch_publish"
+    end
+  end
+  post "spsearch_publish" => "sp_bsb_info_publications#spsearch_publish"
+  get "spsearch_publish" => "sp_bsb_info_publications#spsearch_publish"
+  get "upload_hege_excel" =>"sp_bsb_info_publications#upload_hege_excel"
+  post "upload_hege_excel" =>"sp_bsb_info_publications#upload_hege_excel"
+  post "upload_buhege_excel" =>"sp_bsb_info_publications#upload_buhege_excel"
+  get "spsearch_publish_check" => "sp_bsb_info_publications#check_duplicate"
+  post "spsearch_publish_check" => "sp_bsb_info_publications#check_duplicate"
   # 管理员创建用户
   post 'manager_create_users' => 'users#create'
 

@@ -655,6 +655,19 @@
             </ul>
           </dd>-->
       <% end %>
+      <dd>
+      <div class="title">
+        <span><img src="/assets/leftico06.png"/></span>结果发布
+      </div>
+      <ul class="menuson" style="">
+        <li class="">
+          <cite></cite><a href="/sp_bsb_info_publications">食品监督抽检信息发布</a><i></i>
+        </li>
+        <li class="">
+          <cite></cite><a href="/spsearch_publish_check">食品监督抽检信息查重</a><i></i>
+        </li>
+      </ul>
+      </dd>
       <% if (!current_user.is_admin? and current_user.is_jg_manager?) or(is_shengshi? and !current_user.is_admin?)  %>
           <dd>
             <div class="title">
