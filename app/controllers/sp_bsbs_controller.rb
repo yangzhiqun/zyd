@@ -1218,6 +1218,26 @@ end
     end
   end
 
+  #抽检流程
+  def sampling_process
+    if params[:id].present?
+      sp_bsb = SpBsb.find(params[:id])
+      #@sp_bsb = sp_bsb.nil? ? sp_bsb : Audited::Audit.where(auditable_id: sp_bsb.id, auditable_type: SpBsb)
+    end
+
+    if params[:sp_s_16].present?
+      sp_bsb = SpBsb.find_by_sp_s_16(params[:sp_s_16])
+    end
+    if sp_bsb.present?
+      @sp_bsb = Audited::Audit.where(auditable_id: sp_bsb.id, auditable_type: SpBsb)
+    else
+      @sp_bsb = Audited::Audit.where("action = ? and action != ? and  auditable_type =?","destroy","create",SpBsb)
+    end  
+      @sp_bsb = @sp_bsb.nil? ? sp_bsb : @sp_bsb
+      logger.error "@sp_bsbs: #{@sp_bsb.to_json}"
+     render :locals =>  {:@sp_bsbs => @sp_bsb}
+  end
+
   def fail_pdf_report
     @sp_bsb = SpBsb.find(params[:id])
     if request.post?
