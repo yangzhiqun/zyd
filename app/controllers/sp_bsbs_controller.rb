@@ -17,7 +17,7 @@ class SpBsbsController < ApplicationController
 	if pdfpath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
-        else
+  else
 	  pdfpath = "#{Rails.application.config.attachment_path}/#{pdfpath}"
 	  send_file pdfpath, filename: n, disposition: 'inline'
 	end
@@ -27,13 +27,13 @@ class SpBsbsController < ApplicationController
 	if filepath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
-        else
+  else
          send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
 	end
       }
-    end
   end
-  def report
+ end
+ def report
      @spbsb = SpBsb.find(params[:id])
     respond_to do |format|
     format.pdf {  

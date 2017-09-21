@@ -61,7 +61,7 @@ $(document).ready(function(){
 <% if @sp_bsb.present? %>
   <ul class="timeline-v2">
     <% @sp_bsb.each do |i| %>
-     <% if i.action !="create"%> 
+     <%# if i.action !="create"%> 
       <li>
         <time class="cbp_tmtime" datetime="">
           <span><%= i.created_at.strftime("%H:%M:%S") %></span>
@@ -105,7 +105,7 @@ $(document).ready(function(){
           </p >          
         </div>
       </li>
-     <% end %>  
+     <%# end %>  
     <% end %>
   </ul>
 <% else %>
