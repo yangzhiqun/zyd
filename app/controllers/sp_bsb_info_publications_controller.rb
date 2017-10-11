@@ -88,7 +88,7 @@ class SpBsbInfoPublicationsController < ApplicationController
         next if index == 0 || index == 1
 
         if row[0].nil?
-          row[14] = "发布失败：抽样编号不能为空"
+          row[15] = "发布失败：抽样编号不能为空"
         else
 
           # 处理日期格式
@@ -118,12 +118,12 @@ class SpBsbInfoPublicationsController < ApplicationController
 
           sp_bsb_info_publication = SpBsbInfoPublication.new(
               cjbh: row[0], sjid: sjid_fix, bcscqymc: row[2], bcscqydz: row[3], bcydwmc: row[4], bcydwsf: row[5], spmc: row[6],
-              ggxh: row[7], scrq: scrq_fix, fl: row[9], ggh: row[10], ggrq: ggrq_fix, rwly: row[12], bz: row[13], sfhg: 1,
+              ggxh: row[7], scrq: scrq_fix, fl: row[9], ggh: row[10], ggrq: ggrq_fix, rwly: row[12], bz: row[13], sfhg: 1,bcydwshi: row[14],
               userid: current_user.id, user_s_province: current_user.user_s_province)
           if sp_bsb_info_publication.save
-            row[14] = '发布成功!'
+            row[15] = '发布成功!'
           else
-            row[14] = "发布失败：#{sp_bsb_info_publication.errors.as_json.values().to_s.gsub(/\[|\]|\"/,'')}"
+            row[15] = "发布失败：#{sp_bsb_info_publication.errors.as_json.values().to_s.gsub(/\[|\]|\"/,'')}"
             next
           end
         end
@@ -315,6 +315,6 @@ class SpBsbInfoPublicationsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def sp_bsb_info_publication_params
-    params.require(:sp_bsb_info_publication).permit(:cjbh, :sjid, :bcscqymc, :bcscqydz, :bcydwmc, :bcydwdz, :bcydwsf, :spmc, :ggxh, :sb, :scrq, :bhgxm, :fl, :ggh, :ggrq, :rwly, :bz, :jyjg, :sfhg, :userid, :user_s_province)
+    params.require(:sp_bsb_info_publication).permit(:cjbh, :sjid, :bcscqymc, :bcscqydz, :bcydwmc, :bcydwdz, :bcydwsf, :spmc, :ggxh, :sb, :scrq, :bhgxm, :fl, :ggh, :ggrq, :rwly, :bz, :jyjg, :sfhg, :userid, :user_s_province,:bcydwshi)
   end
 end

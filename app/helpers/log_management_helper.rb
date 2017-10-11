@@ -12,4 +12,5 @@ module LogManagementHelper
         "删除 #{I18n.t("table_name.#{t_name}")}"
     end
   end
+
 end
