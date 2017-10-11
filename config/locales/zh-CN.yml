@@ -243,6 +243,14 @@ zh-CN:
     jg_email: "联系邮箱"
     jg_tel: "联系电话"
     ca_org: "组织机构代码"
+  SpBsb:
+    sp_s_215: "营业执照号"
+    sp_s_14: "样品名称"
+    sp_d_28: "生产日期"
+    sp_s_13: "生产许可证号"
+    sp_d_38: "抽样时间"
+    sp_i_state: "样品状态"
   table_name:
     User: "用户"
     JgBsb: "机构"
+    SpBsb: "检验数据"
