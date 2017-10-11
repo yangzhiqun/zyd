@@ -22,6 +22,7 @@ class SpBsb < ActiveRecord::Base
  # before_save :check_bsb_validity
  # before_save :check_benji_company
   after_update :callback_when_updated
+  audited only: [:sp_s_215,:sp_s_14,:sp_d_28,:sp_s_13,:sp_d_38,:sp_i_state]
 
   SpState = {1 => "基本信息(填报中)", 2 => "检测数据(填报)", 3 => "检测数据(填报)", 4 => "检测数据(机构审核中)", 5 => "检测数据(机构批准中)", 6 => "待机构审核", 9 => "检测数据(已提交至秘书处)", 16 => "检测数据(报告发送人审核中)", 32 => "基本信息审核", 35 => "接收样品"} 
 

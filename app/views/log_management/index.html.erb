@@ -88,15 +88,26 @@ $(document).ready(function(){
 
   function type_btn(){
     if($("#type").val() == 1){
-      $("td.Con2").hide();
       $("td.Con1").show();
-      $("td.Con2").children().hide();
+      $("td.Con2").hide();
+      $("td.Con3").hide();
       $("td.Con1").children().show();
+      $("td.Con2").children().hide();
+      $("td.Con3").children().hide();
     }else if($("#type").val() == 2){
       $("td.Con2").show();
       $("td.Con1").hide();
-      $("td.Con1").children().hide();
+      $("td.Con3").hide();
       $("td.Con2").children().show();
+      $("td.Con1").children().hide();
+      $("td.Con3").children().hide();
+    }else if($("#type").val() == 3){
+      $("td.Con3").show();
+      $("td.Con1").hide();
+      $("td.Con2").hide();
+      $("td.Con3").children().show();
+      $("td.Con1").children().hide();
+      $("td.Con2").children().hide();
     }
   }
   $('#jg_id').select2({theme: 'bootstrap', placeholder: '请选择机构省份',width: "200px"});
@@ -111,10 +122,11 @@ $(document).ready(function(){
   <table class="table table-bordered">
     <tr>
       <td width="50">类型</td>
-      <td width="100">
+      <td width="110">
         <select id="type" name="type" class="form-control input-sm value_btn">
           <option value=1>用户</option>
           <option value=2>机构</option>
+          <option value=3>检验数据</option>
         </select>
       </td>
       <!-- 用户 -->
@@ -125,6 +137,9 @@ $(document).ready(function(){
       <td width="200" class="Con2">
         <%= select_tag "jg_id", options_for_select(JgBsb.all.map { |jg| [jg.jg_name, jg.id] }), :class => "form-control input-sm value_btn" %> 
       </td>
+      <!-- 食品检验数据-->
+      <td width="80" class="Con3">抽样编号</td>
+      <td width="200" class="Con3"><input name="sp_s_16" class="form-control input-sm value_btn" id="sp_s_16" type="text"></td>
       <td width="80">起始日期</td>
       <td width="200"><input type="text" class="form-control input-sm value_btn" id="begin_time" name="begin_time" value=<%= (Time.now-12.months).strftime("%Y-%m-%d") %>></td>
       <td width="80">结束日期</td>
