@@ -10,7 +10,7 @@
         <div class="cbp_tmlabel ibox">
           <h4 class="mb10 f16 b titNa iconTop" id="titNa">
             <!-- 执行动作 -->
-            <%= obtain_name(i.action,i.audited_changes.first[0],i.audited_changes.first[1][1],i.auditable_type) %>
+            <%= obtain_name(i.action,i.audited_changes.first[0],i.audited_changes.first[1],i.auditable_type) %>
           </h4>
 
           <div class="margin-bottom-10 ibox-content" id="ibox-content" style="display: none;">
@@ -21,8 +21,12 @@
               <thead>
                 <tr>
                   <th>参数名称</th>
-                  <th>修改前</th>
-                  <th>修改后</th>
+                  <% if i.action == "update" %>
+                    <th>修改前</th>
+                    <th>修改后</th>
+                  <% else %>
+                    <th>数值</th>
+                  <% end %>
                 </tr>
               </thead>
               <tbody>
@@ -30,8 +34,12 @@
                   <% next if v.nil? %>
                   <tr>
                     <td><%= I18n.t("#{i.auditable_type}.#{k}") %></td>
-                    <td><%= v[0] %></td>
-                    <td><%= v[1] %></td>
+                    <% if i.action == "update" %>
+                      <td><%= v[0] %></td>
+                      <td><%= v[1] %></td>
+                    <% else %>
+                      <td><%= v %></td>
+                    <% end %>
                   </tr>
                 <% end %>
               </tbody>
