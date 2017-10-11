@@ -13,25 +13,25 @@ class SpBsbsController < ApplicationController
      type =params[:type]
      respond_to do |format|
       format.pdf {
-	 pdfpath,n=@spbsb.generate_pdf_report(type)
-	if pdfpath.nil?
+	      pdfpath,n=@spbsb.generate_pdf_report(type)
+	      if pdfpath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
-  else
-	  pdfpath = "#{Rails.application.config.attachment_path}/#{pdfpath}"
-	  send_file pdfpath, filename: n, disposition: 'inline'
-	end
+        else
+	        pdfpath = "#{Rails.application.config.attachment_path}/#{pdfpath}"
+	        send_file pdfpath, filename: n, disposition: 'inline'
+	      end
       }
       format.html {
-        filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], true, current_user.id,false)
-	if filepath.nil?
+          filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], true, current_user.id,false)
+	      if filepath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
-  else
+        else
          send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
-	end
+	      end
       }
-  end
+    end
  end
  def report
      @spbsb = SpBsb.find(params[:id])
@@ -121,50 +121,48 @@ class SpBsbsController < ApplicationController
     signCert=params[:sign_cert]
     res = {}
     pdf_path={} 
-   if @spbsb.is_jiandu?
-         type='JYBG'
-
-       if @spbsb.ca_key_status ==0
-           pdfpath,n=@spbsb.generate_pdf_report(type)
-       else
-         pdfpath = "#{@spbsb.sp_s_16}-#{type}.pdf" 
-       end
-	pdfpath = "#{Rails.application.config.attachment_path}/#{pdfpath}"
-	filename = Rails.root.join('tmp', "sp_bsbs_jybg_#{@spbsb.id}.txt")	
-        jybg_result= @spbsb.client_sign_ca(pdfpath,sign_data,sealImg,signCert,filename)
-      if jybg_result.strip.include?('200')
-        jybg_file =  File.read(Rails.root.join('tmp', "sp_bsbs_jybg_#{@spbsb.id}.txt"))
+ if @spbsb.is_jiandu?
+    type='JYBG'
+   if @spbsb.ca_key_status ==0
+    pdfpath,n=@spbsb.generate_pdf_report(type)
+   else
+    pdfpath = "#{@spbsb.sp_s_16}-#{type}.pdf" 
+   end
+  	pdfpath = "#{Rails.application.config.attachment_path}/#{pdfpath}"
+	  filename = Rails.root.join('tmp', "sp_bsbs_jybg_#{@spbsb.id}.txt")	
+    jybg_result= @spbsb.client_sign_ca(pdfpath,sign_data,sealImg,signCert,filename)
+   if jybg_result.strip.include?('200')
+     jybg_file =  File.read(Rails.root.join('tmp', "sp_bsbs_jybg_#{@spbsb.id}.txt"))
         #render json: {status: 'OK', msg: signSealMessagesJson,pdfpath: pdfpath}
-        res[:JDCJ]=jybg_file
-	pdf_path[:JDCJ]=pdfpath
-      else
-       render json: {status: 'ERR', msg:  jybg_result} and return
-      end
-    end
-    if  @spbsb.is_jiance?
-	type='FXBG'
-	
-       if @spbsb.ca_key_status ==0
-         pdfpath,n=@spbsb.generate_pdf_report(type)
-       else
-         pdfpath = "#{@spbsb.sp_s_16}-#{type}.pdf"
-       end
-        pdfpath = "#{Rails.application.config.attachment_path}/#{pdfpath}"
-        filename = Rails.root.join('tmp', "sp_bsbs_fxbg_#{@spbsb.id}.txt")
-	fxbg_result= @spbsb.client_sign_ca(pdfpath,sign_data,sealImg,signCert,filename)
+     res[:JDCJ]=jybg_file
+	   pdf_path[:JDCJ]=pdfpath
+   else
+      render json: {status: 'ERR', msg:  jybg_result} and return
+   end
+ end
+ if  @spbsb.is_jiance?
+	 type='FXBG'
+  if @spbsb.ca_key_status ==0
+   pdfpath,n=@spbsb.generate_pdf_report(type)
+  else
+   pdfpath = "#{@spbsb.sp_s_16}-#{type}.pdf"
+  end
+   pdfpath = "#{Rails.application.config.attachment_path}/#{pdfpath}"
+   filename = Rails.root.join('tmp', "sp_bsbs_fxbg_#{@spbsb.id}.txt")
+	 fxbg_result= @spbsb.client_sign_ca(pdfpath,sign_data,sealImg,signCert,filename)
 	if fxbg_result.strip.include?('200')
-           fxbg_file =  File.read(Rails.root.join('tmp', "sp_bsbs_fxbg_#{@spbsb.id}.txt"))
-	   res[:FXJC]= fxbg_file
-	   pdf_path[:FXJC]=pdfpath
+   fxbg_file =  File.read(Rails.root.join('tmp', "sp_bsbs_fxbg_#{@spbsb.id}.txt"))
+	 res[:FXJC]= fxbg_file
+	 pdf_path[:FXJC]=pdfpath
   elsif fxbg_result.strip.include?('6002')
     res[:FXJC]= fxbg_file
     pdf_path[:FXJC]=""
 	else
 	  render json: {status: 'ERR', msg:  fxbg_result} and return
 	end
-   end
+ end
 	render json: {status: 'OK', res: res,pdfpath: pdf_path}
-  end
+ end
 
   def print_pdf
     @spbsb = SpBsb.find(params[:id])

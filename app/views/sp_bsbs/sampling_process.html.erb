@@ -71,7 +71,7 @@ $(document).ready(function(){
         <div class="cbp_tmlabel ibox">
           <h4 class="mb10 f16 b titNa iconTop" id="titNa">
             <!-- 执行动作 -->
-            <%= obtain_name(i.action,i.audited_changes.first[0],i.audited_changes.first[1][1],i.auditable_type) %>
+            <%= action_obtain_name(i.action,i.audited_changes.first[0],i.audited_changes.first[1][1],i.auditable_type) %>
           </h4>
 
           <div class="margin-bottom-10 ibox-content" id="ibox-content" style="display: none;">
@@ -87,6 +87,7 @@ $(document).ready(function(){
                 </tr>
               </thead>
               <tbody>
+              <% if i.action == "update" %>
                 <% (i[:audited_changes] rescue []).each do |k, v| %>
                   <% next if v.nil? %>
                   <tr>
@@ -95,15 +96,29 @@ $(document).ready(function(){
                     <td><%= v[1] %></td>
                   </tr>
                 <% end %>
+             <% elsif i.action == "create"%>
+              <% (i[:audited_changes] rescue []).each do |k, v| %>
+                <tr>
+                <td><%= I18n.t("#{i.auditable_type}.#{k}") %></td>
+                <td><%= v%></td>
+                <td></td>
+                </tr>
+              <% end%>  
+             <% end %>  
               </tbody>
-            </table>
+            </table>   
           </div>
-
           <p id="operation" style="display: none;">
             <d class="f14 b">操作人 : </d><%= i.user.tname %>&nbsp;&nbsp;
             <d class="f14 b">单位 : </d><%= i.user.jg_bsb.jg_name %>&nbsp;&nbsp;
           </p >          
         </div>
+        <% if i.action == "destroy" %>
+        <p>
+           <d class="f14 b">操作人 : </d><%= i.user.tname %>&nbsp;&nbsp;
+           <d class="f14 b">单位 : </d><%= i.user.jg_bsb.jg_name %>&nbsp;&nbsp;
+        </p >
+       <% end%> 
       </li>
      <%# end %>  
     <% end %>

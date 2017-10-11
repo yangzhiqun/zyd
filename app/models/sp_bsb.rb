@@ -2,7 +2,7 @@
 class SpBsb < ActiveRecord::Base
   include ApplicationHelper
   #audited except: [:sp_n_15], on: [:update]
-  audited only: [:sp_s_16,:sp_s_reason,:sp_s_2_1,:sp_s_70,:sp_s_67,:sp_s_1,:sp_s_17,:sp_s_18,:sp_s_29,:sp_s_20,:sp_i_state]
+  audited #only: [:sp_s_16,:sp_s_reason,:sp_s_2_1,:sp_s_70,:sp_s_67,:sp_s_1,:sp_s_17,:sp_s_18,:sp_s_29,:sp_s_20,:sp_i_state]
   trigger.after(:insert) do
     "INSERT INTO tmp_sp_bsbs(sp_s_reason, id, sp_i_state, sp_s_16, sp_s_3, sp_s_202, sp_s_14, sp_s_43, sp_s_2_1, sp_s_35, sp_s_64, sp_s_1, sp_s_17, sp_s_20, sp_s_85, created_at, updated_at, sp_s_214, sp_s_71, fail_report_path, tname, user_id, uid, sp_s_18, sp_s_70, sp_s_215, sp_s_68, sp_s_13, sp_s_27, czb_reverted_flag) values(NEW.sp_s_reason, NEW.id, NEW.sp_i_state, NEW.sp_s_16, NEW.sp_s_3, NEW.sp_s_202, NEW.sp_s_14, NEW.sp_s_43, NEW.sp_s_2_1, NEW.sp_s_35, NEW.sp_s_64, NEW.sp_s_1, NEW.sp_s_17, NEW.sp_s_20, NEW.sp_s_85, NEW.created_at, NEW.updated_at, NEW.sp_s_214, NEW.sp_s_71, NEW.fail_report_path, NEW.tname, NEW.user_id, NEW.uid, NEW.sp_s_18, NEW.sp_s_70, NEW.sp_s_215, NEW.sp_s_68, NEW.sp_s_13, NEW.sp_s_27, NEW.czb_reverted_flag)"
   end
@@ -33,19 +33,29 @@ class SpBsb < ActiveRecord::Base
     end
 
     parts.each do |part|
+      
       if part['wtyp_czb_type'] == ::WtypCzbPart::Type::SC
         @sc_state = part['current_state']
       elsif part['wtyp_czb_type'] == ::WtypCzbPart::Type::LT
         @lt_state = part['current_state']
+      elsif part['wtyp_czb_type'] == ::WtypCzbPart::Type::CY
+        @cy_state = part['current_state']
+      elsif part['wtyp_czb_type'] == ::WtypCzbPart::Type::WC  
+        @wc_state = part['current_state']
       end
     end
-
-    if @sc_state == ::WtypCzb::State::PASSED and @lt_state == ::WtypCzb::State::PASSED
+   # logger.error "====#{part['wtyp_czb_type']}--#{@sc_state} ---=#{part['current_state']}"
+    logger.error "===#{@sc_state}---#{@lt_state}"
+    if (@sc_state == ::WtypCzb::State::PASSED and (@lt_state == ::WtypCzb::State::PASSED or @cy_state == ::WtypCzb::State::PASSED ))
       "已完成"
     elsif @sc_state == ::WtypCzb::State::PASSED and @lt_state != ::WtypCzb::State::PASSED
       "已完成-生产"
     elsif @sc_state != ::WtypCzb::State::PASSED and @lt_state == ::WtypCzb::State::PASSED
       "已完成-流通"
+    elsif @cy_state == ::WtypCzb::State::PASSED
+      "已完成-餐饮"
+    elsif @wc_state == ::WtypCzb::State::PASSED
+      "已完成-网抽"
     elsif @sc_state != ::WtypCzb::State::PASSED and @lt_state != ::WtypCzb::State::PASSED
       "进行中"
     else
@@ -1142,7 +1152,7 @@ class SpBsb < ActiveRecord::Base
     #filename = Rails.root.join('tmp', "sp_bsbs_#{self.id}.txt")
     cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 108  #{reqMessage} #{pdfpath} #{filename}"
     signSeal_result = `#{cmd}`
-    logger.error "signSeal_result: #{signSeal_result}"
+    logger.error "cmd: #{cmd}, signSeal_result: #{signSeal_result}"
      return signSeal_result
   end
 
@@ -1293,11 +1303,11 @@ class SpBsb < ActiveRecord::Base
   def generate_pdf_report(report_type)
 	context = generate_report_context(report_type)
 	if report_type.eql?('JYBG')
-         template = 'sp_bsbs/1.html.erb'
+     template = 'sp_bsbs/1.html.erb'
    	 f_name = 'JYBG'	
 	elsif report_type.eql?('FXBG')
-         template = 'sp_bsbs/2.html.erb'
-         f_name = 'FXBG'
+     template = 'sp_bsbs/2.html.erb'
+     f_name = 'FXBG'
 	end
   if self.sp_i_state==3
     pdf_path = Rails.root.join("../attachments", "#{self.sp_s_16}-#{report_type}.pdf")
@@ -1308,32 +1318,32 @@ class SpBsb < ActiveRecord::Base
 	FileUtils.mkdir_p(outpath_folder) unless File.directory?(outpath_folder)
 	outpath = "#{outpath_folder}/#{self.sp_s_16}-#{f_name}.pdf"
 	ApplicationController.new.render template: template,
-		              save_to_file: outpath,
+		        save_to_file: outpath,
 			      save_only: true,
 			      pdf: 'home',
-          	              wkhtmltopdf: '/usr/local/bin/wkhtmltopdf',
-		              encoding: 'utf-8',
+            wkhtmltopdf: '/usr/local/bin/wkhtmltopdf',
+		        encoding: 'utf-8',
 			      disable_javascript: true,
 			      print_media_type: true,
-		              lowquality: false,
+		        lowquality: false,
 			      locals: {
 				    :@spbsb => self, 
-			            :@splog_jcfy => context[:splog_jcfy],
-	                            :@jcfy => context[:sp_bsb][:jcfy], 
+			      :@splog_jcfy => context[:splog_jcfy],
+	          :@jcfy => context[:sp_bsb][:jcfy], 
 				    :@padsplog_jcfy => context[:padsplog_jcfy], 
-			            :@fxx => context[:fxx], 
+			      :@fxx => context[:fxx], 
 				    :@fxx_FY => context[:sp_bsb][:jyyj], 
-			            :@wtx => context[:wtx], 
+			      :@wtx => context[:wtx], 
 				    :@jyyj_hgx_str4 => context[:sp_bsb][:jyjl], 
-	                            :@wtx_str => context[:sp_bsb][:wtxm], 
-			            :@jyjy_FY => context[:FY], 
+	          :@wtx_str => context[:sp_bsb][:wtxm], 
+			      :@jyjy_FY => context[:FY], 
 				    :@splog => context[:splog], 
 				    :@cjx => context[:cjx], 
-			            :@jyjy_struni => context[:jyjy_struni],#  不知何值
+			      :@jyjy_struni => context[:jyjy_struni],#  不知何值
 				    :@jg_bsb => context[:jg_bsb_obj], 
 				    :@jyxm_str => context[:sp_bsb][:jyxm], 
 				    :@jyjy_str => context[:jyjy_str], 
-			            :@jyjy_str4 => context[:jyjy_str4], 
+			      :@jyjy_str4 => context[:jyjy_str4], 
 				    :@jyjy_str1 => context[:jyjy_str1]
 				   }
       return "#{self.sp_s_16}-#{f_name}.pdf", "#{self.sp_s_16}-#{f_name}.pdf"

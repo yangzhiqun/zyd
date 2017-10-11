@@ -189,7 +189,7 @@ class BaosongB < ActiveRecord::Base
           item.restore if item.deleted?
          # item.JGDW = (item.JGDW || "").split("#").push(line[:JGDW]).uniq.join("#") unless line[:JGDW].blank?
           if line[:JGDW]=="/"
-           item.JGDW = item.JGDW
+           item.JGDW = (item.JGDW || "").split("#").push("/").join("#")
           else
            item.JGDW = (item.JGDW || "").split("#").push(line[:JGDW]).uniq.join("#")
           end
@@ -204,7 +204,7 @@ class BaosongB < ActiveRecord::Base
 
           #item.PDYJ = (item.PDYJ || "").split("#").push(line[:PDYJ]).uniq.join("#") unless line[:PDYJ].blank?
           if line[:PDYJ] =="/"
-            item.PDYJ = item.PDYJ
+            item.PDYJ = (item.PDYJ || "").split("#").push("/").uniq.join("#")
           else
             item.PDYJ = (item.PDYJ || "").split("#").push(line[:PDYJ]).uniq.join("#")
           end

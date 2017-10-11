@@ -1,11 +1,4 @@
-﻿/*--------------------------------------------------------------------------  
- *
- * BJCA Adaptive Javascript, Version SAB(Support All Browsers :))
- * This script support bjca client version 2.0 and later
- * Author:BJCA-zys
- *--------------------------------------------------------------------------*/
-
-/* globals var */
+﻿/* globals var */
 var $_$softCertListID = ""; // Soft CertListID, Set by SetUserCertList
 var $_$hardCertListID = ""; // USBKeyCertListID, Set by SetUserCertList
 var $_$allCertListID = "";  // All CertListID, Set by SetUserCertList
@@ -18,12 +11,13 @@ var $_$SecXV2Obj = null;    // BJCASecCOMV2 class Object
 var $_$SecXObj = null;      // BJCASecCOM class Object
 var $_$WebSocketObj = null; // WebSocket class Object
 var $_$CurrentObj = null;   // Current use class Object
+var $_$GetPicObj = null;    // GetKeyPic class Object
 
 // const var
 var CERT_TYPE_HARD = 1;
 var CERT_TYPE_SOFT = 2;
 var CERT_TYPE_ALL  = 3;
- 
+
 // const var
 var CERT_OID_VERSION     = 1; 
 var CERT_OID_SERIAL      = 2;
@@ -51,9 +45,9 @@ var CERT_OID_ISSUER_DN   = 34;
 // set auto logout parameters
 function SetAutoLogoutParameter(strCertID, logoutFunc) 
 {
-    $_$loginCertID = strCertID;
-    $_$logoutFunc = logoutFunc;
-    return;
+	$_$loginCertID = strCertID;
+	$_$logoutFunc = logoutFunc;
+	return;
 }
 
 function SetLoginCertID(strCertID) 
@@ -189,9 +183,9 @@ function $pushAllDropListBox(certUserListObj)
 
 function $myAutoLogoutCallBack(retObj)
 {
-    if (retObj.retVal.indexOf($_$loginCertID) <= 0) {
-        $_$logoutFunc();
-    }
+	if (retObj.retVal.indexOf($_$loginCertID) <= 0) {
+		$_$logoutFunc();
+	}
 }
 
 //usbkey change default callback function
@@ -239,36 +233,36 @@ function $LoadControl(CLSID, ctlName, testFuncName, addEvent)
 				}	
 			}
 		} else {
-            var chromeVersion = window.navigator.userAgent.match(/Chrome\/(\d+)\./);
-            if (chromeVersion && chromeVersion[1]) {
+			var chromeVersion = window.navigator.userAgent.match(/Chrome\/(\d+)\./);
+			if (chromeVersion && chromeVersion[1]) {
                 if (parseInt(chromeVersion[1], 10) >= 42) { // not support npapi return false
-                    document.body.removeChild(pluginDiv);
-                    pluginDiv.innerHTML = "";
-                    pluginDiv = null;
-                    return false;
+                	document.body.removeChild(pluginDiv);
+                	pluginDiv.innerHTML = "";
+                	pluginDiv = null;
+                	return false;
                 }
             }
 
-			if (addEvent) {
-                pluginDiv.innerHTML = '<embed id=' + ctlName + ' type=application/x-xtx-axhost clsid={' + CLSID + '} event_OnUsbkeyChange=$OnUsbKeyChange width=0 height=0 />' ;
-			} else {
-				pluginDiv.innerHTML = '<embed id=' + ctlName + ' type=application/x-xtx-axhost clsid={' + CLSID + '} width=0 height=0 />' ;
-			}	
-		}
-		
-		if (testFuncName != null && testFuncName != "" && eval(ctlName + "." + testFuncName) == undefined) {
-            document.body.removeChild(pluginDiv);
-            pluginDiv.innerHTML = "";
-            pluginDiv = null;
-            return false; 
-		}
-		return true;
-	} catch (e) {
-		document.body.removeChild(pluginDiv);
-		pluginDiv.innerHTML = "";
-		pluginDiv = null;
-		return false;
-	}
+            if (addEvent) {
+            	pluginDiv.innerHTML = '<embed id=' + ctlName + ' type=application/x-xtx-axhost clsid={' + CLSID + '} event_OnUsbkeyChange=$OnUsbKeyChange width=0 height=0 />' ;
+            } else {
+            	pluginDiv.innerHTML = '<embed id=' + ctlName + ' type=application/x-xtx-axhost clsid={' + CLSID + '} width=0 height=0 />' ;
+            }	
+        }
+
+        if (testFuncName != null && testFuncName != "" && eval(ctlName + "." + testFuncName) == undefined) {
+        	document.body.removeChild(pluginDiv);
+        	pluginDiv.innerHTML = "";
+        	pluginDiv = null;
+        	return false; 
+        }
+        return true;
+    } catch (e) {
+    	document.body.removeChild(pluginDiv);
+    	pluginDiv.innerHTML = "";
+    	pluginDiv = null;
+    	return false;
+    }
 }
 
 function $XTXAlert(strMsg) {
@@ -281,11 +275,11 @@ function $XTXAlert(strMsg) {
 
 function $myOKRtnFunc(retVal, cb, ctx)
 {
-    if (typeof cb == 'function') {
-        var retObj = {retVal:retVal, ctx:ctx};
-        cb(retObj);
-    } 
-    return retVal;
+	if (typeof cb == 'function') {
+		var retObj = {retVal:retVal, ctx:ctx};
+		cb(retObj);
+	} 
+	return retVal;
 }
 
 //XTXAppCOM class
@@ -301,34 +295,34 @@ function CreateXTXAppObject() {
 		var ret = XTXAPP.SOF_GetUserList();
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-    
-    o._GetUserListByType = function(strType, cb, ctx) {
-        var strUserList = XTXAPP.SOF_GetUserList();
-        var ret = "";
-        while (true) {
-            var i = strUserList.indexOf("&&&");
-            if (i <= 0 ) {
-                break;
-            }
-            var strOneUser = strUserList.substring(0, i);
-            var strName = strOneUser.substring(0, strOneUser.indexOf("||"));
-            var strCertID = strOneUser.substring(strOneUser.indexOf("||") + 2, strOneUser.length);
-            if (XTXAPP.GetDeviceInfo(strCertID, 7) == strType) {
-                ret += (strOneUser + "&&&");
-            }
-            var len = strUserList.length;
-            strUserList = strUserList.substring(i + 3, len);
-        }
+
+	o._GetUserListByType = function(strType, cb, ctx) {
+		var strUserList = XTXAPP.SOF_GetUserList();
+		var ret = "";
+		while (true) {
+			var i = strUserList.indexOf("&&&");
+			if (i <= 0 ) {
+				break;
+			}
+			var strOneUser = strUserList.substring(0, i);
+			var strName = strOneUser.substring(0, strOneUser.indexOf("||"));
+			var strCertID = strOneUser.substring(strOneUser.indexOf("||") + 2, strOneUser.length);
+			if (XTXAPP.GetDeviceInfo(strCertID, 7) == strType) {
+				ret += (strOneUser + "&&&");
+			}
+			var len = strUserList.length;
+			strUserList = strUserList.substring(i + 3, len);
+		}
 
 		return $myOKRtnFunc(ret, cb, ctx);
-    }
-    o.GetUserList_USBKey = function(cb, ctx) {
-        return o._GetUserListByType("HARD", cb, ctx);
-    };
-    o.GetUserList_Soft = function(cb, ctx) {
-        return o._GetUserListByType("SOFT", cb, ctx);
-    };
-	
+	}
+	o.GetUserList_USBKey = function(cb, ctx) {
+		return o._GetUserListByType("HARD", cb, ctx);
+	};
+	o.GetUserList_Soft = function(cb, ctx) {
+		return o._GetUserListByType("SOFT", cb, ctx);
+	};
+
 	o.ExportUserSignCert = function(strCertID, cb, ctx) {
 		var ret;
 		var strUserCert = XTXAPP.SOF_ExportUserCert(strCertID);
@@ -340,67 +334,67 @@ function CreateXTXAppObject() {
 		}
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.ExportUserExchangeCert = function(strCertID, cb, ctx) {
 		var ret = XTXAPP.SOF_ExportExChangeUserCert(strCertID)
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.VerifyUserPIN = function(strCertID, strUserPIN, cb, ctx) {
 		var ret = XTXAPP.SOF_Login(strCertID, strUserPIN);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.ChangeUserPIN = function(strCertID, oldPwd, newPwd, cb, ctx) {
 		var ret =  XTXAPP.SOF_ChangePassWd(strCertID, oldPwd, newPwd);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.GetUserPINRetryCount = function(strCertID, cb, ctx) {
 		var ret = XTXAPP.SOF_GetPinRetryCount(strCertID);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.GetCertInfo = function(strCert, Type, cb, ctx) {
 		var ret = XTXAPP.SOF_GetCertInfo(strCert, Type);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.GetCertInfoByOID = function(strCert, strOID, cb, ctx) {
 		var ret = XTXAPP.SOF_GetCertInfoByOid(strCert, strOID);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.GetCertEntity = function(strCert, cb, ctx) {
 		var ret = XTXAPP.SOF_GetCertEntity(strCert);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.GenRandom = function(RandomLen, cb, ctx) {
 		var ret = XTXAPP.SOF_GenRandom(RandomLen);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SignData = function(strCertID, strInData, cb, ctx) {
 		var ret = XTXAPP.SOF_SignData(strCertID, strInData);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.VerifySignedData = function(strCert, strInData, strSignValue, cb, ctx) {
 		var ret = XTXAPP.SOF_VerifySignedData(strCert, strInData, strSignValue);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.PubKeyEncrypt = function(strCert, strInData, cb, ctx) {
 		var ret = XTXAPP.SOF_PubKeyEncrypt(strCert, strInData);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.PriKeyDecrypt = function(strCertID, strInData, cb, ctx) {
 		var ret = XTXAPP.SOF_PriKeyDecrypt(strCertID, strInData);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SignDataByP7 = function(strCertID, strInData, bDetach, cb, ctx) {
 		var bFlag = 0;
 		if (bDetach) {
@@ -409,57 +403,57 @@ function CreateXTXAppObject() {
 		var ret = XTXAPP.SOF_SignMessage(bFlag, strCertID, strInData);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.VerifyDataByP7 = function(strP7Data, strPlainMsg, cb, ctx) {
 		var ret = XTXAPP.SOF_VerifySignedMessage(strP7Data, strPlainMsg);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.EncyptMessage = function(strCert, strInData, cb, ctx) {
 		var ret = XTXAPP.SOF_EncryptDataEx(strCert, strInData);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.DecryptMessage = function(strCertID, strP7Envlope, cb, ctx) {
 		var ret = XTXAPP.SOF_DecryptData(strCertID, strP7Envlope);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SignFile = function(strCertID, strFilePath, cb, ctx) {
 		var ret = XTXAPP.SOF_SignFile(strCertID, strFilePath);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.VerifySignFile = function(strCert, strFilePath, strSignValue, cb, ctx) {
 		var ret = XTXAPP.SOF_VerifySignedFile(strCert, strFilePath, strSignValue);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.GetSymKeyLength = function(cb, ctx) {
 		var ret = 24;
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SymEncryptData = function(strKey, strInData, cb, ctx) {
 		var ret = XTXAPP.SOF_SymEncryptData(strKey, strInData);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SymDecryptData = function(strKey, strInData, cb, ctx) {
 		var ret = XTXAPP.SOF_SymDecryptData(strKey, strInData);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SymEncryptFile = function(strKey, strInFilePath, strOutFilePath, cb, ctx) {
 		var ret = XTXAPP.SOF_SymEncryptFile(strKey, strInFilePath, strOutFilePath);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SymDecryptFile = function(strKey, strInFilePath, strOutFilePath, cb, ctx) {
 		var ret = XTXAPP.SOF_SymDecryptFile(strKey, strInFilePath, strOutFilePath);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.ValidateCert = function(strCert, cb, ctx) {
 		var r = XTXAPP.SOF_ValidateCert(strCert);
 		var ret;
@@ -470,40 +464,50 @@ function CreateXTXAppObject() {
 		}
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.HashFile = function(strFilePath, cb, ctx) {
 		var ret = XTXAPP.SOF_HashFile(2, strFilePath); //sha1 alg
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-    
-    o.GetDateNotBefore = function(strCertValid) {
-        return o._GetDateFormate(strCertValid);
-    };
-    
-    o.GetDateNotAfter = function(strCertValid) {
-        return o._GetDateFormate(strCertValid);
-    };
-    
-    o._GetDateFormate = function(strCertValid) {
-        var strYear = strCertValid.substring(0, 4);
-        var strMonth = strCertValid.substring(4, 6);
-        var strDay = strCertValid.substring(6, 8);
-        var strHour = strCertValid.substring(8, 10);
-        var strMin = strCertValid.substring(10, 12);
-        var strSecond = strCertValid.substring(12, 14);
-        var RtnDate = new Date();
-        RtnDate.setFullYear(Number(strYear), Number(strMonth) - 1, Number(strDay));
-        RtnDate.setHours(Number(strHour));
-        RtnDate.setMinutes(Number(strMin));
-        RtnDate.setSeconds(Number(strSecond));
-        return RtnDate;
-    };
-		
+
+	o.GetDateNotBefore = function(strCertValid) {
+		return o._GetDateFormate(strCertValid);
+	};
+
+	o.GetDateNotAfter = function(strCertValid) {
+		return o._GetDateFormate(strCertValid);
+	};
+
+	o._GetDateFormate = function(strCertValid) {
+		var strYear = strCertValid.substring(0, 4);
+		var strMonth = strCertValid.substring(4, 6);
+		var strDay = strCertValid.substring(6, 8);
+		var strHour = strCertValid.substring(8, 10);
+		var strMin = strCertValid.substring(10, 12);
+		var strSecond = strCertValid.substring(12, 14);
+		var RtnDate = new Date();
+		RtnDate.setFullYear(Number(strYear), Number(strMonth) - 1, Number(strDay));
+		RtnDate.setHours(Number(strHour));
+		RtnDate.setMinutes(Number(strMin));
+		RtnDate.setSeconds(Number(strSecond));
+		return RtnDate;
+	};
+
 	o.GetDeviceType = function(strCertID, cb, ctx) {
 		var ret = XTXAPP.GetDeviceInfo(strCertID, 7);
 		return $myOKRtnFunc(ret, cb, ctx);
 	}
-	
+
+	o.SignHashData = function(strCertID, strHashData, ulHashAlg, cb, ctx) {
+		var ret = XTXAPP.SOF_SignHashData(strCertID, strHashData, ulHashAlg);
+		return $myOKRtnFunc(ret, cb, ctx);
+	}
+
+	o.VerifySignedHashData = function(strCert, strHashData, ulHashAlg, strSignValue, cb, ctx) {
+		var ret = XTXAPP.SOF_VerifySignedHashData(strCert, strHashData, strSignValue, ulHashAlg);
+		return $myOKRtnFunc(ret, cb, ctx);
+	}
+
 	return o;
 }
 
@@ -520,14 +524,14 @@ function CreateSecXV2Object() {
 		var ret = SecXV2.GetUserList();
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-    
-    o.GetUserList_USBKey = function(cb, ctx) {
-        return o.GetUserList(cb, ctx);
-    };
-    o.GetUserList_Soft = function(cb, ctx) {
-        return o.GetUserList(cb, ctx);
-    };
-	
+
+	o.GetUserList_USBKey = function(cb, ctx) {
+		return o.GetUserList(cb, ctx);
+	};
+	o.GetUserList_Soft = function(cb, ctx) {
+		return o.GetUserList(cb, ctx);
+	};
+
 	o.ExportUserSignCert = function(strCertID, cb, ctx) {
 		var ret;
 		var strUserCert = SecXV2.ExportUserCert(strCertID);
@@ -539,7 +543,7 @@ function CreateSecXV2Object() {
 		}
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.ExportUserExchangeCert = function(strCertID, cb, ctx) {
 		var ret = SecXV2.ExportExChangeUserCert(strCertID);
 		if (typeof cb == 'function') {
@@ -548,147 +552,147 @@ function CreateSecXV2Object() {
 		} 
 		return ret;
 	};
-	
+
 	o.VerifyUserPIN = function(strCertID, strUserPIN, cb, ctx) {
 		var ret = SecXV2.UserLogin(strCertID, strUserPIN);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.ChangeUserPIN = function(strCertID, oldPwd, newPwd, cb, ctx) {
 		var ret = SecXV2.ChangePasswd(strCertID, oldPwd, newPwd);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.GetUserPINRetryCount = function(strCertID, cb, ctx) {
 		var strExtLib = SecXV2.GetUserInfo(strCertID, 15);
 		var ret = SecXV2.GetBjcaKeyParam(strExtLib, 8);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.GetCertInfo = function(strCert, Type, cb, ctx) {
 		var ret = SecXV2.GetCertInfo(strCert, Type);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.GetCertInfoByOID = function(strCert, strOID, cb, ctx) {
 		var ret = SecXV2.GetCertInfoByOid(strCert, strOID);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.GetCertEntity = function(strCert, cb, ctx) {
 		var ret = SecXV2.GetCertInfoByOid(strCert, "2.16.840.1.113732.2");
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.GenRandom = function(RandomLen, cb, ctx) {
 		var ret = SecXV2.GenRandom(RandomLen);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SignData = function(strCertID, strInData, cb, ctx) {
 		var ret = SecXV2.SignData(strCertID, strInData);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.VerifySignedData = function(strCert, strInData, strSignValue, cb, ctx) {
 		var ret = SecXV2.VerifySignedData(strCert, strInData, strSignValue);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.PubKeyEncrypt = function(strCert, strInData, cb, ctx) {
 		var ret = SecXV2.PubKeyEncrypt(strCert, strInData);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.PriKeyDecrypt = function(strCertID, strInData, cb, ctx) {
 		var ret = SecXV2.PriKeyDecrypt(strCertID, strInData);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SignDataByP7 = function(strCertID, strInData, bDetach, cb, ctx) {
 		var ret = SecXV2.SignDataByP7(strCertID, strInData);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.VerifyDataByP7 = function(strP7Data, strPlainMsg, cb, ctx) {
 		var ret = SecXV2.VerifySignedDatabyP7(strP7Data);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.EncyptMessage = function(strCert, strInData, cb, ctx) {
 		var ret = SecXV2.EncodeP7EnvelopedData(strCert, strInData);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.DecryptMessage = function(strCertID, strP7Envlope, cb, ctx) {
 		var ret = SecXV2.DecodeP7EnvelopedData(strCertID, strP7Envlope);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SignFile = function(strCertID, strFilePath, cb, ctx) {
 		var ret = SecXV2.SignFile(strCertID, strFilePath);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.VerifySignFile = function(strCert, strFilePath, strSignValue, cb, ctx) {
 		var ret = SecXV2.VerifySignedFile(strCert, strFilePath, strSignValue);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.GetSymKeyLength = function(cb, ctx) {
 		var ret = 24;
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SymEncryptData = function(strKey, strInData, cb, ctx) {
 		var ret = SecXV2.EncryptData(strKey, strInData);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SymDecryptData = function(strKey, strInData, cb, ctx) {
 		var ret = SecXV2.DecryptData(strKey, strInData);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SymEncryptFile = function(strKey, strInFilePath, strOutFilePath, cb, ctx) {
 		var ret = SecXV2.EncryptFile(strKey, strInFilePath, strOutFilePath);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SymDecryptFile = function(strKey, strInFilePath, strOutFilePath, cb, ctx) {
 		var ret = SecXV2.DecryptFile(strKey, strInFilePath, strOutFilePath);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.ValidateCert = function(strCert, cb, ctx) {
 		var ret = SecXV2.ValidateCert(strCert);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
-    o.GetDateNotBefore = function(strCertValid) {
-        var strYear = strCertValid.substring(0, 4);
-        var strMonth = strCertValid.substring(5, 7);
-        var strDay = strCertValid.substring(8, 10);
-        var RtnDate = new Date();
-        RtnDate.setFullYear(Number(strYear), Number(strMonth) - 1, Number(strDay));
-        RtnDate.setHours(0);
-        RtnDate.setMinutes(0);
-        RtnDate.setSeconds(0);
-        return RtnDate;
-    };
-    
-    o.GetDateNotAfter = function(strCertValid) {
-        var strYear = strCertValid.substring(0, 4);
-        var strMonth = strCertValid.substring(5, 7);
-        var strDay = strCertValid.substring(8, 10);
-        var RtnDate = new Date();
-        RtnDate.setFullYear(Number(strYear), Number(strMonth) - 1, Number(strDay));
-        RtnDate.setHours(23);
-        RtnDate.setMinutes(59);
-        RtnDate.setSeconds(59);
-        return RtnDate;
-    };
-    
+
+	o.GetDateNotBefore = function(strCertValid) {
+		var strYear = strCertValid.substring(0, 4);
+		var strMonth = strCertValid.substring(5, 7);
+		var strDay = strCertValid.substring(8, 10);
+		var RtnDate = new Date();
+		RtnDate.setFullYear(Number(strYear), Number(strMonth) - 1, Number(strDay));
+		RtnDate.setHours(0);
+		RtnDate.setMinutes(0);
+		RtnDate.setSeconds(0);
+		return RtnDate;
+	};
+
+	o.GetDateNotAfter = function(strCertValid) {
+		var strYear = strCertValid.substring(0, 4);
+		var strMonth = strCertValid.substring(5, 7);
+		var strDay = strCertValid.substring(8, 10);
+		var RtnDate = new Date();
+		RtnDate.setFullYear(Number(strYear), Number(strMonth) - 1, Number(strDay));
+		RtnDate.setHours(23);
+		RtnDate.setMinutes(59);
+		RtnDate.setSeconds(59);
+		return RtnDate;
+	};
+
 	return o;
 }
 
@@ -758,17 +762,16 @@ function CreateSecXObject() {
 	
 	o.GetUserList = function(cb, ctx) {
 		var ret = USBKEY.getUserList();
-		var ret = SecXV2.ValidateCert(strCert);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-    
-    o.GetUserList_USBKey = function(cb, ctx) {
-        return o.GetUserList(cb, ctx);
-    };
-    o.GetUserList_Soft = function(cb, ctx) {
-        return o.GetUserList(cb, ctx);
-    };
-	
+
+	o.GetUserList_USBKey = function(cb, ctx) {
+		return o.GetUserList(cb, ctx);
+	};
+	o.GetUserList_Soft = function(cb, ctx) {
+		return o.GetUserList(cb, ctx);
+	};
+
 	o.ExportUserSignCert = function(strCertID, cb, ctx) {
 		var ret;
 		var strCSPName = USBKEY.getUserInfoByContainer(strCertID, o.CERT_XML_DEVICEPROVIDER);
@@ -784,14 +787,14 @@ function CreateSecXObject() {
 		}
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.ExportUserExchangeCert = function(strCertID, cb, ctx) {
 		var strCSPName = USBKEY.getUserInfoByContainer(strCertID, o.CERT_XML_DEVICEPROVIDER);
 		oCert.importCert(strCertID, o.CERT_SRC_CONTAINER_ENC, strCSPName);
 		var ret = oCert.exportCert(o.CERT_DST_BASE64);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.VerifyUserPIN = function(strCertID, strUserPIN, cb, ctx) {
 		var ret;
 		var strCSPName = USBKEY.getUserInfoByContainer(strCertID, o.CERT_XML_DEVICEPROVIDER);	
@@ -803,10 +806,10 @@ function CreateSecXObject() {
 		} else {
 			ret = false;
 		}
-		
+
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.ChangeUserPIN = function(strCertID, oldPwd, newPwd, cb, ctx) {
 		var ret;
 		var strCSPName = USBKEY.getUserInfoByContainer(strCertID, o.CERT_XML_DEVICEPROVIDER);
@@ -818,80 +821,80 @@ function CreateSecXObject() {
 		} else {
 			ret = false;
 		}
-		
+
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.GetUserPINRetryCount = function(strCertID, cb, ctx) {
 		var strExtLib = USBKEY.getUserInfoByContainer(strCertID, o.CERT_XML_DEVICEAFFIX);
 		var ret = oDevice.getKeyRetrys(strExtLib);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.GetCertInfo = function(strCert, Type, cb, ctx) {
 		oCert.importCert(strCert, o.CERT_SRC_BASE64);
 		var SecXType;
 		switch (Type) {
 			case CERT_OID_ISSUER_CN:
-				SecXType = 4;
-				break;
+			SecXType = 4;
+			break;
 			case CERT_OID_NOT_BEFORE:
-				SecXType = 5;
-				break;
+			SecXType = 5;
+			break;
 			case CERT_OID_NOT_AFTER:
-				SecXType = 6;
-				break;
+			SecXType = 6;
+			break;
 			case CERT_OID_SUBJECT_C:
-				SecXType = 42;
-				break;
+			SecXType = 42;
+			break;
 			case CERT_OID_SUBJECT_O:
-				SecXType = 45;
-				break;
+			SecXType = 45;
+			break;
 			case CERT_OID_SUBJECT_OU:
-				SecXType = 46;
-				break;
+			SecXType = 46;
+			break;
 			case CERT_OID_SUBJECT_ST:
-				SecXType = 44;
-				break;
+			SecXType = 44;
+			break;
 			case CERT_OID_SUBJECT_CN:
-				SecXType = 41;
-				break;
+			SecXType = 41;
+			break;
 			case CERT_OID_SUBJECT_L:
-				SecXType = 43;
-				break;
+			SecXType = 43;
+			break;
 			case CERT_OID_PUBKEY:
-				SecXType = 43;
-				break;
+			SecXType = 43;
+			break;
 			default:
-				SecXType = Type;
-				break;
+			SecXType = Type;
+			break;
 		}
 		var ret = oCert.getBasicCertInfoByOID(SecXType);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.GetCertInfoByOID = function(strCert, strOID, cb, ctx) {
 		oCert.importCert(strCert, o.CERT_SRC_BASE64);
 		var ret = oCert.getExtCertInfoByOID(strOID);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.GetCertEntity = function(strCert, cb, ctx) {
 		oCert.importCert(strCert, o.CERT_SRC_BASE64);
 		var ret = oCert.getExtCertInfoByOID("2.16.840.1.113732.2");
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.GenRandom = function(RandomLen, cb, ctx) {
 		var ret = oCrypto.generateRandom(RandomLen);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SignData = function(strCertID, strInData, cb, ctx) {
 		var ret = oCrypto.signedData(strInData, strCertID);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.VerifySignedData = function(strCert, strInData, strSignValue, cb, ctx) {	
 		var ret;
 		var r = oCrypto.verifySignedData(strSignValue, strCert, strInData);
@@ -900,25 +903,25 @@ function CreateSecXObject() {
 		} else {
 			ret = false;
 		}
-		
+
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.PubKeyEncrypt = function(strCert, strInData, cb, ctx) {
 		var ret = oCrypto.EncDataByCert(strCert, strInData);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.PriKeyDecrypt = function(strCertID, strInData, cb, ctx) {
 		var ret = oCrypto.DecDataByRSA(strCertID, strInData);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SignDataByP7 = function(strCertID, strInData, bDetach, cb, ctx) {
 		var ret = oCrypto.signedDataByP7(strInData, strCertID);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.VerifyDataByP7 = function(strP7Data, strPlainMsg, cb, ctx) {
 		var ret;
 		var r = oCrypto.verifySignedDataByP7(strP7Data);
@@ -927,25 +930,25 @@ function CreateSecXObject() {
 		} else {
 			ret = false;
 		}
-		
+
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.EncyptMessage = function(strCert, strInData, cb, ctx) {
 		var ret = oCrypto.envelopedData(strInData, o.ENVELOP_ENC, strCert);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.DecryptMessage = function(strCertID, strP7Envlope, cb, ctx) {
 		var ret = oCrypto.envelopedData(strP7Envlope, o.ENVELOP_DEC, strCertID);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SignFile = function(strCertID, strFilePath, cb, ctx) {
 		var ret = oCrypto.signFile(strFilePath, strCertID);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.VerifySignFile = function(strCert, strFilePath, strSignValue, cb, ctx) {
 		var ret;
 		var r = oCrypto.verifySignFile(strFilePath, strCert, strSignValue);
@@ -956,22 +959,22 @@ function CreateSecXObject() {
 		}
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.GetSymKeyLength = function(cb, ctx) {
 		var ret = 24;
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SymEncryptData = function(strKey, strInData, cb, ctx) {
 		var ret = oCrypto.encryptData(strKey, strInData);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SymDecryptData = function(strKey, strInData, cb, ctx) {
 		var ret = oCrypto.decryptData(strKey, strInData);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SymEncryptFile = function(strKey, strInFilePath, strOutFilePath, cb, ctx) {
 		var ret;
 		var r = oCrypto.encryptFile(strInFilePath, strOutFilePath, strKey);
@@ -982,7 +985,7 @@ function CreateSecXObject() {
 		}
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.SymDecryptFile = function(strKey, strInFilePath, strOutFilePath, cb, ctx) {
 		var ret;
 		var r = oCrypto.decryptFile(strInFilePath, strOutFilePath, strKey);
@@ -991,10 +994,10 @@ function CreateSecXObject() {
 		} else {
 			ret = false;
 		}
-		
+
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.ValidateCert = function(strCert, cb, ctx) {
 		var ret;
 		var r = oCert.validateCert("", "");
@@ -1005,36 +1008,36 @@ function CreateSecXObject() {
 		}
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.HashFile = function(strFilePath, cb, ctx) {
 		var ret = oCrypto.HashFile(strFilePath);
 		return $myOKRtnFunc(ret, cb, ctx);
 	};
-	
+
 	o.GetDateNotBefore = function(strCertValid) {
-        var strYear = strCertValid.substring(0, 4);
-        var strMonth = strCertValid.substring(5, 7);
-        var strDay = strCertValid.substring(8, 10);
-        var RtnDate = new Date();
-        RtnDate.setFullYear(Number(strYear), Number(strMonth) - 1, Number(strDay));
-        RtnDate.setHours(0);
-        RtnDate.setMinutes(0);
-        RtnDate.setSeconds(0);
-        return RtnDate;
-    };
-    
-    o.GetDateNotAfter = function(strCertValid) {
-        var strYear = strCertValid.substring(0, 4);
-        var strMonth = strCertValid.substring(5, 7);
-        var strDay = strCertValid.substring(8, 10);
-        var RtnDate = new Date();
-        RtnDate.setFullYear(Number(strYear), Number(strMonth) - 1, Number(strDay));
-        RtnDate.setHours(23);
-        RtnDate.setMinutes(59);
-        RtnDate.setSeconds(59);
-        return RtnDate;
-    };
-	
+		var strYear = strCertValid.substring(0, 4);
+		var strMonth = strCertValid.substring(5, 7);
+		var strDay = strCertValid.substring(8, 10);
+		var RtnDate = new Date();
+		RtnDate.setFullYear(Number(strYear), Number(strMonth) - 1, Number(strDay));
+		RtnDate.setHours(0);
+		RtnDate.setMinutes(0);
+		RtnDate.setSeconds(0);
+		return RtnDate;
+	};
+
+	o.GetDateNotAfter = function(strCertValid) {
+		var strYear = strCertValid.substring(0, 4);
+		var strMonth = strCertValid.substring(5, 7);
+		var strDay = strCertValid.substring(8, 10);
+		var RtnDate = new Date();
+		RtnDate.setFullYear(Number(strYear), Number(strMonth) - 1, Number(strDay));
+		RtnDate.setHours(23);
+		RtnDate.setMinutes(59);
+		RtnDate.setSeconds(59);
+		return RtnDate;
+	};
+
 	return o;
 }
 
@@ -1042,316 +1045,394 @@ function CreateSecXObject() {
 function CreateWebSocketObject() {
 	
 	var o = new Object();
-    
-    o.ws_host = "ws://127.0.0.1:";
-    o.ws_port_array = ["4044", "5044", "6044", "7044", "8044"]; 
-    o.ws_port_use = 0;
-    o.ws_obj = null;
-    o.ws_heartbeat_id = 0;
+
+	o.ws_host = "ws://127.0.0.1:";
+	o.ws_port_array = ["4044", "21051/xtxapp","5044", "6044", "7044", "8044"]; 
+	o.ws_port_use = 0;
+	o.ws_obj = null;
+	o.ws_heartbeat_id = 0;
     o.ws_queue_id = 0; // call_cmd_id
     o.ws_queue_list = {};  // call_cmd_id callback queue
     o.ws_queue_ctx = {};
     o.xtx_version = "";
     
     o.load_websocket = function() {
-        if (o.ws_port_use > o.ws_port_array.length) {
-            o.ws_port_use = 0;
-            return false;
-        }
-        
-        var ws_url = o.ws_host + o.ws_port_array[o.ws_port_use] + "/";
-        try {
-            o.ws_obj = new WebSocket(ws_url); 
-        } catch (e) {
-            console.log(e);
-            return false;
-        }
-        
-        o.ws_queue_list["onUsbkeyChange"] = $OnUsbKeyChange;
-        
-        o.ws_obj.onopen = function(evt) { 
-            clearInterval(o.ws_heartbeat_id);
-            o.callMethod("SOF_GetVersion", function(str){o.xtx_version = str.retVal;});
-            o.ws_heartbeat_id = setInterval(function () {
-                o.callMethod("SOF_GetVersion", function(str){});
-            }, 10 * 1000);
-            GetUserList($pushAllDropListBox);
-        }; 
-        
-        o.ws_obj.onclose = function(evt) { 
-        
-		}; 
-        
-        o.ws_obj.onmessage = function(evt) { 
-            var res = JSON.parse(evt.data);  
-            if (typeof(res['call_cmd_id']) != 'undefined' && typeof(o.ws_queue_list[res['call_cmd_id']]) == 'function') {
-                var execFunc = o.ws_queue_list[res['call_cmd_id']];
-                var ctx = o.ws_queue_ctx[res['call_cmd_id']];
-                ctx = ctx || {returnType:"string"};
-                var ret;
-                if (typeof ctx.returnType == 'string') {
-                    if (ctx.returnType == "bool") {
-                        ret = res.retVal == "true" ? true : false;
-                    } else if (ctx.returnType == "number") {
-                        ret = Number(res.retVal);
-                    } else {
-                        ret = res.retVal;
-                    }     
-                } else {
-                    ret = res.retVal;
-                }
-                var retObj = {retVal:ret, ctx:ctx};
-                execFunc(retObj);
-                if (res['call_cmd_id'] != "onUsbkeyChange") {
-                    delete o.ws_queue_list[res['call_cmd_id']];
-                }
-                delete o.ws_queue_ctx[res['call_cmd_id']];
+    	if (o.ws_port_use >= o.ws_port_array.length) {
+    		o.ws_port_use = 0;
+    	//	return false;
+    	}
+
+    	var ws_url = o.ws_host + o.ws_port_array[o.ws_port_use] + "/";
+    	try {
+    		o.ws_obj = new WebSocket(ws_url); 
+    	} catch (e) {
+    		console.log(e);
+    		return false;
+    	}
+
+    	o.ws_queue_list["onUsbkeyChange"] = $OnUsbKeyChange;
+
+    	o.ws_obj.onopen = function(evt) { 
+    		clearInterval(o.ws_heartbeat_id);
+    		o.callMethod("SOF_GetVersion", function(str){o.xtx_version = str.retVal;});
+    		o.ws_heartbeat_id = setInterval(function () {
+    			o.callMethod("SOF_GetVersion", function(str){});
+    		}, 10 * 1000);
+    		GetUserList($pushAllDropListBox);
+    	}; 
+
+    	o.ws_obj.onerror = function(evt) { 
+    		o.ws_port_use++;
+    		o.load_websocket();
+    	};
+
+    	o.ws_obj.onclose = function(evt) { 
+
+    	}; 
+
+
+    	o.ws_obj.onmessage = function(evt) { 
+
+    		var res = JSON.parse(evt.data);  
+    		if(res['set-cookie']){
+    			document.cookie = res['set-cookie'];
+    		}
+
+            //登录失败
+            if(res['loginError'])
+            {
+            	alert(res['loginError']);
             }
+
+            var call_cmd_id = res['call_cmd_id'];
+            if(!call_cmd_id)
+            {
+            	return;
+            }
+
+            var execFunc = o.ws_queue_list[call_cmd_id];
+            if(typeof(execFunc) != 'function')
+            {
+            	return;
+            }
+
+            var ctx = o.ws_queue_ctx[res['call_cmd_id']];
+            ctx = ctx || {returnType:"string"};
+
+            var ret;
+            if (ctx.returnType == "bool"){
+            	ret = res.retVal == "true" ? true : false;
+            } 
+            else if (ctx.returnType == "number"){
+            	ret = Number(res.retVal);
+            } 
+            else{
+            	ret = res.retVal;
+            }     
+            var retObj = {retVal:ret, ctx:ctx};
+
+            execFunc(retObj);
+
+            if (res['call_cmd_id'] != "onUsbkeyChange") {
+            	delete o.ws_queue_list[res['call_cmd_id']];
+            }
+            delete o.ws_queue_ctx[res['call_cmd_id']];
+
         }; 
-        
-        o.ws_obj.onerror = function(evt) { 
-            o.ws_port_use++;
-            o.load_websocket();
-        };
-        
+
         return true;
-	};
-    
-    o.sendMessage = function(sendMsg) {
-        if (o.ws_obj.readyState == WebSocket.OPEN) {
-            o.ws_obj.send(JSON.stringify(sendMsg));
-        } else {
-            console.log("Can't connect to WebSocket server!");
-        }
-    };
-    
-    o.callMethod = function(strMethodName, cb, ctx, returnType, argsArray) {
-        o.ws_queue_id++;
-        if (typeof(cb) == 'function'){
-            o.ws_queue_list['i_' + o.ws_queue_id] = cb;
-            ctx = ctx || {};
-            ctx.returnType = returnType;           
-            o.ws_queue_ctx['i_' + o.ws_queue_id] = ctx;
-        }
-        
-        var sendArray = {};
-        sendArray['xtx_func_name'] = strMethodName;
-        sendArray['call_cmd_id'] = 'i_' + o.ws_queue_id ;
-        if (o.xtx_version >= "2.14") {
-            sendArray['URL'] = window.location.href;
-        }
-        
-        if (arguments.length > 4) {
-            for (var i = 1; i <= argsArray.length; i++) {
-                var strParam = "param_" + i;
-                sendArray[strParam] = argsArray[i - 1];
-            }
-        }
-        
-        if (o.ws_obj.readyState == WebSocket.OPEN) {
-            o.sendMessage(sendArray)
-        } else if (o.ws_obj.readyState != WebSocket.OPEN && o.ws_obj.readyState != WebSocket.CONNECTING) {
-            o.load_websocket();
-            setTimeout(o.sendMessage(sendArray), 500);
-        }
     };
 
-	o.GetUserList = function(cb, ctx) {
-        o.callMethod('SOF_GetUserList', cb, ctx, "string");
-	};
+
+    o.sendMessage = function(sendMsg) {
+    	if (o.ws_obj.readyState == WebSocket.OPEN) {
+    		o.ws_obj.send(JSON.stringify(sendMsg));
+    	} else {
+    		setTimeout(function(){
+    			if(sendMsg.count)
+    			{
+    				sendMsg.count++;
+    				if(sendMsg.count===4)
+    				{
+    					return;
+    				}
+    			}
+    			else
+    			{
+    				sendMsg.count = 1;
+    			}
+    			o.sendMessage(sendMsg);
+    		},500);
+    		console.log("Can't connect to WebSocket server!");
+    	}
+    };
+
+    o.callMethod = function(strMethodName, cb, ctx, returnType, argsArray) {
+    	o.ws_queue_id++;
+    	if (typeof(cb) == 'function'){
+    		o.ws_queue_list['i_' + o.ws_queue_id] = cb;
+    		ctx = ctx || {};
+    		ctx.returnType = returnType;           
+    		o.ws_queue_ctx['i_' + o.ws_queue_id] = ctx;
+    	}
+
+    	var sendArray = {};
+    	sendArray['cookie'] = document.cookie;
+    	sendArray['xtx_func_name'] = strMethodName;
+    	sendArray['call_cmd_id'] = 'i_' + o.ws_queue_id ;
+    	if (o.xtx_version >= "2.14") {
+    		sendArray['URL'] = window.location.href;
+    	}
+
+    	if (arguments.length > 4) {
+    		for (var i = 1; i <= argsArray.length; i++) {
+    			var strParam = "param_" + i;
+    			sendArray[strParam] = argsArray[i - 1];
+    		}
+    		sendArray["param"] = argsArray;
+    	}
+    	o.sendMessage(sendArray);
+
+    //	console.log(o.ws_obj.readyState);
+    //	if (o.ws_obj.readyState == WebSocket.OPEN && o.ws_obj.readyState != WebSocket.CONNECTING) {
+    //		o.load_websocket();
+    //	} 
+    };
+
+
+    o.GetUserList = function(cb, ctx) {
+    	o.callMethod('SOF_GetUserList', cb, ctx, "string");
+    };
 
     o._GetUserListByType = function(strType, cb, ctx) {
-        o.GetUserList(function(retObj) {
-            var strUserList = retObj.retVal;
-            while (true) {
-            var i = strUserList.indexOf("&&&");
-                if (i <= 0 ) {
-                    break;
-                }
-                var strOneUser = strUserList.substring(0, i);
-                var strName = strOneUser.substring(0, strOneUser.indexOf("||"));
-                var strCertID = strOneUser.substring(strOneUser.indexOf("||") + 2, strOneUser.length);
-                o.GetDeviceType(strCertID, function(retObj) {
-                    if (retObj.retVal == retObj.ctx.ctx.type) {
-                        if (typeof retObj.ctx.ctx.cb == 'function') {
-                            retObj.ctx.ctx.cb({retVal:retObj.ctx.userList, ctx:retObj.ctx.ctx.ctx})
-                        }
-                    }
-                }, {userList:strOneUser, ctx:retObj.ctx});
-                var len = strUserList.length;
-                strUserList = strUserList.substring(i + 3, len);
-            }
-        }, {type:strType, cb:cb, ctx:ctx});
+    	o.GetUserList(function(retObj) {
+    		var strUserList = retObj.retVal;
+    		while (true) {
+    			var i = strUserList.indexOf("&&&");
+    			if (i <= 0 ) {
+    				break;
+    			}
+    			var strOneUser = strUserList.substring(0, i);
+    			var strName = strOneUser.substring(0, strOneUser.indexOf("||"));
+    			var strCertID = strOneUser.substring(strOneUser.indexOf("||") + 2, strOneUser.length);
+    			o.GetDeviceType(strCertID, function(retObj) {
+    				if (retObj.retVal == retObj.ctx.ctx.type) {
+    					if (typeof retObj.ctx.ctx.cb == 'function') {
+    						retObj.ctx.ctx.cb({retVal:retObj.ctx.userList, ctx:retObj.ctx.ctx.ctx})
+    					}
+    				}
+    			}, {userList:strOneUser, ctx:retObj.ctx});
+    			var len = strUserList.length;
+    			strUserList = strUserList.substring(i + 3, len);
+    		}
+    	}, {type:strType, cb:cb, ctx:ctx});
     }
     o.GetUserList_USBKey = function(cb, ctx) {
-        return o._GetUserListByType("HARD", cb, ctx);
+    	return o._GetUserListByType("HARD", cb, ctx);
     };
     o.GetUserList_Soft = function(cb, ctx) {
-        return o._GetUserListByType("SOFT", cb, ctx);
+    	return o._GetUserListByType("SOFT", cb, ctx);
     };
-	
-	o.ExportUserSignCert = function(strCertID, cb, ctx) {
-        var paramArray = [strCertID];
-        o.callMethod('SOF_ExportUserCert', cb, ctx, "string", paramArray);
-	};
-	
-	o.ExportUserExchangeCert = function(strCertID, cb, ctx) {
-        var paramArray = [strCertID];
-        o.callMethod('SOF_ExportExChangeUserCert', cb, ctx, "string", paramArray);
-	};
-	
-	o.VerifyUserPIN = function(strCertID, strUserPIN, cb, ctx) {
-        var paramArray = [strCertID, strUserPIN];
-        o.callMethod('SOF_Login', cb, ctx, "bool", paramArray);
-	};
-	
-	o.ChangeUserPIN = function(strCertID, oldPwd, newPwd, cb, ctx) {
-		var paramArray = [strCertID, oldPwd, newPwd];
-        o.callMethod('SOF_ChangePassWd', cb, ctx, "bool", paramArray);
-	};
-	
-	o.GetUserPINRetryCount = function(strCertID, cb, ctx) {
-		var paramArray = [strCertID];
-        o.callMethod('SOF_GetPinRetryCount', cb, ctx, "number", paramArray);
-	};
-	
-	o.GetCertInfo = function(strCert, Type, cb, ctx) {
-        var paramArray = [strCert, Type];
-        o.callMethod('SOF_GetCertInfo', cb, ctx, "string", paramArray);
-	};
-	
-	o.GetCertInfoByOID = function(strCert, strOID, cb, ctx) {
-        var paramArray = [strCert, strOID];
-        o.callMethod('SOF_GetCertInfoByOid', cb, ctx, "string", paramArray);
-	};
-	
-	o.GetCertEntity = function(strCert, cb, ctx) {
-		var paramArray = [strCert];
-        o.callMethod('SOF_GetCertEntity', cb, ctx, "string", paramArray);
-	};
-	
-	o.GenRandom = function(RandomLen, cb, ctx) {
-		var paramArray = [RandomLen];
-        o.callMethod('SOF_GenRandom', cb, ctx, "string", paramArray);
-	};
-	
-	o.SignData = function(strCertID, strInData, cb, ctx) {
-		var paramArray = [strCertID, strInData];
-        o.callMethod('SOF_SignData', cb, ctx, "string", paramArray);
-	};
-	
-	o.VerifySignedData = function(strCert, strInData, strSignValue, cb, ctx) {
-		var paramArray = [strCert, strInData, strSignValue];
-        o.callMethod('SOF_VerifySignedData', cb, ctx, "bool", paramArray);
-	};
-	
-	o.PubKeyEncrypt = function(strCert, strInData, cb, ctx) {
-		var paramArray = [strCert, strInData];
-        o.callMethod('SOF_PubKeyEncrypt', cb, ctx, "string", paramArray);
-	};
-	
-	o.PriKeyDecrypt = function(strCertID, strInData, cb, ctx) {
-		var paramArray = [strCertID, strInData];
-        o.callMethod('SOF_PriKeyDecrypt', cb, ctx, "string", paramArray);
-	};
-	
-	o.SignDataByP7 = function(strCertID, strInData, bDetach, cb, ctx) {
-        var paramArray = [strCertID, strInData];
-        o.callMethod('SOF_SignMessage', cb, ctx, "string", paramArray);
-	};
-	
-	o.VerifyDataByP7 = function(strP7Data, strPlainMsg, cb, ctx) {
-		var paramArray = [strP7Data, strPlainMsg];
-        o.callMethod('SOF_VerifySignedMessage', cb, ctx, "bool", paramArray);
-	};
-	
-	o.EncyptMessage = function(strCert, strInData, cb, ctx) {
-		var paramArray = [strCert, strInData];
-        o.callMethod('SOF_EncryptData', cb, ctx, "string", paramArray);	
-	};
-	
-	o.DecryptMessage = function(strCertID, strP7Envlope, cb, ctx) {
-		var paramArray = [strCertID, strP7Envlope];
-        o.callMethod('SOF_DecryptData', cb, ctx, "string", paramArray);	
-	};
-	
-	o.SignFile = function(strCertID, strFilePath, cb, ctx) {
-		var paramArray = [strCertID, strFilePath];
-        o.callMethod('SOF_SignFile', cb, ctx, "string", paramArray);
-	};
-	
-	o.VerifySignFile = function(strCert, strFilePath, strSignValue, cb, ctx) {
-		var paramArray = [strCert, strFilePath, strSignValue];
-        o.callMethod('SOF_VerifySignedFile', cb, ctx, "bool", paramArray);	
-	};
-	
-	o.GetSymKeyLength = function(cb, ctx) {
-		var ret = 24;
-		return $myOKRtnFunc(ret, cb, ctx);
-	};
-	
-	o.SymEncryptData = function(strKey, strInData, cb, ctx) {
-		var paramArray = [strKey, strInData];
-        o.callMethod('SOF_SymEncryptData', cb, ctx, "string", paramArray);	
-	};
-	
-	o.SymDecryptData = function(strKey, strInData, cb, ctx) {
-		var paramArray = [strKey, strInData];
-        o.callMethod('SOF_SymDecryptData', cb, ctx, "string", paramArray);
-	};
-	
-	o.SymEncryptFile = function(strKey, strInFilePath, strOutFilePath, cb, ctx) {
-		var paramArray = [strKey, strInFilePath, strOutFilePath];
-        o.callMethod('SOF_SymEncryptFile', cb, ctx, "bool", paramArray);	
-	};
-	
-	o.SymDecryptFile = function(strKey, strInFilePath, strOutFilePath, cb, ctx) {
-		var paramArray = [strKey, strInFilePath, strOutFilePath];
-        o.callMethod('SOF_SymDecryptFile', cb, ctx, "bool", paramArray);	
-	};
-	
-	o.ValidateCert = function(strCert, cb, ctx) {
-		var paramArray = [strCert];
-        o.callMethod('SOF_ValidateCert', cb, ctx, "bool", paramArray);	
-	};
-    
+
+    o.ExportUserSignCert = function(strCertID, cb, ctx) {
+    	var paramArray = [strCertID];
+    	o.callMethod('SOF_ExportUserCert', cb, ctx, "string", paramArray);
+    };
+
+    o.ExportUserExchangeCert = function(strCertID, cb, ctx) {
+    	var paramArray = [strCertID];
+    	o.callMethod('SOF_ExportExChangeUserCert', cb, ctx, "string", paramArray);
+    };
+
+    o.VerifyUserPIN = function(strCertID, strUserPIN, cb, ctx) {
+    	var paramArray = [strCertID, strUserPIN];
+    	o.callMethod('SOF_Login', cb, ctx, "bool", paramArray);
+    };
+
+    o.ChangeUserPIN = function(strCertID, oldPwd, newPwd, cb, ctx) {
+    	var paramArray = [strCertID, oldPwd, newPwd];
+    	o.callMethod('SOF_ChangePassWd', cb, ctx, "bool", paramArray);
+    };
+
+    o.GetUserPINRetryCount = function(strCertID, cb, ctx) {
+    	var paramArray = [strCertID];
+    	o.callMethod('SOF_GetPinRetryCount', cb, ctx, "number", paramArray);
+    };
+
+    o.GetCertInfo = function(strCert, Type, cb, ctx) {
+    	var paramArray = [strCert, Type];
+    	o.callMethod('SOF_GetCertInfo', cb, ctx, "string", paramArray);
+    };
+
+    o.GetCertInfoByOID = function(strCert, strOID, cb, ctx) {
+    	var paramArray = [strCert, strOID];
+    	o.callMethod('SOF_GetCertInfoByOid', cb, ctx, "string", paramArray);
+    };
+
+    o.GetCertEntity = function(strCert, cb, ctx) {
+    	var paramArray = [strCert];
+    	o.callMethod('SOF_GetCertEntity', cb, ctx, "string", paramArray);
+    };
+
+    o.GenRandom = function(RandomLen, cb, ctx) {
+    	var paramArray = [RandomLen];
+    	o.callMethod('SOF_GenRandom', cb, ctx, "string", paramArray);
+    };
+
+    o.SignData = function(strCertID, strInData, cb, ctx) {
+    	var paramArray = [strCertID, strInData];
+    	o.callMethod('SOF_SignData', cb, ctx, "string", paramArray);
+    };
+
+    o.VerifySignedData = function(strCert, strInData, strSignValue, cb, ctx) {
+    	var paramArray = [strCert, strInData, strSignValue];
+    	o.callMethod('SOF_VerifySignedData', cb, ctx, "bool", paramArray);
+    };
+
+    o.PubKeyEncrypt = function(strCert, strInData, cb, ctx) {
+    	var paramArray = [strCert, strInData];
+    	o.callMethod('SOF_PubKeyEncrypt', cb, ctx, "string", paramArray);
+    };
+
+    o.PriKeyDecrypt = function(strCertID, strInData, cb, ctx) {
+    	var paramArray = [strCertID, strInData];
+    	o.callMethod('SOF_PriKeyDecrypt', cb, ctx, "string", paramArray);
+    };
+
+    o.SignDataByP7 = function(strCertID, strInData, bDetach, cb, ctx) {
+    	var paramArray = [strCertID, strInData];
+    	o.callMethod('SOF_SignMessage', cb, ctx, "string", paramArray);
+    };
+
+    o.VerifyDataByP7 = function(strP7Data, strPlainMsg, cb, ctx) {
+    	var paramArray = [strP7Data, strPlainMsg];
+    	o.callMethod('SOF_VerifySignedMessage', cb, ctx, "bool", paramArray);
+    };
+
+    o.EncyptMessage = function(strCert, strInData, cb, ctx) {
+    	var paramArray = [strCert, strInData];
+    	o.callMethod('SOF_EncryptData', cb, ctx, "string", paramArray);	
+    };
+
+    o.DecryptMessage = function(strCertID, strP7Envlope, cb, ctx) {
+    	var paramArray = [strCertID, strP7Envlope];
+    	o.callMethod('SOF_DecryptData', cb, ctx, "string", paramArray);	
+    };
+
+    o.SignFile = function(strCertID, strFilePath, cb, ctx) {
+    	var paramArray = [strCertID, strFilePath];
+    	o.callMethod('SOF_SignFile', cb, ctx, "string", paramArray);
+    };
+
+    o.VerifySignFile = function(strCert, strFilePath, strSignValue, cb, ctx) {
+    	var paramArray = [strCert, strFilePath, strSignValue];
+    	o.callMethod('SOF_VerifySignedFile', cb, ctx, "bool", paramArray);	
+    };
+
+    o.GetSymKeyLength = function(cb, ctx) {
+    	var ret = 24;
+    	return $myOKRtnFunc(ret, cb, ctx);
+    };
+
+    o.SymEncryptData = function(strKey, strInData, cb, ctx) {
+    	var paramArray = [strKey, strInData];
+    	o.callMethod('SOF_SymEncryptData', cb, ctx, "string", paramArray);	
+    };
+
+    o.SymDecryptData = function(strKey, strInData, cb, ctx) {
+    	var paramArray = [strKey, strInData];
+    	o.callMethod('SOF_SymDecryptData', cb, ctx, "string", paramArray);
+    };
+
+    o.SymEncryptFile = function(strKey, strInFilePath, strOutFilePath, cb, ctx) {
+    	var paramArray = [strKey, strInFilePath, strOutFilePath];
+    	o.callMethod('SOF_SymEncryptFile', cb, ctx, "bool", paramArray);	
+    };
+
+    o.SymDecryptFile = function(strKey, strInFilePath, strOutFilePath, cb, ctx) {
+    	var paramArray = [strKey, strInFilePath, strOutFilePath];
+    	o.callMethod('SOF_SymDecryptFile', cb, ctx, "bool", paramArray);	
+    };
+
+    o.ValidateCert = function(strCert, cb, ctx) {
+    	var paramArray = [strCert];
+    	o.callMethod('SOF_ValidateCert', cb, ctx, "bool", paramArray);	
+    };
+
     o.HashFile = function(strFilePath, cb, ctx) {
-		var paramArray = [2, strFilePath];
-        o.callMethod('SOF_HashFile', cb, ctx, "string", paramArray);
-	};
-    
+    	var paramArray = [2, strFilePath];
+    	o.callMethod('SOF_HashFile', cb, ctx, "string", paramArray);
+    };
+
     o.GetDateNotBefore = function(strCertValid) {
-        return o._GetDateFormate(strCertValid);
+    	return o._GetDateFormate(strCertValid);
     };
-    
+
     o.GetDateNotAfter = function(strCertValid) {
-        return o._GetDateFormate(strCertValid);
+    	return o._GetDateFormate(strCertValid);
     };
-    
+
     o._GetDateFormate = function(strCertValid) {
-        var strYear = strCertValid.substring(0, 4);
-        var strMonth = strCertValid.substring(4, 6);
-        var strDay = strCertValid.substring(6, 8);
-        var strHour = strCertValid.substring(8, 10);
-        var strMin = strCertValid.substring(10, 12);
-        var strSecond = strCertValid.substring(12, 14);
-        var RtnDate = new Date();
-        RtnDate.setFullYear(Number(strYear), Number(strMonth) - 1, Number(strDay));
-        RtnDate.setHours(Number(strHour));
-        RtnDate.setMinutes(Number(strMin));
-        RtnDate.setSeconds(Number(strSecond));
-        return RtnDate;
+    	var strYear = strCertValid.substring(0, 4);
+    	var strMonth = strCertValid.substring(4, 6);
+    	var strDay = strCertValid.substring(6, 8);
+    	var strHour = strCertValid.substring(8, 10);
+    	var strMin = strCertValid.substring(10, 12);
+    	var strSecond = strCertValid.substring(12, 14);
+    	var RtnDate = new Date();
+    	RtnDate.setFullYear(Number(strYear), Number(strMonth) - 1, Number(strDay));
+    	RtnDate.setHours(Number(strHour));
+    	RtnDate.setMinutes(Number(strMin));
+    	RtnDate.setSeconds(Number(strSecond));
+    	return RtnDate;
     };
-		
-	o.GetDeviceType = function(strCertID, cb, ctx) {
-		var paramArray = [strCertID, 7];
-        o.callMethod('GetDeviceInfo', cb, ctx, "string", paramArray);
-	}
-    
-    if (!o.load_websocket()) {
-        return null;
+
+    o.GetDeviceType = function(strCertID, cb, ctx) {
+    	var paramArray = [strCertID, 7];
+    	o.callMethod('GetDeviceInfo', cb, ctx, "string", paramArray);
     }
-    
+
+    o.SignHashData = function(strCertID, strHashData, ulHashAlg, cb, ctx) {
+    	var paramArray = [strCertID, strHashData, ulHashAlg];
+    	o.callMethod('SOF_SignHashData', cb, ctx, "string", paramArray);
+    }
+
+    o.VerifySignedHashData = function(strCert, strHashData, ulHashAlg, strSignValue, cb, ctx) {
+    	var paramArray = [strCert, strHashData, ulHashAlg, strSignValue];
+    	o.callMethod('SOF_VerifySignedHashData', cb, ctx, "bool", paramArray);
+    }
+
+	// getpic begin
+	o.GetPic = function(strContainerName, cb, ctx) {
+		var paramArray = [strContainerName];
+		o.callMethod('GetPic', cb, ctx, "string", paramArray);
+	};
+
+	o.Hash = function(strInData, cb, ctx) {
+		var paramArray = [strInData];
+		o.callMethod('Hash', cb, ctx, "string", paramArray);
+	};
+
+	o.ConvertPicFormat = function(strInData, type, cb, ctx) {
+		var paramArray = [strInData, type];
+		o.callMethod('ConvertPicFormat', cb, ctx, "string", paramArray);
+	}; 
+
+	o.ConvertGif2Jpg = function(strInData, cb, ctx) {
+		var paramArray = [strInData];
+		o.callMethod('ConvertGif2Jpg', cb, ctx, "string", paramArray);
+	}; 
+
+	o.ConvertPicSize = function(strInData, w, h, cb, ctx) {
+		var paramArray = [strInData, w, h];
+		o.callMethod('ConvertPicSize', cb, ctx, "string", paramArray);
+	}; 
+	// getpic end
+
+	if (!o.load_websocket()) {
+		return null;
+	}
+
 	return o;
 }
 
@@ -1360,28 +1441,28 @@ function CreateWebSocketObject() {
 
 function $myErrorRtnFunc(retVal, cb, ctx)
 {
-    if (typeof cb == 'function') {
-        var retObj = {retVal:retVal, ctx:ctx};
-        cb(retObj);
-    }
-    
-    return retVal;
+	if (typeof cb == 'function') {
+		var retObj = {retVal:retVal, ctx:ctx};
+		cb(retObj);
+	}
+
+	return retVal;
 }
 //get user list
 function GetUserList(cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.GetUserList(cb, ctx);
 	} else {
-        return $myErrorRtnFunc("", cb, ctx);
+		return $myErrorRtnFunc("", cb, ctx);
 	}
 }
 
 //get usbKey user list
 function GetUserList_USBKey(cb, ctx) {
-    if ($_$CurrentObj != null) {
+	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.GetUserList_USBKey(cb, ctx);
 	} else {
-        return $myErrorRtnFunc("", cb, ctx);
+		return $myErrorRtnFunc("", cb, ctx);
 	}
 }
 
@@ -1390,7 +1471,7 @@ function GetUserList_Soft(cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.GetUserList_Soft(cb, ctx);
 	} else {
-        return $myErrorRtnFunc("", cb, ctx);
+		return $myErrorRtnFunc("", cb, ctx);
 	}
 }
 
@@ -1399,7 +1480,7 @@ function GetSignCert(strCertID, cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.ExportUserSignCert(strCertID, cb, ctx);
 	} else {
-        return $myErrorRtnFunc("", cb, ctx);
+		return $myErrorRtnFunc("", cb, ctx);
 	}
 }
 
@@ -1408,7 +1489,7 @@ function GetExchCert(strCertID, cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.ExportUserExchangeCert(strCertID, cb, ctx);
 	} else {
-        return $myErrorRtnFunc("", cb, ctx);
+		return $myErrorRtnFunc("", cb, ctx);
 	}
 }
 
@@ -1417,7 +1498,7 @@ function VerifyUserPIN(strCertID, strUserPIN, cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.VerifyUserPIN(strCertID, strUserPIN, cb, ctx);
 	} else {
-        return $myErrorRtnFunc(false, cb, ctx);
+		return $myErrorRtnFunc(false, cb, ctx);
 	}
 }
 
@@ -1426,7 +1507,7 @@ function ChangeUserPassword(strCertID, oldPwd, newPwd, cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.ChangeUserPIN(strCertID, oldPwd, newPwd, cb, ctx);
 	} else {
-        return $myErrorRtnFunc(false, cb, ctx);
+		return $myErrorRtnFunc(false, cb, ctx);
 	}
 }
 
@@ -1435,7 +1516,7 @@ function GetUserPINRetryCount(strCertID, cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.GetUserPINRetryCount(strCertID, cb, ctx);
 	} else {
-        return $myErrorRtnFunc(0, cb, ctx);
+		return $myErrorRtnFunc(0, cb, ctx);
 	}
 }
 
@@ -1444,7 +1525,7 @@ function GetCertBasicinfo(strCert, Type, cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.GetCertInfo(strCert, Type, cb, ctx);
 	} else {
-        return $myErrorRtnFunc("", cb, ctx);
+		return $myErrorRtnFunc("", cb, ctx);
 	}
 }
 
@@ -1453,7 +1534,7 @@ function GetExtCertInfoByOID(strCert, strOID, cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.GetCertInfoByOID(strCert, strOID, cb, ctx);
 	} else {
-        return $myErrorRtnFunc("", cb, ctx);
+		return $myErrorRtnFunc("", cb, ctx);
 	}
 }
 
@@ -1462,7 +1543,7 @@ function GetCertEntity(strCert, cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.GetCertEntity(strCert, cb, ctx);
 	} else {
-        return $myErrorRtnFunc("", cb, ctx);
+		return $myErrorRtnFunc("", cb, ctx);
 	}
 }
 
@@ -1471,7 +1552,7 @@ function GenerateRandom(RandomLen, cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.GenRandom(RandomLen, cb, ctx);
 	} else {
-        return $myErrorRtnFunc("", cb, ctx);
+		return $myErrorRtnFunc("", cb, ctx);
 	}
 }
 
@@ -1480,7 +1561,7 @@ function SignedData(strCertID, strInData, cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.SignData(strCertID, strInData, cb, ctx);
 	} else {
-        return $myErrorRtnFunc("", cb, ctx);
+		return $myErrorRtnFunc("", cb, ctx);
 	}
 }
 
@@ -1489,7 +1570,7 @@ function VerifySignedData(strCert, strInData, strSignValue, cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.VerifySignedData(strCert, strInData, strSignValue, cb, ctx);
 	} else {
-        return $myErrorRtnFunc(false, cb, ctx);
+		return $myErrorRtnFunc(false, cb, ctx);
 	}
 }
 
@@ -1498,7 +1579,7 @@ function PubKeyEncrypt(strCert, strInData, cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.PubKeyEncrypt(strCert, strInData, cb, ctx);
 	} else {
-        return $myErrorRtnFunc("", cb, ctx);
+		return $myErrorRtnFunc("", cb, ctx);
 	}
 }
 
@@ -1507,7 +1588,7 @@ function PriKeyDecrypt(strCertID, strInData, cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.PriKeyDecrypt(strCertID, strInData, cb, ctx);
 	} else {
-        return $myErrorRtnFunc("", cb, ctx);
+		return $myErrorRtnFunc("", cb, ctx);
 	}
 }
 
@@ -1516,7 +1597,7 @@ function SignByP7(strCertID, strInData, bDetach, cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.SignDataByP7(strCertID, strInData, bDetach, cb, ctx);
 	} else {
-        return $myErrorRtnFunc("", cb, ctx);
+		return $myErrorRtnFunc("", cb, ctx);
 	}
 }
 
@@ -1525,7 +1606,7 @@ function VerifyDatabyP7(strP7Data, strPlainMsg, cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.VerifyDataByP7(strP7Data, strPlainMsg, cb, ctx);
 	} else {
-        return $myErrorRtnFunc("", cb, ctx);
+		return $myErrorRtnFunc("", cb, ctx);
 	}
 }
 
@@ -1534,7 +1615,7 @@ function EncodeP7Enveloped(strCert, strInData, cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.EncyptMessage(strCert, strInData, cb, ctx);
 	} else {
-        return $myErrorRtnFunc("", cb, ctx);
+		return $myErrorRtnFunc("", cb, ctx);
 	}	
 }
 
@@ -1543,7 +1624,7 @@ function DecodeP7Enveloped(strCertID, strP7Envlope, cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.DecryptMessage(strCertID, strP7Envlope, cb, ctx);
 	} else {
-        return $myErrorRtnFunc("", cb, ctx);
+		return $myErrorRtnFunc("", cb, ctx);
 	}	
 }
 
@@ -1552,7 +1633,7 @@ function SignFile(strCertID, strFilePath, cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.SignFile(strCertID, strFilePath, cb, ctx);
 	} else {
-        return $myErrorRtnFunc("", cb, ctx);
+		return $myErrorRtnFunc("", cb, ctx);
 	}	
 }
 
@@ -1561,7 +1642,7 @@ function VerifySignFile(strCert, strFilePath, strSignValue, cb, ctx) {
 	if ($_$CurrentObj != null) {
 		return $_$CurrentObj.VerifySignFile(strCert, strFilePath, strSignValue, cb, ctx);
 	} else {
-        return $myErrorRtnFunc(false, cb, ctx);
+		return $myErrorRtnFunc(false, cb, ctx);
 	}	
 }
 
@@ -1592,7 +1673,7 @@ function DecryptData(strKey, strInData, cb, ctx) {
 		return $myErrorRtnFunc("", cb, ctx);
 	}
 }
- 
+
 //encrypt file by symmitric key 
 function EncryptFile(strKey, strInFilePath, strOutFilePath, cb, ctx) {
 	if ($_$CurrentObj != null) {
@@ -1632,9 +1713,25 @@ function GetDeviceType(strCertID, cb, ctx) {
 // calculate file's hash
 function HashFile(strFilePath, cb, ctx) {
 	if ($_$CurrentObj != null && $_$CurrentObj.HashFile != undefined) {
-        return $_$CurrentObj.HashFile(strFilePath, cb, ctx);
+		return $_$CurrentObj.HashFile(strFilePath, cb, ctx);
 	} 
 	return $myErrorRtnFunc("", cb, ctx);
+}
+
+// sign hash data only v2.0 or later support
+function SignHashData(strCertID, strHashData, ulHashAlg, cb, ctx) {
+	if ($_$CurrentObj != null && $_$CurrentObj.SignHashData != undefined) {
+		return $_$CurrentObj.SignHashData(strCertID, strHashData, ulHashAlg, cb, ctx);
+	} 
+	return $myErrorRtnFunc("", cb, ctx);
+}
+
+// verify signed hash data  only v2.0 or later support
+function VerifySignedHashData(strCert, strHashData, ulHashAlg, strSignValue, cb, ctx) {
+	if ($_$CurrentObj != null && $_$CurrentObj.VerifySignedHashData != undefined) {
+		return $_$CurrentObj.VerifySignedHashData(strCert, strHashData, ulHashAlg, strSignValue, cb, ctx);
+	}
+	return $myErrorRtnFunc(false, cb, ctx);
 }
 
 function GetDateNotBefore(strCertValid) {
@@ -1653,37 +1750,37 @@ function GetDateNotAfter(strCertValid) {
 
 function $loginSignRandomCallBack(retObj)
 {
-    if (retObj.retVal == "") {
-        $XTXAlert("客户端签名失败!");
-        return;
-    }
-    var objForm = retObj.ctx.objForm;
-    var strAction = retObj.ctx.action;
-    objForm.UserSignedData.value = retObj.retVal;
-    objForm.action = strAction;
-    objForm.submit();	
+	if (retObj.retVal == "") {
+		$XTXAlert("客户端签名失败!");
+		return;
+	}
+	var objForm = retObj.ctx.objForm;
+	var strAction = retObj.ctx.action;
+	objForm.UserSignedData.value = retObj.retVal;
+	objForm.action = strAction;
+	objForm.submit();	
 }
 
 function $loginVerifyServerSignatureCallBack(retObj)
 {
-    if (!retObj.retVal) {
-        $XTXAlert("验证服务器端信息失败!");
-        return;
-    }
-    
-    var strCertID = retObj.ctx.certID;
-    SignedData(strCertID, strServerRan, $loginSignRandomCallBack, retObj.ctx);
+	if (!retObj.retVal) {
+		$XTXAlert("验证服务器端信息失败!");
+		return;
+	}
+
+	var strCertID = retObj.ctx.certID;
+	SignedData(strCertID, strServerRan, $loginSignRandomCallBack, retObj.ctx);
 }
 
 function $loginCheckCertValidNotAfter(retObj)
 {
-    var notAfterDate = GetDateNotAfter(retObj.retVal);
+	var notAfterDate = GetDateNotAfter(retObj.retVal);
 	var milliseconds = notAfterDate.getTime() - new Date().getTime();
 	if (milliseconds < 0) {
 		$XTXAlert("您的证书已过期，请尽快到北京数字证书认证中心办理证书更新手续！");
-	    return;
+		return;
 	}
-	
+
 	days = parseInt(milliseconds / (1000*60*60*24));	
 	if (days > 0 && days <= 60) {
 		$XTXAlert("您的证书还有" + days + "天过期\n请您尽快到北京数字证书认证中心办理证书更新手续！");
@@ -1698,64 +1795,64 @@ function $loginCheckCertValidNotAfter(retObj)
 			$XTXAlert("您的证书还有" + minutes + "分钟过期\n您尽快到北京数字证书认证中心办理证书更新手续！");
 		} else {
 			$XTXAlert("您的证书已过期，请尽快到北京数字证书认证中心办理证书更新手续！");
-            return;
+			return;
 		}	
 	}
-    
-    VerifySignedData(strServerCert, strServerRan, strServerSignedData, 
-        $loginVerifyServerSignatureCallBack, retObj.ctx);
+
+	VerifySignedData(strServerCert, strServerRan, strServerSignedData, 
+		$loginVerifyServerSignatureCallBack, retObj.ctx);
 }
 
 function $loginCheckCertValidNotBefore(retObj)
 {
-    var notBeforeDate = GetDateNotBefore(retObj.retVal);
-    var days = parseInt((notBeforeDate.getTime() - new Date().getTime()) / (1000*60*60*24));
-    if (days > 0) {
-        $XTXAlert("您的证书尚未生效!距离生效日期还剩" + days + "天!");
-        return;
-    }
-    var strUserCert = retObj.ctx.objForm.UserCert.value;
-    GetCertBasicinfo(strUserCert, CERT_OID_NOT_AFTER, $loginCheckCertValidNotAfter, retObj.ctx);
+	var notBeforeDate = GetDateNotBefore(retObj.retVal);
+	var days = parseInt((notBeforeDate.getTime() - new Date().getTime()) / (1000*60*60*24));
+	if (days > 0) {
+		$XTXAlert("您的证书尚未生效!距离生效日期还剩" + days + "天!");
+		return;
+	}
+	var strUserCert = retObj.ctx.objForm.UserCert.value;
+	GetCertBasicinfo(strUserCert, CERT_OID_NOT_AFTER, $loginCheckCertValidNotAfter, retObj.ctx);
 }
 
 function $loginGetSignCertCallBack(retObj)
 {
-    var strUserCert = retObj.retVal;
-    if (strUserCert == "") {
-        $XTXAlert("导出用户证书失败!");
-        return;
-    }
-    retObj.ctx.objForm.UserCert.value =  strUserCert;
-    
-    GetCertBasicinfo(strUserCert, CERT_OID_NOT_BEFORE, $loginCheckCertValidNotBefore, retObj.ctx);
+	var strUserCert = retObj.retVal;
+	if (strUserCert == "") {
+		$XTXAlert("导出用户证书失败!");
+		return;
+	}
+	retObj.ctx.objForm.UserCert.value =  strUserCert;
+
+	GetCertBasicinfo(strUserCert, CERT_OID_NOT_BEFORE, $loginCheckCertValidNotBefore, retObj.ctx);
 }
 
 function $loginGetPINRetryCallBack(retObj)
 {
-    var retryCount = Number(retObj.retVal);
-    if (retryCount > 0) {
-        $XTXAlert("校验证书密码失败!您还有" + retryCount + "次机会重试!");
-        return;
-    } else if (retryCount == 0) {
-        $XTXAlert("您的证书密码已被锁死,请联系BJCA进行解锁!");
-        return;
-    } else {
-        $XTXAlert("登录失败!");
-        return;
-    }	
+	var retryCount = Number(retObj.retVal);
+	if (retryCount > 0) {
+		$XTXAlert("校验证书密码失败!您还有" + retryCount + "次机会重试!");
+		return;
+	} else if (retryCount == 0) {
+		$XTXAlert("您的证书密码已被锁死,请联系BJCA进行解锁!");
+		return;
+	} else {
+		$XTXAlert("登录失败!");
+		return;
+	}	
 }
 
 function $loginVerifyPINCallBack(retObj)
 {
-    var strCertID = retObj.ctx.certID;
-    var objForm = retObj.ctx.objForm;
-    if (!retObj.retVal) {
-        GetUserPINRetryCount(strCertID, $loginGetPINRetryCallBack); 
-        return;
-    }
-    objForm.ContainerName.value = strCertID;
-    
-    GetSignCert(strCertID, $loginGetSignCertCallBack, retObj.ctx);
+	var strCertID = retObj.ctx.certID;
+	var objForm = retObj.ctx.objForm;
+	if (!retObj.retVal) {
+		GetUserPINRetryCount(strCertID, $loginGetPINRetryCallBack); 
+		return;
+	}
+	objForm.ContainerName.value = strCertID;
+
+	GetSignCert(strCertID, $loginGetSignCertCallBack, retObj.ctx);
 }
 
 //Form login
@@ -1765,10 +1862,10 @@ function Login(formName, strCertID, strPin, strAction) {
 		$XTXAlert("表单错误！");
 		return;
 	}
-    if (strCertID == null || strCertID == "") {
-        $XTXAlert("请输入证书密码！");
+	if (strCertID == null || strCertID == "") {
+		$XTXAlert("请输入证书密码！");
 		return;
-    }
+	}
 	if (strPin == null || strPin == "") {
 		$XTXAlert("请输入证书密码！");
 		return;
@@ -1787,43 +1884,135 @@ function Login(formName, strCertID, strPin, strAction) {
 	if (objForm.ContainerName == null) {
 		objForm.insertAdjacentHTML("BeforeEnd", strContainerItem);
 	}
-    
-    var ctx = {certID:strCertID, objForm:objForm, action:strAction};
-    
+
+	var ctx = {certID:strCertID, objForm:objForm, action:strAction};
+
 	VerifyUserPIN(strCertID, strPin, $loginVerifyPINCallBack, ctx);
-	
+
 	return;
 }
 
+/*
+ * GetKeyPic控件接口
+ */
+//GetPic class
+function CreateGetPicObject() {	
+	var bOK = $LoadControl("3BC3C868-95B5-47ED-8686-E0E3E94EF366", "OGetPic", "GetPic()", false);
+	if (!bOK) {
+		return null;
+	}	
+	
+	var o = new Object();
+	
+	o.GetPic = function(strContainerName, cb, ctx) {
+		var ret = OGetPic.GetPic(strContainerName);
+		return $myOKRtnFunc(ret, cb, ctx);
+	};
+
+	o.Hash = function(strInData, cb, ctx) {
+		var ret = OGetPic.Hash(strInData)
+		return $myOKRtnFunc(ret, cb, ctx);
+	};
+
+	o.ConvertPicFormat = function(strInData, type, cb, ctx) {
+		var ret = OGetPic.ConvertPicFormat(strInData, type);
+		return $myOKRtnFunc(ret, cb, ctx);
+	}; 
+
+	o.ConvertGif2Jpg = function(strInData, cb, ctx) {
+		var ret = OGetPic.ConvertGif2Jpg(strInData);
+		return $myOKRtnFunc(ret, cb, ctx);
+	}; 
+
+	o.ConvertPicSize = function(strInData, w, h, cb, ctx) {
+		var ret = OGetPic.ConvertPicSize(strInData, w, h);
+		return $myOKRtnFunc(ret, cb, ctx);
+	}; 
+
+	return o;
+}
+function GetPic(strContainerName, cb, ctx) {
+	if ($_$GetPicObj != null && $_$GetPicObj.GetPic != undefined) {
+		return $_$GetPicObj.GetPic(strContainerName, cb, ctx);
+	} else if ($_$WebSocketObj != null && $_$WebSocketObj.GetPic != undefined) {
+		return $_$WebSocketObj.GetPic(strContainerName, cb, ctx);
+	} else {
+		return $myErrorRtnFunc("", cb, ctx);
+	}	
+} 
+
+function Hash(strInData, cb, ctx) {
+	if ($_$GetPicObj != null && $_$GetPicObj.Hash != undefined) {
+		return $_$GetPicObj.Hash(strInData, cb, ctx);
+	} else if ($_$WebSocketObj != null && $_$WebSocketObj.Hash != undefined) {
+		return $_$WebSocketObj.Hash(strInData, cb, ctx);
+	} else {
+		return $myErrorRtnFunc("", cb, ctx);
+	}
+}
+
+function ConvertPicFormat(strInData, type, cb, ctx) {
+	if ($_$GetPicObj != null && $_$GetPicObj.ConvertPicFormat != undefined) {
+		return $_$GetPicObj.ConvertPicFormat(strInData, type, cb, ctx);
+	} else if ($_$WebSocketObj != null && $_$WebSocketObj.ConvertPicFormat != undefined) {
+		return $_$WebSocketObj.ConvertPicFormat(strInData, type, cb, ctx);
+	} else {
+		return $myErrorRtnFunc("", cb, ctx);
+	}
+}
+
+function ConvertGif2Jpg(strInData, cb, ctx) {
+	if ($_$GetPicObj != null && $_$GetPicObj.ConvertGif2Jpg != undefined) {
+		return $_$GetPicObj.ConvertGif2Jpg(strInData, cb, ctx);
+	} else if ($_$WebSocketObj != null && $_$WebSocketObj.ConvertGif2Jpg != undefined) {
+		return $_$WebSocketObj.ConvertGif2Jpg(strInData, cb, ctx);
+	} else {
+		return $myErrorRtnFunc("", cb, ctx);
+	}
+}
+
+function ConvertPicSize(strInData, w, h, cb, ctx) {
+	if ($_$GetPicObj != null && $_$GetPicObj.ConvertPicSize != undefined) {
+		return $_$GetPicObj.ConvertPicSize(strInData, w, h, cb, ctx);
+	} else if ($_$WebSocketObj != null && $_$WebSocketObj.ConvertPicSize != undefined) {
+		return $_$WebSocketObj.ConvertPicSize(strInData, w, h, cb, ctx);
+	} else {
+		return $myErrorRtnFunc("", cb, ctx);
+	}
+}
+
 (function() {
-    $_$XTXAppObj = CreateXTXAppObject();
+	// don't check return value
+	$_$GetPicObj = CreateGetPicObject();
+
+	
+	$_$XTXAppObj = CreateXTXAppObject();
 	if ($_$XTXAppObj != null) {
 		$_$CurrentObj = $_$XTXAppObj;
 		return;
 	}
-	
+
 	$_$SecXV2Obj = CreateSecXV2Object();
 	if ($_$SecXV2Obj != null) {
 		$_$CurrentObj = $_$SecXV2Obj;
 		return;
 	}
-	
+
 	$_$SecXObj = CreateSecXObject();
 	if ($_$SecXObj != null) {
 		$_$CurrentObj = $_$SecXObj;
 		return;
 	}
-    
-    $_$WebSocketObj = CreateWebSocketObject();
-    if ($_$WebSocketObj != null) {
+
+	$_$WebSocketObj = CreateWebSocketObject();
+	if ($_$WebSocketObj != null) {
 		$_$CurrentObj = $_$WebSocketObj;
 		return;
-	}
-    
-    $_$CurrentObj = null;
-	
+	}	
+
+	$_$CurrentObj = null;
+
 	$XTXAlert("检查证书应用环境出错!");
 	return;
 })();
 
- 
