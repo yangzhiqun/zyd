@@ -5,11 +5,12 @@ module LogManagementHelper
   def obtain_name(action_name,key,value,t_name) 
     case action_name
       when "update"
-        "修改#{I18n.t("table_name.#{t_name}")}  #{I18n.t("#{t_name}.#{key}")} 为 #{value}"
+        "修改#{I18n.t("table_name.#{t_name}")}  #{I18n.t("#{t_name}.#{key}")} 为 #{value[1]}"
       when "create"
         "创建 #{I18n.t("table_name.#{t_name}")}"
       when "destroy"
         "删除 #{I18n.t("table_name.#{t_name}")}"
     end
   end
+
 end
