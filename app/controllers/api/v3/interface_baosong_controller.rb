@@ -43,9 +43,13 @@ class Api::V3::InterfaceBaosongController < ApplicationController
  # 创建报送分类A.B
  def create_baosong(name,baosong_a_id=nil)
    if name == "BaosongA"
-     raise "报送分类A名字重复！" if BaosongA.find_by_name(params["baosong_as"]["name"]).present?
+     obj = BaosongA.find_by_name(params["baosong_as"]["name"])
+   else
+     obj = BaosongB.where(baosong_a_id:baosong_a_id,name:params["baosong_bs"]["name"]).first
    end
-   obj = name.constantize.new()
+   if obj.nil?
+     obj = name.constantize.new()
+   end
    params[ActiveRecordName["#{name}"]].each do |field, value|
      if obj.respond_to?(field)
        obj.send("#{field}=", value)
@@ -92,9 +96,9 @@ class Api::V3::InterfaceBaosongController < ApplicationController
        when "DCategory"  
          hash_key = [category["a_category"],category["b_category"],category["c_category"],category["name"]].join("-")
      end
-     unless type_name.has_key?(hash_key)
+     if !type_name.has_key?(hash_key) && name != "CheckItem"
        type_name[hash_key] = obj.id
-     else
+     elsif name != "CheckItem"
        raise "#{hash_key} >> 重复!" 
      end
    end
