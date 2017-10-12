@@ -27,8 +27,7 @@ function request_ajax(is_btn,str) {
     url:  url,
     data: data,
     success: function(data){
-      alert(data);
-     // $("#zml").html(data);
+      $("#zml").html(data);
       replace_a_s();
       _titNa = $(".titNa");   
       dianji(_titNa);
