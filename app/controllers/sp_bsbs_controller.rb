@@ -795,6 +795,7 @@ end
               unless params[:spdata].blank?
                 params[:spdata].delete_if { |data| data.keys.length == 1 }
                 createlog=0
+                ids=[]
                 params[:spdata].each do |data|
                   if data[:id].nil?
                     createlog = 1
@@ -810,9 +811,11 @@ end
                   end
                 else
                   params[:spdata].each do |data|
+                    ids.push(data[:id])
                     @spdata = Spdatum.find(data[:id])
                     @spdata.update_attributes(data.as_json)
                   end
+                  @sp_bsb.spdata.where(' id NOT IN (?)',ids ).destroy_all
                 end
               end
             end
