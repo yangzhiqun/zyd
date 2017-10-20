@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  get 'log_management/index'
+  get 'log_management/search'
   match 'config/init_site', via: [:get, :post]
   get 'site-logo' => 'config#site_logo'
 
@@ -236,15 +238,14 @@ Rails.application.routes.draw do
       get "preview_ca_pdf"
       get 'report'
     end
-
     collection do
      get 'no_available_pdf_found'
      get 'by_ca_info'
      get 'print_pdf'
      get 'super_jg'
+     get 'sampling_process'
     end
   end
-
   resources :pad_sp_bsbs do
     member do
       get "accept_file"
@@ -369,7 +370,22 @@ Rails.application.routes.draw do
       get 'pending'
     end
   end
-
+  resources :sp_bsb_info_publications do
+    collection do
+       get 'spsearch_publish'
+       post 'upload_hege_excel'
+       post 'upload_buhege_excel'
+       get 'check_duplicate'
+       get 'spsearch_publish_check' =>"sp_bsb_info_publications#spsearch_publish"
+    end
+  end
+  post "spsearch_publish" => "sp_bsb_info_publications#spsearch_publish"
+  get "spsearch_publish" => "sp_bsb_info_publications#spsearch_publish"
+  get "upload_hege_excel" =>"sp_bsb_info_publications#upload_hege_excel"
+  post "upload_hege_excel" =>"sp_bsb_info_publications#upload_hege_excel"
+  post "upload_buhege_excel" =>"sp_bsb_info_publications#upload_buhege_excel"
+  get "spsearch_publish_check" => "sp_bsb_info_publications#check_duplicate"
+  post "spsearch_publish_check" => "sp_bsb_info_publications#check_duplicate"
   # 管理员创建用户
   post 'manager_create_users' => 'users#create'
 
@@ -395,7 +411,7 @@ Rails.application.routes.draw do
 
   post "admin/login"
   get "admin/login"
-  
+
 
   post '/ca_login' => 'admin#ca_login'
   post '/ca_logout' => 'admin#logout'
@@ -415,6 +431,18 @@ Rails.application.routes.draw do
   get "data/seach"
   delete "del_data/:id" =>"data#destroy"
   root :to => 'welcome_notices#index'
+
+  #数据统计
+  get 'statistics' => 'statistics#statistics'
+  get 'task_statistics' => 'statistics#task_statistics'
+  get 'food_statistics' => 'statistics#food_statistics'
+  get 'nonconformity_statistics' => 'statistics#nonconformity_statistics'
+  get 'unit_statistics' => 'statistics#unit_statistics'
+  get 'overtime_statistics' => 'statistics#overtime_statistics'
+  get 'disposal_statistics' => 'statistics#disposal_statistics'
+  get 'enterprise_statistics' => 'statistics#enterprise_statistics'
+  get 'early_warning' => 'statistics#early_warning'
+  get 'composite_statistics' => 'statistics#composite_statistics'
 
 
 end

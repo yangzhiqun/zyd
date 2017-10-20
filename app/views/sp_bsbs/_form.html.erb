@@ -2225,7 +2225,8 @@
 		 sign_cert: signCert,
 		 keypic: sealImg,
 		 sign_date: _sign_date,
-		pr_status: $("#pr_status").val()
+		 pr_status: $("#pr_status").val(),
+     async: false
 }, function (res) {
 		if (res.status == 'OK') {
 			var hashed_signs = {};
@@ -2236,7 +2237,8 @@
 			id:  '<%= @sp_bsb.id %>',
 			sign_data: hashed_signs,
 			sp_status: $("#sp_status").val(),
-			pdfpath: pdfpath
+			pdfpath: pdfpath,
+      async: false
 			 }, function (data) {
 				if (data.status == 'OK') {
 					if(SP.sp_bsb.sp_i_state != 5){
