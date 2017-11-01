@@ -2201,7 +2201,9 @@
 		if(SP.sp_bsb.sp_i_state == 5) {
           // 当5时盖两遍
           handle_client_sign(sealImg, signCert, function(){
+         <%if @sp_bsb.issue_date.blank? %>
             handle_client_sign(sealImg, signCert, null, 1);
+         <% end %>   
           }, 0);
         } else {
           handle_client_sign(sealImg, signCert, null, 0);
@@ -2243,68 +2245,65 @@
 				if (data.status == 'OK') {
 					if(SP.sp_bsb.sp_i_state != 5){
 					   $("form.edit_sp_bsb").ajaxSubmit({
-				       	     dataType: "json",
-                                             success: function (message) {
-                                              if (message.status == '保存成功!') {
-                                                 alert(message.msg);
-					   	 location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
-                                              } else if (message.status == '保存出错!') {
-                         		          alert(message.msg);
-                        		     	 $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
-                    			         $('.loading-label').addClass('hidden');
-					       }
+				       	dataType: "json",
+                success: function (message) {
+               if (message.status == '保存成功!') {
+                alert(message.msg);
+					   	  location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
+               } else if (message.status == '保存出错!') {
+                 alert(message.msg);
+                $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
+                $('.loading-label').addClass('hidden');
+					     }
 					    }
 					   });
 				}else{
-				 if (_onFinish) {
-			           _onFinish();
-     				 }else {
+				 if (_onFinish&&SP.sp_bsb.issue_date==null) {
+			        _onFinish();
+     		 }else {
 				  $("form.edit_sp_bsb").ajaxSubmit({
-                                             dataType: "json",
-                                             success: function (message) {
-                                              if (message.status == '保存成功!') {
-                                                 alert(message.msg);
-                                                 location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
-                                              } else if (message.status == '保存出错!') {
-                                                  alert(message.msg);
-                                                 $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
-                                                 $('.loading-label').addClass('hidden');
-                                               }
-                                            }                                           
+             dataType: "json",
+             success: function (message) {
+            if (message.status == '保存成功!') {
+             alert(message.msg);
+             location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
+            } else if (message.status == '保存出错!') {
+             alert(message.msg);
+             $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
+             $('.loading-label').addClass('hidden');
+            }
+           }                                           
 					});
-     				 }
-					}
-				 } else{
-				   alert(data.msg);
-				 }
-			}, 'json')
+     		 }
+			  }
+			} else{
+			 alert(data.msg);
+		  }
+		}, 'json')
 		});
 
 	if (res.res.JDCJ) {
-           clientSignByHash(res.res.JDCJ,cur_cert_id, $("#ca_sign_pwd").val(), "sign_data",
-             function (res) {
-                  hashed_signs['JDCJ']= {hash: res,type: 'JYBG'};
-                  ep2.emit('jdcj');
-              });
-	 pdfpath['JDCJ']=res.pdfpath.JDCJ;
-	}
-	else{
+       clientSignByHash(res.res.JDCJ,cur_cert_id, $("#ca_sign_pwd").val(), "sign_data",
+       function (res) {
+        hashed_signs['JDCJ']= {hash: res,type: 'JYBG'};
+        ep2.emit('jdcj');
+       });
+	   pdfpath['JDCJ']=res.pdfpath.JDCJ;
+	}else{
 	  ep2.emit('jdcj');
 	}
 	if (res.res.FXJC) {
-           clientSignByHash(res.res.FXJC,cur_cert_id, $("#ca_sign_pwd").val(), "sign_data",
-             function (res) {
-                  hashed_signs['FXJC'] = {hash: res,type: 'FXBG'};
-                  ep2.emit('fxjc');
-              });
-	    pdfpath['FXJC']=res.pdfpath.FXJC;
-        }
-        else{
-          ep2.emit('fxjc');
-        }
-	
-     }
-   },'json');
+      clientSignByHash(res.res.FXJC,cur_cert_id, $("#ca_sign_pwd").val(), "sign_data",
+      function (res) {
+        hashed_signs['FXJC'] = {hash: res,type: 'FXBG'};
+            ep2.emit('fxjc');
+        });
+	      pdfpath['FXJC']=res.pdfpath.FXJC;
+  }else{
+        ep2.emit('fxjc');
+    }
+   }
+ },'json');
 }
 <% end%>
 
