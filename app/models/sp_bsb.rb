@@ -796,15 +796,12 @@ class SpBsb < ActiveRecord::Base
         wtyp_czb.SPYL = self.sp_s_18
         wtyp_czb.SPCYL = self.sp_s_19
         wtyp_czb.SPXL = self.sp_s_20
-        logger.error "111: #{sp_s_wcxian},#{self.sp_s_wcshi},#{self.sp_s_wcsheng}"
         wtyp_czb.wc_sheng = self.sp_s_wcsheng
         wtyp_czb.wc_shi = self.sp_s_wcshi
         wtyp_czb.wc_xian =self.sp_s_wcxian
-        logger.error "333: #{wtyp_czb.wc_sheng},#{wtyp_czb.wc_shi},#{wtyp_czb.wc_xian}"
         # TODO: 要做好事务处理 2015-04-25
         if wtyp_czb.save
           @spdata = []
-          logger.error "133: #{wtyp_czb.wc_shi},#{wtyp_czb.wc_sheng},#{wtyp_czb.wc_xian}"
           self.spdata.each do |data|
             if data.spdata_2.include? "问题" or data.spdata_2.include? "不合格"
               hczdata = SpHczSpdata.new
@@ -1036,86 +1033,24 @@ class SpBsb < ActiveRecord::Base
         abs_target_path = File.expand_path('../reports', Rails.root).to_s + target_path
 	end
         return tmp_file
-=begin
-      if pdf_rules.blank?
-         if !self.sp_s_69.blank?
-            pdf_rules =self.sp_s_69 
-         else
-           if @jg_bsb.jg_bsb_stamps.count > 0
-             pdf_rules = @jg_bsb.jg_bsb_stamps.pluck(:stamp_no).join(',')
-           else
-	            Rails.logger.error '机构未进行数字签名认证，无法查看报告'
-              self.report_path = "#{target_path}/#{self.id}.pdf"
-		           if preview and !force_generate 
-                  return tmp_file
-               end
-                 return nil
-            end
-	        end
-			else
-				if pdf_rules =='ca_file'
-					return tmp_file
-				end
-				if preview and force_generate
-						tmp_file = Rails.root.join('tmp/pdf_preview', "sp_bsbs_#{self.id}_print.pdf")
-				end
-      end
-
-      FileUtils.mkdir_p abs_target_path unless Dir.exists? abs_target_path
-
-      self.report_path = "#{target_path}/#{self.id}.pdf"
-      # create stamp record
-      userinfo = {userName: '吉林省食品药品监督局', channelId: 'CHN_3039394B3D71D6FD', creditCodes: {ORG: '092648364'}}
-      documentInfo = {docuName: '云签章', fileDesc: '云签章'}
-      content = []
-      pdf_rules.split(',').each do |rule|
-        content.push({ruleNum: rule, appId: '9ff70fce51874b62a5f136fdda43c4b7', userinfo: userinfo, documentInfo: documentInfo})
-      end
-      # logger.error content.to_json
-      content = Base64.strict_encode64(content.to_json)
-
-      cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 105 #{content} #{tmp_file} #{self.absolute_report_path(preview && !force_generate)}"
-
-
-      result = `#{cmd}`
-      logger.error "result"
-      logger.error result
-      FileUtils.rm_f(tmp_file)
-
-      if result.strip.include?('200')
-        if !preview or force_generate
-          SpBsb.record_timestamps = false
-          self.save
-          SpBsb.record_timestamps = true
-        end
-        return self.absolute_report_path(preview && !force_generate)
-      else
-        self.report_path = nil
-        return nil
-      end
-
-    else
-      self.absolute_report_path
-    end
-=end
    end
   end
 
 	def generate_ca_pdf_report(ca_filepath,new_ca_filepath,ruleNumList,signData,signCert,nonce)
 	    tmp_file = ca_filepath
 	    userinfo = {channelId: 'CHN_3039394B3D71D6FD'}
-            documentInfo = {docuName: '云签章', fileDesc: '云签章'}
-	   reqMessage ={ruleNumList: ruleNumList, appId: Rails.application.config.site[:appid],policyType: 2, userinfo: userinfo, documentInfo: documentInfo,nonce: nonce, signCert: signCert,signData: signData}
-	   content = Base64.strict_encode64(reqMessage.to_json)
+      documentInfo = {docuName: '云签章', fileDesc: '云签章'}
+	    reqMessage ={ruleNumList: ruleNumList, appId: Rails.application.config.site[:appid],policyType: 2, userinfo: userinfo, documentInfo: documentInfo,nonce: nonce, signCert: signCert,signData: signData}
+	    content = Base64.strict_encode64(reqMessage.to_json)
       cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 114 #{content} #{tmp_file} #{new_ca_filepath}"
-      result = `#{cmd}`
+     result = `#{cmd}`
      logger.error "cmd: #{cmd}"
      logger.error result
       if result.strip.include?('200')
-	return new_ca_filepath
+	     return new_ca_filepath
       else
-		return nil
-	end
+		   return nil
+    	end
 	end
     def client_sign_ca(pdfpath,sign_data,sealImg,signCert,filename)
     if [2, 3].include? self.sp_i_state
@@ -1292,47 +1227,47 @@ class SpBsb < ActiveRecord::Base
   def generate_pdf_report(report_type)
 	context = generate_report_context(report_type)
 	if report_type.eql?('JYBG')
-         template = 'sp_bsbs/1.html.erb'
+     template = 'sp_bsbs/1.html.erb'
    	 f_name = 'JYBG'	
 	elsif report_type.eql?('FXBG')
-         template = 'sp_bsbs/2.html.erb'
-         f_name = 'FXBG'
+     template = 'sp_bsbs/2.html.erb'
+     f_name = 'FXBG'
 	end
   if self.sp_i_state==3
-    pdf_path = Rails.root.join("../attachments", "#{self.sp_s_16}-#{report_type}.pdf")
-    FileUtils.rm_f(pdf_path)  if File.exists?(self.pdf_path)
+   # pdf_path = Rails.root.join("../attachments", "#{self.sp_s_16}-#{report_type}.pdf")
+   # FileUtils.rm_f(pdf_path)  if File.exists?(self.pdf_path)
   end
 	now = Time.now
 	outpath_folder = "#{Rails.application.config.attachment_path}"
 	FileUtils.mkdir_p(outpath_folder) unless File.directory?(outpath_folder)
 	outpath = "#{outpath_folder}/#{self.sp_s_16}-#{f_name}.pdf"
 	ApplicationController.new.render template: template,
-		              save_to_file: outpath,
+		        save_to_file: outpath,
 			      save_only: true,
 			      pdf: 'home',
-          	              wkhtmltopdf: '/usr/local/bin/wkhtmltopdf',
-		              encoding: 'utf-8',
+          	wkhtmltopdf: '/usr/local/bin/wkhtmltopdf',
+		        encoding: 'utf-8',
 			      disable_javascript: true,
 			      print_media_type: true,
-		              lowquality: false,
+		        lowquality: false,
 			      locals: {
 				    :@spbsb => self, 
-			            :@splog_jcfy => context[:splog_jcfy],
-	                            :@jcfy => context[:sp_bsb][:jcfy], 
+			      :@splog_jcfy => context[:splog_jcfy],
+	          :@jcfy => context[:sp_bsb][:jcfy], 
 				    :@padsplog_jcfy => context[:padsplog_jcfy], 
-			            :@fxx => context[:fxx], 
+			      :@fxx => context[:fxx], 
 				    :@fxx_FY => context[:sp_bsb][:jyyj], 
-			            :@wtx => context[:wtx], 
+			      :@wtx => context[:wtx], 
 				    :@jyyj_hgx_str4 => context[:sp_bsb][:jyjl], 
-	                            :@wtx_str => context[:sp_bsb][:wtxm], 
-			            :@jyjy_FY => context[:FY], 
+	          :@wtx_str => context[:sp_bsb][:wtxm], 
+			      :@jyjy_FY => context[:FY], 
 				    :@splog => context[:splog], 
 				    :@cjx => context[:cjx], 
-			            :@jyjy_struni => context[:jyjy_struni],#  不知何值
+			      :@jyjy_struni => context[:jyjy_struni],#  不知何值
 				    :@jg_bsb => context[:jg_bsb_obj], 
 				    :@jyxm_str => context[:sp_bsb][:jyxm], 
 				    :@jyjy_str => context[:jyjy_str], 
-			            :@jyjy_str4 => context[:jyjy_str4], 
+			      :@jyjy_str4 => context[:jyjy_str4], 
 				    :@jyjy_str1 => context[:jyjy_str1]
 				   }
       return "#{self.sp_s_16}-#{f_name}.pdf", "#{self.sp_s_16}-#{f_name}.pdf"
