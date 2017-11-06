@@ -1,0 +1,122 @@
+<script>
+  $(function () {
+    $("#begin_time, #ending_time, #begin_time_1, #ending_time_1").datepicker({
+      dateFormat: "yy-mm-dd",
+      changeMonth: true,
+      changeYear: true
+    });
+
+    $('#submit_hege').click(function () {
+      file = $('#hege_file').val();
+      if (file.length == 0 ){
+        alert("请选择上传文件");
+        return false;
+      }
+    });
+
+    $('#submit_buhege').click(function () {
+      file = $('#buhege_file').val();
+      if (file.length == 0){
+        alert("请选择上传文件");
+        return false;
+      }
+    });
+  });
+</script>
+<div class="panel panel-primary">
+  <div class="panel-heading">数据查询选项</div>
+  <div class="panel-body">
+    <form action="/spsearch_publish" method="POST">
+      <%= tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token) %>
+      <fieldset style="padding: 5px 10px;">
+        <table style="table-layout: fixed;" class="search-form table table-bordered table-condensed table-bordered-black">
+          <tr>
+            <td colspan="4">公告日期开始时间</td>
+            <td colspan="6">
+              <input class="form-control input-sm" type="text" id="begin_time" value="<%= @begin_time.strftime("%Y-%m-%d") %>" name="begin_time">
+            </td>
+            <td colspan="4">公告日期结束时间</td>
+            <td colspan="6">
+              <input class="form-control input-sm" type="text" id="ending_time" value="<%= @ending_time.strftime("%Y-%m-%d") %>" name="ending_time">
+            </td>
+            <td colspan="4">省份</td>
+            <td colspan="6">
+              <%= select_tag "user_s_province", options_for_select(SysProvince.level1.map { |prov| [prov.name, prov.name] }.unshift(['全部', '']), params[:user_s_province]), :class => "form-control" %>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="4">公告号</td>
+            <td colspan="6">
+              <input class="form-control input-sm" type="text" id="ggh" value="<%= params[:ggh] %>" name="ggh">
+            </td>
+            <td colspan="4">标称生产企业名称</td>
+            <td colspan="6">
+              <input class="form-control input-sm" type="text" id="bcscqymc" value="<%= params[:bcscqymc] %>" name="bcscqymc">
+            </td>
+            <td colspan="4">被抽样单位名称</td>
+            <td colspan="6">
+              <input class="form-control input-sm" type="text" id="bcydwmc" value="<%= params[:bcydwmc] %>" name="bcydwmc">
+            </td>
+          </tr>
+          <tr>
+            <td colspan="4">样品名称</td>
+            <td colspan="6">
+              <input class="form-control input-sm" type="text" id="ypmc" value="<%= params[:ypmc] %>" name="ypmc"></td>
+            <td colspan="4">任务来源</td>
+            <td colspan="6">
+              <input class="form-control input-sm" type="text" id="s1" value="<%= params[:rwly] %>" name="rwly"></td>
+            <td colspan="4">是否合格</td>
+            <td colspan="6">
+              <%= select_tag "sfhg", options_for_select([['全部',''],['合格','1'],['不合格','0']], params[:sfhg]), :class => "form-control" %>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="4">分类</td>
+            <td colspan="6">
+              <input class="form-control input-sm" type="text" id="fl" value="<%= params[:fl] %>" name="fl"></td>
+            <td colspan="4">抽检编号</td>
+            <td colspan="6">
+              <input class="form-control input-sm" type="text" id="cjbh" value="<%= params[:cjbh] %>" name="cjbh"></td>
+            <td colspan="4">检验机构</td>
+            <td colspan="6">
+              <input class="form-control input-sm" type="text" id="jyjg" value="<%= params[:jyjg] %>" name="jyjg"></td>
+          </tr>
+        </table>
+        <div class="form-inline">
+          <input id="sp_submit" type="submit" class="btn btn-primary btn-sm" value="搜索">
+
+          <div class="checkbox">
+            <label><input type="checkbox" name="remember" value="1" <%= 'checked' if params[:remember].to_i == 1 %>>记住选项</label>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</div>
+
+<div class="tab-content">
+  <p><%= will_paginate @sp_bsb_info_publications, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
+  <%= render 'part_index' %>
+  <p><%= will_paginate @sp_bsb_info_publications, :params => params, :separator => ',', :previous_label => '上一页', :next_label => '下一页' %></p>
+</div>
+<p class="text-danger"><%= flash[:error] %></p>
+<div class="xls-publish-form well well-sm">
+  <h4>合格数据发布</h4>
+  <%= form_tag '/upload_hege_excel', method: :post, multipart: true do %>
+      <div class="form-group">
+        <label>上传合格数据<a style="color: blue;" href="/hege_tmpl.xls">合格模板下载</a></label>
+        <%= file_field_tag 'hege_xls', class: 'form-control input-sm', id: 'hege_file' %>
+      </div>
+      <input type="submit" id="submit_hege" value="发布" class="btn btn-sm btn-primary">
+  <% end %>
+</div>
+<div class="xls-publish-form well well-sm">
+  <h4>不合格数据发布</h4>
+  <%= form_tag '/upload_buhege_excel', method: :post, multipart: true do %>
+      <div class="form-group">
+        <label>上传不合格数据<a style="color: blue;" href="/buhege_tmpl.xls">不合格模板下载</a></label>
+        <%= file_field_tag 'buhege_xls', class: 'form-control input-sm', id: 'buhege_file' %>
+      </div>
+      <input type="submit" id="submit_buhege" value="发布" class="btn btn-sm btn-primary">
+  <% end %>
+</div>

@@ -1,0 +1,22 @@
+# MySQL.  Versions 5.6+ recommended.
+development:
+  adapter: mysql2
+  #host: mysql_database
+  encoding: utf8
+  collation: utf8_unicode_ci
+  reconnect: false
+  database: tdepot_demo_production_ceshi
+  pool: 25
+  username: root
+  password: admin
+
+production:
+  adapter: mysql2
+  encoding: utf8
+  collation: utf8_unicode_ci
+  reconnect: false
+  database: tdepot_demo_production_ceshi
+  pool: 25
+  #host: '10.0.39.208'
+  username: root
+  password: admin

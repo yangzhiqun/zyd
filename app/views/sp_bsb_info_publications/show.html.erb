@@ -1,0 +1,117 @@
+<!--<p id="notice"><%= notice %></p>-->
+<h1>信息发布
+</h1>
+
+<style type="text/css">
+  .style1 td, .style1 th {
+    border: solid windowtext 1px;
+    padding: 0 5.4pt 0 5.4pt;
+    height: 30px;
+  }
+</style>
+<div id="my_show">
+  <table border="1" cellspacing="0" cellpadding="0" width="100%" class="style1">
+    <tr>
+      <td colspan="30" style="background: #FFFF99;"><span style="font-family:宋体">△――食品监督抽检<% if @sp_bsb_info_publication.sfhg.eql?(1) %>合格产品<% else %>不合格产品<% end %>信息</span></td>
+    </tr>
+<!--    <tr>
+      <td colspan="5">抽样编号</td>
+      <td colspan="11"><%=  %></td>
+      <td colspan="3">报送分类*</td>
+      <td colspan="11"><%=  %></td>
+    </tr>
+    <tr>
+      <td colspan="3">样品名称*</td>
+      <td colspan="7"><%=  %></td>
+      <td colspan="3">样品属性</td>
+      <td colspan="5"><%=  %></td>
+      <td colspan="3">抽样数量*</td>
+      <td colspan="4"><%=  %></td>
+      <td colspan="2">单位*</td>
+      <td colspan="3"><%=  %></td>
+    </tr>
+    <tr>
+      <td colspan="3">抽样编号*</td>
+      <td colspan="27"><%=  %></td>
+    </tr>-->
+    <tr>
+      <th colspan="3">抽样编号</td>
+      <td colspan="5"><%= @sp_bsb_info_publication.cjbh %></td>
+      <th colspan="3">序号</td>
+      <td colspan="5"><%= @sp_bsb_info_publication.sjid %></td>
+      <th colspan="3">检验机构</td>
+      <td colspan="11"><%= @sp_bsb_info_publication.jyjg %></td>
+    </tr>
+    <tr>
+      <th colspan="3">标称生产企业名称</td>
+      <td colspan="5"><%= @sp_bsb_info_publication.bcscqymc %></td>
+      <th colspan="3">标称生产企业地址</td>
+      <td colspan="19"><%= @sp_bsb_info_publication.bcscqydz %></td>
+    </tr>
+    <tr>
+      <th colspan="3">被抽样单位名称</td>
+      <td colspan="5"><%= @sp_bsb_info_publication.bcydwmc %></td>
+      <% if @sp_bsb_info_publication.sfhg.eql?(1) %>
+        <th colspan="3">被抽样单位所在省份</td>
+        <td colspan="19"><%= @sp_bsb_info_publication.bcydwsf %></td>
+      <% else %>
+        <th colspan="3">被抽样单位地址</td>
+        <td colspan="19"><%= @sp_bsb_info_publication.bcydwdz %></td>
+      <% end %>
+    </tr>
+    <tr>
+      <th colspan="3">食品名称</td>
+      <td colspan="5"><%= @sp_bsb_info_publication.spmc %></td>
+      <th colspan="3">规格型号</td>
+      <td colspan="5"><%= @sp_bsb_info_publication.ggxh %></td>
+      <th colspan="3">生产日期/批号</td>
+      <% if @sp_bsb_info_publication.sfhg.eql?(1) %>
+        <td colspan="11"><%= @sp_bsb_info_publication.scrq %></td>
+      <% else %>
+        <td colspan="4"><%= @sp_bsb_info_publication.scrq %></td>
+        <th colspan="3">商标</td>
+        <td colspan="3"><%= @sp_bsb_info_publication.sb %></td>
+      <% end %>
+    </tr>
+    <tr>
+      <th colspan="3">任务来源/项目名称</td>
+      <td colspan="5"><%= @sp_bsb_info_publication.rwly %></td>
+      <th colspan="3">分类</td>
+      <td colspan="5"><%= @sp_bsb_info_publication.fl %></td>
+      <th colspan="3">公告号</td>
+      <td colspan="4"><%= @sp_bsb_info_publication.ggh %></td>
+      <th colspan="3">公告日期</td>
+      <td colspan="3"><%= @sp_bsb_info_publication.ggrq.strftime("%Y.%m.%d") %></td>
+    </tr>
+		<% if @sp_bsb_info_publication.sfhg.eql?(0) %>
+		  <tr>
+			  <th colspan="3">不合格项目║检验结果║标准值</th>
+			  <td colspan="27"><%= @sp_bsb_info_publication.bhgxm %></td>
+			<tr>
+		<% end %>
+    <tr>
+      <th colspan="3">备注</td>
+      <td colspan="27"><%= @sp_bsb_info_publication.bz %></td>
+    </tr>
+
+    <tr style="display:none;">
+      <td colspan="3" width="11%"></td>
+      <td colspan="2" width="5.7%"></td>
+      <td colspan="3" width="10%"></td>
+      <td colspan="2" width="6.7%"></td>
+      <td colspan="3" width="10%"></td>
+      <td colspan="2" width="6.7%"></td>
+      <td colspan="3" width="10%"></td>
+      <td colspan="2" width="6.7%"></td>
+      <td colspan="3" width="10%"></td>
+      <td colspan="2" width="6.7%"></td>
+      <td colspan="3" width="10%"></td>
+      <td colspan="2" width="6.7%"></td>
+    </tr>
+  </table>
+</div>
+
+<div class="actions">
+  <br>
+  <%= link_to '返回', sp_bsb_info_publications_path ,:class => 'btn btn-info btn-xs'%>
+</div>
