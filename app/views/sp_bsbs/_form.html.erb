@@ -120,7 +120,7 @@
           copied.find('.PDYJ').append("<option value='" + data + "'>" + data + "</option>");
         });
 	
-	if (!!item.JYYJJHB)
+	    if (!!item.JYYJJHB)
         $.each(item.JYYJJHB.split("#"), function (index, data) {
           copied.find('.JYYJJHB').append("<option value='" + data + "'>" + data + "</option>");
         });
@@ -129,7 +129,16 @@
         $.each(item.BZ.split("#"), function (index, data) {
           copied.find('.BZ').append("<option value='" + data + "'>" + data + "</option>");
         });
-
+     if(o !=null){
+      if(item.BZ.split("#").length==1&&item.BZ!=o.spdata_20){
+        o.spdata_20=item.BZ
+      }
+      
+      if(item.JYYJJHB.split("#").length==1&&item.JYYJJHB!=o.spdata_19){
+        o.spdata_19=item.JYYJJHB
+      }
+     }
+      
       if ((item.PDYJ || "").split("#")[0].length < 4) {
         copied.find('.JGPD').append("<option value='未检验'>未检验</option>");
         copied.find('.JGPD').append("<option value='不判定项'>不判定项</option>");
@@ -206,7 +215,7 @@
       }).val(item.JGDW);
 
       if (o != null && is_previous_data()) {
-        copied.find('.JYYJ').attr({'value': o.spdata_3, 'title': o.spdata_3}).val(o.spdata_3);
+        copied.find('.JYYJ').attr({'value': "o.spdata_3", 'title': o.spdata_3}).val(o.spdata_3);
         copied.find('.JYYJJHB').attr({'value': o.spdata_19}).val(o.spdata_19);
         copied.find('.BZ').attr({'value': o.spdata_20}).val(o.spdata_20);
         copied.find('.PDYJ').attr({'value': o.spdata_4, 'title': o.spdata_4}).val(o.spdata_4);
@@ -2222,13 +2231,13 @@
 		}
 
 	function handle_client_sign(sealImg, signCert, _onFinish, _sign_date) {
+     $.ajaxSetup({async : false  });
 		 $.get('/sp_bsbs/by_ca_info.json',{
 		 id: <%= @sp_bsb.id %>,
 		 sign_cert: signCert,
 		 keypic: sealImg,
 		 sign_date: _sign_date,
-		 pr_status: $("#pr_status").val(),
-     async: false
+		 pr_status: $("#pr_status").val()
 }, function (res) {
 		if (res.status == 'OK') {
 			var hashed_signs = {};
@@ -2239,8 +2248,7 @@
 			id:  '<%= @sp_bsb.id %>',
 			sign_data: hashed_signs,
 			sp_status: $("#sp_status").val(),
-			pdfpath: pdfpath,
-      async: false
+			pdfpath: pdfpath
 			 }, function (data) {
 				if (data.status == 'OK') {
 					if(SP.sp_bsb.sp_i_state != 5){
@@ -2304,6 +2312,7 @@
     }
    }
  },'json');
+ $.ajaxSetup({async : true  });
 }
 <% end%>
 
