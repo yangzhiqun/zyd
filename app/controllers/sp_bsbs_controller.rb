@@ -891,6 +891,14 @@ end
     end
   end
 
+  def prompt_report
+    @sp_bsbs,@ending_time,@begin_time = SpBsb.search(params,session[:change_js],current_user,is_sheng?,is_city?,is_county_level?,is_shengshi?,all_super_departments,"spsearch")
+    if params["type"] == "limited_report"
+      @sp_bsbs = @sp_bsbs.where(bgfl:"24小时限时报告")
+    end
+    @sp_bsbs = @sp_bsbs.paginate(page: params[:page], per_page: 10)  
+  end
+
   # POST /sp_bsbs/spsearch
   # POST /sp_bsbs/spsearch.json
   def spsearch
@@ -1353,7 +1361,7 @@ end
   # 导出成为Excel文件并下载至本地 
   def export_excel_alldata
     @sp_bsbs,@ending_time,@begin_time = SpBsb.search(params,session[:change_js],current_user,is_sheng?,is_city?,is_county_level?,is_shengshi?,all_super_departments)
-    send_file(DownloadData.start(@sp_bsbs), :disposition => "attachment")
+    send_file(DownloadData.start(@sp_bsbs,current_user.report_form), :disposition => "attachment")
   end
 
   def  super_jg

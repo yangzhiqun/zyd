@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
 
+  get 'report_forms/index'
+  get 'report_forms/update'
+  get 'sp_bsbs/:type/prompt_report' => 'sp_bsbs#prompt_report'
+
   get 'log_management/index'
   get 'log_management/search'
   match 'config/init_site', via: [:get, :post]
