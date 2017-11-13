@@ -764,6 +764,11 @@ end
                     createlog = 1
                     break
                   end
+                  @spdata= Spdatum.find(data[:id])
+                  if data[:spdata_0].present?&&@spdata.spdata_0 !=data[:spdata_0]
+                     createlog = 1
+                     break
+                  end
                 end
                 if createlog == 1
                   @sp_bsb.spdata.destroy_all
