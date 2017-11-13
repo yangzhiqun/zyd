@@ -31,6 +31,7 @@ class User < ActiveRecord::Base
   after_create :cleanup_after_create
 
   has_many :user_audit_logs
+  has_one :report_form
 
   def is_info_complete?
     !tname.blank?
