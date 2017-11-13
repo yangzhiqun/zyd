@@ -118,9 +118,9 @@ module ApplicationHelper
       #  all_jg = JgBsb.where("id = ? and jg_type = ?",current_user.jg_bsb.id,1)
       #end
 			#if current_user.is_admin?
-        all_jg = JgBsb.where(jg_type: 1)
+      all_jg = JgBsb.where(jg_type: 1).includes(:jg_bsb_names)
       #end
-			all_jg.each{ |a| jg_arr << a.jg_name}
+      all_jg.each{ |a| jg_arr << a.jg_bsb_names.last.name}
 		else
 			jg_type = current_user.jg_bsb.jg_type
 			super_jg = current_user.jg_bsb.jg_bsb_supers

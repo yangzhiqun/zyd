@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170919182900) do
+ActiveRecord::Schema.define(version: 20171109023237) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -704,6 +704,14 @@ ActiveRecord::Schema.define(version: 20170919182900) do
     t.integer  "wtyp_czb_part_id",  limit: 4
   end
 
+  create_table "report_forms", force: :cascade do |t|
+    t.text     "spbsb_field",  limit: 65535
+    t.text     "spdata_field", limit: 65535
+    t.integer  "user_id",      limit: 4
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+  end
+
   create_table "sample_members", force: :cascade do |t|
     t.string   "jg_name",       limit: 255
     t.string   "username",      limit: 255
@@ -997,6 +1005,7 @@ ActiveRecord::Schema.define(version: 20170919182900) do
     t.string   "sp_s_wctel",               limit: 255
     t.string   "sp_s_wcbh",                limit: 255
     t.string   "sp_proid",                 limit: 255
+    t.date     "issue_date"
   end
 
   add_index "sp_bsbs", ["application_id"], name: "index_sp_bsbs_on_application_id", using: :btree

@@ -7,6 +7,8 @@ class WelcomeNoticesController < ApplicationController
   # GET /welcome_notices.json
   def index
     @welcome_notices = WelcomeNotice.order("top desc, updated_at desc")
+    @sp_bsbs,@ending_time,@begin_time = SpBsb.search({},session[:change_js],current_user,is_sheng?,is_city?,is_county_level?,is_shengshi?,all_super_departments,"spsearch")
+    @sp_bsbs = @sp_bsbs.where(bgfl:"24小时限时报告").length
 
     respond_to do |format|
       format.html # index.html.erb
