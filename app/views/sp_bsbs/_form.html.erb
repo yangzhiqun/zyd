@@ -2248,7 +2248,7 @@
 
 	function handle_client_sign(sealImg, signCert, _onFinish, _sign_date) {
      var url = "/sp_bsbs/by_ca_info.json'"
-     var data ={id: <%= @sp_bsb.id %>,sign_cert: signCert,keypic: sealImg,sign_date: _sign_date,pr_status: $("#pr_status").val()}
+     var data ={id: SP.sp_bsb.id,sign_cert: signCert,keypic: sealImg,sign_date: _sign_date,pr_status: $("#pr_status").val()}
      $.ajax({
        type: 'get',
        url: url,
@@ -2261,7 +2261,7 @@
           var ep2 = new EventProxy();
           ep2.all('jdcj', 'fxjc', function () {
             var url2 = "/sp_bsbs/print_pdf.json";
-            var data2 = {id:  '<%= @sp_bsb.id %>',sign_data: hashed_signs,sp_status: $("#sp_status").val(),pdfpath: pdfpath };
+            var data2 = {id:  SP.sp_bsb.id,sign_data: hashed_signs,sp_status: $("#sp_status").val(),pdfpath: pdfpath };
             $.ajax({
                type: 'get',
                url: url2,
