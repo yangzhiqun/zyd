@@ -721,7 +721,13 @@ end
         end
         if sp_bsb_params["sp_i_state"].to_s == "3" or sp_bsb_params["sp_i_state"].to_s =="1"
            @sp_bsb.update_attributes({:ca_key_status => 0,:JDCJ_report_path =>"",:FXJC_report_path => ""})
+        
+          if @sp_bsb.sp_i_state.to_s =="9" and @sp_bsb.issue_date.blank? and @sp_bsb.sign_date.present?
+            time = @sp_bsb.sign_date.strftime("%Y-%m-%d")
+            @sp_bsb.update_attributes({:issue_date => time })
+          end
         end
+
         if sp_bsb_params["sp_i_state"].to_s == "16" and @sp_bsb.sp_i_state.to_s =="5" and @sp_bsb.ca_key_status.to_s=="16" and @sp_bsb.issue_date.blank?
          time = Time.new.strftime("%Y-%m-%d")
          @sp_bsb.update_attributes({:issue_date => time})

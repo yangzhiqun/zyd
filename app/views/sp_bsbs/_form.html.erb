@@ -2230,90 +2230,89 @@
       });
 		}
 
-	function handle_client_sign(sealImg, signCert, _onFinish, _sign_date) {
-     $.ajaxSetup({async : false  });
-		 $.get('/sp_bsbs/by_ca_info.json',{
-		 id: <%= @sp_bsb.id %>,
-		 sign_cert: signCert,
-		 keypic: sealImg,
-		 sign_date: _sign_date,
-		 pr_status: $("#pr_status").val()
-}, function (res) {
-		if (res.status == 'OK') {
-			var hashed_signs = {};
-			var pdfpath={};
-			var ep2 = new EventProxy();	
-		ep2.all('jdcj', 'fxjc', function () {
-			$.get('/sp_bsbs/print_pdf.json', {
-			id:  '<%= @sp_bsb.id %>',
-			sign_data: hashed_signs,
-			sp_status: $("#sp_status").val(),
-			pdfpath: pdfpath
-			 }, function (data) {
-				if (data.status == 'OK') {
-					if(SP.sp_bsb.sp_i_state != 5){
-					   $("form.edit_sp_bsb").ajaxSubmit({
-				       	dataType: "json",
-                success: function (message) {
-               if (message.status == '保存成功!') {
-                alert(message.msg);
-					   	  location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
-               } else if (message.status == '保存出错!') {
-                 alert(message.msg);
-                $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
-                $('.loading-label').addClass('hidden');
-					     }
-					    }
-					   });
-				}else{
-				 if (_onFinish&&SP.sp_bsb.issue_date==null) {
-			        _onFinish();
-     		 }else {
-				  $("form.edit_sp_bsb").ajaxSubmit({
-             dataType: "json",
-             success: function (message) {
-            if (message.status == '保存成功!') {
-             alert(message.msg);
-             location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
-            } else if (message.status == '保存出错!') {
-             alert(message.msg);
-             $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
-             $('.loading-label').addClass('hidden');
-            }
-           }                                           
-					});
-     		 }
-			  }
-			} else{
-			 alert(data.msg);
-		  }
-		}, 'json')
-		});
+  function ajaxSubmit(){
+    $("form.edit_sp_bsb").ajaxSubmit({
+      dataType: "json",
+      success: function (message) {
+       if (message.status == '保存成功!') {
+        alert(message.msg);
+        location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
+       } else if (message.status == '保存出错!') {
+        alert(message.msg);
+        $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
+        $('.loading-label').addClass('hidden');
+       }
+     }
+    });
+  }
 
-	if (res.res.JDCJ) {
-       clientSignByHash(res.res.JDCJ,cur_cert_id, $("#ca_sign_pwd").val(), "sign_data",
-       function (res) {
-        hashed_signs['JDCJ']= {hash: res,type: 'JYBG'};
-        ep2.emit('jdcj');
-       });
-	   pdfpath['JDCJ']=res.pdfpath.JDCJ;
-	}else{
-	  ep2.emit('jdcj');
-	}
-	if (res.res.FXJC) {
-      clientSignByHash(res.res.FXJC,cur_cert_id, $("#ca_sign_pwd").val(), "sign_data",
-      function (res) {
-        hashed_signs['FXJC'] = {hash: res,type: 'FXBG'};
+	function handle_client_sign(sealImg, signCert, _onFinish, _sign_date) {
+     var url = "/sp_bsbs/by_ca_info.json'"
+     var data ={id: <%= @sp_bsb.id %>,sign_cert: signCert,keypic: sealImg,sign_date: _sign_date,pr_status: $("#pr_status").val()}
+     $.ajax({
+       type: 'get',
+       url: url,
+       data: data,
+       async: false,
+       success: function(res){
+        if(res.status=='OK'){
+          var hashed_signs = {};
+          var pdfpath={};
+          var ep2 = new EventProxy();
+          ep2.all('jdcj', 'fxjc', function () {
+            var url2 = "/sp_bsbs/print_pdf.json";
+            var data2 = {id:  '<%= @sp_bsb.id %>',sign_data: hashed_signs,sp_status: $("#sp_status").val(),pdfpath: pdfpath };
+            $.ajax({
+               type: 'get',
+               url: url2,
+               data: data2,
+               async: false,
+               success: function(data){
+                if(data.status =="OK"){
+                  if(SP.sp_bsb.sp_i_state != 5){
+                      ajaxSubmit();      
+                  }else{
+                    if(_onFinish&&SP.sp_bsb.issue_date==null){
+                        _onFinish();
+                    }else{
+                      ajaxSubmit();
+                    }
+                  }
+                }else{
+                  alert(data.msg); 
+                }                  
+               }
+            });//aiax
+        }); //ep2
+
+        if(res.res.JDCJ) {
+         clientSignByHash(res.res.JDCJ,cur_cert_id, $("#ca_sign_pwd").val(), "sign_data",
+           function (res){
+             hashed_signs['JDCJ']= {hash: res,type: 'JYBG'};
+             ep2.emit('jdcj');
+           });
+         pdfpath['JDCJ']=res.pdfpath.JDCJ;
+        }else{
+          ep2.emit('jdcj');
+        } 
+        
+        if(res.res.FXJC){
+          clientSignByHash(res.res.FXJC,cur_cert_id, $("#ca_sign_pwd").val(), "sign_data",
+          function (res) {
+            hashed_signs['FXJC'] = {hash: res,type: 'FXBG'};
             ep2.emit('fxjc');
-        });
-	      pdfpath['FXJC']=res.pdfpath.FXJC;
-  }else{
-        ep2.emit('fxjc');
-    }
+          });  
+          pdfpath['FXJC']=res.pdfpath.FXJC;
+        }else{
+          ep2.emit('fxjc');
+        }
+
+      }else {
+          alert(res.msg);
+      }
+     } //success
+    });//ajax
    }
- },'json');
- $.ajaxSetup({async : true  });
-}
 <% end%>
 
 </script>

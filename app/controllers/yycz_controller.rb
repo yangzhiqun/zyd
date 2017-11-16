@@ -281,7 +281,6 @@ class YyczController < ApplicationController
     @bsb = SpBsb.find_by_sp_s_16(@djb.cjbh)
 
     params[:data].each do |data|
-      logger.debug data.to_json
       spdata = SpYydjbSpdata.find(data["id"])
       spdata.fjjg = data["fjjg"]
       spdata.jgdw = data["jgdw"]
