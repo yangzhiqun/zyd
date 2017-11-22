@@ -208,11 +208,11 @@ module ApplicationHelper
 	end
   
   def yy_is_city?
-     return  current_user.prov_city.present? && (current_user.prov_city != "-请选择-" || current_user.prov_city !="")
+     return  current_user.prov_city.present? && (current_user.prov_city != "-请选择-")
   end
 
   def yy_is_country?
-    return current_user.prov_city.present? && current_user.prov_country.present? && (current_user.prov_country!= "-请选择-" || current_user.prov_country!="")
+    return current_user.prov_city.present? && current_user.prov_country.present? && (current_user.prov_country!= "-请选择-")
   end
   def is_tuixiu
       (is_city? || is_county_level?)   

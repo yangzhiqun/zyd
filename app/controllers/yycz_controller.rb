@@ -210,8 +210,6 @@ class YyczController < ApplicationController
        	@sp_bsbs = @sp_bsbs.where("s.sp_s_4 = ? OR s.sp_s_220 = ?  OR s.sp_s_wcshi =?", current_user.jg_bsb.city, current_user.jg_bsb.city,current_user.jg_bsb.city)
 				elsif is_xian_deploy?
          @sp_bsbs = @sp_bsbs.where("s.sp_s_5 = ? OR s.sp_s_221 = ?  OR s.sp_s_wcxian =? ",current_user.jg_bsb.country,current_user.jg_bsb.country,current_user.jg_bsb.country)
-        else
-         @sp_bsbs = @sp_bsbs.where(" 0=1")
         end
       end
 		end
