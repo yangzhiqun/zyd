@@ -206,17 +206,24 @@ module ApplicationHelper
 		jg = current_user.jg_bsb
 		return jg.jg_province != "-请选择-" && (jg.city != "-请选择-" || !jg.city.blank? ) && (jg.country != "-请选择-" && !jg.country.blank?)
 	end
+  
+  def yy_is_city?
+     return  current_user.prov_city.present? && (current_user.prov_city != "-请选择-")
+  end
 
+  def yy_is_country?
+    return current_user.prov_city.present? && current_user.prov_country.present? && (current_user.prov_country!= "-请选择-")
+  end
   def is_tuixiu
       (is_city? || is_county_level?)   
   end
 
   def is_shi_deploy?
-    (is_city?&&jg_is_city?)
+    (yy_is_city?&&jg_is_city?)
   end
 
   def is_xian_deploy?
-    (is_county_level?&&jg_is_country?)
+    (yy_is_country?&&jg_is_country?)
   end
  def is_level?
      return "省级"  if  is_sheng?

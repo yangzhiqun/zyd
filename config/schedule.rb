@@ -24,9 +24,9 @@ every 7.days do
   rake 'log:clear'
 end
 
-every 30.minutes do
-  runner 'SpYydjb.auto_commit_overdue'
-end
+#every 20.days do
+ # runner 'SpYydjb.auto_commit_overdue'
+#end
 #
 #every 15.minutes do
 #  runner '::HeartbeatWorker.perform_async'
