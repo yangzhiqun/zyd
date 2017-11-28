@@ -499,10 +499,11 @@ class SpBsb < ActiveRecord::Base
           PUSH_BASE_DATA_FIELDS.each do |field|
             form[field] = self.send(field)
           end
-          Rails.logger.error "sending: #{form}"
+          Rails.logger.error "sending: #{form.to_json}"
 
-          response = RestClient.post(jg_bsb.api_ip_address, form.to_json)
-          json = JSON.parse(response)
+         # response = RestClient.post(jg_bsb.api_ip_address, form.to_json)
+         # json = JSON.parse(response)
+          json =  Unirest.post(jg_bsb.api_ip_address, parameters:form.to_json).body
           if json['status'] == 'OK'
             self.update_attributes({:synced => true})
             return nil
