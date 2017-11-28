@@ -1,0 +1,253 @@
+$(function(){
+	chart();
+})
+function chart(){
+  console.log(data["合肥"][0]["xAxis"][0]["data"]);
+	var option1 = {
+        title: {
+            text: '抽样超期统计'            
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data:['最低气温']
+        },
+        toolbox: {
+            show: true,
+            feature: {
+                dataZoom: {
+                    yAxisIndex: 'none'
+                },
+                dataView: {readOnly: false},
+                magicType: {type: ['line', 'bar']},
+                restore: {},
+                saveAsImage: {}
+            }
+        },
+        xAxis:  {
+            type: 'category',
+            boundaryGap: false,
+            //data: ['抽样单位1','抽样单位2','抽样单位3','抽样单位4','抽样单位5','抽样单位6','抽样单位7']
+            data: data["合肥"][0]["xAxis"][0]["data"]
+        },
+        yAxis: {
+        	name:'天数',
+            type: 'value',
+            axisLabel: {
+                formatter: '{value} '
+            },
+            axisLine:{
+                lineStyle:{
+                    color:'#000'
+                }
+            }
+        },
+        series: [
+            {
+                name:'截止抽样天数',
+                type:'line',
+                data:data["合肥"][0]["series"][0]["data"],
+                markPoint: {
+                    data: [
+                        {name: '周最低', value: 0, xAxis: 1, yAxis: -1.5}
+                    ]
+                },
+                markLine: {
+                    data: [[
+                          {
+                              name:'5',
+                              coord:[0,5]
+                          },{
+                              name:'',
+                              coord:[6,5]
+                          }
+                        ],
+                        [{
+                            symbol: 'none',
+                            x: '90%',
+                            yAxis: 'max'
+                        }, {
+                            symbol: 'circle',
+                            label: {
+                                normal: {
+                                    position: 'start',
+                                    formatter: '最大值'
+                                }
+                            },
+                            type: 'max',
+                            name: '最高点'
+                        }]
+                    ]
+                }
+            }
+        ]
+    };
+    var myChart1=echarts.init(document.getElementById('chart_1'));
+    myChart1.setOption(option1);
+    var option2 = {
+        title: {
+            text: '检验超期统计'            
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        toolbox: {
+            show: true,
+            feature: {
+                dataZoom: {
+                    yAxisIndex: 'none'
+                },
+                dataView: {readOnly: false},
+                magicType: {type: ['line', 'bar']},
+                restore: {},
+                saveAsImage: {}
+            }
+        },
+        xAxis:  {
+            type: 'category',
+            boundaryGap: false,
+            data: data["合肥"][1]["xAxis"][0]["data"]
+        },
+        yAxis: {
+        	name:'天数',
+            type: 'value',
+            axisLabel: {
+                formatter: '{value} '
+            },
+            axisLine:{
+                lineStyle:{
+                    color:'#000'
+                }
+            }
+        },
+        series: [
+            {
+                name:'截止完全提交天数',
+                type:'line',
+                data:data["合肥"][1]["series"][0]["data"],
+                markPoint: {
+                    data: [
+                        {name: '周最低', value: 0, xAxis: 1, yAxis: -1.5}
+                    ]
+                }, 
+                markLine: {
+                    data: [
+                        [
+                          {
+                              name:'25',
+                              coord:[0,25]
+                          },{
+                              name:'25',
+                              coord:[6,25]
+                          }
+                        ],
+                        [{
+                            symbol: 'none',
+                            x: '90%',
+                            yAxis: 'max'
+                        }, {
+                            symbol: 'circle',
+                            label: {
+                                normal: {
+                                    position: 'start',
+                                    formatter: '最大值'
+                                }
+                            },
+                            type: 'max',
+                            name: '最高点'
+                        }]
+                    ]
+                }
+            }
+        ]
+    };
+    var myChart2=echarts.init(document.getElementById('chart_2'));
+    myChart2.setOption(option2);
+    // 点击下拉框根据区域加载相应地区的数据
+    // console.log($('.cqtj_option')[0].value);
+    var hefei2={
+        xAxis:[{
+            data:['抽样单位1','抽样单位2','抽样单位3','抽样单位4','抽样单位5','抽样单位6','抽样单位7']
+        }],
+        series:[
+        {
+            data:[15, 20, 22, 50, 30, 100, 10]
+        }
+        ]
+    }
+    var hefei1={
+        xAxis:[{
+            data:['抽样单位1','抽样单位2','抽样单位3','抽样单位4','抽样单位5','抽样单位6','抽样单位7']
+        }],
+        series:[
+        {
+            data:[1, 2, 2, 5, 3, 10, 0]
+        }
+        ]
+    }
+    var huangshan2={
+        xAxis:[{
+            data:['抽样单位1','抽样单位2','抽样单位3','抽样单位4','抽样单位5','抽样单位6','抽样单位7']
+        }],
+        series:[
+        {
+            data:[80, 42, 50, 45, 53, 11, 9]
+        }
+        ]
+    }
+    var huangshan1={
+        xAxis:[{
+            data:['抽样单位1','抽样单位2','抽样单位3','抽样单位4','抽样单位5','抽样单位6','抽样单位7']
+        }],
+        series:[
+        {
+            data:[2, 4, 5, 4, 3, 1, 6]
+        }
+        ]
+    }
+    var bengbu2={
+        xAxis:[{
+            data:['抽样单位1','抽样单位2','抽样单位3','抽样单位4','抽样单位5','抽样单位6','抽样单位7']
+        }],
+        series:[
+        {
+            data:[5, 32, 20, 5, 13, 11, 19]
+        }
+        ]
+    }
+    var bengbu1={
+        xAxis:[{
+            data:['抽样单位1','抽样单位2','抽样单位3','抽样单位4','抽样单位5','抽样单位6','抽样单位7']
+        }],
+        series:[
+        {
+            data:[5, 2, 8, 5, 3, 1, 9]
+        }
+        ]
+    }
+    function select_slide(){
+        $(document).on('change','select#cqtj_option',function(){
+            var optionVal=$(this).val();//获取当前选中项的value值
+            myChart1.setOption(data[optionVal][0]); 
+            myChart2.setOption(data[optionVal][1]);
+            //switch(optionVal){
+            //    case '黄山':
+            //        myChart1.setOption(huangshan1);
+            //        myChart2.setOption(huangshan2);
+            //        break;
+            //        case '蚌埠':
+            //        myChart1.setOption(bengbu1);
+            //        myChart2.setOption(bengbu2);
+            //        break;
+            //        case '合肥':
+            //        myChart1.setOption(hefei1);
+            //        myChart2.setOption(hefei2);
+            //        break;
+            //        default :
+            //        break;
+            //}          
+        });
+    }  
+    select_slide();
+}

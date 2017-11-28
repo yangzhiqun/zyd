@@ -1,0 +1,21 @@
+table{
+	width: 100%;
+	border-collapse: collapse;
+}
+table th,table td{
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	border:1px solid #ccc;
+	min-width: 80px;
+	font-size: 14px;
+}
+table td:nth-child(11){
+	width: 100px;
+}
+table td{
+	background-color: #F7DFDB;
+}
+table td span{
+	color:#009ED7;
+}

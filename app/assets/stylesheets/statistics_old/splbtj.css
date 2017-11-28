@@ -1,0 +1,65 @@
+.foodcate_btn{
+    margin-bottom: 25px;
+    border-bottom: 2px solid #ccc;
+}
+.foodcate_btn .foodcateSelect_btn{
+    height: 38px;
+    line-height: 38px;
+}
+.foodcate_btn .foodcateSelect_btn label{
+    display: inline-block;
+    width: 80px;
+    text-align: right;
+    height: 100%;
+    vertical-align: bottom;
+    margin-left: 10px;
+}
+.foodcate_btn .foodcateSelect_btn .foodcateSelect_option{
+    display: inline-block;
+    height: 36px;
+    width: 160px;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+    font-size: 16px;
+    margin: 0 10px;
+}
+.foodcate_btn .foodcateSelect_btn .foodcate_operBox{
+    height: 100%;
+    display: inline-block;
+    vertical-align: bottom;
+    float: right;
+    margin-right: 25px;
+}
+.foodcate_btn .foodcateSelect_btn .foodcate_query,
+.foodcate_btn .foodcateSelect_btn .foodcate_export{
+    height: 100%;
+    margin: 0 10px;
+}
+
+.formOperation{
+    width: 90%;
+    margin: 0 auto;
+    margin-bottom: 10px;
+}
+.formOperation>input{
+    height: 35px;
+    /*width: 80px;*/
+    background-color: #337ab7;
+    /*border: none;*/
+    outline: none;
+    border-radius: 8px;
+}
+.fillpage-date{
+    margin: 0 10px;
+}
+.fillpage-date>span{
+    font-weight: 700;
+}
+.fillpage-date .form-group {
+    width: 150px;
+    display: inline-block;
+}
+.fillpage-date input.form-control{
+    
+}
