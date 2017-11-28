@@ -41,6 +41,9 @@ class BaosongBsController < ApplicationController
       end
     end
     @baosong_a = BaosongA.where("id in (?)",baosongids)
+    if eval(params[:is_new]) || (params[:time].to_time > Time.parse("2017-04-16") && !eval(params[:is_new]) && eval(params[:wochacha]))
+      @baosong_a = @baosong_a.where("rwlylx != '省局'")
+    end
     # if  is_county_level? or is_city?
       respond_to do |format|
         format.json { render json: {status: "OK", msg: "", data: @baosong_a.select("id, name")} }
