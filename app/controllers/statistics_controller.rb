@@ -131,9 +131,9 @@ class StatisticsController < ApplicationController
         sampling_num = 0 #单位抽样超期数量
         jg_name = jg.jg_bsb_names.last.name
         sp_bsbs = SpBsb.where(sp_s_43:jg_name)
-        #sp_bsbs.where(sp_i_state:2).each { |sp| sampling_num +=1 if days_between(Time.now,sp.sp_d_38) < 5 }
+        sp_bsbs.where(sp_i_state:2).each { |sp| sampling_num +=1 if days_between(Time.now,sp.sp_d_38) > 5 }
         #抽样超期
-        sp_bsbs.where(sp_i_state:2).each { |sp| p days_between(Time.now,sp.sp_d_38) }
+        #sp_bsbs.where(sp_i_state:2).each { |sp| p days_between(Time.now,sp.sp_d_38) }
         @data[city_name][0][:xAxis][0][:data] << jg_name
         @data[city_name][0][:series][0][:data] << sampling_num
         #检验超期
@@ -143,7 +143,7 @@ class StatisticsController < ApplicationController
           sp.sp_logs.each{|log| sp_log = log if [2,3,4,5,6,7,8,16].include?(log.sp_i_state)}
           if sp_log
             time = sp_log.created_at.to_s
-            examine_num += 1 if days_between(Time.now,time) < 40
+            examine_num += 1 if days_between(Time.now,time) > 40
           end
         end
         @data[city_name][1][:xAxis][0][:data] << jg_name

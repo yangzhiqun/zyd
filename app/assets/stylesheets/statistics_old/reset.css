@@ -1,5 +1,5 @@
 /* CSS Document */
-html, body, div, span, object, iframe,h1, h2, 
+/*html, body, div, span, object, iframe,h1, h2, 
 h3, h4, h5, h6, p, blockquote, pre,abbr, address, cite, code,del, dfn, 
 em, img, ins,kbd, q, samp,small, strong, sub, sup, var,b, i,dl, dt, dd, 
 ol, ul, li,fieldset, form, label, legend,table, caption, tbody, 
@@ -13,7 +13,7 @@ audio, video {
     font-size:100%;
     vertical-align:baseline;
     background:transparent;
-    outline-style:none;/*FF*/ 
+    outline-style:none;*//*FF
 }
 
 body {
@@ -31,8 +31,8 @@ a{
 }
 a:hover,a:focus{
     text-decoration:none;
-    bblr:expression(this.onFocus=this.blur());/*IE*/
-    outline-style:none;/*FF*/ 
+    bblr:expression(this.onFocus=this.blur());
+    outline-style:none;
     }
 table {
     border-collapse:collapse;
@@ -42,7 +42,7 @@ table {
 input, select {
     vertical-align:middle;
 }
-
+*/
 /*css为clearfix，清除浮动*/
 .clearfix::before,
 .clearfix::after{
