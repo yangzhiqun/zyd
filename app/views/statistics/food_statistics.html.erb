@@ -1,30 +1,223 @@
-<div style="text-align: center; margin: 10px;">
-  <h2>食品类别统计</h2>
-  <p>以食品大类、次类、次亚类、细类等为条件，查询统计省抽、市抽、县抽任务中完成情况，如：统计食品大类、次类、次亚类、细类、任务数、抽样数、检验数、不合格数、合格数、已处置、处置中等。</p>
-</div>
-<div class="statistical-table">
-  <table>
-    <tr>
-      <th>食品大类</th>
-      <th>总批次</th>
-      <th>监督抽检批次</th>
-      <th>不合格批次</th>
-      <th>不合格样品率</th>
-      <th>风险监测批次</th>
-      <th>问题样品批次</th>
-      <th>问题样品率</th>
-    </tr>
-    <% @a_categories.each do |ac| %>
-      <tr>
-        <td><%= ac.name %></td>
-        <td><%= SpBsb.where(sp_s_17: ac.name).all.count %></td>
-        <td><%= ac.id %></td>
-        <td><%= ac.id %></td>
-        <td><%= ac.id %></td>
-        <td><%= ac.id %></td>
-        <td><%= ac.id %></td>
-        <td><%= ac.id %></td>
-      </tr>
-    <% end %>
-  </table>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>食品类别统计</title>
+    <!-- css
+    <link rel="stylesheet" href="../libs/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/TreeGrid.css">
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/splbtj.css">
+    -->
+    <%= stylesheet_link_tag "statistics_old/bootstrap/dist/css/bootstrap.min.css", :media => "all" %>
+    <%= stylesheet_link_tag "statistics_old/TreeGrid","statistics_old/reset","statistics_old/splbtj", :media => "all" %>
+    <!-- js
+    <script src="../libs/treegrad/jquery-1.3.2.min.js"></script>
+    <script src="../libs/echarts.js"></script>
+    <script src="../libs/treegrad/TreeGrid.js"></script>
+    <script src="../libs/layDate/laydate.js"></script>
+    -->
+    <%= javascript_include_tag "statistics/treegrad/jquery-1.3.2.min","statistics/treegrad/TreeGrid","statistics/layDate/laydate" %>
+</head> 
+<body>
+    <div class="container">
+        <!-- 头部head -->
+        <div class="page-header testcompany_header">
+            <h1>食品类别统计</h1>
+        </div>
+
+        <!-- 上侧按钮部分 -->
+        <div class="foodcate_btn">
+            <form role="form">
+                <div class="form-group foodcateSelect_btn">
+                    <!-- 选取栏 -->
+                    <!-- 1 -->
+                    <select class="form-control foodcateSelect_option">
+                        <option selected="selected">省级本级</option>
+                        <option >省级转移</option>
+                        <option >省级专项</option>
+                        <option >市级本级</option>
+                    </select>
+                    <!-- 2 -->
+                    <select class="form-control foodcateSelect_option">
+                        <option selected="selected">报送分类a</option>
+                        <option >报送分类a1</option>
+                        <option >报送分类a2</option>
+                        <option >报送分类a3</option>
+                    </select>
+                    <!-- 导出报表 -->
+                    <label for="">
+                        <button type="submit" class="btn btn-default btn-primary foodcate_query bgc1">导出报表</button>
+                    </label>
+                </div>
+                <!-- 时间栏 -->
+                <div class="fillpage-date">
+                    <span>样品填报时间：</span>
+                    <div class="form-group">
+                        <label class="sr-only" for="page-start">开始时间</label>
+                        <input type="text" class="form-control" id="page-start" placeholder="开始时间">
+                    </div>
+                    <div style="width:20px;height:3px;margin:0px auto;padding:0px;background-color:#D5D5D5;overflow:hidden;display: inline-block;"></div>
+                    <div class="form-group">
+                        <label class="sr-only" for="page-end">结束时间</label>
+                        <input type="text" class="form-control" id="page-end" placeholder="结束时间">
+                    </div>    
+                </div>
+            </form>
+        </div>
+
+        <!-- 下侧列表数据部分 -->
+        <!-- 表格操作 -->
+        <!-- <div class="formOperation">
+            <input type="button" value="关闭列表" onclick="expandAll('N')">  
+            <input type="button" value="展开列表" onclick="expandAll('Y')">  
+            <input type="button" value="取得当前行数据" onclick="selectedItem()">
+            <input type="text" id="currentRow" size="110" style="display: none;">
+        </div> -->
+          
+        <!-- 表格数据 -->
+        <div id="div1" style="margin-bottom: 100px;">
+            <!-- 动态加载数据 -->
+        </div>
+    </div>
+    
+</body>
+    <script type="text/javascript">
+        var config = {
+            id: "tg1",
+            width: "100%",
+            renderTo: "div1",
+            headerAlign: "left",
+            headerHeight: "30",
+            dataAlign: "left",
+            indentation: "20",
+            folderOpenIcon: "<%= asset_path('statistics/page-open.png') %>",
+            folderCloseIcon: "<%= asset_path('statistics/page-close.png') %>",
+            defaultLeafIcon: "<%= asset_path('statistics/page-none.png') %>", 
+            hoverRowBackground: "false",
+            folderColumnIndex: "0",
+            itemClick: "itemClickEvent",
+            columns:[
+                {headerText: "名称", dataField: "name", headerAlign: "center",width: "240", handler: "customOrgName"},
+                {headerText: "序号", dataField: "code", headerAlign: "center", dataAlign: "center"},
+                {headerText: "任务数",dataField: "task", headerAlign: "center", dataAlign: "center", width: "100"},
+                {headerText: "抽样数", dataField: "sampling",headerAlign: "center", dataAlign: "center", width: "100"},
+                {headerText: "检验数", dataField: "test",headerAlign: "center", dataAlign: "center", width: "100"},
+                {headerText: "不合格数",dataField: "unqualified", headerAlign: "center", dataAlign: "center", width: "100"},
+                {headerText: "合格数", dataField: "qualified",headerAlign: "center", dataAlign: "center", width: "100"},
+                {headerText: "已处置", dataField: "Disposed",headerAlign: "center", dataAlign: "center", width: "100"},
+                {headerText: "处置中", dataField: "Disposal",headerAlign: "center", dataAlign: "center", width: "100"}
+            ],
+            data:[
+                {name: "报送分类a1", code: "1",task:"128",sampling:"128",test:"80",unqualified:"15",qualified:"65",Disposed:"13",Disposal:"2",},
+                {name: "报送分类a", code: "2",task:"82",sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
+                    {name: "报送分类b", code: "3",task:"82",sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
+                        {name: "食品大类", code: "4",task:"82",sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children: [
+                            {name: "食品亚类", code: "5",task:"82",sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
+                                {name: "食品次亚类", code: "6",task:"82",sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
+                                    {name: "食品细类", code: "7",task:"82",sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",}
+                                    ]}
+                            ]},
+                        ]}
+                    ]},
+                    {name: "报送分类b1", code: "8",task:"62",sampling:"62",test:"35",unqualified:"3",qualified:"45",Disposed:"3",Disposal:"42",},
+                    {name: "报送分类b2", code: "9",task:"20",sampling:"20",test:"40",unqualified:"2",qualified:"25",Disposed:"6",Disposal:"19",},
+                    
+                ]},{name: "", code: "总计", task:"210", sampling:"210",test:"155",unqualified:"20",qualified:"135",Disposed:"18",Disposal:"2", height:"200"},
+            ]
+        };
+
+        $(document).ready(function(){
+            $("#div1 table tr:last td:first").children("img").remove(); //删除最后图标
+            $(".allcheck").click(function(){
+                $("#tg1").find("input[name='cblbox']").attr("checked",$(this).attr("checked"));
+            });
+
+            // 时间区域选取
+            // 初始时间
+            laydate.render({
+              elem: '#page-start', //指定元素
+              type: 'month'
+            });
+            // 结束时间
+            laydate.render({
+              elem: '#page-end', //指定元素
+              type: 'month'
+            });
+
+        });
+        /*
+            单击数据行后触发该事件
+            id：行的id
+            index：行的索引。
+            data：json格式的行数据对象。
+        */
+        function itemClickEvent(id, index, data){
+
+
+            jQuery("#currentRow").val(id + ", " + index + ", " + TreeGrid.json2str(data));
+        }
+
+        /*
+            通过指定的方法来自定义栏数据
+        */
+        function customCheckBox(row, col){
+            return "<input name='cblbox' type='checkbox'>";
+        }
+
+        function customOrgName(row, col){
+            var name = row[col.dataField] || "";
+            return name;
+        }
+
+        function customLook(row, col){
+
+            return "<a href='javascript:void(0)' onclick='showrowname(\""+row.code+"\",\""+row.name+"\")' style='color:blue;'>查看</a>";
+        }
+
+        function showrowname(code , name){
+            alert( code +  name );
+
+        }
+
+        //创建一个组件对象
+        var treeGrid = new TreeGrid(config);
+        treeGrid.show();
+
+        /*
+            展开、关闭所有节点。
+            isOpen=Y表示展开，isOpen=N表示关闭
+        */
+        function expandAll(isOpen){
+            treeGrid.expandAll(isOpen);
+        }
+
+        /*
+            取得当前选中的行，方法返回TreeGridItem对象
+        */
+        function selectedItem(){
+            var treeGridItem = treeGrid.getSelectedItem();
+            if(treeGridItem!=null){
+                //获取数据行属性值
+                //alert(treeGridItem.id + ", " + treeGridItem.index + ", " + treeGridItem.data.name);
+
+                //获取父数据行
+                var parent = treeGridItem.getParent();
+                if(parent!=null){
+                    //jQuery("#currentRow").val(parent.data.name);
+                }
+
+                //获取子数据行集
+                var children = treeGridItem.getChildren();
+                if(children!=null && children.length>0){
+                    jQuery("#currentRow").val(children[0].data.name);
+                }
+            }
+        }
+    </script>
+    <!-- 时间 -->
+    <script type="type=text/javascript">
+        
+    </script>
+</html>

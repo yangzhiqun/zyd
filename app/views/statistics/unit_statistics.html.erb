@@ -1,95 +1,68 @@
-<div style="text-align: center; margin: 10px;">
-  <h2>承检单位统计</h2>
-  <p>以承检单位、时间等为条件，查询统计各承检单位任务数、接样数、合格数，不合格数。</p>
+<%= stylesheet_link_tag "statistics_old/bootstrap/dist/css/bootstrap.min.css", :media => "all" %>
+<%= stylesheet_link_tag "statistics_old/reset","statistics_old/cjdwtj","statistics_old/TreeGrid", :media => "all" %>
+<body>
+<div class="container">
+    <!-- 头部head -->
+    <div class="page-header testcompany_header">
+        <h1>承检单位统计</h1>
+    </div>
+    
+    <!-- 上侧按钮部分 -->
+    <div class="btn-group topside_date" role="group" aria-label="...">
+        <!-- 按日期查询按钮 -->
+        <div class="fillpage-date">
+            <span>样品填报时间：</span>
+            <div class="form-group">
+                <label class="sr-only" for="page-start">开始时间</label>
+                <input type="text" class="form-control" id="page-start" placeholder="开始时间">
+            </div>
+            <div style="width:20px;height:3px;margin:0px auto;padding:0px;background-color:#D5D5D5;overflow:hidden;display: inline-block;"></div>
+            <div class="form-group">
+                <label class="sr-only" for="page-end">结束时间</label>
+                <input type="text" class="form-control" id="page-end" placeholder="结束时间">
+            </div>    
+        </div>
+        <!-- 切换显示模式 -->
+        <div class="topside_switch">
+            <button type="button" class="btn btn-default changeType" id="select">查询</button>
+            <button type="button" class="btn btn-default bgc1 btn-primary exportR" id="export">导出报表</button>
+            <button type="button" class="btn btn-default changeType" id="changeBtn">切换图表模式</button>
+        </div>
+    </div>
+    <div class="topbtn_cqtj">
+        <form role="form">
+            <div class="form-group topbtnSect_cqtj hide">
+                <!-- 左侧选取栏 -->
+                <label>区域：</label>
+                <select class="form-control cqtj_option" id="cqtj_option"></select>
+            </div>
+        </form>
+    </div>
+
+    <div id="subpage">
+      <%= render :partial => "subpage_unit_statistics", :locals => {:data => @data} %>
+    </div>
+
 </div>
-<div>
-  <div id="bars" style="width: 100%; height:600px; text-align: center"></div>
-  <script type="text/javascript">
-    var myChart = echarts.init(document.getElementById('bars'));
-    app.title = '堆叠柱状图';
-    var option = {
-        tooltip : {
-            trigger: 'axis',
-            axisPointer : {            // 坐标轴指示器，坐标轴触发有效
-                type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
-            }
-        },
-        legend: {
-            data:['任务数量','核查处置数量','异议数据','合格数','抽检数量','不合格数','流通','生产','消费']
-        },
-        grid: {
-            left: '3%',
-            right: '4%',
-            bottom: '3%',
-            containLabel: true
-        },
-        xAxis : [
-            {
-                type : 'category',
-                data : ['周一','周二','周三','周四','周五','周六','周日']
-            }
-        ],
-        yAxis : [
-            {
-                type : 'value'
-            }
-        ],
-        series : [
-            {
-                name:'任务数量',
-                type:'bar',
-                data:[320, 332, 301, 334, 390, 330, 320]
-            },
-            {
-                name:'核查处置数量',
-                type:'bar',
-                stack: '任务数量',
-                data:[120, 132, 101, 134, 90, 230, 210]
-            },
-            {
-                name:'异议数据',
-                type:'bar',
-                stack: '任务数量',
-                data:[220, 182, 191, 234, 290, 330, 310]
-            },
-            {
-                name:'合格数',
-                type:'bar',
-                stack: '任务数量',
-                data:[150, 232, 201, 154, 190, 330, 410]
-            },
-            {
-                name:'抽检数量',
-                type:'bar',
-                data:[862, 1018, 964, 1026, 1679, 1600, 1570]
-            },
-            {
-                name:'不合格数',
-                type:'bar',
-                barWidth : 5,
-                stack: '抽检数量',
-                data:[620, 732, 701, 734, 1090, 1130, 1120]
-            },
-            {
-                name:'流通',
-                type:'bar',
-                stack: '抽检数量',
-                data:[120, 132, 101, 134, 290, 230, 220]
-            },
-            {
-                name:'生产',
-                type:'bar',
-                stack: '抽检数量',
-                data:[60, 72, 71, 74, 190, 130, 110]
-            },
-            {
-                name:'消费',
-                type:'bar',
-                stack: '抽检数量',
-                data:[62, 82, 91, 84, 109, 110, 120]
-            }
-        ]
-    };
-    myChart.setOption(option);
-  </script>
-</div>
+</body>
+<script>
+  $(document).ready(function(){
+    $("#select").click(function(){
+      request_ajax();
+    })
+    function request_ajax() {
+      var url  = "/unit_statistics";
+      $.ajax({
+        type: "get",
+        url:  url,
+        data: {"subpage":"true"},
+        success: function(data){
+          $("#subpage").html(data);
+          treeGrid.expandAll("N");//默认关闭
+          chart()
+        }
+      });
+    }
+  }) 
+</script>
+</html>

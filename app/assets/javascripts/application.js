@@ -79,12 +79,12 @@
 //= require china
 //= require anhui
 $(function(){
-  $('#preview').iframeAutoHeight({debug: false});
+  //$('#preview').iframeAutoHeight({debug: false});
 
-  $( ".datepicker" ).datepicker({dateFormat:"yy-mm-dd",
-    changeMonth: true,
-    changeYear: true
-  });
+  //$( ".datepicker" ).datepicker({dateFormat:"yy-mm-dd",
+  //  changeMonth: true,
+  //  changeYear: true
+  //});
 
-  $('[data-toggle="tooltip"]').tooltip();
+  //$('[data-toggle="tooltip"]').tooltip();
 });

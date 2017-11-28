@@ -1,0 +1,104 @@
+/*上侧按钮部分*/
+.topbtn_task{
+    margin-bottom: 25px;
+    border-bottom: 2px solid #ccc;
+}
+.topbtn_task .topbtnSect_task{
+    height: 38px;
+    line-height: 38px;
+}
+.topbtn_task .topbtnSect_task label,
+.taskbox .taskbox_topCon label[for^='taskbox_'],
+.foodbox .foodbox_topCon label[for^='foodbox_'],
+.sampbox .sampbox_topCon label[for^='sampbox_'],
+.productLocalbox .productLocalbox_topCon label[for^='productLocalbox_']{
+    display: inline-block;
+    width: 80px;
+    text-align: right;
+    height: 100%;
+    vertical-align: bottom;
+    margin-left: 10px;
+}
+.topbtn_task .topbtnSect_task .task_option,
+.taskbox .taskbox_topCon select,
+.foodbox .foodbox_topCon select,
+.sampbox .sampbox_topCon select,
+.productLocalbox .productLocalbox_topCon select{
+    display: inline-block;
+    height: 36px;
+    width: 160px;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+    font-size: 16px;
+}
+.taskbtn_operBox{
+    height: 100%;
+    display: inline-block;
+    vertical-align: bottom;
+    margin-left: 25px;
+}
+.taskbtn_operBox .taskbtn_query,
+.taskbtn_operBox .taskbtn_export{
+    height: 100%;
+    margin: 0 10px;
+}
+
+/*按选择器选项隐藏和显示项*/
+
+/*任务类型*/
+.taskbox{
+    margin-bottom: 80px;
+}
+.taskbox .taskbox_topCon{
+    height: 100%;
+    line-height: 38px;
+    padding-bottom: 15px;
+}
+.taskbox .taskbox_bottomCon{
+    width: 100%;
+    margin: 25px auto;
+}
+/*食品类型*/
+.foodbox{
+    margin-bottom: 80px;
+}
+.foodbox .foodbox_topCon{
+    height: 100%;
+    line-height: 38px;
+}
+.foodbox .foodbox_bottomCon{
+    width: 100%;
+    margin: 25px auto;
+}
+.food_selectbox{
+    display: inline-block;
+    width: 24.5%;
+    padding-bottom: 15px;
+}
+/*抽样地点*/
+.sampbox{
+    margin-bottom: 80px;
+}
+.sampbox .sampbox_topCon{
+    height: 100%;
+    line-height: 38px;
+    padding-bottom: 15px;
+}
+.sampbox .sampbox_bottomCon{
+    width: 100%;
+    margin: 25px auto;
+}
+/*生产单位所在省*/
+.productLocalbox{
+    margin-bottom: 80px;
+}
+.productLocalbox .productLocalbox_topCon{
+    height: 100%;
+    line-height: 38px;
+    padding-bottom: 15px;
+}
+.productLocalbox .productLocalbox_bottomCon{
+    width: 100%;
+    margin: 25px auto;
+}

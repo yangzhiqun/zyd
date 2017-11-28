@@ -447,6 +447,12 @@ Rails.application.routes.draw do
   get 'enterprise_statistics' => 'statistics#enterprise_statistics'
   get 'early_warning' => 'statistics#early_warning'
   get 'composite_statistics' => 'statistics#composite_statistics'
+  #任务子模板
+  get 'statistics_task_type' => 'statistics#statistics_task_type'
+  get 'statistics_food_type' => 'statistics#statistics_food_type'
+  get 'statistics_sampling_sites' => 'statistics#statistics_sampling_sites'
+  get 'statistics_production_unit_province' => 'statistics#statistics_production_unit_province'
 
+  get 'nonconformity_statistics_data/:id' => 'statistics#nonconformity_statistics_data'
 
 end

@@ -1,0 +1,148 @@
+/*承检单位统计*/
+
+/*左侧列表菜单*/
+.leftside_first{
+    display: inline-block;
+    width: 16%;
+    border: 1px solid #ccc;
+    margin: 0 20px 10px 15px;
+    vertical-align: top;
+}
+.leftside_first .leftside_second>dt{
+    background-color:#3992d0;
+    height: 39px;
+    line-height: 39px;
+    padding-left: 10px;
+    cursor: pointer;
+    color: #ffffff;
+}
+.leftside_first .leftside_second>dd{
+    height: 30px;
+    line-height: 30px;
+    padding-left: 15px;
+    cursor: pointer;
+}
+.leftside_first .leftside_second>dt img{
+    height: 55%;
+    line-height: 32px;
+    vertical-align: middle;
+    margin-left: 10px;
+    margin-bottom: 5px;
+}
+/*上侧按钮部分*/
+.topside_date{
+    vertical-align: top;
+    width: 100%;
+    padding-left: 2%;
+    margin-bottom: 15px;
+}
+.topside_date>button{
+    background-color: #3992d0;
+    color: #ffffff;
+    border-radius: 5px !important;
+    margin:0 5px;
+}
+.topside_date div.topside_switch{
+    position: absolute;
+    right: 20%;
+    top:0;
+}
+div.topside_switch button.exportR{
+   /*background-color: #cccccc;*/
+}
+.fillpage-date{
+    margin: 0 10px;
+}
+.fillpage-date>span{
+    font-weight: 700;
+}
+.fillpage-date .form-group {
+    width: 150px;
+    display: inline-block;
+    margin-bottom: 0;
+}
+/*div.topside_switch .exportR{
+    display: none;
+}*/
+/*右侧内容部分*/
+.rightcon_first{
+    display: inline-block;
+    vertical-align: top;
+    /*margin-left: 100px;*/
+    width: 80%;
+    float: right;
+    margin-right: 5px;
+}
+.rightcon_first table#detail_table{
+    border: 1px solid #ccc;
+}
+table#detail_table tr.parent{
+    background-color:#3992d0;
+    color: #ffffff;
+}
+/*承接单位统计*/
+/*图表样式*/
+.topbtn_cqtj{
+    margin-bottom: 25px;
+    border-bottom: 2px solid #ccc;
+}
+.topbtn_cqtj .topbtnSect_cqtj{
+    height: 38px;
+    line-height: 38px;
+}
+.topbtn_cqtj .topbtnSect_cqtj label{
+    display: inline-block;
+    width: 80px;
+    text-align: right;
+    height: 100%;
+    vertical-align: bottom;
+    margin-left: 10px;
+}
+.topbtn_cqtj .topbtnSect_cqtj .cqtj_option{
+    display: inline-block;
+    height: 36px;
+    width: 160px;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+    font-size: 16px;
+}
+.topbtn_cqtj .topbtnSect_cqtj .cqtjbtn_operBox{
+    height: 100%;
+    display: inline-block;
+    vertical-align: bottom;
+    float: right;
+    margin-right: 25px;
+}
+.topbtn_cqtj .topbtnSect_cqtj .cqtjbtn_export{
+    height: 100%;
+    margin: 0 10px;
+}
+.charts{
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 100px;
+    /*background-color: #eee;*/
+    display: inline-block;
+}
+#chart{
+    width: 1000px;
+    height: 400px;
+}
+/*抽样及检验超期统计*/
+/*图表样式*/
+.charts_1,.charts_2{
+    margin: 0 auto;
+    width: 1000px;
+    height: 500px;
+    background-color: #eee;
+}
+
+.charts_2{
+    margin-top: 60px;
+}
+#chart_1,#chart_2{
+    margin: 0 auto;
+    width: 1000px;
+    height: 500px;
+}
