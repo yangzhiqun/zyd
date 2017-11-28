@@ -1,74 +1,192 @@
-<div style="text-align: center; margin: 10px;">
-  <h2>企业覆盖率统计</h2>
-  <p>按照国家总局统计表格（以接口形式对接，保证企业数及信息和国家局统一）进行统计生产企业、被抽样企业覆盖率等。</p>
-</div>
-<ul class="nav nav-tabs">
-  <li role="presentation" class="dropdown">
-    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-      筛选条件
-      <span class="caret"></span>
-    </a>
-    <ul class="dropdown-menu">
-      <li>
-        <a>任务类别</a>
-      </li>
-      <li>
-        <a>食品类别</a>
-      </li>
-      <li>
-        <a>抽样地点</a>
-      </li>
-      <li>
-        <a>生产单位</a>
-      </li>
-      <li></li>
-    </ul>
-  </li>
-</ul>
-<div class="statistics-image">
-  <div class="row">
-    <div class="col-md-9" style="border-right: 1px solid #ddd;">
-      <div id="main" style="width: 800px; height: 500px; margin-left: 20px;"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>企业覆盖率统计</title>
+    <!-- css -->
+    <!--
+    <link rel="stylesheet" href="../libs/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/cjdwtj.css">
+    -->
+    <%= stylesheet_link_tag "statistics_old/bootstrap/dist/css/bootstrap.min.css", :media => "all" %>
+    <%= stylesheet_link_tag "statistics_old/reset","statistics_old/cjdwtj", :media => "all" %>
+    <!-- js -->
+    <!--
+    <script src="../libs/jquery-2.1.4/dist/jquery.min.js"></script>
+    <script src="../libs/echarts.js"></script>
+    <script src="../libs/jquery-easyui-1.5.3/jquery.easyui.min.js"></script>
+    <script src="../libs/echarts.js"></script>
+    -->
+    <%= javascript_include_tag "statistics/city_data","statistics/qyfgltj" %>
+    <style>
+        h4.tableTit_h3{
+            display: inline-block;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        h2{
+            font-size: 18px;
+            font-weight: 700;
+            padding:10px 0;
+            margin-top: 50px;
+        }
+        .chart_title1{
+            margin-top: -39px;
+        }
+        .marginL50{
+            margin-left: 50px;
+        }
+        .charts_2{
+            margin-top: 0;
+        }
+    </style>
+    <script type="text/javascript">
+    $(".leftsidebar_box dt").css({"background-color":"#3992d0"});
+    $(".leftsidebar_box dt img").attr("src","../images/left.png");
+    $(function(){     
+        $('.topbtnSect_cqtj').children().hide();
+        changeBtn();
+    })
+    // 点击切换图表
+    function changeBtn(){
+        $('#changeBtn').click(function(event) {
+            var that=$(this);
+            $('.content_bottom').toggleClass('hide');
+            $('.charts').toggleClass('hide');
+            if($('.content_bottom').is(':hidden')){
+                that.text('切换表格模式');
+                $('.exportR').addClass('hide');
+                $('.topbtnSect_cqtj').children().show();
+            }else{
+                that.text('切换图表模式');
+                $('.exportR').removeClass('hide');
+                $('.topbtnSect_cqtj').children().hide();
+            }
+        });
+    }
+    </script>
+</head>
+<body>
+<div class="container">
+    <!-- 头部head -->
+    <div class="page-header testcompany_header">
+        <h1>企业覆盖率统计</h1>
     </div>
-    <div class="col-md-3" style="height: 502px; overflow: scroll;">
-      <table>
-        <tr style="font-size: 16px;">
-          <th style="padding: 10px;">大类</th>
-          <th style="padding: 10px;">不合格批次</th>
-        </tr>
-        <% @company_counts.each do |k, v| %>
-          <tr style="font-size: 12px;">
-            <td style="padding: 10px;"><%= k %></td>
-            <td style="padding: 10px;"><%= v %></td>
-          </tr>
-        <% end %>
-      </table>
+    
+    <!-- 上侧按钮部分 -->
+    <div class="btn-group topside_date" role="group" aria-label="...">
+        <!-- 切换显示模式 -->
+        <div class="topside_switch">
+            <button type="button" class="btn btn-default bgc1 btn-primary exportR">导出报表</button>
+            <button type="button" class="btn btn-default changeType" id="changeBtn">切换图表模式</button>
+        </div>
+        <div class="topbtn_cqtj">
+            <form role="form">
+                <!-- 左侧选取栏 -->
+                <div class="form-group topbtnSect_cqtj">
+                    <label>区域：</label>
+                    <select class="form-control cqtj_option" id="cqtj_option"></select>
+                </div>
+            </form>
+        </div>
     </div>
-  </div>
+
+     <!-- 右侧表格 -->
+    <div class="content_bottom" style="width: 80%;margin:0 auto 80px;">
+        <!-- 被抽样单位覆盖率 -->
+        <h4 class="tableTit_h3">被抽样单位覆盖率</h4>
+        <table class="table table-bordered">
+            <tr class="info">
+                <th>序号</th>
+                <th>区域</th>
+                <th>总企业数</th>
+                <th>被抽样单位数</th>
+                <th>覆盖率</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>合肥</td>
+                <td>100</td>
+                <td>78</td>
+                <td>78%</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>芜湖</td>
+                <td>132</td>
+                <td>91</td>
+                <td>68.18%</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>蚌埠</td>
+                <td>109</td>
+                <td>82</td>
+                <td>75.23%</td>
+            </tr>
+            <tr>
+                <td>合计</td>
+                <td></td>
+                <td>341</td>
+                <td>251</td>
+                <td>73.803%</td>
+            </tr>
+        </table>
+        <!-- 生产企业覆盖率 -->
+        <h4 class="tableTit_h3">生产企业覆盖率</h4>
+        <table class="table table-bordered">
+            <tr class="info">
+                <th>序号</th>
+                <th>区域</th>
+                <th>总企业数</th>
+                <th>被抽样单位数</th>
+                <th>覆盖率</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>合肥</td>
+                <td>100</td>
+                <td>78</td>
+                <td>78%</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>芜湖</td>
+                <td>132</td>
+                <td>91</td>
+                <td>68.18%</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>蚌埠</td>
+                <td>109</td>
+                <td>82</td>
+                <td>75.23%</td>
+            </tr>
+            <tr>
+                <td>合计</td>
+                <td></td>
+                <td>341</td>
+                <td>251</td>
+                <td>73.803%</td>
+            </tr>
+        </table>
+    </div> 
+
+    <!-- 右侧图表    -->
+    <div class="charts hide">
+        <h2 class="chart_title1 marginL50">被抽检单位覆盖率</h2>
+        <div class="charts_1">
+            <div id="chart_1"></div>
+        </div>
+        <h2 class="marginL50">企业生产覆盖率</h2>
+        <div class="charts_2">
+            <div id="chart_2"></div>
+        </div>
+    </div>
 </div>
-<script type="text/javascript">
-  $('body').scrollspy({ target: '#navbar-example' })
-  var myChart = echarts.init(document.getElementById('main'));
-  var option = {
-    color: ['#3398DB'],
-    title: {
-      text: ''
-    },
-    tooltip: {},
-    legend: {
-      data: ['销量']
-    },
-    xAxis: {
-      data: <%= raw @company_counts.keys.first(10) %>,
-    },
-    yAxis: {},
-    series: [
-      {
-        name: '销量',
-        type: 'bar',
-        data:  <%= raw @company_counts.values.first(10) %>
-      }
-    ]
-  };
-  myChart.setOption(option);
-</script>
+</body>
+</html>
