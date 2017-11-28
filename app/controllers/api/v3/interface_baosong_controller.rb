@@ -96,9 +96,9 @@ class Api::V3::InterfaceBaosongController < ApplicationController
        when "DCategory"  
          hash_key = [category["a_category"],category["b_category"],category["c_category"],category["name"]].join("-")
      end
-     unless type_name.has_key?(hash_key)
+     if !type_name.has_key?(hash_key) && name != "CheckItem"
        type_name[hash_key] = obj.id
-     else
+     elsif name != "CheckItem"
        raise "#{hash_key} >> 重复!" 
      end
    end

@@ -464,7 +464,7 @@ class WtypCzbPart < ActiveRecord::Base
       end
     end
     if self.changed? && !content_tmp.blank?
-      WtypCzbPartLogs.create(sp_bsb_id: self.sp_bsb_id, content: content_tmp, wtyp_czb_part_id: self.id, wtyp_czb_state: self.current_state, wtyp_czb_type: self.wtyp_czb_type, user_id: current_user.id)
+      #WtypCzbPartLogs.create(sp_bsb_id: self.sp_bsb_id, content: content_tmp, wtyp_czb_part_id: self.id, wtyp_czb_state: self.current_state, wtyp_czb_type: self.wtyp_czb_type, user_id: current_user.id)
     end
   end
 
