@@ -597,7 +597,7 @@
     $('#sp_bsb_sp_s_2_1').change(function () {
       var o = $(this);
       if (o.val() != '') {
-        $.get('/baosong_bs/by_rwly.json', {a_name: o.val()}, function (data) {
+      $.get('/baosong_bs/by_rwly.json', {a_name: o.val(),is_new: <%= action?("new") %>,time:"<%= @sp_bsb.created_at || Time.now %>",wochacha:"<%= @sp_bsb.wochacha_task_id.blank? %>"}, function (data) {
           if (data.status == 'OK') {
             $('#sp_bsb_sp_s_70, #sp_bsb_sp_s_67').empty();
             render_spec_list([]);

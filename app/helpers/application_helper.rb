@@ -267,6 +267,10 @@ module ApplicationHelper
     !YAML.load_file("config/use_ca.yml")["open_baosong"]
   end
 
+  def is_belong_name
+    ["江苏","山西","甘肃","兵团","吉林","安徽"].include?(SysConfig.get(SysConfig::Key::PROV))
+  end
+
   def sp_bsb_fields
     return {
         :bsb => {
