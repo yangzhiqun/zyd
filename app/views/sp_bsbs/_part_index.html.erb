@@ -158,6 +158,7 @@
       <td><%= sp_bsb.sp_s_43 %></td>
       <td><%= sp_bsb.sp_s_214 %></td>
       <td>
+        <%= link_to '抽检流程', "/sp_bsbs/sampling_process?id=#{sp_bsb.id}", :class => 'btn btn-link btn-xs center-block' %>
         <% if sp_bsb.sp_i_state == nil %>
           <%= link_to '填报样品信息', "/sp_bsbs/#{sp_bsb.id}/edit", :class => 'btn btn-link btn-xs center-block' %>
         <% elsif sp_bsb.sp_i_state < 2 %>

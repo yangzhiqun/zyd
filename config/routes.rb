@@ -2,7 +2,6 @@ Rails.application.routes.draw do
 
   get 'log_management/index'
   get 'log_management/search'
-
   match 'config/init_site', via: [:get, :post]
   get 'site-logo' => 'config#site_logo'
 
@@ -239,15 +238,14 @@ Rails.application.routes.draw do
       get "preview_ca_pdf"
       get 'report'
     end
-
     collection do
      get 'no_available_pdf_found'
      get 'by_ca_info'
      get 'print_pdf'
      get 'super_jg'
+     get 'sampling_process'
     end
   end
-
   resources :pad_sp_bsbs do
     member do
       get "accept_file"
