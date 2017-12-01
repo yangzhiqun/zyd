@@ -1,0 +1,137 @@
+<%= javascript_include_tag "statistics/layDate/laydate","statistics/city_data","statistics/treegrad/jquery-1.3.2.min","statistics/treegrad/TreeGrid","statistics/cjdwtj" %>
+<!-- 表格数据 -->
+<div id="table_testCompany" style="margin-bottom: 100px;"></div>
+<!-- 右侧图表 -->
+<div class="charts">
+    <div class="charts_1 hide">
+        <div class="rightChart" id="chart" >
+        </div> 
+    </div> 
+</div>  
+<script>
+    var config = {
+            id: "tg1",
+            width: "100%",
+            renderTo: "table_testCompany",
+            headerAlign: "left",
+            headerHeight: "30",
+            dataAlign: "left",
+            indentation: "20",
+            folderOpenIcon: "<%= asset_path('statistics/page-open.png') %>",
+            folderCloseIcon: "<%= asset_path('statistics/page-close.png') %>",
+            defaultLeafIcon: "<%= asset_path('statistics/page-none.png') %>", 
+            hoverRowBackground: "false",
+            folderColumnIndex: "0",
+            itemClick: "itemClickEvent",
+            columns:[
+                {headerText: "地区", dataField: "name", headerAlign: "center",width: "300", handler: "customOrgName"},
+                {headerText: "序号", dataField: "code", headerAlign: "center", dataAlign: "center"},
+                {headerText: "任务数",dataField: "task", headerAlign: "center", dataAlign: "center",},
+                {headerText: "接样数", dataField: "sampling",headerAlign: "center", dataAlign: "center", },
+                {headerText: "合格数", dataField: "qualified",headerAlign: "center", dataAlign: "center", },
+                {headerText: "不合格数",dataField: "unqualified", headerAlign: "center", dataAlign: "center", },
+                {headerText: "已处置", dataField: "dcisposed",headerAlign: "center", dataAlign: "center", },
+                {headerText: "处置中", dataField: "disposeing",headerAlign: "center", dataAlign: "center", },
+            ],
+            data: <%= raw data %>
+            //data:[
+            //    {name: "合肥", code: "1",task:"22",sampling:"15",qualified:"10",unqualified:"12",Disposed:"20",Disposeing:"2",children:[
+            //            {name: "合肥承检1", code: "2",task:"10",sampling:"5",qualified:"8",unqualified:"2",Disposed:"10",Disposeing:"0",},
+            //            {name: "合肥承检2", code: "3",task:"5",sampling:"5",qualified:"5",unqualified:"0",Disposed:"4",Disposeing:"1",},
+            //            {name: "合肥承检3", code: "4",task:"7",sampling:"5",qualified:"5",unqualified:"2",Disposed:"5",Disposeing:"2",}
+            //            ]},
+            //    {name: "黄山", code: "5", task:"20",sampling:"15",qualified:"11",unqualified:"1",Disposed:"1",Disposeing:"1",},
+            //    {name: "蚌埠", code: "6", task:"15",sampling:"15",qualified:"11",unqualified:"10",Disposed:"2",Disposeing:"2",},
+            //    {name: "", code: "总计",task:"57",sampling:"45",qualified:"32",unqualified:"23",Disposed:"23",Disposeing:"5",},
+            //]
+        };
+
+        $(document).ready(function(){
+            treeGrid.expandAll("N");//默认关闭
+            $("#table_testCompany table tr:last td:first").children("img").remove(); //删除最后图标
+            $(".allcheck").click(function(){
+                $("#tg1").find("input[name='cblbox']").attr("checked",$(this).attr("checked"));
+            });
+
+            // 时间区域选取
+            // 初始时间
+            laydate.render({
+              elem: '#page-start', //指定元素
+              type: 'month'
+            });
+            // 结束时间
+            laydate.render({
+              elem: '#page-end', //指定元素
+              type: 'month'
+            });
+
+        });
+        /*
+            单击数据行后触发该事件
+            id：行的id
+            index：行的索引。
+            data：json格式的行数据对象。
+        */
+        function itemClickEvent(id, index, data){
+
+
+            jQuery("#currentRow").val(id + ", " + index + ", " + TreeGrid.json2str(data));
+        }
+
+        /*
+            通过指定的方法来自定义栏数据
+        */
+        function customCheckBox(row, col){
+            return "<input name='cblbox' type='checkbox'>";
+        }
+
+        function customOrgName(row, col){
+            var name = row[col.dataField] || "";
+            return name;
+        }
+
+        function customLook(row, col){
+
+            return "<a href='javascript:void(0)' onclick='showrowname(\""+row.code+"\",\""+row.name+"\")' style='color:blue;'>查看</a>";
+        }
+
+        function showrowname(code , name){
+            alert( code +  name );
+
+        }
+
+        //创建一个组件对象
+        var treeGrid = new TreeGrid(config);
+        treeGrid.show();
+
+        /*
+            展开、关闭所有节点。
+            isOpen=Y表示展开，isOpen=N表示关闭
+        */
+        function expandAll(isOpen){
+            treeGrid.expandAll(isOpen);
+        }
+
+        /*
+            取得当前选中的行，方法返回TreeGridItem对象
+        */
+        function selectedItem(){
+            var treeGridItem = treeGrid.getSelectedItem();
+            if(treeGridItem!=null){
+                //获取数据行属性值
+                //alert(treeGridItem.id + ", " + treeGridItem.index + ", " + treeGridItem.data.name);
+
+                //获取父数据行
+                var parent = treeGridItem.getParent();
+                if(parent!=null){
+                    //jQuery("#currentRow").val(parent.data.name);
+                }
+
+                //获取子数据行集
+                var children = treeGridItem.getChildren();
+                if(children!=null && children.length>0){
+                    jQuery("#currentRow").val(children[0].data.name);
+                }
+            }
+        }
+</script>

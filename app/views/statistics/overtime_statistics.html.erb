@@ -1,25 +1,131 @@
-<div style="text-align: center; margin: 10px;">
-  <h2>抽样及检验超期统计</h2>
-  <p>统计出各抽样单位或检验单位抽样及超期统计数。</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>抽样及检验超期统计</title>
+    <!-- css
+    <link rel="stylesheet" href="../libs/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/cjdwtj.css">
+    -->
+    <%#= stylesheet_link_tag "statistics_old/bootstrap/dist/css/bootstrap.min.css", :media => "all" %>
+    <%= stylesheet_link_tag "statistics_old/reset","statistics_old/cjdwtj", :media => "all" %>
+    <!-- js
+    <script src="../libs/jquery-2.1.4/dist/jquery.min.js"></script>
+    <script src="../libs/echarts.js"></script>
+    <script src="../libs/jquery-easyui-1.5.3/jquery.easyui.min.js"></script>
+    -->
+    <%= javascript_include_tag "statistics/city_data","statistics/cyjjycqtj" %>
+</head>
+<body>
+<div class="container">
+    <!-- 头部head -->
+    <div class="page-header testcompany_header">
+        <h1>抽样及检验超期统计</h1>
+    </div>
+    
+    <!-- 上侧按钮部分 -->
+    <div class="topbtn_cqtj">
+        <form role="form">
+            <div class="form-group topbtnSect_cqtj">
+                <!-- 左侧选取栏 -->
+                <label>区域：</label>
+                <select class="form-control cqtj_option" id="cqtj_option"></select>
+                <!-- 右侧操作按钮 -->
+                <div class="cqtjbtn_operBox">
+                    <button type="submit" class="btn btn-default bgc1 btn-primary cqtjbtn_export">导出列表</button>
+                </div>
+            </div>
+        </form>
+    </div>
+   
+    <!-- 右侧图表    -->
+    <div class="charts">
+        <div class="charts_1">
+            <div id="chart_1"></div>
+        </div>
+        <div class="charts_2">
+            <div id="chart_2"></div>
+        </div>
+    </div>
 </div>
-
-<div class="statistical-table">
-  <table>
-    <tr>
-      <th>序号</th>
-      <th>总批次</th>
-      <th>完成抽样批次</th>
-      <th>不合格样本批次</th>
-      <th>核查处置率</th>
-    </tr>
-    <% @a_categories.each_with_index do |ac, i| %>
-      <tr>
-        <td><%= i + 1 %></td>
-        <td><%= SpBsb.where(sp_s_17: ac.name).all.count %></td>
-        <td><%= ac.id %></td>
-        <td><%= ac.id %></td>
-        <td><%= ac.id %></td>
-      </tr>
-    <% end %>
-  </table>
-</div>
+</body>
+<script>
+        var data = <%= raw @data %>
+        console.log(data);
+        var idTmr;  
+        function  getExplorer() {  
+            var explorer = window.navigator.userAgent ;  
+            //ie  
+            if (explorer.indexOf("MSIE") >= 0) {  
+                return 'ie';  
+            }  
+            //firefox  
+            else if (explorer.indexOf("Firefox") >= 0) {  
+                return 'Firefox';  
+            }  
+            //Chrome  
+            else if(explorer.indexOf("Chrome") >= 0){  
+                return 'Chrome';  
+            }  
+            //Opera  
+            else if(explorer.indexOf("Opera") >= 0){  
+                return 'Opera';  
+            }  
+            //Safari  
+            else if(explorer.indexOf("Safari") >= 0){  
+                return 'Safari';  
+            }  
+        }  
+        function method5(tableid) {  
+            if(getExplorer()=='ie')  
+            {  
+                var curTbl = document.getElementById(tableid);  
+                var oXL = new ActiveXObject("Excel.Application");  
+                var oWB = oXL.Workbooks.Add();  
+                var xlsheet = oWB.Worksheets(1);  
+                var sel = document.body.createTextRange();  
+                sel.moveToElementText(curTbl);  
+                sel.select();  
+                sel.execCommand("Copy");  
+                xlsheet.Paste();  
+                oXL.Visible = true;  
+  
+                try {  
+                    var fname = oXL.Application.GetSaveAsFilename("Excel.xls", "Excel Spreadsheets (*.xls), *.xls");  
+                } catch (e) {  
+                    print("Nested catch caught " + e);  
+                } finally {  
+                    oWB.SaveAs(fname);  
+                    oWB.Close(savechanges = false);  
+                    oXL.Quit();  
+                    oXL = null;  
+                    idTmr = window.setInterval("Cleanup();", 1);  
+                }  
+  
+            }  
+            else  
+            {  
+                tableToExcel(tableid)  
+            }  
+        }  
+        function Cleanup() {  
+            window.clearInterval(idTmr);  
+            CollectGarbage();  
+        }  
+        var tableToExcel = (function() {  
+            var uri = 'data:application/vnd.ms-excel;base64,',  
+                    template = '<html><head><meta charset="UTF-8"></head><body><table>{table}</table></body></html>',  
+                    base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) },  
+                    format = function(s, c) {  
+                        return s.replace(/{(\w+)}/g,  
+                                function(m, p) { return c[p]; }) }  
+            return function(table, name) {  
+                if (!table.nodeType) table = document.getElementById(table)  
+                var ctx = {worksheet: name || 'Worksheet', table: table.innerHTML}  
+                window.location.href = uri + base64(format(template, ctx))  
+            }  
+        })() 
+</script>
+</html>

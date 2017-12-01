@@ -1,0 +1,48 @@
+.checkquery_option{
+    line-height: 20px;
+    margin: 15px 0 15px 40px;
+}
+.check_selectbox{
+    display: inline-block;
+    width: 24.5%;
+    padding-bottom: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.check_selectbox label{
+    display: inline-block;
+    width: 34%;
+    text-align: right;
+    line-height: 32px;
+    vertical-align: bottom;
+    margin-left: 10px;
+}
+.check_selectbox select{
+    display: inline-block;
+    height: 36px;
+    width: 58%;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+    font-size: 16px;
+}
+.check_selectbox input.checkbox_optionE,
+.check_selectbox input.checkbox_optionF{
+    display: inline-block;
+    width: 58%;
+}
+.taskbtn_operBox{
+    height: 100%;
+    width: 100%;
+    display: inline-block;
+    vertical-align: bottom;
+    float: left;
+    margin-left: 25px;
+    margin-bottom: 40px;
+}
+.taskbtn_operBox .taskbtn_query,
+.taskbtn_operBox .taskbtn_export{
+    width: 150px;
+    height: 100%;
+    margin: 0 15px;
+}

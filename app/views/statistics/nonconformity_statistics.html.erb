@@ -1,55 +1,503 @@
-<div style="text-align: center; margin: 10px;">
-</div>
-<div style="">
-  <div id="circle" style="width: 600px;height:400px; text-align: center"></div>
-  <script type="text/javascript">
-    var myChart = echarts.init(document.getElementById('circle'));
-    var option = {
-      title: {
-        text: '不合格项目统计',
-        subtext: '查询统计省市县三级不合格项目情况。',
-        x: 'center'
-      },
-      tooltip: {
-        trigger: 'item',
-        formatter: "{a} <br/>{b} : {c} ({d}%)"
-      },
-      legend: {
-        orient: 'vertical',
-        left: 'left',
-        data: ['合格', '不合格', '未检出']
-      },
-      color: ['#3398DB', '#fa0404', '#dddddd'],
-      series: [
-        {
-          name: '不合格项目统计',
-          type: 'pie',
-          radius: '55%',
-          center: [
-            '50%', '60%'
-          ],
-          data: [
-            {
-              value: <%= @good %>,
-              name: '合格'
-            }, {
-              value: <%= @bad %>,
-              name: '不合格'
-            }, {
-              value: <%= @checkout_no %>,
-              name: '未检出'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>不合格项目统计</title>
+    <%#= stylesheet_link_tag "statistics_old/bootstrap/dist/css/bootstrap.min.css", :media => "all" %>
+    <%= stylesheet_link_tag "statistics_old/reset","statistics_old/unproject", :media => "all" %>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header testcompany_header">
+            <h1>不合格项目统计</h1>
+        </div>
+        <div class="content">
+            <div>
+                <form action="/nonconformity_statistics">
+                  <!--<button class="btn btn-default bgc1 btn-primary export_btn">导出报表</button>-->
+                  <input type="hidden" name="is_export" id="is_export" value="1">
+                  <input type="submit" name="commit" value="导出报表" id="save" class="btn btn-default bgc1 btn-primary export_btn">
+                </form>
+            </div>
+            <div style="width:100%;margin-top: 15px;">
+                <div class="content_left">
+                    <table>
+                        <tr>
+                            <th class="bgc1"><button class="area_btn" id="btn_area">安徽省</button></th>
+                        </tr>
+                    </table>
+                </div>
+                <div class="content_main" id="mainMap"></div>
+                <div class="content_right">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="bgc1">检验不合格项目</th>
+                               <th class="bgc1">不合格批次</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- <tr>
+                                <td>酸价（KOH）</td>
+                                <td><button class="value_btn">10</button></td>
+                            </tr>
+                            <tr>
+                                <td>过氧化值</td>
+                                <td><button class="value_btn">15</button></td>
+                            </tr> -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--
+    <script src="../libs/jquery-2.1.4/dist/jquery.min.js"></script>
+    <script src="../libs/echarts.js"></script>
+    <script src="../js/map/china-main-city-map.js"></script>
+    -->
+    <%= javascript_include_tag "statistics/map/china-main-city-map" %>
+    <script>
+    $(function(){
+        var all_data = <%= raw @data_items %>
+        console.log(all_data);
+        chartMap();
+        main();
+    })
+    function main(){
+        //动态渲染左侧区域数据
+        var htmlStr='';
+        for(var k in cityMap){
+            if(k!='安徽'){
+                 htmlStr+='<tr>'+
+                            '<td><button class="area_btn">'+k+'</'+'button></td>'+
+                        '</tr>'
             }
-          ],
-          itemStyle: {
-            emphasis: {
-              shadowBlur: 10,
-              shadowOffsetX: 0,
-              shadowColor: 'rgba(0, 0, 0, 0.5)'
-            }
-          }
         }
-      ]
-    };
-    myChart.setOption(option);
-  </script>
-</div>
+        $('.content_left table').append(htmlStr);
+        // $('#btn_area').click(function(event) {
+        //     $('td').slideDown(500);
+        // });
+    
+        // 点击检验值弹出对应区域的数据详情
+        $(document).on('click','.value_btn',function(){
+             var iTop = (window.screen.availHeight-400)/ 2;
+             var iLeft = (window.screen.availWidth-800)/ 2;
+             window.open('./detailList.html', '_blank','height=400, width=800, top='+iTop+',left='+iLeft+', toolbar=no,menubar=no, scrollbars=no,resizable=no, location=no, status=no');
+        });
+       
+    }        
+function chartMap(){
+    var myChart = echarts.init(document.getElementById('mainMap'));
+    //存储切换的每一级地图信息
+    var mapStack = [];
+    var timeFn = null;
+    var curMap = {};
+    var titleType=['安徽省','合肥市','淮北市','宿州市','阜阳市','淮南市','滁州市','六安市','马鞍山市','芜湖市','宣城市','池州市','安庆市','黄山市','亳州市','蚌埠市'];
+    var randomData=returnData();
+    console.log(randomData)
+    //初始化地图
+    // function randomData() {
+    //     return Math.round(Math.random()*100);
+    // }    
+    loadMap('340000', 'anhui','安徽省');
+    addHtml(randomData.anhui);
+    
+    myChart.on('mapselectchanged', function(params) {
+        clearTimeout(timeFn);
+        //由于单击事件和双击事件冲突，故单击的响应事件延迟250毫秒执行
+        timeFn = setTimeout(function(){
+            console.log(params)
+            var name = params.batch[0].name;
+            var mapCode = cityMap[name];
+            if (!mapCode) {
+                alert('无此区域地图显示');
+                return;
+            }
+            //根据区域名更改表格数据
+            switch(name){
+                case '安徽省':
+                addHtml(randomData.anhui);
+                break;
+                case '合肥市':
+                addHtml(randomData.hefei);
+                break;
+                case '芜湖市':
+                addHtml(randomData.wuhu);
+                break;
+                case '蚌埠市':
+                addHtml(randomData.bengbu);
+                break;
+                case '淮北市':
+                addHtml(randomData.huaibei);
+                break;
+                case '马鞍山市':
+                addHtml(randomData.maanshan);
+                break;
+                case '淮南市':
+                addHtml(randomData.huainan);
+                break;
+                case '铜陵市':
+                addHtml(randomData.tongling);
+                break;
+                case '安庆市':
+                addHtml(randomData.anqing);
+                break;
+                case '黄山市':
+                addHtml(randomData.huangshan);
+                break;
+                case '滁州市':
+                addHtml(randomData.chuzhou);
+                break;
+                case '宿州市':
+                addHtml(randomData.suzhou);
+                break;
+                case '阜阳市':
+                addHtml(randomData.fuyang);
+                break;
+                case '六安市':
+                addHtml(randomData.luan);
+                break;
+                case '亳州市':
+                addHtml(randomData.bozhou);
+                break;
+                case '池州市':
+                addHtml(randomData.chizhou);
+                break;
+                case '宣城市':
+                addHtml(randomData.xuancheng);
+                break;
+                default:
+                break;
+
+            }
+            loadMap(mapCode, name,name); 
+            //将上一级地图信息压入mapStack
+            mapStack.push({
+                mapCode: curMap.mapCode,
+                mapName: curMap.mapName
+            });
+        }, 250);   
+    });
+    /*
+       绑定双击事件，并加载上一级地图
+    */
+    myChart.on('dblclick', function(params) {
+        //当双击事件发生时，清除单击事件，仅响应双击事件
+        clearTimeout(timeFn);
+        var map = mapStack.pop();
+        if (!mapStack.length && !map) {
+            alert('已经到达最上一级地图了');
+            return;
+        }
+        loadMap(340000, 'anhui','安徽省');
+        if(map.mapName=='anhui'){
+           addHtml(randomData.anhui);
+        }
+    });
+    /**
+       加载地图：根据地图所在省市的行政编号
+    */
+    //点击左侧区域右侧地图和数据表随之更新
+    
+    $(document).on('click','.area_btn',function(){
+        var thisTxt=$(this).text();
+        switch(thisTxt){
+            case '安徽省':
+            addHtml(randomData.anhui);
+            click_slide(randomData.anhui.yb,'anhui','安徽省');
+            break;
+            case '合肥市':
+            addHtml(randomData.hefei);
+            click_slide(randomData.hefei.yb,'hefei','合肥市');
+            break;
+            case '芜湖市':
+            addHtml(randomData.wuhu);
+            click_slide(randomData.wuhu.yb,'wuhu','芜湖市');
+            break;
+            case '蚌埠市':
+            addHtml(randomData.bengbu);
+            click_slide(randomData.bengbu.yb,'bengbu','蚌埠市');
+            break;
+            case '淮北市':
+            addHtml(randomData.huaibei);
+            click_slide(randomData.huaibei.yb,'hauibei','淮北市');
+            break;
+            case '马鞍山市':
+            addHtml(randomData.maanshan);
+            click_slide(randomData.maanshan.yb,'maanshan','马鞍山市');
+            break;
+            case '淮南市':
+            addHtml(randomData.huainan);
+            click_slide(randomData.huainan.yb,'huainan','淮南市');
+            break;
+            case '铜陵市':
+            addHtml(randomData.tongling);
+            click_slide(randomData.tongling.yb,'tongling','铜陵市');
+            break;
+            case '安庆市':
+            addHtml(randomData.anqing);
+            click_slide(randomData.anqing.yb,'anqing','安庆市');
+            break;
+            case '黄山市':
+            addHtml(randomData.huangshan);
+            click_slide(randomData.huangshan.yb,'huangshan','黄山市');
+            break;
+            case '滁州市':
+            addHtml(randomData.chuzhou);
+            click_slide(randomData.chuzhou.yb,'chuzhou','滁州市');
+            break;
+            case '宿州市':
+            addHtml(randomData.suzhou);
+            click_slide(randomData.suzhou.yb,'suzhou','宿州市');
+            break;
+            case '阜阳市':
+            addHtml(randomData.fuyang);
+            click_slide(randomData.fuyang.yb,'fuyang','阜阳市');
+            break;
+            case '六安市':
+            addHtml(randomData.luan);
+            click_slide(randomData.luan.yb,'luan','六安市');
+            break;
+            case '亳州市':
+            addHtml(randomData.bozhou);
+            click_slide(randomData.bozhou.yb,'bozhou','亳州市');
+            break;
+            case '池州市':
+            addHtml(randomData.chizhou);
+            click_slide(randomData.chizhou.yb,'chizhou','池州市');
+            break;
+            case '宣城市':
+            addHtml(randomData.xuancheng);
+            click_slide(randomData.xuancheng.yb,'xuancheng','宣城市');
+            break;
+            default:
+            break;
+        }
+    });
+    // 点击左侧边栏显示相应的地区
+    function click_slide(mapCode,mapTitle,name){
+        if (!mapCode) {
+            alert('无此区域地图显示');
+            return;
+        }
+        loadMap(mapCode,mapTitle,name); 
+        //将上一级地图信息压入mapStack
+        mapStack.push({
+            mapCode: curMap.mapCode,
+            mapName: curMap.mapName
+        });
+    }
+    function addHtml(obj){
+        console.log(obj);
+        var htmlStr='<tr>'+
+                            '<td>酸价（KOH）</td>'+
+                            '<td><button class="value_btn">'+obj.koh+'</button></td>'+
+                       '</tr>'+
+                       '<tr>'+
+                           '<td>过氧化值</td>'+
+                           '<td><button class="value_btn">'+obj.hoValue+'</button></td>'+
+                        '</tr>'
+            $('.content_right>table>tbody').html(htmlStr);
+    }
+    // 地图方法封装
+    function loadMap(mapCode, mapName,titleName) {
+        // alert(mapCode)
+        //$.getJSON('../js/map/china-main-city/' + mapCode + '.json', function(data) {
+        $.getJSON('nonconformity_statistics_data/'+mapCode, function(data) {
+             console.log(<%= raw @data_arr %>);
+             if (data) {
+                 echarts.registerMap(mapName, data);
+                 var option = {
+                    title:{
+                        text:titleName,
+                        left:'center'
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        // formatter: '{b}'
+                    },
+                    visualMap: {
+                       min: 0,
+                       max: 100,
+                       left: 'left',
+                       top: 'bottom',
+                       text: ['高','低'],          
+                       calculable: true,
+                       inRange: {
+                           color: ['yellow', 'lightblue']
+                       }
+                    },
+                    // toolbox: {
+                   
+                    series: [
+                        {
+                            name: '不合格批次',
+                            type: 'map',
+                            mapType: mapName,
+                            selectedMode : 'multiple',
+                            label: {
+                                normal: {
+                                    show: true
+                                },
+                                emphasis: {
+                                    show: true
+                                }
+                            },
+                            data: <%= raw @data_arr %>
+                            //data:[
+                            //    // 市级数据
+                            //    {name:'合肥市',value:randomData.hefei.count},
+                            //    {name:'淮北市',value:randomData.huaibei.count},
+                            //    {name:'宿州市',value:randomData.suzhou.count},
+                            //    {name:'阜阳市',value:randomData.fuyang.count},
+                            //    {name:'淮南市',value:randomData.huainan.count},
+                            //    {name:'滁州市',value:randomData.chuzhou.count},
+                            //    {name:'六安市',value:randomData.luan.count},
+                            //    {name:'马鞍山市',value:randomData.maanshan.count},
+                            //    {name:'芜湖市',value:randomData.wuhu.count},
+                            //    {name:'铜陵市',value:randomData.tongling.count},
+                            //    {name:'宣城市',value:randomData.xuancheng.count},
+                            //    {name:'池州市',value:randomData.chizhou.count},
+                            //    {name:'安庆市',value:randomData.anqing.count},
+                            //    {name:'黄山市',value:randomData.huangshan.count},
+                            //    {name:'亳州市',value:randomData.bozhou.count},
+                            //    {name:'蚌埠市',value:randomData.bengbu.count},
+                            //    // 县级数据
+                            //    {name:'长丰县',value:0},
+                            //    {name:'庐江县',value:0},
+                            //    {name:'庐阳区',value:0},
+                            //    {name:'巢湖市',value:0},
+                            //    {name:'包河区',value:0},
+                            //    {name:'肥东县',value:0},
+                            //    {name:'肥西县',value:0},
+                            //    {name:'蜀山区',value:0},
+                            //    {name:'瑶海区',value:0},
+    
+                            //    {name:'砀山县',value:0},
+                            //    {name:'萧县',value:0},
+                            //    {name:'埇桥区',value:0},
+                            //    {name:'灵璧县',value:0},
+                            //    {name:'泗县',value:0},
+    
+                            //    {name:'杜集区',value:0},
+                            //    {name:'相山区',value:0},
+                            //    {name:'烈山区',value:0},
+                            //    {name:'濉溪县',value:0},
+    
+                            //    {name:'固镇县',value:0},
+                            //    {name:'五河县',value:0},
+                            //    {name:'怀远县',value:0},
+                            //    {name:'淮上区',value:0},
+                            //    {name:'龙子湖区',value:0},
+                            //    {name:'蚌山区',value:0},
+                            //    {name:'禹会区',value:0},
+    
+                            //    {name:'界首市',value:0},
+                            //    {name:'太和县',value:0},
+                            //    {name:'颍泉区',value:0},
+                            //    {name:'颍东区',value:0},
+                            //    {name:'颍州区',value:0},
+                            //    {name:'颍上县',value:0},
+                            //    {name:'阜南县',value:0},
+                            //    {name:'临泉县',value:0},
+    
+                            //    {name:'凤台县',value:0},
+                            //    {name:'潘集区',value:0},
+                            //    {name:'八公山区',value:0},
+                            //    {name:'谢家集区',value:0},
+                            //    {name:'田家庵区',value:0},
+                            //    {name:'大通区',value:0},
+    
+                            //    {name:'霍邱县',value:0},
+                            //    {name:'寿县',value:0},
+                            //    {name:'裕安区',value:0},
+                            //    {name:'金安区',value:0},
+                            //    {name:'金寨县',value:0},
+                            //    {name:'霍山县',value:0},
+                            //    {name:'舒城县',value:0},
+    
+                            //    {name:'凤阳县',value:0},
+                            //    {name:'明光市',value:0},
+                            //    {name:'天长市',value:0},
+                            //    {name:'定远县',value:0},
+                            //    {name:'南谯区',value:0},
+                            //    {name:'琅琊区',value:0},
+                            //    {name:'来安县',value:0},
+                            //    {name:'全椒县',value:0},
+    
+                            //    {name:'谯城区',value:0},
+                            //    {name:'涡阳县',value:0},
+                            //    {name:'蒙城县',value:0},
+                            //    {name:'利辛县',value:0},
+    
+                            //    {name:'含山县',value:0},
+                            //    {name:'和县',value:0},
+                            //    {name:'花山区',value:0},
+                            //    {name:'雨山区',value:0},
+                            //    {name:'当涂县',value:0},
+    
+                            //    {name:'无为县',value:0},
+                            //    {name:'鸠江区',value:0},
+                            //    {name:'镜湖区',value:0},
+                            //    {name:'弋江区',value:0},
+                            //    {name:'三山区',value:0},
+                            //    {name:'芜湖县',value:0},
+                            //    {name:'繁昌县',value:0},
+                            //    {name:'南陵县',value:0},
+    
+                            //    {name:'贵池区',value:0},
+                            //    {name:'青阳县',value:0},
+                            //    {name:'石台县',value:0},
+                            //    {name:'东至县',value:0},
+    
+                            //    {name:'岳西县',value:0},
+                            //    {name:'潜山县',value:0},
+                            //    {name:'桐城市',value:0},
+                            //    {name:'枞阳县',value:0},
+                            //    {name:'怀宁县',value:0},
+                            //    {name:'宜秀区',value:0},
+                            //    {name:'望江县',value:0},
+                            //    {name:'太湖县',value:0},
+                            //    {name:'宿松县',value:0},
+                            //    {name:'迎江区',value:0},
+                            //    {name:'大观区',value:0},
+    
+                            //    {name:'郎溪县',value:0},
+                            //    {name:'广德县',value:0},
+                            //    {name:'宣州区',value:0},
+                            //    {name:'宁国市',value:0},
+                            //    {name:'泾县',value:0},
+                            //    {name:'旌德县',value:0},
+                            //    {name:'绩溪县',value:0},
+    
+                            //    {name:'黄山区',value:0},
+                            //    {name:'黟县',value:0},
+                            //    {name:'徽州区',value:0},
+                            //    {name:'歙县',value:0},
+                            //    {name:'屯溪区',value:0},
+                            //    {name:'休宁县',value:0},
+                            //    {name:'祁门县',value:0},
+    
+                            //    {name:'铜陵县',value:0},
+                            //    {name:'狮子山区',value:0},
+                            //    {name:'铜官山区',value:0},
+                            //    {name:'郊区',value:0},
+                            //]
+                        }
+                    ]
+                 };
+                 myChart.setOption(option);
+                 curMap = {
+                    mapCode: mapCode,
+                    mapName: mapName
+                 };     
+             } else {
+                 alert('无法加载该地图');
+             }       
+        });
+    }   
+}       
+    </script>
+</body>
+</html>

@@ -118,9 +118,9 @@ module ApplicationHelper
       #  all_jg = JgBsb.where("id = ? and jg_type = ?",current_user.jg_bsb.id,1)
       #end
 			#if current_user.is_admin?
-        all_jg = JgBsb.where(jg_type: 1)
+      all_jg = JgBsb.where(jg_type: 1).includes(:jg_bsb_names)
       #end
-			all_jg.each{ |a| jg_arr << a.jg_name}
+      all_jg.each{ |a| jg_arr << a.jg_bsb_names.last.name}
 		else
 			jg_type = current_user.jg_bsb.jg_type
 			super_jg = current_user.jg_bsb.jg_bsb_supers
@@ -198,25 +198,32 @@ module ApplicationHelper
 	#机构是否是市
 	def jg_is_city?
 		jg = current_user.jg_bsb
-		return jg.jg_province != "-请选择-" && (jg.city != "-请选择-" || jg.city !="" )&& (jg.country == "-请选择-"  || jg.country =="")
+		return jg.jg_province != "-请选择-" && (jg.city != "-请选择-" || jg.city !="" )&& (jg.country == "-请选择-"  || jg.country.blank?)
 	end
 
 	#机构是否是县
 	def jg_is_country?
 		jg = current_user.jg_bsb
-		return jg.jg_province != "-请选择-" && (jg.city != "-请选择-" || jg.city !="" )&& (jg.country != "-请选择-" || jg.country !="")
+		return jg.jg_province != "-请选择-" && (jg.city != "-请选择-" || !jg.city.blank? ) && (jg.country != "-请选择-" && !jg.country.blank?)
 	end
+  
+  def yy_is_city?
+     return  current_user.prov_city.present? && (current_user.prov_city != "-请选择-")
+  end
 
+  def yy_is_country?
+    return current_user.prov_city.present? && current_user.prov_country.present? && (current_user.prov_country!= "-请选择-")
+  end
   def is_tuixiu
       (is_city? || is_county_level?)   
   end
 
   def is_shi_deploy?
-    (is_city?&&jg_is_city?)
+    (yy_is_city?&&jg_is_city?)
   end
 
   def is_xian_deploy?
-    (is_county_level?&&jg_is_country?)
+    (yy_is_country?&&jg_is_country?)
   end
  def is_level?
      return "省级"  if  is_sheng?
@@ -254,6 +261,10 @@ module ApplicationHelper
 
   def is_open_to_wochacha
     YAML.load_file("config/use_ca.yml")["is_open_to_wochacha"]
+  end
+
+  def is_open_baosong
+    !YAML.load_file("config/use_ca.yml")["open_baosong"]
   end
 
   def sp_bsb_fields

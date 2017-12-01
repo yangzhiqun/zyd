@@ -4,6 +4,6 @@ class ChangeTextToCheckItems < ActiveRecord::Migration
   end
   
   def down
-   change_column :check_items,:BZFFJCXDW,:text
+  # change_column :check_items,:BZFFJCXDW,:text
   end
 end

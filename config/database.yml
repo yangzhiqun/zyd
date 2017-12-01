@@ -9,6 +9,7 @@ development:
   username: root
   password: admin
 
+
 production:
   adapter: mysql2
   encoding: utf8
@@ -17,3 +18,4 @@ production:
   pool: 25
   username: root
   password: admin
+

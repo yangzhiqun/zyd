@@ -23,6 +23,14 @@ class ChangeLengthToWtypCabParts < ActiveRecord::Migration
             
    change_column :wtyp_czb_parts,:cpkzqk_1,:string,limit: 100
    change_column :wtyp_czb_parts,:cpkzqk_2,:string,limit: 100
+   #change_column :wtyp_czb_parts,:cpkzqk_3,:string,limit: 100
+   #change_column :wtyp_czb_parts,:cpkzqk_4,:string,limit: 200
+   #change_column :wtyp_czb_parts,:cpkzqk_5,:string,limit: 100
+   #change_column :wtyp_czb_parts,:cpkzqk_6,:string,limit: 100
+   #change_column :wtyp_czb_parts,:cpkzqk_7,:string,limit: 100
+   #change_column :wtyp_czb_parts,:cpkzqk_8,:string,limit: 100
+   #change_column :wtyp_czb_parts,:cpkzqk_9,:string,limit: 100
+   #change_column :wtyp_czb_parts,:cpkzqk_10,:string,limit: 100
    change_column :wtyp_czb_parts,:cpkzqk_3,:string,limit: 100
   end
 end
