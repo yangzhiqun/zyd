@@ -39,7 +39,7 @@ class StatisticsController < ApplicationController
 
   #不合格项目统计
   def nonconformity_statistics
-    @sp_bsbs = SpBsb.where("sp_bsbs.sp_i_state = 9 AND (sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%')").includes(:spdata)
+    @sp_bsbs = SpBsb.where("sp_i_state = 9 AND (sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%')").includes(:spdata)
     @data_arr = []
     @data_items = {"安徽省"=>{}}
     city = @sp_bsbs.where("sp_s_4 != '请选择'")
@@ -47,9 +47,6 @@ class StatisticsController < ApplicationController
     #地图各省数据
     city.group(:sp_s_4).count.each{ |k,y| @data_arr << {"name" => k+"市","value" => y} } 
     county.group(:sp_s_5).count.each{ |k,y| @data_arr << {"name" => k,"value" => y}}
-    p "1"*200
-    p @data_arr
-    p "2"*200
     @data_arr = @data_arr.to_json
     #各省不合格项目
     city.group_by{ |c| c.sp_s_4 }.each do |key,sp_bsbs|
@@ -64,7 +61,6 @@ class StatisticsController < ApplicationController
         end
       end
     end
-    p @data_items
     @data_items = @data_items.to_json
     if params["is_export"].present?
       send_file(DownloadStatistics.start("Statistic::Nonconformity",["aa"]), :disposition => "attachment")
@@ -131,9 +127,8 @@ class StatisticsController < ApplicationController
         sampling_num = 0 #单位抽样超期数量
         jg_name = jg.jg_bsb_names.last.name
         sp_bsbs = SpBsb.where(sp_s_43:jg_name)
-        sp_bsbs.where(sp_i_state:2).each { |sp| sampling_num +=1 if days_between(Time.now,sp.sp_d_38) > 5 }
         #抽样超期
-        #sp_bsbs.where(sp_i_state:2).each { |sp| p days_between(Time.now,sp.sp_d_38) }
+        sp_bsbs.where(sp_i_state:2).each { |sp| sampling_num +=1 if days_between(Time.now,sp.sp_d_38) > 5 }
         @data[city_name][0][:xAxis][0][:data] << jg_name
         @data[city_name][0][:series][0][:data] << sampling_num
         #检验超期
@@ -153,12 +148,29 @@ class StatisticsController < ApplicationController
     @data = @data.to_json
   end
 
+  #退休统计
+  def retirement_statistics
+  end
+
   #核查处置统计
   def disposal_statistics
-    city = params["city"] || "合肥"
-    sp_bsbs = SpBsb.where("sp_s_71 not like '%不合格样品%' and sp_s_71 not like '%问题样品%'").includes(:wtyp_czbs,:wtyp_czb_parts)
-    #区域:sp_s_wcshi sp_s_4
-    #不合格处置数 num = wtyp_czbs =1  状态
+    #@data = {} #{"大众超市"=>[30,"5%",5,"5%",0,50,4,2],"人民食堂"=>[75,"9%",3,"7%",0,43,0,2]}
+    #city = params["city"] || "合肥"
+    #sp_bsbs = SpBsb.where("(sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%') and (sp_s_wcshi='#{city}' or sp_s_4='#{city}' or sp_s_220='#{city}')")
+    #sp_bsb_ids = sp_bsbs.map{|s| s.id }
+    #sp_yydjbs = {}
+    #wtyp_czb_p = WtypCzbPart.where(sp_bsb_id:sp_bsb_ids).group_by{ |wt| wt.wtyp_sp_bsbs_id }
+    #SpYydjb.where(id:sp_bsb_ids).each{ |spyy| sp_yydjbs[spyy.id] = spyy }
+    #sp_bsbs.group_by{ |sp| sp.sp_s_35 }.each do |name,values|  
+    #  @data[name] = []
+    #  num1,num2,num3,num4,num5,num6,num7,num8 = 0,0,0,0,0,0,0,0
+    #  values.each do |sp_bsb|
+    #    if wtyp_czb_p.has_key?(sp_bsb.id)
+    #      wtyp_czb_p[sp_bsb.id].each{ |wp| wp }
+    #    end
+    #  end
+    #end
+    #不合格处置数 num = wtyp_czbs = current_state:1  状态
     #不合格处置率 :num/sp_bsbs
     #不合格处置完成数 :wtyp_czbs =3
     #:不合格处置完成率:wtyp_czbs/sp_bsbs
@@ -179,7 +191,13 @@ class StatisticsController < ApplicationController
 
   #复合查询统计
   def composite_statistics
-    #地区 全部包含
+    #@data = [{name: "合肥", code: "1",totalbat:"22",samplingbat:"15",qualifiedbat:"10%",unqualifiedbat:"12",qualifiedsamp:"20",riskbat:"2",problembat:"713",problemsamp:"1.24%",children:[{name: "长丰",code: "1",totalbat:"22",samplingbat:"15",qualifiedbat:"10%",unqualifiedbat:"12",qualifiedsamp:"20",riskbat:"2",problembat:"713",problemsamp:"1.24%"}]}]
+    @data = []
+    sp_bsbs = SpBsb.where("sp_s_4 != '请选择'").group_by{ |sp| sp.sp_s_4 }
+    sp_bsbs.each do |city,sp_arr|
+      totalbat = sp_arr.length #总批次
+      #samplingbat#监督抽检批次   
+    end
     #总批次 ： sp_bsb.where(地区).count
     #监督抽检批次：sp_s_44
     #风险检测批次 :sp_s_44
