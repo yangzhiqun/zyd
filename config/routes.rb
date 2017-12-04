@@ -448,6 +448,7 @@ Rails.application.routes.draw do
   get 'enterprise_statistics' => 'statistics#enterprise_statistics'
   get 'early_warning' => 'statistics#early_warning'
   get 'composite_statistics' => 'statistics#composite_statistics'
+  get 'retirement_statistics' => 'statistics#retirement_statistics'
   #任务子模板
   get 'statistics_task_type' => 'statistics#statistics_task_type'
   get 'statistics_food_type' => 'statistics#statistics_food_type'

@@ -672,6 +672,7 @@ class SpBsb < ActiveRecord::Base
   has_many :api_exchange_pools, :dependent => :delete_all
   has_many :sp_bsb_stamp_rules
   has_many :sp_logs
+  has_many :wtyp_czbs, foreign_key: 'wtyp_sp_bsbs_id'
   has_many :wtyp_czb_parts
   has_one :published_sp_bsb, foreign_key: 'cjbh', primary_key: 'sp_s_16'
 
