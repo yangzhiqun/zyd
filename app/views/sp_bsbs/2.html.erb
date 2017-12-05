@@ -276,8 +276,8 @@
                     <p></p>
                     <p style="text-indent: 8cm" ;>（检验报告专用章）</p>
                     <p style="text-indent: 3.3cm" ;>
-				签发日期：
-		    </p>
+			            	 签发日期：<span style="font-weight: bold;font-size:20px;"><% if @spbsb.issue_date.present?%><%= @spbsb.issue_date %> <% end%></span>
+		                </p>
                   </td>
                 </tr>
                 <tr>

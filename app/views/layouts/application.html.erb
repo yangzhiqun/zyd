@@ -756,7 +756,7 @@
             <cite></cite><a href="/unit_statistics">承检单位统计</a><i></i>
           </li>
           <li class="<%= "active" if action?("overtime_statistics") %>">
-            <cite></cite><a href="/overtime_statistics">抽样及检验超期统计</a><i></i>
+            <cite></cite><a href="/overtime_statistics">超期统计</a><i></i>
           </li>
           <li class="<%= "active" if action?("disposal_statistics") %>">
             <cite></cite><a href="/disposal_statistics">核查处置统计</a><i></i>
@@ -766,6 +766,9 @@
           </li>
           <li class="<%= "active" if action?("early_warning") %>">
             <cite></cite><a href="/early_warning">不合格样品及问题样品预警</a><i></i>
+          </li>
+          <li class="<%= "active" if action?("retirement_statistics") %>">
+            <cite></cite><a href="/retirement_statistics">退修统计</a><i></i>
           </li>
           <li class="<%= "active" if action?("composite_statistics") %>">
             <cite></cite><a href="/composite_statistics">复合查询统计</a><i></i>
@@ -804,13 +807,20 @@
             </div>
           </dd>
       <% end %>
-      <%# if current_user.is_admin? or is_shengshi? %>
+      <% if current_user.is_admin? or is_shengshi? %>
         <dd>
           <div class="title not-expand">
             <span><img src="<%= asset_path('leftico11.png') %>"/></span><a href="/log_management/index">日志查询</a>
           </div>
         </dd>
-      <%# end %>
+      <% end %>
+      <% if current_user.is_admin? || is_shengshi? || session[:change_js]==6 %>
+        <dd>
+          <div class="title not-expand">
+            <span><img src="<%= asset_path('leftico11.png') %>"/></span><a href="/report_forms/index">报表字段管理</a>
+          </div>
+        </dd>
+      <% end %>
     </dl>
 
   </div>
@@ -836,7 +846,9 @@
     <!--<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");
     document.write(unescape("%3Cspan id='cnzz_stat_icon_1000354640'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s22.cnzz.com/z_stat.php%3Fid%3D1000354640' type='text/javascript'%3E%3C/script%3E"));</script>-->
 <% end %>
-<%= javascript_include_tag 'ESealWebSocket_PDFClientLogin' %>
-<%= javascript_include_tag 'XTXSAB' %>
+<% if is_opne_ca %>
+  <%= javascript_include_tag 'ESealWebSocket_PDFClientLogin' %>
+  <%= javascript_include_tag 'XTXSAB' %>
+<% end %>
 </body>
 </html>

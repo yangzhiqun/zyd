@@ -40,7 +40,9 @@
             alert('<%= flash[:error] %>');
         }, 500);
         <% end %>
-        SetUserCertList('login_form_ca.user_cert_list', CERT_TYPE_ALL);
+        <% if is_opne_ca %>
+          SetUserCertList('login_form_ca.user_cert_list', CERT_TYPE_ALL);
+        <% end %>
 
         $('#cert-login').click(function () {
             var ret = Login('login_form_ca', login_form_ca.user_cert_list.value, login_form_ca.cert_password.value)

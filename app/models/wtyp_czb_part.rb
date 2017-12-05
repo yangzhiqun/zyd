@@ -464,7 +464,7 @@ class WtypCzbPart < ActiveRecord::Base
       end
     end
     if self.changed? && !content_tmp.blank?
-      WtypCzbPartLogs.create(sp_bsb_id: self.sp_bsb_id, content: content_tmp, wtyp_czb_part_id: self.id, wtyp_czb_state: self.current_state, wtyp_czb_type: self.wtyp_czb_type, user_id: current_user.id)
+      #WtypCzbPartLogs.create(sp_bsb_id: self.sp_bsb_id, content: content_tmp, wtyp_czb_part_id: self.id, wtyp_czb_state: self.current_state, wtyp_czb_type: self.wtyp_czb_type, user_id: current_user.id)
     end
   end
 
@@ -562,7 +562,7 @@ class WtypCzbPart < ActiveRecord::Base
     end
     # 被抽样单位市区
     unless params[:bcydw_shi].blank?
-      wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.bcydw_shi = ? or sp_s_4=?',params[:bcydw_shi],params[:bcydw_shi])
+      wtyp_czbs = wtyp_czbs.where('wtyp_czb_parts.bcydw_shi = ? or wtyp_czb_parts.sp_s_4=?',params[:bcydw_shi],params[:bcydw_shi])
     end
 
     # 表示生产企业名称

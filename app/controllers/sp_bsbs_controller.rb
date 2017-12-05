@@ -11,42 +11,42 @@ class SpBsbsController < ApplicationController
  def print
     @spbsb = SpBsb.find(params[:id])
      type =params[:type]
-     respond_to do |format|
-      format.pdf {
-	      pdfpath,n=@spbsb.generate_pdf_report(type)
-	      if pdfpath.nil?
+    respond_to do |format|
+     format.pdf {
+	       pdfpath,n=@spbsb.generate_pdf_report(type)
+	    if pdfpath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
-        else
-	        pdfpath = "#{Rails.application.config.attachment_path}/#{pdfpath}"
-	        send_file pdfpath, filename: n, disposition: 'inline'
-	      end
-      }
-      format.html {
-          filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], true, current_user.id,false)
-	      if filepath.nil?
+      else
+	       pdfpath = "#{Rails.application.config.attachment_path}/#{pdfpath}"
+	       send_file pdfpath, filename: n, disposition: 'inline'
+	    end
+     }
+     format.html {
+        filepath = @spbsb.generate_bsb_report_pdf(params[:pdf_rules], true, current_user.id,false)
+	    if filepath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
-        else
+      else
          send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
-	      end
-      }
+     	end
+     }
     end
- end
- def report
-     @spbsb = SpBsb.find(params[:id])
+  end
+  def report
+    @spbsb = SpBsb.find(params[:id])
     respond_to do |format|
     format.pdf {  
      type= params[:type]
      if @spbsb.JDCJ_report_path.present? and type=="JYBG"
-            filepath=@spbsb.JDCJ_report_path
+        filepath=@spbsb.JDCJ_report_path
      end
      if @spbsb.FXJC_report_path.present? and type=="FXBG"
-            filepath=@spbsb.FXJC_report_path
+        filepath=@spbsb.FXJC_report_path
      end
      if filepath.nil?
-          flash[:error] = '查看报告失败'
-          redirect_to '/sp_bsbs/no_available_pdf_found' and return
+       flash[:error] = '查看报告失败'
+        redirect_to '/sp_bsbs/no_available_pdf_found' and return
      else 
         send_file filepath, filename: "#{@spbsb.sp_s_16}-检验报告.pdf", disposition: 'inline'
      end
@@ -59,49 +59,46 @@ class SpBsbsController < ApplicationController
 	 format.html {
 		signData =params[:signData]
 		signCert =params[:signCert]
-               if params[:type] =='JYBG'
-		  ca_filepath=@spbsb.JDCJ_report_path
-                new_ca_filepath = "#{Rails.application.config.attachment_path}/result/#{@spbsb.sp_s_16}-look.pdf"
-		ruleNumList = []
-	        params[:pdf_rules].split(',').each do |rule|
-		   ruleNumList.push(rule)
-	         end
+    if params[:type] =='JYBG'
+		 ca_filepath=@spbsb.JDCJ_report_path
+     new_ca_filepath = "#{Rails.application.config.attachment_path}/result/#{@spbsb.sp_s_16}-look.pdf"
+		 ruleNumList = []
+	   params[:pdf_rules].split(',').each do |rule|
+		    ruleNumList.push(rule)
+	   end
 		                                    
-	        filepath = @spbsb.generate_ca_pdf_report(ca_filepath,new_ca_filepath,ruleNumList,signData,signCert,params[:nonce])
-		if filepath.nil?
-                    flash[:error] = '查看报告失败'
-                    redirect_to '/sp_bsbs/no_available_pdf_found' and return
-                 else
+	   filepath = @spbsb.generate_ca_pdf_report(ca_filepath,new_ca_filepath,ruleNumList,signData,signCert,params[:nonce])
+		 if filepath.nil?
+       flash[:error] = '查看报告失败'
+       redirect_to '/sp_bsbs/no_available_pdf_found' and return
+     else
 		    send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
-	         end
-                end
-	       if params[:type] =='FXBG'
-
-	         ca_filepath=@spbsb.FXJC_report_path
-		new_ca_filepath = "#{Rails.application.config.attachment_path}/result/#{@spbsb.sp_s_16}-FX_look.pdf"
-		ruleNumList = []
-                params[:pdf_rules].split(',').each do |rule|
-                   ruleNumList.push(rule)
-                 end
-                 filepath = @spbsb.generate_ca_pdf_report(ca_filepath,new_ca_filepath,ruleNumList,signData,signCert,params[:nonce])
-		if filepath.nil?
-                    flash[:error] = '查看报告失败'
-                    redirect_to '/sp_bsbs/no_available_pdf_found' and return
-                 else
-		   send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
-                 end
+	   end
+    end
+	  if params[:type] =='FXBG'
+      ca_filepath=@spbsb.FXJC_report_path
+	   	new_ca_filepath = "#{Rails.application.config.attachment_path}/result/#{@spbsb.sp_s_16}-FX_look.pdf"
+		  ruleNumList = []
+      params[:pdf_rules].split(',').each do |rule|
+        ruleNumList.push(rule)
+      end
+      filepath = @spbsb.generate_ca_pdf_report(ca_filepath,new_ca_filepath,ruleNumList,signData,signCert,params[:nonce])
+		  if filepath.nil?
+         flash[:error] = '查看报告失败'
+         redirect_to '/sp_bsbs/no_available_pdf_found' and return
+      else
+		     send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
+      end
 		
-	       end
+	  end
 			if !filepath.nil?
 				if !params[:ca_key_status].blank?
 					@spbsb.update_attributes({:ca_key_status =>9})
 				end
 			end
-         # send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
 		}
 		format.pdf {
-		#filepath =  Rails.root.join('tmp/pdf_preview', "preview_sp_bsbs_#{@spbsb.id}_print.pdf")
-		filepath  = File.expand_path('../reports', Rails.root).to_s+"preview_sp_bsbs_#{self.id}_print.pdf"
+	  	filepath  = File.expand_path('../reports', Rails.root).to_s+"preview_sp_bsbs_#{self.id}_print.pdf"
       if filepath.nil?
           flash[:error] = '查看报告失败'
           redirect_to '/sp_bsbs/no_available_pdf_found' and return
@@ -109,77 +106,68 @@ class SpBsbsController < ApplicationController
           send_file filepath, filename: "yyyy-检验报告.pdf", disposition: 'inline'
        end
     }	
-	end
+   end
   end
    
 
 
   def by_ca_info
     @spbsb = SpBsb.find(params[:id])
+    ActiveRecord::Base.transaction do
     sign_data=params[:sign_date]
     sealImg=params[:keypic]
     signCert=params[:sign_cert]
     res = {}
     pdf_path={} 
- if @spbsb.is_jiandu?
-    type='JYBG'
-   if @spbsb.ca_key_status ==0
-    pdfpath,n=@spbsb.generate_pdf_report(type)
-   else
-    pdfpath = "#{@spbsb.sp_s_16}-#{type}.pdf" 
-   end
-  	pdfpath = "#{Rails.application.config.attachment_path}/#{pdfpath}"
-	  filename = Rails.root.join('tmp', "sp_bsbs_jybg_#{@spbsb.id}.txt")	
-    jybg_result= @spbsb.client_sign_ca(pdfpath,sign_data,sealImg,signCert,filename)
-   if jybg_result.strip.include?('200')
+   if @spbsb.is_jiandu?
+     type='JYBG'
+    if @spbsb.ca_key_status ==0
+     pdfpath,n=@spbsb.generate_pdf_report(type)
+    else
+     pdfpath = "#{@spbsb.sp_s_16}-#{type}.pdf" 
+    end
+	   pdfpath = "#{Rails.application.config.attachment_path}/#{pdfpath}"
+  	 filename = Rails.root.join('tmp', "sp_bsbs_jybg_#{@spbsb.id}.txt")	
+     jybg_result= @spbsb.client_sign_ca(pdfpath,sign_data,sealImg,signCert,filename)
+    if jybg_result.strip.include?('200')
      jybg_file =  File.read(Rails.root.join('tmp', "sp_bsbs_jybg_#{@spbsb.id}.txt"))
-        #render json: {status: 'OK', msg: signSealMessagesJson,pdfpath: pdfpath}
      res[:JDCJ]=jybg_file
 	   pdf_path[:JDCJ]=pdfpath
-   else
-      render json: {status: 'ERR', msg:  jybg_result} and return
+    else
+       render json: {status: 'ERR', msg:  jybg_result} and return
+    end
    end
- end
- if  @spbsb.is_jiance?
-	 type='FXBG'
-  if @spbsb.ca_key_status ==0
-   pdfpath,n=@spbsb.generate_pdf_report(type)
-  else
-   pdfpath = "#{@spbsb.sp_s_16}-#{type}.pdf"
+   if  @spbsb.is_jiance?
+	  type='FXBG'
+    if @spbsb.ca_key_status ==0
+     pdfpath,n=@spbsb.generate_pdf_report(type)
+    else
+     pdfpath = "#{@spbsb.sp_s_16}-#{type}.pdf"
+    end
+     pdfpath = "#{Rails.application.config.attachment_path}/#{pdfpath}"
+     filename = Rails.root.join('tmp', "sp_bsbs_fxbg_#{@spbsb.id}.txt")
+	   fxbg_result= @spbsb.client_sign_ca(pdfpath,sign_data,sealImg,signCert,filename)
+	  if fxbg_result.strip.include?('200')
+     fxbg_file =  File.read(Rails.root.join('tmp', "sp_bsbs_fxbg_#{@spbsb.id}.txt"))
+	   res[:FXJC]= fxbg_file
+	   pdf_path[:FXJC]=pdfpath
+    elsif fxbg_result.strip.include?('6002')
+     res[:FXJC]= fxbg_file
+     pdf_path[:FXJC]=""
+	  else
+	   render json: {status: 'ERR', msg:  fxbg_result} and return
+	  end
+   end
+	   render json: {status: 'OK', res: res,pdfpath: pdf_path}
+   end  
   end
-   pdfpath = "#{Rails.application.config.attachment_path}/#{pdfpath}"
-   filename = Rails.root.join('tmp', "sp_bsbs_fxbg_#{@spbsb.id}.txt")
-	 fxbg_result= @spbsb.client_sign_ca(pdfpath,sign_data,sealImg,signCert,filename)
-	if fxbg_result.strip.include?('200')
-   fxbg_file =  File.read(Rails.root.join('tmp', "sp_bsbs_fxbg_#{@spbsb.id}.txt"))
-	 res[:FXJC]= fxbg_file
-	 pdf_path[:FXJC]=pdfpath
-  elsif fxbg_result.strip.include?('6002')
-    res[:FXJC]= fxbg_file
-    pdf_path[:FXJC]=""
-	else
-	  render json: {status: 'ERR', msg:  fxbg_result} and return
-	end
- end
-	render json: {status: 'OK', res: res,pdfpath: pdf_path}
- end
 
   def print_pdf
     @spbsb = SpBsb.find(params[:id])
+    ActiveRecord::Base.transaction do
     reqMessage ={appId: Rails.application.config.site[:appid]}
     reqMessage =  Base64.strict_encode64(reqMessage.to_json)
-    #if @spbsb.is_jiandu? and params[:sign_data][:JDCJ].present?
-#	type='JYBG'
- #   end
-  #  if @spbsb.is_jiance? and params[:sign_data][:FXJC].present?
-   #   type='FXBG'
-   # end
-    #if @spbsb.ca_key_status ==0
-       pdfpath=params[:pdfpath]
-    #else
-    #   pdfpath = "#{Rails.application.config.attachment_path}/#{@spbsb.sp_s_16}-#{type}.pdf"
-   # end
-   res ={}
+    res ={}
     if @spbsb.is_jiandu? and params[:sign_data][:JDCJ].present?
       type='JYBG'
       pdfpath=  params[:pdfpath][:JDCJ]
@@ -188,38 +176,32 @@ class SpBsbsController < ApplicationController
       writeJson= Rails.root.join('tmp', "yang.req")
       result = `java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 199  #{reqMessage} #{writeJson} #{pdfpath}`     
      logger.error result
-
-     if  result.strip.include?('200')
+     if result.strip.include?('200')
         sp_status=params[:sp_status]
-        #@spbsb.update_attributes({:sp_i_state =>sp_status})
         @spbsb.update_attributes({:ca_key_status => sp_status,:sp_s_48 =>current_user.tname,:JDCJ_report_path => pdfpath})
         SpLog.create(:sp_bsb_id => @spbsb.id, :sp_i_state => sp_status, :remark => "", :user_id => current_user.id,:ca_key_status => 1)
-        #render json: {status: 'OK', msg: '成功'}
-	res[:JDCJ] = {t: 'JDCJ', status: 'OK'}
-      else
-	render json: {status: 'ERR', msg: result} and return
-      end
-
+	      res[:JDCJ] = {t: 'JDCJ', status: 'OK'}
+     else
+	      render json: {status: 'ERR', msg: result} and return
+     end
     end
     if @spbsb.is_jiance? and params[:sign_data][:FXJC].present?
-      type='FXBG'
-      pdfpath=  params[:pdfpath][:FXJC]
-      sp_status=params[:sp_status]
+       type='FXBG'
+       pdfpath=  params[:pdfpath][:FXJC]
+       sp_status=params[:sp_status]
       if pdfpath.blank?
        @spbsb.update_attributes({:ca_key_status => sp_status,:sp_s_48 =>current_user.tname,:FXJC_report_path => pdfpath})
        SpLog.create(:sp_bsb_id => @spbsb.id, :sp_i_state => sp_status, :remark => "", :user_id => current_user.id,:ca_key_status => 1)
        res[:FXJC] = {t: 'FXJC', status: 'OK'}
       else
-      sign_data=params[:sign_data][:FXJC][:hash]
-          File.write(Rails.root.join('tmp', "yang.req"),sign_data)
-      writeJson= Rails.root.join('tmp', "yang.req")
+       sign_data=params[:sign_data][:FXJC][:hash]
+       File.write(Rails.root.join('tmp', "yang.req"),sign_data)
+       writeJson= Rails.root.join('tmp', "yang.req")
       result = `java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 199  #{reqMessage} #{writeJson} #{pdfpath}`
       logger.error result
       if  result.strip.include?('200')
-        #@spbsb.update_attributes({:sp_i_state =>sp_status})
         @spbsb.update_attributes({:ca_key_status => sp_status,:sp_s_48 =>current_user.tname,:FXJC_report_path => pdfpath})
         SpLog.create(:sp_bsb_id => @spbsb.id, :sp_i_state => sp_status, :remark => "", :user_id => current_user.id,:ca_key_status => 1)
-        #render json: {status: 'OK', msg: '成功'}
         res[:FXJC] = {t: 'FXJC', status: 'OK'}
        else
         render json: {status: 'ERR', msg: result} and return
@@ -227,30 +209,9 @@ class SpBsbsController < ApplicationController
 
      end
    end
-   render json: {status: 'OK', msg: '成功',res: res}
-=begin
-    if @spbsb.ca_key_status ==0
-       pdfpath=params[:pdfpath]
-    else
-       pdfpath = "#{Rails.application.config.attachment_path}/#{@spbsb.sp_s_16}-#{type}.pdf"
-    end
-    sign_data=params[:sign_data][:hash]
-    #signSealMessagesJson =  File.read(Rails.root.join('tmp', "sp_bsbs_#{@spbsb.id}.txt"))	
-     #File.write(Rails.root.join('tmp', "yang.req"),sign_data)
-    # writeJson= Rails.root.join('tmp', "yang.req")
-     writeJson=sign_data
-     reqMessage ={appId: '9ff70fce51874b62a5f136fdda43c4b7'}
-     reqMessage =  Base64.strict_encode64(reqMessage.to_json)
-     result = `java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  111.26.194.57 8081 199  #{reqMessage} #{writeJson} #{pdfpath}`
-      if  result.strip.include?('200')
-	sp_status=params[:sp_status]
-        @spbsb.update_attributes({:sp_i_state =>sp_status})
-        @spbsb.update_attributes({:ca_key_status => sp_status,:sp_s_48 =>current_user.tname})
-        SpLog.create(:sp_bsb_id => @spbsb.id, :sp_i_state => sp_status, :remark => "", :user_id => current_user.id,:ca_key_status => 1)
-	render json: {status: 'OK', msg: '成功'}
-      end
-=end
+    render json: {status: 'OK', msg: '成功',res: res}
   end
+ end
 
 
 
@@ -758,10 +719,19 @@ end
         if @role_name.eql? '检测机构批准' or params[:sp_bsb][:sp_i_state].to_s == '6' or @loglaststatesign or params[:sp_bsb][:sp_i_state].to_s =='5' 
           @sp_bsb.sp_s_48 = current_user.tname
         end
-         if sp_bsb_params["sp_i_state"] == "3"
-          @sp_bsb.update_attributes({:ca_key_status => 0})
-         end
+        if sp_bsb_params["sp_i_state"].to_s == "3" or sp_bsb_params["sp_i_state"].to_s =="1"
+           @sp_bsb.update_attributes({:ca_key_status => 0,:JDCJ_report_path =>"",:FXJC_report_path => ""})
+        
+          if @sp_bsb.sp_i_state.to_s =="9" and @sp_bsb.issue_date.blank? and @sp_bsb.sign_date.present?
+            time = @sp_bsb.sign_date.strftime("%Y-%m-%d")
+            @sp_bsb.update_attributes({:issue_date => time })
+          end
+        end
 
+        if sp_bsb_params["sp_i_state"].to_s == "16" and @sp_bsb.sp_i_state.to_s =="5" and @sp_bsb.ca_key_status.to_s=="16" and @sp_bsb.issue_date.blank?
+         time = Time.new.strftime("%Y-%m-%d")
+         @sp_bsb.update_attributes({:issue_date => time})
+        end   
         @sp_bsb.assign_attributes(sp_bsb_params)
 
         if @sp_bsb.changes.has_key?('sp_i_state') and @sp_bsb.changes['sp_i_state'][1] == 2 and [0, 1].include?(@sp_bsb.changes['sp_i_state'][0]) and (@sp_bsb.cyd_file.blank? or @sp_bsb.cyjygzs_file.blank?)
@@ -793,10 +763,16 @@ end
               unless params[:spdata].blank?
                 params[:spdata].delete_if { |data| data.keys.length == 1 }
                 createlog=0
+                ids=[]
                 params[:spdata].each do |data|
                   if data[:id].nil?
                     createlog = 1
                     break
+                  end
+                  @spdata= Spdatum.find(data[:id])
+                  if data[:spdata_0].present?&&@spdata.spdata_0 !=data[:spdata_0]
+                     createlog = 1
+                     break
                   end
                 end
                 if createlog == 1
@@ -808,9 +784,11 @@ end
                   end
                 else
                   params[:spdata].each do |data|
+                    ids.push(data[:id])
                     @spdata = Spdatum.find(data[:id])
                     @spdata.update_attributes(data.as_json)
                   end
+                  @sp_bsb.spdata.where(' id NOT IN (?)',ids ).destroy_all
                 end
               end
             end
@@ -889,6 +867,14 @@ end
       format.html { redirect_to "/sp_bsbs_spsearch?#{session[:query]}" }
       format.json { head :no_content }
     end
+  end
+
+  def prompt_report
+    @sp_bsbs,@ending_time,@begin_time = SpBsb.search(params,session[:change_js],current_user,is_sheng?,is_city?,is_county_level?,is_shengshi?,all_super_departments,"spsearch")
+    if params["type"] == "limited_report"
+      @sp_bsbs = @sp_bsbs.where(bgfl:"24小时限时报告")
+    end
+    @sp_bsbs = @sp_bsbs.paginate(page: params[:page], per_page: 10)  
   end
 
   # POST /sp_bsbs/spsearch
@@ -1353,7 +1339,7 @@ end
   # 导出成为Excel文件并下载至本地 
   def export_excel_alldata
     @sp_bsbs,@ending_time,@begin_time = SpBsb.search(params,session[:change_js],current_user,is_sheng?,is_city?,is_county_level?,is_shengshi?,all_super_departments)
-    send_file(DownloadData.start(@sp_bsbs), :disposition => "attachment")
+    send_file(DownloadData.start(@sp_bsbs,current_user.report_form), :disposition => "attachment")
   end
 
   def  super_jg

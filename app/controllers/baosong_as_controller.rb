@@ -17,10 +17,10 @@ class BaosongAsController < ApplicationController
           baosongids.push(baosong.baosong_a_id)
         end
       end
-      if jg_is_city?
+      if is_city?
         @baosong_as = BaosongA.where("id in (?) and rwlylx = ?",baosongids,"市/区局").order("created_at desc")
       end
-      if jg_is_country?
+      if is_county_level?
         @baosong_as = BaosongA.where("id in (?) and rwlylx = ?",baosongids,"县").order("created_at desc")
       end
 

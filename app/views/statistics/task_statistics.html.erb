@@ -1,90 +1,81 @@
-<div class='statistical-title'>
-  <h2>任务统计</h2>
-  <p>以任务类别、食品类别、抽样地点、生产单位所在省等为条件，对省抽、市抽、县抽任务完成情况进行查询统计。 统计各市、县任务数、抽样数、检验数、不合格数、合格数、已处置、处置中等数据。</p>
-</div>
-<ul class="nav nav-tabs">
-  <li role="presentation" class="dropdown">
-    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-      筛选条件
-      <span class="caret"></span>
-    </a>
-    <ul class="dropdown-menu">
-      <li>
-        <a>任务类别</a>
-      </li>
-      <li>
-        <a>食品类别</a>
-      </li>
-      <li>
-        <a>抽样地点</a>
-      </li>
-      <li>
-        <a>生产单位</a>
-      </li>
-      <li></li>
-    </ul>
-  </li>
-</ul>
-<div class="statistics-image">
-  <div class="row">
-    <div class="col-md-9" style="border-right: 1px solid #ddd;">
-      <div id="main" style="width: 800px; height: 500px; margin-left: 20px;"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>任务统计</title>
+    <!-- css
+    <link rel="stylesheet" href="../libs/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/TreeGrid.css">
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/rwtj.css">
+    -->
+    <%#= stylesheet_link_tag "statistics_old/bootstrap/dist/css/bootstrap.min.css", :media => "all" %>
+    <%= stylesheet_link_tag "statistics_old/reset","statistics_old/rwtj","statistics_old/TreeGrid", :media => "all" %>
+
+    <!-- js
+    <script src="../libs/treegrad/jquery-1.3.2.min.js"></script>
+    <script src="../libs/treegrad/TreeGrid.js"></script>
+    <script src="../libs/echarts.js"></script>
+    -->
+    <%= javascript_include_tag "statistics/treegrad/jquery-1.3.2.min","statistics/treegrad/TreeGrid" %>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部head -->
+        <div class="page-header testcompany_header">
+            <h1>任务统计</h1>
+        </div>
+
+        <!-- 上侧按钮部分 -->
+        <div class="topbtn_task">
+            <form role="form">
+                <div class="form-group topbtnSect_task">
+                    <!-- 左侧选取栏 -->
+                    <label>类型选取</label>
+                    <select class="form-control task_option" id="task_option">
+                        <!-- <option >全部</option> -->
+                        <option selected="selected" value="taskbox_sign">任务类型</option>
+                        <option value="foodbox_sign">食品类型</option>
+                        <option value="sampbox_sign">抽样地点</option>
+                        <option value="productLocalbox_sign">生产单位所在省</option>
+                    </select>
+                    
+                    <!-- 右侧操作按钮
+                    <div class="taskbtn_operBox">
+                        <button type="submit" class="btn btn-default taskbtn_query">查询</button>
+                        <button type="submit" class="btn btn-default taskbtn_export bgc1 btn-primary">导出列表</button>
+                    </div>
+                    -->
+                </div>
+            </form>
+        </div>
+
+        <iframe src="statistics_task_type" style="width: 100%;float:left;height: -webkit-fill-available;"></iframe>
     </div>
-    <div class="col-md-3" style="height: 502px; overflow: scroll;">
-      <table>
-        <tr style="font-size: 16px;">
-          <th style="padding: 10px;">大类</th>
-          <th style="padding: 10px;">不合格批次</th>
-        </tr>
-        <% @item_counts.each do |k, v| %>
-          <tr style="font-size: 12px;">
-            <td style="padding: 10px;"><%= k %></td>
-            <td style="padding: 10px;"><%= v %></td>
-          </tr>
-        <% end %>
-      </table>
-    </div>
-  </div>
-</div>
-<script type="text/javascript">
-  $('body').scrollspy({ target: '#navbar-example' })
-  var myChart = echarts.init(document.getElementById('main'));
-  var option = {
-    color: ['#3398DB'],
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow' 
-      }
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
-    },
-    xAxis: [
-      {
-        type: 'category',
-        data: <%= raw @item_counts.keys.first(10) %>,
-        axisTick: {
-          alignWithLabel: true
+    
+</body>
+</html>
+<script>
+    // 默认显示任务类型
+    var $selectValue = $("#task_option").find("option:selected").val();
+    $("div#"+$selectValue).css("display","block");
+    // 选取栏  
+    $("select#task_option").change(function(){
+        var optVal = $(this).val();
+        switch(optVal){
+            case 'taskbox_sign':
+            $('iframe').attr('src','statistics_task_type');
+            break;
+            case 'foodbox_sign':
+            $('iframe').attr('src','statistics_food_type');
+            break;
+            case 'sampbox_sign':
+            $('iframe').attr('src','statistics_sampling_sites');
+            break;
+            case 'productLocalbox_sign':
+            $('iframe').attr('src','statistics_production_unit_province');
+            break;
         }
-      }
-    ],
-    yAxis: [
-      {
-        type: 'value'
-      }
-    ],
-    series: [
-      {
-        name: '直接访问',
-        type: 'bar',
-        barWidth: '60%',
-        data: <%= @item_counts.values.first(10) %>
-      }
-    ]
-  };
-  myChart.setOption(option);
+    });
 </script>

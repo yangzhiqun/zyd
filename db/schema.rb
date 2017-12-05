@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170914141224) do
+ActiveRecord::Schema.define(version: 20171109023237) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -215,8 +215,6 @@ ActiveRecord::Schema.define(version: 20170914141224) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
-
-  add_index "jg_bsb_names", ["name"], name: "name", unique: true, using: :btree
 
   create_table "jg_bsb_stamps", force: :cascade do |t|
     t.integer  "jg_bsb_id",  limit: 4
@@ -704,6 +702,14 @@ ActiveRecord::Schema.define(version: 20170914141224) do
     t.integer  "wtyp_czb_part_id",  limit: 4
   end
 
+  create_table "report_forms", force: :cascade do |t|
+    t.text     "spbsb_field",  limit: 65535
+    t.text     "spdata_field", limit: 65535
+    t.integer  "user_id",      limit: 4
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+  end
+
   create_table "sample_members", force: :cascade do |t|
     t.string   "jg_name",       limit: 255
     t.string   "username",      limit: 255
@@ -784,6 +790,7 @@ ActiveRecord::Schema.define(version: 20170914141224) do
     t.string   "user_s_province", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "bcydwshi",        limit: 255
   end
 
   create_table "sp_bsb_pictures", force: :cascade do |t|
@@ -947,7 +954,7 @@ ActiveRecord::Schema.define(version: 20170914141224) do
     t.string   "czb_reverted_reason",      limit: 255
     t.string   "sp_s_220",                 limit: 50
     t.string   "sp_s_221",                 limit: 50
-    t.string   "sp_s_222",                 limit: 20
+    t.string   "sp_s_222",                 limit: 60
     t.integer  "user_id",                  limit: 4
     t.string   "uid",                      limit: 20
     t.integer  "sp_s_37_user_id",          limit: 4
@@ -964,6 +971,7 @@ ActiveRecord::Schema.define(version: 20170914141224) do
     t.string   "FXJC_report_path",         limit: 200
     t.string   "JDCJ_pdf_rules",           limit: 200
     t.string   "FXJC_pdf_rules",           limit: 200
+    t.string   "sp_proid",                 limit: 255
     t.integer  "wochacha_task_id",         limit: 4
     t.string   "sp_s_sfjk",                limit: 32
     t.string   "sp_s_ycg",                 limit: 32
@@ -995,7 +1003,7 @@ ActiveRecord::Schema.define(version: 20170914141224) do
     t.string   "sp_s_wclxr",               limit: 255
     t.string   "sp_s_wctel",               limit: 255
     t.string   "sp_s_wcbh",                limit: 255
-    t.string   "sp_proid",                 limit: 255
+    t.date     "issue_date"
   end
 
   add_index "sp_bsbs", ["application_id"], name: "index_sp_bsbs_on_application_id", using: :btree
@@ -1006,6 +1014,7 @@ ActiveRecord::Schema.define(version: 20170914141224) do
   add_index "sp_bsbs", ["sp_s_1"], name: "index_sp_bsbs_on_sp_s_1", using: :btree
   add_index "sp_bsbs", ["sp_s_14"], name: "index_on_sp_s_14", using: :btree
   add_index "sp_bsbs", ["sp_s_16"], name: "index_sp_bsbs_on_sp_s_16", using: :btree
+  add_index "sp_bsbs", ["sp_s_16"], name: "sp_s_16", unique: true, using: :btree
   add_index "sp_bsbs", ["sp_s_202"], name: "index_sp_bsbs_on_sp_s_202", using: :btree
   add_index "sp_bsbs", ["sp_s_214"], name: "index_on_sp_s_214", using: :btree
   add_index "sp_bsbs", ["sp_s_3"], name: "index_sp_bsbs_on_sp_s_3", using: :btree
@@ -1934,8 +1943,6 @@ ActiveRecord::Schema.define(version: 20170914141224) do
     t.integer  "blr_user_id",         limit: 4
     t.integer  "tbr_user_id",         limit: 4
     t.integer  "shr_user_id",         limit: 4
-    t.string   "sp_s_4",              limit: 50
-    t.string   "sp_s_5",              limit: 50
     t.string   "sp_s_220",            limit: 50
     t.string   "sp_s_221",            limit: 50
     t.string   "SPDL",                limit: 255
@@ -1945,6 +1952,8 @@ ActiveRecord::Schema.define(version: 20170914141224) do
     t.string   "xc_attachment_path",  limit: 100
     t.string   "pc_attachment_path",  limit: 100
     t.string   "xz_attachment_path",  limit: 100
+    t.string   "sp_s_4",              limit: 50
+    t.string   "sp_s_5",              limit: 50
     t.date     "qdqk_sdrq"
     t.string   "qdqk_sfjs",           limit: 60
     t.text     "cpkzqk_wzhyy",        limit: 65535
@@ -2098,14 +2107,14 @@ ActiveRecord::Schema.define(version: 20170914141224) do
     t.string   "cydwsf",                 limit: 60
     t.string   "bsscqymc",               limit: 60
     t.datetime "scrq"
-    t.string   "sp_s_4",                 limit: 50
-    t.string   "sp_s_5",                 limit: 50
     t.string   "sp_s_220",               limit: 50
     t.string   "sp_s_221",               limit: 50
     t.string   "SPDL",                   limit: 255
     t.string   "SPYL",                   limit: 255
     t.string   "SPCYL",                  limit: 255
     t.string   "SPXL",                   limit: 255
+    t.string   "sp_s_4",                 limit: 50
+    t.string   "sp_s_5",                 limit: 50
     t.string   "bcydw_shi",              limit: 50
     t.string   "bcydw_xian",             limit: 50
     t.string   "bsscqy_shi",             limit: 50

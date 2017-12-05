@@ -119,7 +119,7 @@
           copied.find('.PDYJ').append("<option value='" + data + "'>" + data + "</option>");
         });
 	
-	if (!!item.JYYJJHB)
+	    if (!!item.JYYJJHB)
         $.each(item.JYYJJHB.split("#"), function (index, data) {
           copied.find('.JYYJJHB').append("<option value='" + data + "'>" + data + "</option>");
         });
@@ -128,7 +128,16 @@
         $.each(item.BZ.split("#"), function (index, data) {
           copied.find('.BZ').append("<option value='" + data + "'>" + data + "</option>");
         });
-
+     if(o !=null){
+      if(item.BZ.split("#").length==1&&item.BZ!=o.spdata_20){
+        o.spdata_20=item.BZ
+      }
+      
+      if(item.JYYJJHB.split("#").length==1&&item.JYYJJHB!=o.spdata_19){
+        o.spdata_19=item.JYYJJHB
+      }
+     }
+      
       if ((item.PDYJ || "").split("#")[0].length < 4) {
         copied.find('.JGPD').append("<option value='未检验'>未检验</option>");
         copied.find('.JGPD').append("<option value='不判定项'>不判定项</option>");
@@ -205,7 +214,7 @@
       }).val(item.JGDW);
 
       if (o != null && is_previous_data()) {
-        copied.find('.JYYJ').attr({'value': o.spdata_3, 'title': o.spdata_3}).val(o.spdata_3);
+        copied.find('.JYYJ').attr({'value': "o.spdata_3", 'title': o.spdata_3}).val(o.spdata_3);
         copied.find('.JYYJJHB').attr({'value': o.spdata_19}).val(o.spdata_19);
         copied.find('.BZ').attr({'value': o.spdata_20}).val(o.spdata_20);
         copied.find('.PDYJ').attr({'value': o.spdata_4, 'title': o.spdata_4}).val(o.spdata_4);
@@ -345,11 +354,11 @@
     });
 	
 	
-    <% if [2,3,4, 5].include?(@sp_bsb.sp_i_state) %>
-	SetUserCertList('ca_sign_form.user_cert_list', CERT_TYPE_HARD);
+    <% if [2,3,4, 5].include?(@sp_bsb.sp_i_state) && is_opne_ca %>
+	    SetUserCertList('ca_sign_form.user_cert_list', CERT_TYPE_HARD);
     <% end %>
-    <% if [16].include?(@sp_bsb.sp_i_state) %>
-	SetUserCertList('sp_bsb_form.sp_user_cert_list', CERT_TYPE_HARD);
+    <% if 16 == @sp_bsb.sp_i_state && is_opne_ca %>
+	    SetUserCertList('sp_bsb_form.sp_user_cert_list', CERT_TYPE_HARD);
     <% end %>
     if ($("#sp_bsb_sp_s_63").val() == "散装") {
       <%@check=[26,27,13,72,73,74]%>
@@ -2200,7 +2209,9 @@
 		if(SP.sp_bsb.sp_i_state == 5) {
           // 当5时盖两遍
           handle_client_sign(sealImg, signCert, function(){
+         <%if @sp_bsb.issue_date.blank? %>
             handle_client_sign(sealImg, signCert, null, 1);
+         <% end %>   
           }, 0);
         } else {
           handle_client_sign(sealImg, signCert, null, 0);
@@ -2218,93 +2229,89 @@
       });
 		}
 
-	function handle_client_sign(sealImg, signCert, _onFinish, _sign_date) {
-		 $.get('/sp_bsbs/by_ca_info.json',{
-		 id: <%= @sp_bsb.id %>,
-		 sign_cert: signCert,
-		 keypic: sealImg,
-		 sign_date: _sign_date,
-		 pr_status: $("#pr_status").val(),
-     async: false
-}, function (res) {
-		if (res.status == 'OK') {
-			var hashed_signs = {};
-			var pdfpath={};
-			var ep2 = new EventProxy();	
-		ep2.all('jdcj', 'fxjc', function () {
-			$.get('/sp_bsbs/print_pdf.json', {
-			id:  '<%= @sp_bsb.id %>',
-			sign_data: hashed_signs,
-			sp_status: $("#sp_status").val(),
-			pdfpath: pdfpath,
-      async: false
-			 }, function (data) {
-				if (data.status == 'OK') {
-					if(SP.sp_bsb.sp_i_state != 5){
-					   $("form.edit_sp_bsb").ajaxSubmit({
-				       	     dataType: "json",
-                                             success: function (message) {
-                                              if (message.status == '保存成功!') {
-                                                 alert(message.msg);
-					   	 location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
-                                              } else if (message.status == '保存出错!') {
-                         		          alert(message.msg);
-                        		     	 $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
-                    			         $('.loading-label').addClass('hidden');
-					       }
-					    }
-					   });
-				}else{
-				 if (_onFinish) {
-			           _onFinish();
-     				 }else {
-				  $("form.edit_sp_bsb").ajaxSubmit({
-                                             dataType: "json",
-                                             success: function (message) {
-                                              if (message.status == '保存成功!') {
-                                                 alert(message.msg);
-                                                 location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
-                                              } else if (message.status == '保存出错!') {
-                                                  alert(message.msg);
-                                                 $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
-                                                 $('.loading-label').addClass('hidden');
-                                               }
-                                            }                                           
-					});
-     				 }
-					}
-				 } else{
-				   alert(data.msg);
-				 }
-			}, 'json')
-		});
+  function ajaxSubmit(){
+    $("form.edit_sp_bsb").ajaxSubmit({
+      dataType: "json",
+      success: function (message) {
+       if (message.status == '保存成功!') {
+        alert(message.msg);
+        location.href = '/sp_bsbs_spsearch?<%= session[:query].html_safe if session[:query].present? %>';
+       } else if (message.status == '保存出错!') {
+        alert(message.msg);
+        $('#stamp-dlg .modal-footer .btn').removeAttr('disabled');
+        $('.loading-label').addClass('hidden');
+       }
+     }
+    });
+  }
 
-	if (res.res.JDCJ) {
-           clientSignByHash(res.res.JDCJ,cur_cert_id, $("#ca_sign_pwd").val(), "sign_data",
-             function (res) {
-                  hashed_signs['JDCJ']= {hash: res,type: 'JYBG'};
-                  ep2.emit('jdcj');
-              });
-	 pdfpath['JDCJ']=res.pdfpath.JDCJ;
-	}
-	else{
-	  ep2.emit('jdcj');
-	}
-	if (res.res.FXJC) {
-           clientSignByHash(res.res.FXJC,cur_cert_id, $("#ca_sign_pwd").val(), "sign_data",
-             function (res) {
-                  hashed_signs['FXJC'] = {hash: res,type: 'FXBG'};
-                  ep2.emit('fxjc');
-              });
-	    pdfpath['FXJC']=res.pdfpath.FXJC;
-        }
-        else{
+	function handle_client_sign(sealImg, signCert, _onFinish, _sign_date) {
+     var url = "/sp_bsbs/by_ca_info.json'"
+     var data ={id: SP.sp_bsb.id,sign_cert: signCert,keypic: sealImg,sign_date: _sign_date,pr_status: $("#pr_status").val()}
+     $.ajax({
+       type: 'get',
+       url: url,
+       data: data,
+       async: false,
+       success: function(res){
+        if(res.status=='OK'){
+          var hashed_signs = {};
+          var pdfpath={};
+          var ep2 = new EventProxy();
+          ep2.all('jdcj', 'fxjc', function () {
+            var url2 = "/sp_bsbs/print_pdf.json";
+            var data2 = {id:  SP.sp_bsb.id,sign_data: hashed_signs,sp_status: $("#sp_status").val(),pdfpath: pdfpath };
+            $.ajax({
+               type: 'get',
+               url: url2,
+               data: data2,
+               async: false,
+               success: function(data){
+                if(data.status =="OK"){
+                  if(SP.sp_bsb.sp_i_state != 5){
+                      ajaxSubmit();      
+                  }else{
+                    if(_onFinish&&SP.sp_bsb.issue_date==null){
+                        _onFinish();
+                    }else{
+                      ajaxSubmit();
+                    }
+                  }
+                }else{
+                  alert(data.msg); 
+                }                  
+               }
+            });//aiax
+        }); //ep2
+
+        if(res.res.JDCJ) {
+         clientSignByHash(res.res.JDCJ,cur_cert_id, $("#ca_sign_pwd").val(), "sign_data",
+           function (res){
+             hashed_signs['JDCJ']= {hash: res,type: 'JYBG'};
+             ep2.emit('jdcj');
+           });
+         pdfpath['JDCJ']=res.pdfpath.JDCJ;
+        }else{
+          ep2.emit('jdcj');
+        } 
+        
+        if(res.res.FXJC){
+          clientSignByHash(res.res.FXJC,cur_cert_id, $("#ca_sign_pwd").val(), "sign_data",
+          function (res) {
+            hashed_signs['FXJC'] = {hash: res,type: 'FXBG'};
+            ep2.emit('fxjc');
+          });  
+          pdfpath['FXJC']=res.pdfpath.FXJC;
+        }else{
           ep2.emit('fxjc');
         }
-	
-     }
-   },'json');
-}
+
+      }else {
+          alert(res.msg);
+      }
+     } //success
+    });//ajax
+   }
 <% end%>
 
 </script>
@@ -3225,7 +3232,7 @@
                         <% @jg_bsb.jg_bsb_stamps.where("stamp_type not in ('FX1')").each do |stamp| %>
 			  <li>
                              <a href="javascript:void(0);" data-stamp-no="<%= stamp.stamp_no %>" class="stamp-selector">
-                             <% if stamp.image_path.include?("http") %>
+                             <% if !stamp.image_path.nil? && stamp.image_path.include?("http") %>
                                <img src="<%= stamp.image_path %>" class="img-thumbnail" alt="<%= stamp.stamp_no %>">
                              <% else %>
                                <img src="/jg_bsb_stamps/<%= stamp.id %>/cover" class="img-thumbnail" alt="<%= stamp.stamp_no %>">

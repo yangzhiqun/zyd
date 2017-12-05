@@ -1,6 +1,7 @@
 ﻿#encoding: utf-8
 class SpBsb < ActiveRecord::Base
   include ApplicationHelper
+  audited only: [:sp_s_16,:sp_s_reason,:sp_s_2_1,:sp_s_70,:sp_s_67,:sp_s_1,:sp_s_17,:sp_s_18,:sp_s_29,:sp_s_20,:sp_i_state]
   trigger.after(:insert) do
     "INSERT INTO tmp_sp_bsbs(sp_s_reason, id, sp_i_state, sp_s_16, sp_s_3, sp_s_202, sp_s_14, sp_s_43, sp_s_2_1, sp_s_35, sp_s_64, sp_s_1, sp_s_17, sp_s_20, sp_s_85, created_at, updated_at, sp_s_214, sp_s_71, fail_report_path, tname, user_id, uid, sp_s_18, sp_s_70, sp_s_215, sp_s_68, sp_s_13, sp_s_27, czb_reverted_flag) values(NEW.sp_s_reason, NEW.id, NEW.sp_i_state, NEW.sp_s_16, NEW.sp_s_3, NEW.sp_s_202, NEW.sp_s_14, NEW.sp_s_43, NEW.sp_s_2_1, NEW.sp_s_35, NEW.sp_s_64, NEW.sp_s_1, NEW.sp_s_17, NEW.sp_s_20, NEW.sp_s_85, NEW.created_at, NEW.updated_at, NEW.sp_s_214, NEW.sp_s_71, NEW.fail_report_path, NEW.tname, NEW.user_id, NEW.uid, NEW.sp_s_18, NEW.sp_s_70, NEW.sp_s_215, NEW.sp_s_68, NEW.sp_s_13, NEW.sp_s_27, NEW.czb_reverted_flag)"
   end
@@ -43,7 +44,6 @@ class SpBsb < ActiveRecord::Base
         @wc_state = part['current_state']
       end
     end
-   # logger.error "====#{part['wtyp_czb_type']}--#{@sc_state} ---=#{part['current_state']}"
     if (@sc_state == ::WtypCzb::State::PASSED and (@lt_state == ::WtypCzb::State::PASSED or @cy_state == ::WtypCzb::State::PASSED ))
       "已完成"
     elsif @sc_state == ::WtypCzb::State::PASSED and @lt_state != ::WtypCzb::State::PASSED
@@ -327,9 +327,9 @@ class SpBsb < ActiveRecord::Base
     @rwly = all_super_departments
     if params[:flag]=="tabs_1"
      if is_city
-       @sp_bsbs = @sp_bsbs.where("sp_s_4 = ? or sp_s_220=?",current_user.prov_city,current_user.prov_city)
+       @sp_bsbs = @sp_bsbs.where("sp_s_4 = ? or sp_s_220=? or sp_s_wcshi = ?",current_user.prov_city,current_user.prov_city,current_user.prov_city)
      elsif is_county_level
-       @sp_bsbs = @sp_bsbs.where("(sp_s_4 = ? and sp_s_5 = ?) or (sp_s_220 = ? and sp_s_221 = ? )",current_user.prov_city,current_user.prov_country,current_user.prov_city,current_user.prov_country)
+       @sp_bsbs = @sp_bsbs.where("(sp_s_4 = ? and sp_s_5 = ?) or (sp_s_220 = ? and sp_s_221 = ? ) or (sp_s_wcshi =? and sp_s_wcxian= ?)",current_user.prov_city,current_user.prov_country,current_user.prov_city,current_user.prov_country,current_user.prov_city,current_user.prov_country)
      end
     end
     return @sp_bsbs, @ending_time, @begin_time
@@ -496,10 +496,11 @@ class SpBsb < ActiveRecord::Base
           PUSH_BASE_DATA_FIELDS.each do |field|
             form[field] = self.send(field)
           end
-          Rails.logger.error "sending: #{form}"
+          Rails.logger.error "sending: #{form.to_json}"
 
-          response = RestClient.post(jg_bsb.api_ip_address, form.to_json)
-          json = JSON.parse(response)
+         # response = RestClient.post(jg_bsb.api_ip_address, form.to_json)
+         # json = JSON.parse(response)
+          json =  Unirest.post(jg_bsb.api_ip_address, parameters:form.to_json).body
           if json['status'] == 'OK'
             self.update_attributes({:synced => true})
             return nil
@@ -699,6 +700,7 @@ class SpBsb < ActiveRecord::Base
   has_many :api_exchange_pools, :dependent => :delete_all
   has_many :sp_bsb_stamp_rules
   has_many :sp_logs
+  has_many :wtyp_czbs, foreign_key: 'wtyp_sp_bsbs_id'
   has_many :wtyp_czb_parts
   has_one :published_sp_bsb, foreign_key: 'cjbh', primary_key: 'sp_s_16'
 
@@ -836,15 +838,12 @@ class SpBsb < ActiveRecord::Base
         wtyp_czb.SPYL = self.sp_s_18
         wtyp_czb.SPCYL = self.sp_s_19
         wtyp_czb.SPXL = self.sp_s_20
-        logger.error "111: #{sp_s_wcxian},#{self.sp_s_wcshi},#{self.sp_s_wcsheng}"
         wtyp_czb.wc_sheng = self.sp_s_wcsheng
         wtyp_czb.wc_shi = self.sp_s_wcshi
         wtyp_czb.wc_xian =self.sp_s_wcxian
-        logger.error "333: #{wtyp_czb.wc_sheng},#{wtyp_czb.wc_shi},#{wtyp_czb.wc_xian}"
         # TODO: 要做好事务处理 2015-04-25
         if wtyp_czb.save
           @spdata = []
-          logger.error "133: #{wtyp_czb.wc_shi},#{wtyp_czb.wc_sheng},#{wtyp_czb.wc_xian}"
           self.spdata.each do |data|
             if data.spdata_2.include? "问题" or data.spdata_2.include? "不合格"
               hczdata = SpHczSpdata.new
@@ -1076,86 +1075,24 @@ class SpBsb < ActiveRecord::Base
         abs_target_path = File.expand_path('../reports', Rails.root).to_s + target_path
 	end
         return tmp_file
-=begin
-      if pdf_rules.blank?
-         if !self.sp_s_69.blank?
-            pdf_rules =self.sp_s_69 
-         else
-           if @jg_bsb.jg_bsb_stamps.count > 0
-             pdf_rules = @jg_bsb.jg_bsb_stamps.pluck(:stamp_no).join(',')
-           else
-	            Rails.logger.error '机构未进行数字签名认证，无法查看报告'
-              self.report_path = "#{target_path}/#{self.id}.pdf"
-		           if preview and !force_generate 
-                  return tmp_file
-               end
-                 return nil
-            end
-	        end
-			else
-				if pdf_rules =='ca_file'
-					return tmp_file
-				end
-				if preview and force_generate
-						tmp_file = Rails.root.join('tmp/pdf_preview', "sp_bsbs_#{self.id}_print.pdf")
-				end
-      end
-
-      FileUtils.mkdir_p abs_target_path unless Dir.exists? abs_target_path
-
-      self.report_path = "#{target_path}/#{self.id}.pdf"
-      # create stamp record
-      userinfo = {userName: '吉林省食品药品监督局', channelId: 'CHN_3039394B3D71D6FD', creditCodes: {ORG: '092648364'}}
-      documentInfo = {docuName: '云签章', fileDesc: '云签章'}
-      content = []
-      pdf_rules.split(',').each do |rule|
-        content.push({ruleNum: rule, appId: '9ff70fce51874b62a5f136fdda43c4b7', userinfo: userinfo, documentInfo: documentInfo})
-      end
-      # logger.error content.to_json
-      content = Base64.strict_encode64(content.to_json)
-
-      cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 105 #{content} #{tmp_file} #{self.absolute_report_path(preview && !force_generate)}"
-
-
-      result = `#{cmd}`
-      logger.error "result"
-      logger.error result
-      FileUtils.rm_f(tmp_file)
-
-      if result.strip.include?('200')
-        if !preview or force_generate
-          SpBsb.record_timestamps = false
-          self.save
-          SpBsb.record_timestamps = true
-        end
-        return self.absolute_report_path(preview && !force_generate)
-      else
-        self.report_path = nil
-        return nil
-      end
-
-    else
-      self.absolute_report_path
-    end
-=end
    end
   end
 
 	def generate_ca_pdf_report(ca_filepath,new_ca_filepath,ruleNumList,signData,signCert,nonce)
 	    tmp_file = ca_filepath
 	    userinfo = {channelId: 'CHN_3039394B3D71D6FD'}
-            documentInfo = {docuName: '云签章', fileDesc: '云签章'}
-	   reqMessage ={ruleNumList: ruleNumList, appId: Rails.application.config.site[:appid],policyType: 2, userinfo: userinfo, documentInfo: documentInfo,nonce: nonce, signCert: signCert,signData: signData}
-	   content = Base64.strict_encode64(reqMessage.to_json)
+      documentInfo = {docuName: '云签章', fileDesc: '云签章'}
+	    reqMessage ={ruleNumList: ruleNumList, appId: Rails.application.config.site[:appid],policyType: 2, userinfo: userinfo, documentInfo: documentInfo,nonce: nonce, signCert: signCert,signData: signData}
+	    content = Base64.strict_encode64(reqMessage.to_json)
       cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client.jar')} #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 114 #{content} #{tmp_file} #{new_ca_filepath}"
-      result = `#{cmd}`
+     result = `#{cmd}`
      logger.error "cmd: #{cmd}"
      logger.error result
       if result.strip.include?('200')
-	return new_ca_filepath
+	     return new_ca_filepath
       else
-		return nil
-	end
+		   return nil
+    	end
 	end
     def client_sign_ca(pdfpath,sign_data,sealImg,signCert,filename)
     if [2, 3].include? self.sp_i_state
@@ -1339,8 +1276,8 @@ class SpBsb < ActiveRecord::Base
      f_name = 'FXBG'
 	end
   if self.sp_i_state==3
-    pdf_path = Rails.root.join("../attachments", "#{self.sp_s_16}-#{report_type}.pdf")
-    FileUtils.rm_f(pdf_path)  if File.exists?(self.pdf_path)
+   # pdf_path = Rails.root.join("../attachments", "#{self.sp_s_16}-#{report_type}.pdf")
+   # FileUtils.rm_f(pdf_path)  if File.exists?(self.pdf_path)
   end
 	now = Time.now
 	outpath_folder = "#{Rails.application.config.attachment_path}"
@@ -1350,7 +1287,7 @@ class SpBsb < ActiveRecord::Base
 		        save_to_file: outpath,
 			      save_only: true,
 			      pdf: 'home',
-            wkhtmltopdf: '/usr/local/bin/wkhtmltopdf',
+          	wkhtmltopdf: '/usr/local/bin/wkhtmltopdf',
 		        encoding: 'utf-8',
 			      disable_javascript: true,
 			      print_media_type: true,

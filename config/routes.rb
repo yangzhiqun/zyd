@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
 
+  get 'report_forms/index'
+  get 'report_forms/update'
+  get 'sp_bsbs/:type/prompt_report' => 'sp_bsbs#prompt_report'
+
   get 'log_management/index'
   get 'log_management/search'
   match 'config/init_site', via: [:get, :post]
@@ -433,6 +437,7 @@ Rails.application.routes.draw do
   root :to => 'welcome_notices#index'
 
   #数据统计
+  resources :statistics
   get 'statistics' => 'statistics#statistics'
   get 'task_statistics' => 'statistics#task_statistics'
   get 'food_statistics' => 'statistics#food_statistics'
@@ -443,6 +448,13 @@ Rails.application.routes.draw do
   get 'enterprise_statistics' => 'statistics#enterprise_statistics'
   get 'early_warning' => 'statistics#early_warning'
   get 'composite_statistics' => 'statistics#composite_statistics'
+  get 'retirement_statistics' => 'statistics#retirement_statistics'
+  #任务子模板
+  get 'statistics_task_type' => 'statistics#statistics_task_type'
+  get 'statistics_food_type' => 'statistics#statistics_food_type'
+  get 'statistics_sampling_sites' => 'statistics#statistics_sampling_sites'
+  get 'statistics_production_unit_province' => 'statistics#statistics_production_unit_province'
 
+  get 'nonconformity_statistics_data/:id' => 'statistics#nonconformity_statistics_data'
 
 end

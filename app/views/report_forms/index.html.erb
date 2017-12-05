@@ -1,0 +1,103 @@
+<head>
+  <meta charset="UTF-8">
+  <style>
+    html,body{
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+    }
+    h1{
+      text-align: center;    
+    }
+    .container{
+      width: 90%;
+      margin:0 auto;
+    }
+    table{
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      box-shadow: 0 0 5px 0 #ccc;
+    }
+    th,td{
+      border:1px solid #ccc;
+      height: 40px;
+      text-align: center;
+    }
+  </style>
+  <script>
+    $(function(){
+      // 全选
+      function allChecked(tag){
+        tag.attr('checked',true);
+      }
+      // 部分选中
+      function partChecked(data,table){
+        var arr = data.split(',');
+        if(table=="spbsb"){
+          var dom = $('.spbsbs input');
+        }else{
+          var dom = $('.spdata input');
+        }
+        dom.each(function(){
+          var num = arr.indexOf($(this).val());
+          if(num != -1){
+            allChecked($(this));
+          }
+        })
+      }
+      <% if @report_form.nil? %>
+        allChecked($('input'));
+      <% else %>
+        partChecked("<%= @report_form.spbsb_field %>","spbsb");
+        partChecked("<%= @report_form.spdata_field %>","spdata");
+      <% end %>
+      $('.btn').click(function(){
+        var spbsb  =[];
+        var spdata =[];
+        $('.spbsbs input').each(function(){
+          if($(this).is(':checked')){
+            spbsb.push($(this).val());
+          }
+        })
+        $('.spdata input').each(function(){
+          if($(this).is(':checked')){
+            spdata.push($(this).val());
+          }
+        })
+        $("#spbsb").val(spbsb.toString());
+        $("#spdata").val(spdata.toString());
+      })
+    })
+  </script>
+</head>
+<h1>报表字段管理</h1>
+<body>
+  <div class="text-danger"><%= flash[:notice] %></div>
+  <%= form_for :report_forms, url: '/report_forms/update', method: :get do |f| %>
+    <div class="container">
+        <div class="row spbsbs">
+          <div class="col-xs-12" style="text-align:center;font-size:18px">基本信息报送表</div>
+          <% I18n.t(SpBsb).each do |field,name| %>
+            <div class="col-xs-2" style="border:1px solid #ccc;overflow: hidden;white-space: nowrap;">
+              <input type="checkbox" name="spbsb" value=<%= field.to_s %> >
+              <span><%= name %></span>
+            </div>
+          <% end %>
+        </div>
+        <div class="row spdata">
+          <div class="col-xs-12" style="text-align:center;font-size:18px">检验数据表</div>
+          <% I18n.t(Spdatum).each do |field,name| %>
+            <div class="col-xs-2" style="border:1px solid #ccc;overflow: hidden;white-space: nowrap;">
+              <input type="checkbox" name="spbsb" value=<%= field.to_s %> >
+              <span><%= name %></span>
+            </div>
+          <% end %>
+        </div>
+      <input type="hidden" name="spbsb" id="spbsb">
+      <input type="hidden" name="spdata" id="spdata">
+      <input type="submit" class="btn btn-primary btn-sm" style="float: right" value="提交">
+    </div>
+  <% end %>
+</body>
