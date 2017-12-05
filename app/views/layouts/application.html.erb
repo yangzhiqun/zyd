@@ -519,7 +519,7 @@
   <div class="main_left" style="background:#f0f9fd; width:15%;">
     <div class="lefttop"><span></span>操作列表</div>
     <dl class="leftmenu">
-      <% if ((current_user.pad_permission.to_i > 0 || current_user.is_admin? || is_shengshi? ) and is_open_production?) || is_belong_name %>
+      <% if ((current_user.pad_permission.to_i > 0 || current_user.is_admin? || is_shengshi? ) and is_open_production?) %>
           <dd>
             <div class="title">
               <span><img src="<%= asset_path('leftico05.png') %>"/></span>样品采集
@@ -547,7 +547,7 @@
               <span><img src="<%= asset_path('leftico01.png') %>"/></span>数据报送
             </div>
             <ul class="menuson" style="<%= "display: block;" if controller?("sp_bsbs") or controller?("sp_bsbs_spsearch") %>">
-              <% if (current_user.user_d_authority == 1 and is_open_production?) || is_belong_name %>
+              <% if (current_user.user_d_authority == 1 and is_open_production?) %>
                   <li class="<%= "active" if action?("new") %>"><cite></cite><a href="/sp_bsbs/new">食品检验数据录入</a><i></i>
                   </li>
               <% end %>
