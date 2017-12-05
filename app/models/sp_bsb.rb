@@ -1,8 +1,6 @@
 ﻿#encoding: utf-8
 class SpBsb < ActiveRecord::Base
   include ApplicationHelper
-  #audited except: [:sp_n_15], on: [:update]
-  audited #only: [:sp_s_16,:sp_s_reason,:sp_s_2_1,:sp_s_70,:sp_s_67,:sp_s_1,:sp_s_17,:sp_s_18,:sp_s_29,:sp_s_20,:sp_i_state]
   trigger.after(:insert) do
     "INSERT INTO tmp_sp_bsbs(sp_s_reason, id, sp_i_state, sp_s_16, sp_s_3, sp_s_202, sp_s_14, sp_s_43, sp_s_2_1, sp_s_35, sp_s_64, sp_s_1, sp_s_17, sp_s_20, sp_s_85, created_at, updated_at, sp_s_214, sp_s_71, fail_report_path, tname, user_id, uid, sp_s_18, sp_s_70, sp_s_215, sp_s_68, sp_s_13, sp_s_27, czb_reverted_flag) values(NEW.sp_s_reason, NEW.id, NEW.sp_i_state, NEW.sp_s_16, NEW.sp_s_3, NEW.sp_s_202, NEW.sp_s_14, NEW.sp_s_43, NEW.sp_s_2_1, NEW.sp_s_35, NEW.sp_s_64, NEW.sp_s_1, NEW.sp_s_17, NEW.sp_s_20, NEW.sp_s_85, NEW.created_at, NEW.updated_at, NEW.sp_s_214, NEW.sp_s_71, NEW.fail_report_path, NEW.tname, NEW.user_id, NEW.uid, NEW.sp_s_18, NEW.sp_s_70, NEW.sp_s_215, NEW.sp_s_68, NEW.sp_s_13, NEW.sp_s_27, NEW.czb_reverted_flag)"
   end
@@ -22,7 +20,7 @@ class SpBsb < ActiveRecord::Base
  # before_save :check_bsb_validity
  # before_save :check_benji_company
   after_update :callback_when_updated
-  audited only: [:sp_s_215,:sp_s_14,:sp_d_28,:sp_s_13,:sp_d_38,:sp_i_state]
+  audited only: [:sp_s_215,:sp_s_14,:sp_d_28,:sp_s_13,:sp_d_38,:sp_i_state,:sp_s_16]
 
   SpState = {1 => "基本信息(填报中)", 2 => "检测数据(填报)", 3 => "检测数据(填报)", 4 => "检测数据(机构审核中)", 5 => "检测数据(机构批准中)", 6 => "待机构审核", 9 => "检测数据(已提交至秘书处)", 16 => "检测数据(报告发送人审核中)", 32 => "基本信息审核", 35 => "接收样品"} 
 
@@ -46,7 +44,6 @@ class SpBsb < ActiveRecord::Base
       end
     end
    # logger.error "====#{part['wtyp_czb_type']}--#{@sc_state} ---=#{part['current_state']}"
-    logger.error "===#{@sc_state}---#{@lt_state}"
     if (@sc_state == ::WtypCzb::State::PASSED and (@lt_state == ::WtypCzb::State::PASSED or @cy_state == ::WtypCzb::State::PASSED ))
       "已完成"
     elsif @sc_state == ::WtypCzb::State::PASSED and @lt_state != ::WtypCzb::State::PASSED
@@ -511,6 +508,37 @@ class SpBsb < ActiveRecord::Base
           end
         end
       end
+    end
+  end
+
+  module State_type
+    TX = 1
+    TB = 2
+    TH = 3
+    SH = 4
+    BZ = 5
+    FS = 16
+    TJ = 9
+  end
+
+  def self.state_type(state)
+    case state
+    when 1
+      '退修中'
+    when 2
+      '填报数据'
+    when 3
+      '退回待修'
+    when 4
+      '待机构审核'
+    when 5
+      '待机构批准'
+    when 16
+      '报告发送人'
+    when 9
+      '完全提交'
+    else
+       '-'   
     end
   end
 
