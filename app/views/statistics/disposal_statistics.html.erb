@@ -101,7 +101,6 @@
         <div class="hefei_datastatistics content_bottom">
             <table class="table table-bordered">
                 <tr class="info">
-                    <th>序号</th>
                     <th>处置单位</th>
                     <th>处置环节</th>
                     <th>不合格处置数</th>
@@ -113,71 +112,20 @@
                     <th>复检不合格数</th>
                     <th>立案数</th>
                 </tr>
-                <tr>
-                    <td>1</td>
-                    <td>大众超市</td>
-                    <td>经营</td>
-                    <td>30</td>
-                    <td>5%</td>
-                    <td>5</td>
-                    <td>5%</td>
-                    <td>0</td>
-                    <td>50</td>
-                    <td>4</td>
-                    <td>2</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>食品有限公司</td>
-                    <td>经营</td>
-                    <td>35</td>
-                    <td>20%</td>
-                    <td>5</td>
-                    <td>5%</td>
-                    <td>5</td>
-                    <td>50</td>
-                    <td>5</td>
-                    <td>2</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>人民食堂</td>
-                    <td>经营</td>
-                    <td>25</td>
-                    <td>5%</td>
-                    <td>5</td>
-                    <td>10%</td>
-                    <td>8</td>
-                    <td>50</td>
-                    <td>5</td>
-                    <td>2</td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>食品企业</td>
-                    <td>经营</td>
-                    <td>21</td>
-                    <td>10%</td>
-                    <td>5</td>
-                    <td>12%</td>
-                    <td>5</td>
-                    <td>50</td>
-                    <td>5</td>
-                    <td>2</td>
-                </tr>
-                <tr>
-                    <td>合计：</td>
-                    <td></td>
-                    <td></td>
-                    <td>111</td>
-                    <td>40%</td>
-                    <td>20</td>
-                    <td>32%</td>
-                    <td>18</td>
-                    <td>200</td>
-                    <td>19</td>
-                    <td>8</td>
-                </tr>
+                <% @data.each do |name,value| %>
+                  <tr>
+                    <td><%= name %></td>
+                    <td><%= value[0] %></td>
+                    <td><%= value[1] %></td>
+                    <td><%= value[2] %></td>
+                    <td><%= value[3] %></td>
+                    <td><%= value[4] %></td>
+                    <td><%= value[5] %></td>
+                    <td><%= value[6] %></td>
+                    <td><%= value[7] %></td>
+                    <td><%= value[8] %></td>
+                  </tr>
+                <% end %>
             </table>
         </div>
         <!-- 表格数据2-黄山 -->
