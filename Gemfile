@@ -49,6 +49,7 @@ gem 'rest-client'
 gem 'savon'
 
 gem 'browser'
+gem 'ransack'
 
 gem 'sidekiq'
 #gem 'unicorn'

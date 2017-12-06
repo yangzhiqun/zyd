@@ -58,9 +58,9 @@
     -->
     <%= javascript_include_tag "statistics/map/china-main-city-map" %>
     <script>
+    var all_data
     $(function(){
-        var all_data = <%= raw @data_items %>
-        console.log(all_data);
+        all_data = <%= raw @data_items %>
         chartMap();
         main();
     })
@@ -68,7 +68,7 @@
         //动态渲染左侧区域数据
         var htmlStr='';
         for(var k in cityMap){
-            if(k!='安徽'){
+            if(k!='安徽省'){
                  htmlStr+='<tr>'+
                             '<td><button class="area_btn">'+k+'</'+'button></td>'+
                         '</tr>'
@@ -95,82 +95,24 @@ function chartMap(){
     var curMap = {};
     var titleType=['安徽省','合肥市','淮北市','宿州市','阜阳市','淮南市','滁州市','六安市','马鞍山市','芜湖市','宣城市','池州市','安庆市','黄山市','亳州市','蚌埠市'];
     var randomData=returnData();
-    console.log(randomData)
     //初始化地图
     // function randomData() {
     //     return Math.round(Math.random()*100);
     // }    
     loadMap('340000', 'anhui','安徽省');
-    addHtml(randomData.anhui);
+    addHtml(all_data["安徽省"]);
     
     myChart.on('mapselectchanged', function(params) {
         clearTimeout(timeFn);
         //由于单击事件和双击事件冲突，故单击的响应事件延迟250毫秒执行
         timeFn = setTimeout(function(){
-            console.log(params)
             var name = params.batch[0].name;
             var mapCode = cityMap[name];
             if (!mapCode) {
                 alert('无此区域地图显示');
                 return;
             }
-            //根据区域名更改表格数据
-            switch(name){
-                case '安徽省':
-                addHtml(randomData.anhui);
-                break;
-                case '合肥市':
-                addHtml(randomData.hefei);
-                break;
-                case '芜湖市':
-                addHtml(randomData.wuhu);
-                break;
-                case '蚌埠市':
-                addHtml(randomData.bengbu);
-                break;
-                case '淮北市':
-                addHtml(randomData.huaibei);
-                break;
-                case '马鞍山市':
-                addHtml(randomData.maanshan);
-                break;
-                case '淮南市':
-                addHtml(randomData.huainan);
-                break;
-                case '铜陵市':
-                addHtml(randomData.tongling);
-                break;
-                case '安庆市':
-                addHtml(randomData.anqing);
-                break;
-                case '黄山市':
-                addHtml(randomData.huangshan);
-                break;
-                case '滁州市':
-                addHtml(randomData.chuzhou);
-                break;
-                case '宿州市':
-                addHtml(randomData.suzhou);
-                break;
-                case '阜阳市':
-                addHtml(randomData.fuyang);
-                break;
-                case '六安市':
-                addHtml(randomData.luan);
-                break;
-                case '亳州市':
-                addHtml(randomData.bozhou);
-                break;
-                case '池州市':
-                addHtml(randomData.chizhou);
-                break;
-                case '宣城市':
-                addHtml(randomData.xuancheng);
-                break;
-                default:
-                break;
-
-            }
+            addHtml(all_data[name]);
             loadMap(mapCode, name,name); 
             //将上一级地图信息压入mapStack
             mapStack.push({
@@ -202,73 +144,57 @@ function chartMap(){
     
     $(document).on('click','.area_btn',function(){
         var thisTxt=$(this).text();
+        addHtml(all_data[thisTxt]);
         switch(thisTxt){
             case '安徽省':
-            addHtml(randomData.anhui);
             click_slide(randomData.anhui.yb,'anhui','安徽省');
             break;
             case '合肥市':
-            addHtml(randomData.hefei);
             click_slide(randomData.hefei.yb,'hefei','合肥市');
             break;
             case '芜湖市':
-            addHtml(randomData.wuhu);
             click_slide(randomData.wuhu.yb,'wuhu','芜湖市');
             break;
             case '蚌埠市':
-            addHtml(randomData.bengbu);
             click_slide(randomData.bengbu.yb,'bengbu','蚌埠市');
             break;
             case '淮北市':
-            addHtml(randomData.huaibei);
             click_slide(randomData.huaibei.yb,'hauibei','淮北市');
             break;
             case '马鞍山市':
-            addHtml(randomData.maanshan);
             click_slide(randomData.maanshan.yb,'maanshan','马鞍山市');
             break;
             case '淮南市':
-            addHtml(randomData.huainan);
             click_slide(randomData.huainan.yb,'huainan','淮南市');
             break;
             case '铜陵市':
-            addHtml(randomData.tongling);
             click_slide(randomData.tongling.yb,'tongling','铜陵市');
             break;
             case '安庆市':
-            addHtml(randomData.anqing);
             click_slide(randomData.anqing.yb,'anqing','安庆市');
             break;
             case '黄山市':
-            addHtml(randomData.huangshan);
             click_slide(randomData.huangshan.yb,'huangshan','黄山市');
             break;
             case '滁州市':
-            addHtml(randomData.chuzhou);
             click_slide(randomData.chuzhou.yb,'chuzhou','滁州市');
             break;
             case '宿州市':
-            addHtml(randomData.suzhou);
             click_slide(randomData.suzhou.yb,'suzhou','宿州市');
             break;
             case '阜阳市':
-            addHtml(randomData.fuyang);
             click_slide(randomData.fuyang.yb,'fuyang','阜阳市');
             break;
             case '六安市':
-            addHtml(randomData.luan);
             click_slide(randomData.luan.yb,'luan','六安市');
             break;
             case '亳州市':
-            addHtml(randomData.bozhou);
             click_slide(randomData.bozhou.yb,'bozhou','亳州市');
             break;
             case '池州市':
-            addHtml(randomData.chizhou);
             click_slide(randomData.chizhou.yb,'chizhou','池州市');
             break;
             case '宣城市':
-            addHtml(randomData.xuancheng);
             click_slide(randomData.xuancheng.yb,'xuancheng','宣城市');
             break;
             default:
@@ -289,23 +215,18 @@ function chartMap(){
         });
     }
     function addHtml(obj){
-        console.log(obj);
-        var htmlStr='<tr>'+
-                            '<td>酸价（KOH）</td>'+
-                            '<td><button class="value_btn">'+obj.koh+'</button></td>'+
-                       '</tr>'+
-                       '<tr>'+
-                           '<td>过氧化值</td>'+
-                           '<td><button class="value_btn">'+obj.hoValue+'</button></td>'+
-                        '</tr>'
-            $('.content_right>table>tbody').html(htmlStr);
+      var htmlStr = ''
+      for (var key in obj) {
+        str =  '<tr>'+'<td>'+key+'</td>'+'<td><button class="value_btn">'+obj[key]+'</button></td>'+'</tr>'
+        htmlStr += str
+      }
+      $('.content_right>table>tbody').html(htmlStr);
     }
     // 地图方法封装
     function loadMap(mapCode, mapName,titleName) {
         // alert(mapCode)
         //$.getJSON('../js/map/china-main-city/' + mapCode + '.json', function(data) {
         $.getJSON('nonconformity_statistics_data/'+mapCode, function(data) {
-             console.log(<%= raw @data_arr %>);
              if (data) {
                  echarts.registerMap(mapName, data);
                  var option = {
