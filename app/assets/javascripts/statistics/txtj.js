@@ -77,6 +77,19 @@ function chart(data){
             {
                 name:'完全提交退修数',
                 type:'bar',
+                itemStyle: {
+                    normal: {
+                        // 随机显示
+                        color:function(d){
+                            return "#"+Math.floor(Math.random()*(256*256*256-1)).toString(16);
+                        },
+                        label: {
+                            show: true
+                            // position: 'top',
+                            // formatter: '{b}\n{c}'
+                        }
+                    }
+                },
                 data:data.cyjg.y1
             },
             {
@@ -146,6 +159,19 @@ function chart(data){
             {
                 name:'完全提交退修数',
                 type:'bar',
+                itemStyle: {
+                    normal: {
+                        // 随机显示
+                        color:function(d){
+                            return "#"+Math.floor(Math.random()*(256*256*256-1)).toString(16);
+                        },
+                        label: {
+                            show: true
+                            // position: 'top',
+                            // formatter: '{b}\n{c}'
+                        }
+                    }
+                },
                 data:data.cjjg.y1
             },
             {

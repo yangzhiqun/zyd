@@ -34,6 +34,7 @@
                         <thead>
                             <tr>
                                 <th class="bgc1">检验不合格项目</th>
+                                <th class="bgc1">不合格批次</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -44,7 +45,7 @@
         </div>
 
         <div class="content_bottom">
-            <table class="table table-bordered">
+            <table class="table table-bordered" id = "tb_report">
                 <thead>
                     <tr class="info">
                         <th style="width:60px;">序号</th>
@@ -77,7 +78,8 @@
     $(function(){
         chartMap();
         main();
-        init(returnData().anhui.detail);         
+        init(returnData().anhui.detail);
+        getData(data);
     })
     function main(){
         //动态渲染左侧区域数据
@@ -528,7 +530,150 @@
                  }       
             });
         }   
-    }       
+    }
+    var data = [{"area":"合肥","dh":"SC1002134432","bcydw":"大众超市","scqy":"scqy","ypmc":"茶叶","rwly":"安徽省食品药品监督管理局",
+        "jyxm":"xxxx","dl":"食用农产品","yl":"茶","cyl":"茶","xl":"茶"}];
+    function getData(info){
+        $('#tb_report').bootstrapTable({
+            //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
+            //method: 'get',                      //请求方式（*）
+            data:info,
+            // datatype:'json',
+            toolbar: '#toolbar',                //工具按钮用哪个容器
+            striped: true,                      //是否显示行间隔色
+            cache: false,                      //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            search: true, //显示搜索框
+            // pagination: true,                   //是否显示分页（*）
+            // sortOrder: "asc",                   //排序方式
+            //queryParams: oTableInit.queryParams,//传递参数（*）
+            // sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
+            // pageNumber: 1,                       //初始化加载第一页，默认第一页
+            // pageSize: 10,                       //每页的记录行数（*）
+            // pageList: [10, 25, 50, 100],      //可供选择的每页的行数（*）
+            columns : [
+                {
+                    title : '序号',//标题  可不加
+                    formatter : function(value,row, index) {
+                        return index + 1;
+                    }
+                },
+                {
+                    field : 'area',
+                    title : '区域',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        return value;
+                    }
+                },
+                {
+                    field : 'bcydw',
+                    title : '被抽样单位',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        return value;
+                    }
+                },
+                {
+                    field : 'scqy',
+                    title : '生产企业',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        return value;
+                    }
+                },
+                {
+                    field : 'dh',
+                    title : '抽样单号',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
+                        return info;
+                    }
+                },{
+                    field : 'ypmc',
+                    title : '样品名称',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
+                        return info;
+                    }
+                },{
+                    field : 'rwly',
+                    title : '任务来源',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        return value;
+                    }
+                },{
+                    field : 'jyxm',
+                    title : '检验项目',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
+                        return info;
+                    }
+                },{
+                    field : 'dl',
+                    title : '大类',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
+                        return info;
+                    }
+                },
+                {
+                    field : 'yl',
+                    title : '亚类',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        return value;
+                    }
+                },
+                {
+                    field : 'cyl',
+                    title : '次亚类',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        return value;
+                    }
+                },
+                {
+                    field : 'xl',
+                    title : '细类',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        return value;
+                    }
+                }
+            ]
+        });
+    }
+    function getSelect(params){
+        //先销毁表格
+        $('#tb_report').bootstrapTable('destroy');
+      /*  $.ajax({
+       type: "post",
+       contentType: "application/json",
+       url: "WebService1.asmx/Login",
+       data: {
+       "parmas":parmas.join(',')
+       },
+       success: function (data) {
+       if (data == 'true') {
+       window.location.open = 'HTMLPage1.htm';
+       }
+       else {
+       alert("数据错误");
+       }
+       }
+       })
+       */
+        var data1 = [{"area":"合肥","dh":"SC1002134432","bcydw":"大众超市","scqy":"scqy","ypmc":"茶叶","rwly":"安徽省食品药品监督管理局",
+            "jyxm":"xxxx","dl":"食用农产品","yl":"茶","cyl":"茶","xl":"茶"},
+            {"area":"黄山","dh":"SC1002134432","bcydw":"大众超市","scqy":"scqy","ypmc":"茶叶","rwly":"安徽省食品药品监督管理局",
+                "jyxm":"xxxx","dl":"食用农产品","yl":"茶","cyl":"茶","xl":"茶"}];
+        getData(data1);
+    }
 </script>
 </body>
 </html>
