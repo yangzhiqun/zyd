@@ -27,7 +27,8 @@
 
         <!-- 上侧按钮部分 -->
         <div class="foodcate_btn">
-            <form role="form">
+            <%= search_form_for @q, url: composite_statistics_path, html: {role: "form"} do |f|  %>
+            <!--<form role="form">-->
                 <!-- 选项部分 -->
                 <div class="checkquery_option">
                     <label class="checkbox-inline">
@@ -55,7 +56,7 @@
                         <input type="checkbox" checked="checked" name="checkbox" id="inlineCheckbox3" value="option3">报送分类
                     </label>
                 </div>
-
+                
                 <!-- 下拉选项部分 -->
                 <!-- 选取栏1 -->
                 <div class="check_selectbox">
@@ -182,7 +183,8 @@
                     <button type="submit" class="btn btn-default taskbtn_query">查询</button>
                     <button type="submit" class="btn btn-default taskbtn_export bgc1 btn-primary">导出列表</button>
                 </div>
-            </form>
+            <!-- </form> -->
+            <% end %>
         </div>
 
         <!-- 下侧列表数据部分 -->
@@ -218,7 +220,6 @@
         itemClick: "itemClickEvent",
         columns:[
             {headerText: "地区", dataField: "name", headerAlign: "center",width: "200", handler: "customOrgName"},
-            {headerText: "序号", dataField: "code", headerAlign: "center", dataAlign: "center"},
             {headerText: "总批次",dataField: "totalbat", headerAlign: "center", dataAlign: "center", width: "100"},
             {headerText: "监督抽检批次", dataField: "samplingbat",headerAlign: "center", dataAlign: "center", width: "120"},
             {headerText: "合格批次", dataField: "qualifiedbat",headerAlign: "center", dataAlign: "center", width: "120"},
@@ -228,20 +229,22 @@
             {headerText: "问题样品批次", dataField: "problembat",headerAlign: "center", dataAlign: "center", width: "120"},
             {headerText: "问题样品率", dataField: "problemsamp",headerAlign: "center", dataAlign: "center", width: "120"}
         ],
-        data:[
-            {name: "合肥", code: "1",totalbat:"6574",samplingbat:"1232",qualifiedbat:"1200",unqualifiedbat:"193",qualifiedsamp:"4.263%",riskbat:"1222",problembat:"713",problemsamp:"1.24%",children:[
-                                {name: "长丰", code: "2",totalbat:"2131",samplingbat:"231",qualifiedbat:"226",unqualifiedbat:"5",qualifiedsamp:"1.23%",riskbat:"650",problembat:"625",problemsamp:"3.75%",},
-                                {name: "肥东", code: "3",totalbat:"2344",samplingbat:"434",qualifiedbat:"400",unqualifiedbat:"34",qualifiedsamp:"5.17%",riskbat:"654",problembat:"23",problemsamp:"1.25%",},
-                                {name: "巢湖", code: "4",totalbat:"1009",samplingbat:"954",qualifiedbat:"800",unqualifiedbat:"154",qualifiedsamp:"11.5%",riskbat:"380",problembat:"65",problemsamp:"18.7%",},
-                                ]},
-            {name: "安庆", code: "5",totalbat:"7500",samplingbat:"6500",qualifiedbat:"6350",unqualifiedbat:"150",qualifiedsamp:"6.2%",riskbat:"2200",problembat:"106",problemsamp:"4.818%",},
-            {name: "黄山", code: "6",totalbat:"10900",samplingbat:"8000",qualifiedbat:"7355",unqualifiedbat:"645",qualifiedsamp:"8.06%",riskbat:"3552",problembat:"72",problemsamp:"2.64%",},
-            {name: "六安", code: "7",totalbat:"7826",samplingbat:"6500",qualifiedbat:"6350",unqualifiedbat:"150",qualifiedsamp:"6.2%",riskbat:"2200",problembat:"106",problemsamp:"4.818%",},
-            {name: "", code: "总计",totalbat:"32800",samplingbat:"22232",qualifiedbat:"21255",unqualifiedbat:"1138",qualifiedsamp:"6.18%",riskbat:"9174",problembat:"997",problemsamp:"3.379%",height:"200"},
-        ]
+        data: <%= raw @data %> 
+        //data:[
+        //    {name: "合肥",totalbat:"6574",samplingbat:"1232",qualifiedbat:"1200",unqualifiedbat:"193",qualifiedsamp:"4.263%",riskbat:"1222",problembat:"713",problemsamp:"1.24%",children:[
+        //                        {name: "长丰",totalbat:"2131",samplingbat:"231",qualifiedbat:"226",unqualifiedbat:"5",qualifiedsamp:"1.23%",riskbat:"650",problembat:"625",problemsamp:"3.75%",},
+        //                        {name: "肥东",totalbat:"2344",samplingbat:"434",qualifiedbat:"400",unqualifiedbat:"34",qualifiedsamp:"5.17%",riskbat:"654",problembat:"23",problemsamp:"1.25%",},
+        //                        {name: "巢湖",totalbat:"1009",samplingbat:"954",qualifiedbat:"800",unqualifiedbat:"154",qualifiedsamp:"11.5%",riskbat:"380",problembat:"65",problemsamp:"18.7%",},
+        //                        ]},
+        //    {name: "安庆",totalbat:"7500",samplingbat:"6500",qualifiedbat:"6350",unqualifiedbat:"150",qualifiedsamp:"6.2%",riskbat:"2200",problembat:"106",problemsamp:"4.818%",},
+        //    {name: "黄山",totalbat:"10900",samplingbat:"8000",qualifiedbat:"7355",unqualifiedbat:"645",qualifiedsamp:"8.06%",riskbat:"3552",problembat:"72",problemsamp:"2.64%",},
+        //    {name: "六安",totalbat:"7826",samplingbat:"6500",qualifiedbat:"6350",unqualifiedbat:"150",qualifiedsamp:"6.2%",riskbat:"2200",problembat:"106",problemsamp:"4.818%",},
+        //    {name: "总计",totalbat:"32800",samplingbat:"22232",qualifiedbat:"21255",unqualifiedbat:"1138",qualifiedsamp:"6.18%",riskbat:"9174",problembat:"997",problemsamp:"3.379%",height:"200"},
+        //]
     };
 
     $(document).ready(function(){
+        treeGrid.expandAll("N");//默认关闭
         $("#div1 table tr:last td:first").children("img").remove(); //删除最后图标
         $(".allcheck").click(function(){
             $("#tg1").find("input[name='cblbox']").attr("checked",$(this).attr("checked"));

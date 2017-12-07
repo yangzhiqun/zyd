@@ -1,4 +1,4 @@
-source 'https://gems.ruby-china.org'
+source 'http://gems.ruby-china.org'
 
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
@@ -49,6 +49,7 @@ gem 'rest-client'
 gem 'savon'
 
 gem 'browser'
+gem 'ransack'
 
 gem 'sidekiq'
 #gem 'unicorn'

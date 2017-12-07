@@ -45,10 +45,12 @@
 }
 
 /*按选择器选项隐藏和显示项*/
-
+.pubbox{
+    display:none;
+}
 /*任务类型*/
 .taskbox{
-    margin-bottom: 80px;
+    margin-bottom: 10px;
 }
 .taskbox .taskbox_topCon{
     height: 100%;
@@ -61,7 +63,7 @@
 }
 /*食品类型*/
 .foodbox{
-    margin-bottom: 80px;
+    margin-bottom: 10px;
 }
 .foodbox .foodbox_topCon{
     height: 100%;
@@ -78,7 +80,7 @@
 }
 /*抽样地点*/
 .sampbox{
-    margin-bottom: 80px;
+    margin-bottom: 10px;
 }
 .sampbox .sampbox_topCon{
     height: 100%;
@@ -91,7 +93,7 @@
 }
 /*生产单位所在省*/
 .productLocalbox{
-    margin-bottom: 80px;
+    margin-bottom: 10px;
 }
 .productLocalbox .productLocalbox_topCon{
     height: 100%;

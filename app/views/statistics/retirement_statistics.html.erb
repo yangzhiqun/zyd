@@ -9,15 +9,39 @@
     <link rel="stylesheet" href="../css/reset.css">
     <link rel="stylesheet" href="../css/cjdwtj.css">
     -->
-    <%#= stylesheet_link_tag "statistics_old/bootstrap/dist/css/bootstrap.min.css", :media => "all" %>
+  <link href="http://cdn.bootcss.com/bootstrap-table/1.9.1/bootstrap-table.min.css" rel="stylesheet"/>
+  <%#= stylesheet_link_tag "statistics_old/bootstrap/dist/css/bootstrap.min.css", :media => "all" %>
     <%= stylesheet_link_tag "statistics_old/reset","statistics_old/cjdwtj", :media => "all" %>
+  <style>
+    h4.tableTit_h3{
+      display: inline-block;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    h2{
+      font-size: 18px;
+      font-weight: 700;
+      padding:10px 0;
+      margin-top: 50px;
+    }
+    .chart_title1{
+      margin-top: -39px;
+    }
+    .marginL50{
+      margin-left: 50px;
+    }
+    .charts_2{
+      margin-top: 0;
+    }
+  </style>
     <!-- js
     <script src="../libs/jquery-2.1.4/dist/jquery.min.js"></script>
     <script src="../libs/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="../libs/layDate/laydate.js"></script>
     <script src="../libs/echarts.js"></script>
     -->
-    <%= javascript_include_tag "statistics/layDate/laydate","statistics/city_data","statistics/hccztj" %>
+    <%= javascript_include_tag "statistics/layDate/laydate","statistics/city_data","statistics/txtj" %>
     <script>
         $(document).ready(function(){
             // 时间区域选取
@@ -33,33 +57,189 @@
             });
 
             // 按地区选择表格数据
-            var cq_select = $(".topbtnSect_cqtj");
+            var cq_select = $("#cqtj_option");
             cq_select.change(function(){
+              /*  $.ajax({
+               type: "post",
+               contentType: "application/json",
+               url: "WebService1.asmx/Login",
+               data: {
+               "parmas":parmas.join(',')
+               },
+               success: function (data) {
+               if (data == 'true') {
+               window.location.open = 'HTMLPage1.htm';
+               }
+               else {
+               alert("数据错误");
+               }
+               }
+               })
+               */
+                //先销毁表格
+                $('#tb_report').bootstrapTable('destroy');
+                $('#tb_report1').bootstrapTable('destroy');
+                var data1 = [{"area":"瑶海","cyjg":"zhangsan","txsl":"10","txl":"12"},{"area":"庐阳","cyjg":"zhangsdsan","txsl":"23","txl":"22"}];
                 var cq_selected = $(this).find("option:selected").text();
-                switch(cq_selected){
-                    case "合肥":
-                    $('.hefei_datastatistics').show()
-                    .siblings().hide();
-                    break;
-                    case "黄山":
-                    $('.huangshan_datastatistics').show()
-                    .siblings().hide();
-                    break;
-                    case "蚌埠":
-                    $('.bengbu_datastatistics').show()
-                    .siblings().hide();
-                    break;
-                }
+                alert(cq_selected);
+                getData(data1);
+                getData1(data1);
+
             })
         
+
+        var data = [{"area":"合肥","cyjg":"zhangsan","txsl":"10","txl":"12"},{"area":"黄山","cyjg":"zhangsdsan","txsl":"23","txl":"2"}];
+
+       function getData(info){
+        $('#tb_report').bootstrapTable({
+            //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
+            //method: 'get',                      //请求方式（*）
+            data:info,
+           // datatype:'json',
+            toolbar: '#toolbar',                //工具按钮用哪个容器
+            striped: true,                      //是否显示行间隔色
+            cache: false,                      //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            search: true, //显示搜索框
+           // pagination: true,                   //是否显示分页（*）
+           // sortOrder: "asc",                   //排序方式
+            //queryParams: oTableInit.queryParams,//传递参数（*）
+           // sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
+           // pageNumber: 1,                       //初始化加载第一页，默认第一页
+           // pageSize: 10,                       //每页的记录行数（*）
+           // pageList: [10, 25, 50, 100],      //可供选择的每页的行数（*）
+            columns : [
+                {
+                    title : '序号',//标题  可不加
+                    formatter : function(value,row, index) {
+                        return index + 1;
+                    }
+                },
+                {
+                    field : 'area',
+                    title : '区域',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        return value;
+                    }
+                },{
+                    field : 'cyjg',
+                    title : '抽样机构名称',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
+                        return info;
+                    }
+                },{
+                    field : 'txsl',
+                    title : '完全提交退修数',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
+                        return info;
+                    }
+                },
+                {
+                    field : 'txl',
+                    title : '完全提交退修率',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        return value+"%";
+                    }
+                }
+                ]
+        });
+       }
+            getData(data);
+
+            function getData1(info){
+                $('#tb_report1').bootstrapTable({
+                    //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
+                    //method: 'get',                      //请求方式（*）
+                    data:info,
+                    // datatype:'json',
+                    toolbar: '#toolbar',                //工具按钮用哪个容器
+                    striped: true,                      //是否显示行间隔色
+                    cache: false,                      //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                    search: true, //显示搜索框
+                    // pagination: true,                   //是否显示分页（*）
+                    // sortOrder: "asc",                   //排序方式
+                    //queryParams: oTableInit.queryParams,//传递参数（*）
+                    // sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
+                    // pageNumber: 1,                       //初始化加载第一页，默认第一页
+                    // pageSize: 10,                       //每页的记录行数（*）
+                    // pageList: [10, 25, 50, 100],      //可供选择的每页的行数（*）
+                    columns : [
+                        {
+                            title : '序号',//标题  可不加
+                            formatter : function(value,row, index) {
+                                return index + 1;
+                            }
+                        },
+                        {
+                            field : 'area',
+                            title : '区域',
+                            align : 'center',
+                            formatter : function (value, row, index) {
+                                return value;
+                            }
+                        },{
+                            field : 'cyjg',
+                            title : '承检机构名称',
+                            align : 'center',
+                            formatter : function (value, row, index) {
+                                var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
+                                return info;
+                            }
+                        },{
+                            field : 'txsl',
+                            title : '完全提交退修数',
+                            align : 'center',
+                            formatter : function (value, row, index) {
+                                var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
+                                return info;
+                            }
+                        },
+                        {
+                            field : 'txl',
+                            title : '完全提交退修率',
+                            align : 'center',
+                            formatter : function (value, row, index) {
+                                return value+"%";
+                            }
+                        }
+                    ]
+                });
+            }
+            getData1(data);
+            changeBtn();
         })
+        function getinfo(){
+            alert("退修数列表");
+        }
+        // 点击切换图表
+        function changeBtn(){
+            $('#changeBtn').click(function(event) {
+                var that=$(this);
+                $('.content_main').toggleClass('hide');
+                $('.charts').toggleClass('hide');
+                if($('.content_main').is(':hidden')){
+                    that.text('切换表格模式');
+                    $('.exportR').addClass('hide');
+                   // $('.topbtnSect_cqtj').children().show();
+                }else{
+                    that.text('切换图表模式');
+                    $('.exportR').removeClass('hide');
+                  //  $('.topbtnSect_cqtj').children().hide();
+                }
+            });
+        }
     </script>
 </head>
 <body>
 <div class="container">
     <!-- 头部head -->
     <div class="page-header testcompany_header">
-        <h1>核查处置统计  </h1>
+        <h1>退修统计  </h1>
     </div>
     
     <!-- 上侧按钮部分 -->
@@ -84,251 +264,50 @@
         </div>
     </div>
 
-     <!-- 上侧按钮部分 -->
+     <!-- 上侧按钮部分
     <div class="topbtn_cqtj">
         <form role="form">
-            <div class="form-group topbtnSect_cqtj">
-                <!-- 左侧选取栏 -->
+            <div class="form-group topbtnSect_cqtj">-->
+                <!-- 左侧选取栏
                 <label>区域：</label>
-                <select class="form-control cqtj_option" id="cqtj_option"></select>
+                <select class="form-control cqtj_option"  multiple="multiple" id="cqtj_option"></select>
             </div>
         </form>
-    </div>
+    </div>-->
+  <div class="content">
+    <div style="width:100%;margin-top: 15px;">
+  <div class="content_left" style="float: left; width: 15%;height: 400px;">
+    <table>
+      <tr>
+        <th class="bgc1"><select style="width: 100%;height: 400px;" class="form-control cqtj_option"  multiple="multiple" id="cqtj_option"></select></th>
+      </tr>
+    </table>
+  </div>
+  <!-- 右侧表格 -->
+  <div id="main_id" class="content_main" style="float: right;width: 85%;">
+    <!-- 抽样机构 -->
+    <h4 class="tableTit_h3">抽样机构</h4>
+    <table class="table table-bordered" id="tb_report">
+    </table>
+    <!-- 承检机构 -->
+    <h4 class="tableTit_h3">承检机构</h4>
+    <table class="table table-bordered" id="tb_report1">
+    </table>
+  </div>
 
-    <!-- 表格数据 -->
-    <div class="anhui_datastatistics">
-        <!-- 表格数据1-合肥 -->
-        <div class="hefei_datastatistics content_bottom">
-            <table class="table table-bordered">
-                <tr class="info">
-                    <th>序号</th>
-                    <th>处置单位</th>
-                    <th>处置环节</th>
-                    <th>不合格处置数</th>
-                    <th>不合格处置率</th>
-                    <th>不合格处置完成数</th>
-                    <th>不合格处置完成率</th>
-                    <th>异议数</th>
-                    <th>复检数</th>
-                    <th>复检不合格数</th>
-                    <th>立案数</th>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>大众超市</td>
-                    <td>经营</td>
-                    <td>30</td>
-                    <td>5%</td>
-                    <td>5</td>
-                    <td>5%</td>
-                    <td>0</td>
-                    <td>50</td>
-                    <td>4</td>
-                    <td>2</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>食品有限公司</td>
-                    <td>经营</td>
-                    <td>35</td>
-                    <td>20%</td>
-                    <td>5</td>
-                    <td>5%</td>
-                    <td>5</td>
-                    <td>50</td>
-                    <td>5</td>
-                    <td>2</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>人民食堂</td>
-                    <td>经营</td>
-                    <td>25</td>
-                    <td>5%</td>
-                    <td>5</td>
-                    <td>10%</td>
-                    <td>8</td>
-                    <td>50</td>
-                    <td>5</td>
-                    <td>2</td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>食品企业</td>
-                    <td>经营</td>
-                    <td>21</td>
-                    <td>10%</td>
-                    <td>5</td>
-                    <td>12%</td>
-                    <td>5</td>
-                    <td>50</td>
-                    <td>5</td>
-                    <td>2</td>
-                </tr>
-                <tr>
-                    <td>合计：</td>
-                    <td></td>
-                    <td></td>
-                    <td>111</td>
-                    <td>40%</td>
-                    <td>20</td>
-                    <td>32%</td>
-                    <td>18</td>
-                    <td>200</td>
-                    <td>19</td>
-                    <td>8</td>
-                </tr>
-            </table>
-        </div>
-        <!-- 表格数据2-黄山 -->
-        <div class="huangshan_datastatistics content_bottom" style="display: none">
-            <table class="table table-bordered">
-                <tr class="info">
-                    <th>序号</th>
-                    <th>处置单位</th>
-                    <th>处置环节</th>
-                    <th>不合格处置数</th>
-                    <th>不合格处置率</th>
-                    <th>不合格处置完成数</th>
-                    <th>不合格处置完成率</th>
-                    <th>异议数</th>
-                    <th>复检数</th>
-                    <th>复检不合格数</th>
-                    <th>立案数</th>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>大众超市</td>
-                    <td>经营</td>
-                    <td>35</td>
-                    <td>20%</td>
-                    <td>5</td>
-                    <td>5%</td>
-                    <td>5</td>
-                    <td>50</td>
-                    <td>5</td>
-                    <td>2</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>食品有限公司</td>
-                    <td>经营</td>
-                    <td>30</td>
-                    <td>10%</td>
-                    <td>5</td>
-                    <td>10%</td>
-                    <td>5</td>
-                    <td>10</td>
-                    <td>45</td>
-                    <td>5</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>人民食堂</td>
-                    <td>经营</td>
-                    <td>35</td>
-                    <td>20%</td>
-                    <td>5</td>
-                    <td>5%</td>
-                    <td>5</td>
-                    <td>50</td>
-                    <td>5</td>
-                    <td>2</td>
-                </tr>
-                <tr>
-                    <td>合计：</td>
-                    <td></td>
-                    <td></td>
-                    <td>100</td>
-                    <td>50%</td>
-                    <td>15</td>
-                    <td>20%</td>
-                    <td>15</td>
-                    <td>110</td>
-                    <td>55</td>
-                    <td>9</td>
-                </tr>
-            </table>
-        </div>
-        <!-- 表格数据3-蚌埠 -->
-        <div class="bengbu_datastatistics content_bottom" style="display: none">
-            <table class="table table-bordered">
-                <tr class="info">
-                    <th>序号</th>
-                    <th>处置单位</th>
-                    <th>处置环节</th>
-                    <th>不合格处置数</th>
-                    <th>不合格处置率</th>
-                    <th>不合格处置完成数</th>
-                    <th>不合格处置完成率</th>
-                    <th>异议数</th>
-                    <th>复检数</th>
-                    <th>复检不合格数</th>
-                    <th>立案数</th>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>大众超市</td>
-                    <td>经营</td>
-                    <td>35</td>
-                    <td>20%</td>
-                    <td>5</td>
-                    <td>5%</td>
-                    <td>5</td>
-                    <td>50</td>
-                    <td>5</td>
-                    <td>2</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>食品有限公司</td>
-                    <td>经营</td>
-                    <td>10</td>
-                    <td>1%</td>
-                    <td>5</td>
-                    <td>5%</td>
-                    <td>15</td>
-                    <td>5</td>
-                    <td>5</td>
-                    <td>5</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>食品网</td>
-                    <td>经营</td>
-                    <td>35</td>
-                    <td>20%</td>
-                    <td>5</td>
-                    <td>5%</td>
-                    <td>5</td>
-                    <td>50</td>
-                    <td>5</td>
-                    <td>2</td>
-                </tr>
-                <tr>
-                    <td>合计：</td>
-                    <td></td>
-                    <td></td>
-                    <td>80</td>
-                    <td>41%</td>
-                    <td>15</td>
-                    <td>15%</td>
-                    <td>25</td>
-                    <td>105</td>
-                    <td>15</td>
-                    <td>9</td>
-                </tr>
-            </table>
-        </div>
+  <!-- 右侧图表-->
+  <div class="charts hide" style="float: right;width: 85%;">
+    <h2 class="chart_title1 marginL50">抽样机构</h2>
+    <div class="charts_1">
+      <div id="chart_1"></div>
     </div>
-    <!-- 右侧图表 -->
-    <div class="charts">
-        <div class="charts_1 hide">
-            <div class="rightChart" id="chart" >
-        
-            </div> 
-        </div> 
-    </div>  
+    <h2 class="marginL50">承检机构</h2>
+    <div class="charts_2">
+      <div id="chart_2"></div>
+    </div>
+  </div>
+</div>
+</div>
 </div>
 </body>
 </html>

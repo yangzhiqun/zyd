@@ -1,8 +1,8 @@
 $(function(){
 	chart();
 })
+var data = {"cycq":{"x":[],"y":[]},"jycq":{"x":[],"y":[]},"hcczcq":{"x":[],"y":[]},"yycq":{"x":[],"y":[]}}
 function chart(){
-  console.log(data["合肥"][0]["xAxis"][0]["data"]);
 	var option1 = {
         title: {
             text: '抽样超期统计'            
@@ -10,9 +10,9 @@ function chart(){
         tooltip: {
             trigger: 'axis'
         },
-        legend: {
+        /*legend: {
             data:['最低气温']
-        },
+        },*/
         toolbox: {
             show: true,
             feature: {
@@ -25,17 +25,45 @@ function chart(){
                 saveAsImage: {}
             }
         },
+        grid: { // 控制图的大小，调整下面这些值就可以，
+            x: 40,
+            x2: 100,
+            y2: 150// y2可以控制 X轴跟Zoom控件之间的间隔，避免以为倾斜后造成 label重叠到zoom上
+        },
         xAxis:  {
             type: 'category',
             boundaryGap: false,
             //data: ['抽样单位1','抽样单位2','抽样单位3','抽样单位4','抽样单位5','抽样单位6','抽样单位7']
+            axisLabel: {
+                formatter: function(value){
+                    var ret = "";//拼接加\n返回的类目项
+                    var maxLength = 2;//每项显示文字个数
+                    var valLength = value.length;//X轴类目项的文字个数
+                    var rowN = Math.ceil(valLength / maxLength); //类目项需要换行的行数
+                    if (rowN > 1)//如果类目项的文字大于3,
+                    {
+                        for (var i = 0; i < rowN; i++) {
+                            var temp = "";//每次截取的字符串
+                            var start = i * maxLength;//开始截取的位置
+                            var end = start + maxLength;//结束截取的位置
+                            //这里也可以加一个是否是最后一行的判断，但是不加也没有影响，那就不加吧
+                            temp = value.substring(start, end) + "\n";
+                            ret += temp; //凭借最终的字符串
+                        }
+                        return ret;
+                    }
+                    else {
+                        return value;
+                    }
+                }
+            },
             data: data["合肥"][0]["xAxis"][0]["data"]
         },
         yAxis: {
-        	name:'天数',
+        	name:'数量',
             type: 'value',
             axisLabel: {
-                formatter: '{value} '
+                formatter: '{value}批'
             },
             axisLine:{
                 lineStyle:{
@@ -45,8 +73,36 @@ function chart(){
         },
         series: [
             {
-                name:'截止抽样天数',
-                type:'line',
+                name:'截止今天抽样超期数量',
+                type:'bar',
+                itemStyle: {
+                    normal: {
+                        // 随机显示
+                        color:function(d){
+                            return "#"+Math.floor(Math.random()*(256*256*256-1)).toString(16);
+                        }
+                        //定制显示
+                       /* color: function(params) {
+                            // build a color map as your need.
+                            var colorList = [
+                                '#C1232B','#B5C334','#FCCE10','#E87C25','#27727B',
+                                '#FE8463','#9BCA63','#FAD860','#F3A43B','#60C0DD',
+                                '#D7504B','#C6E579','#F4E001','#F0805A','#26C0C0',
+                                '#EFE42A','#C33531','#EE9201','#29AAE3','#64BD3D',
+                                '#64BD3D','#0AAF9F','#26C0C0','#26C0C0','#26C0C0',
+                                '#26C0C0','#26C0C0','#26C0C0','#26C0C0','#26C0C0',
+                                '#26C0C0','#26C0C0','#26C0C0','#26C0C0','#26C0C0'
+                            ];
+                            return colorList[params.dataIndex]
+                        }*/
+                        ,
+                        label: {
+                            show: true
+                           // position: 'top',
+                           // formatter: '{b}\n{c}'
+                        }
+                    }
+                },
                 data:data["合肥"][0]["series"][0]["data"],
                 markPoint: {
                     data: [
@@ -54,7 +110,7 @@ function chart(){
                     ]
                 },
                 markLine: {
-                    data: [[
+                    data: [/*[
                           {
                               name:'5',
                               coord:[0,5]
@@ -62,7 +118,7 @@ function chart(){
                               name:'',
                               coord:[6,5]
                           }
-                        ],
+                        ],*/
                         [{
                             symbol: 'none',
                             x: '90%',
@@ -104,16 +160,46 @@ function chart(){
                 saveAsImage: {}
             }
         },
+        grid: { // 控制图的大小，调整下面这些值就可以，
+                      x: 40,
+                     x2: 100,
+                     y2: 150// y2可以控制 X轴跟Zoom控件之间的间隔，避免以为倾斜后造成 label重叠到zoom上
+         },
         xAxis:  {
             type: 'category',
             boundaryGap: false,
+            axisLabel: {
+                interval: 0,
+                formatter: function(value){
+                    //debugger
+                    var ret = "";//拼接加\n返回的类目项
+                    var maxLength = 2;//每项显示文字个数
+                    var valLength = value.length;//X轴类目项的文字个数
+                    var rowN = Math.ceil(valLength / maxLength); //类目项需要换行的行数
+                    if (rowN > 1)//如果类目项的文字大于3,
+                    {
+                        for (var i = 0; i < rowN; i++) {
+                            var temp = "";//每次截取的字符串
+                            var start = i * maxLength;//开始截取的位置
+                            var end = start + maxLength;//结束截取的位置
+                            //这里也可以加一个是否是最后一行的判断，但是不加也没有影响，那就不加吧
+                            temp = value.substring(start, end) + "\n";
+                            ret += temp; //凭借最终的字符串
+                        }
+                        return ret;
+                    }
+                    else {
+                        return value;
+                    }
+                }
+            },
             data: data["合肥"][1]["xAxis"][0]["data"]
         },
         yAxis: {
-        	name:'天数',
+        	name:'数量',
             type: 'value',
             axisLabel: {
-                formatter: '{value} '
+                formatter: '{value}批'
             },
             axisLine:{
                 lineStyle:{
@@ -123,8 +209,21 @@ function chart(){
         },
         series: [
             {
-                name:'截止完全提交天数',
-                type:'line',
+                name:'截止今天检验超期数量',
+                type:'bar',
+                itemStyle: {
+                      normal: {
+                          // 随机显示
+                          color:function(d){
+                              return "#"+Math.floor(Math.random()*(256*256*256-1)).toString(16);
+                          },
+                          label: {
+                              show: true
+                              // position: 'top',
+                              // formatter: '{b}\n{c}'
+                          }
+                      }
+                },
                 data:data["合肥"][1]["series"][0]["data"],
                 markPoint: {
                     data: [
@@ -133,7 +232,7 @@ function chart(){
                 }, 
                 markLine: {
                     data: [
-                        [
+                        /*[
                           {
                               name:'25',
                               coord:[0,25]
@@ -141,7 +240,7 @@ function chart(){
                               name:'25',
                               coord:[6,25]
                           }
-                        ],
+                        ],*/
                         [{
                             symbol: 'none',
                             x: '90%',
@@ -166,71 +265,14 @@ function chart(){
     myChart2.setOption(option2);
     // 点击下拉框根据区域加载相应地区的数据
     // console.log($('.cqtj_option')[0].value);
-    var hefei2={
-        xAxis:[{
-            data:['抽样单位1','抽样单位2','抽样单位3','抽样单位4','抽样单位5','抽样单位6','抽样单位7']
-        }],
-        series:[
-        {
-            data:[15, 20, 22, 50, 30, 100, 10]
-        }
-        ]
-    }
-    var hefei1={
-        xAxis:[{
-            data:['抽样单位1','抽样单位2','抽样单位3','抽样单位4','抽样单位5','抽样单位6','抽样单位7']
-        }],
-        series:[
-        {
-            data:[1, 2, 2, 5, 3, 10, 0]
-        }
-        ]
-    }
-    var huangshan2={
-        xAxis:[{
-            data:['抽样单位1','抽样单位2','抽样单位3','抽样单位4','抽样单位5','抽样单位6','抽样单位7']
-        }],
-        series:[
-        {
-            data:[80, 42, 50, 45, 53, 11, 9]
-        }
-        ]
-    }
-    var huangshan1={
-        xAxis:[{
-            data:['抽样单位1','抽样单位2','抽样单位3','抽样单位4','抽样单位5','抽样单位6','抽样单位7']
-        }],
-        series:[
-        {
-            data:[2, 4, 5, 4, 3, 1, 6]
-        }
-        ]
-    }
-    var bengbu2={
-        xAxis:[{
-            data:['抽样单位1','抽样单位2','抽样单位3','抽样单位4','抽样单位5','抽样单位6','抽样单位7']
-        }],
-        series:[
-        {
-            data:[5, 32, 20, 5, 13, 11, 19]
-        }
-        ]
-    }
-    var bengbu1={
-        xAxis:[{
-            data:['抽样单位1','抽样单位2','抽样单位3','抽样单位4','抽样单位5','抽样单位6','抽样单位7']
-        }],
-        series:[
-        {
-            data:[5, 2, 8, 5, 3, 1, 9]
-        }
-        ]
-    }
-    function select_slide(){
+
         $(document).on('change','select#cqtj_option',function(){
             var optionVal=$(this).val();//获取当前选中项的value值
-            myChart1.setOption(data[optionVal][0]); 
-            myChart2.setOption(data[optionVal][1]);
+            getChartInfo(myChart1);
+            getChartInfo(myChart2);
+            //console.log(data);
+            //myChart1.setOption(data[optionVal][0]);
+            //myChart2.setOption(data[optionVal][1]);
             //switch(optionVal){
             //    case '黄山':
             //        myChart1.setOption(huangshan1);
@@ -248,6 +290,47 @@ function chart(){
             //        break;
             //}          
         });
-    }  
-    select_slide();
+    //数据请求后台
+    function getChartInfo(myChart,params){
+        myChart.showLoading();
+      /*  $.ajax({
+       type : "post",
+       async : true, //异步执行
+       url : "AcceptData",
+       dataType : "json", //返回数据形式为json
+       success : function(json) {
+       if (json) {
+       var data;
+       if(myChart==myChart1){
+       data = json.cyjg;
+       }else{
+       data = json.cjjg;
+       }*/
+        myChart.hideLoading();
+        myChart.setOption({
+            xAxis:[{
+                data:['抽样单位1','抽样单位2','抽样单位3','抽样单位4','抽样单位5','抽样单位6','抽样单位7']
+            }],
+            series:[
+                {
+                    data:[5, 2, 8, 5, 3, 1, 9]
+                }
+            ]
+        });
+      /*    }
+       },
+       error : function(errorMsg) {
+       alert("请求数据失败");
+       }*/
+    }
+    //点击不同的市显示相应的数据列表
+    myChart1.on('click',function(params){
+        switch(params.name){
+            case '抽样单位1':
+                var iTop = (window.screen.availHeight-400)/ 2;
+                var iLeft = (window.screen.availWidth-800)/ 2;
+                window.open('./chaoqiList.html', '_blank','height=400, width=1000, top='+iTop+',left='+iLeft+', toolbar=no,menubar=no, scrollbars=no,resizable=no, location=no, status=no');
+                break;
+        }
+    })
 }

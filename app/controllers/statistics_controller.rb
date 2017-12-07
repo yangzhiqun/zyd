@@ -39,6 +39,7 @@ class StatisticsController < ApplicationController
 
   #不合格项目统计
   def nonconformity_statistics
+    #@data_arr:各市不合格批次数量 @data_items:各市不合格项目统计
     @sp_bsbs = SpBsb.where("sp_i_state = 9 AND (sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%')").includes(:spdata)
     @data_arr = []
     @data_items = {"安徽省"=>{}}
@@ -154,26 +155,44 @@ class StatisticsController < ApplicationController
 
   #核查处置统计
   def disposal_statistics
-    #@data = {} #{"大众超市"=>[30,"5%",5,"5%",0,50,4,2],"人民食堂"=>[75,"9%",3,"7%",0,43,0,2]}
-    #city = params["city"] || "合肥"
-    #sp_bsbs = SpBsb.where("(sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%') and (sp_s_wcshi='#{city}' or sp_s_4='#{city}' or sp_s_220='#{city}')")
-    #sp_bsb_ids = sp_bsbs.map{|s| s.id }
-    #sp_yydjbs = {}
-    #wtyp_czb_p = WtypCzbPart.where(sp_bsb_id:sp_bsb_ids).group_by{ |wt| wt.wtyp_sp_bsbs_id }
-    #SpYydjb.where(id:sp_bsb_ids).each{ |spyy| sp_yydjbs[spyy.id] = spyy }
-    #sp_bsbs.group_by{ |sp| sp.sp_s_35 }.each do |name,values|  
-    #  @data[name] = []
-    #  num1,num2,num3,num4,num5,num6,num7,num8 = 0,0,0,0,0,0,0,0
-    #  values.each do |sp_bsb|
-    #    if wtyp_czb_p.has_key?(sp_bsb.id)
-    #      wtyp_czb_p[sp_bsb.id].each{ |wp| wp }
-    #    end
-    #  end
-    #end
+    @data = {} #{"大众超市"=>[30,"5%",5,"5%",0,50,4,2],"人民食堂"=>[75,"9%",3,"7%",0,43,0,2]}
+    city = params["city"] || "合肥"
+    sp_bsbs = SpBsb.where("(sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%') and (sp_s_wcshi='#{city}' or sp_s_4='#{city}' or sp_s_220='#{city}')")
+    sp_bsb_ids = sp_bsbs.map{|s| s.id }
+    sp_yydjbs = {}
+    wtyp_czb_p = WtypCzbPart.where(sp_bsb_id:sp_bsb_ids).group_by{ |wt| wt.sp_bsb_id }
+    SpYydjb.where(id:sp_bsb_ids).each{ |spyy| sp_yydjbs[spyy.id] = spyy }
+    sp_bsbs.group_by{ |sp| sp.sp_s_35 }.each do |name,sp_bsb_arr|  
+      #不合格处置数,不合格处置率,不合格处置完成数,不合格处置完成率,异议数,复检数,复检不合格数,立案数
+      num1,num2,num3,num4,num5,num6,num7,num8 = 0,'',0,'',0,0,0,0
+      sp_bsb_arr.each do |sp_bsb|
+        if wtyp_czb_p.has_key?(sp_bsb.id)
+          wtyp_czb_p[sp_bsb.id].each do |wp|
+            if wp.current_state == 1
+              num1 += 1
+            elsif wp.current_state == 3
+              num3 += 1
+            end
+            num8 += 1 if wp.xzcfqk_1 == "是"
+          end
+        end
+        if sp_yydjbs.has_key?(sp_bsb.id)
+          num5 += 1
+          if sp_yydjbs[sp_bsb.id] == 0
+            num7 += 1 
+          elsif sp_yydjbs[sp_bsb.id] == 1
+            num6 += 1
+          end
+        end
+      end
+      num2 = ((num1.to_f/sp_bsb_arr.length)*100).to_i.to_s+"%" #不合格处置率
+      num4 = ((num3.to_f/sp_bsb_arr.length)*100).to_i.to_s+"%" #不合格处置完成率
+      @data[name] = ["经营",num1,num2,num3,num4,num5,num6,num7,num8]
+    end
     #不合格处置数 num = wtyp_czbs = current_state:1  状态
     #不合格处置率 :num/sp_bsbs
     #不合格处置完成数 :wtyp_czbs =3
-    #:不合格处置完成率:wtyp_czbs/sp_bsbs
+    #不合格处置完成率:wtyp_czbs/sp_bsbs
     # 异议数:sp_bsb.sp_yydjb
     # 复检数:sp_bsb.sp_yydjb.fjsqqk
     # 复检不合格数:sp_bsb.sp_yydjb.fjsqqk
@@ -191,13 +210,48 @@ class StatisticsController < ApplicationController
 
   #复合查询统计
   def composite_statistics
-    #@data = [{name: "合肥", code: "1",totalbat:"22",samplingbat:"15",qualifiedbat:"10%",unqualifiedbat:"12",qualifiedsamp:"20",riskbat:"2",problembat:"713",problemsamp:"1.24%",children:[{name: "长丰",code: "1",totalbat:"22",samplingbat:"15",qualifiedbat:"10%",unqualifiedbat:"12",qualifiedsamp:"20",riskbat:"2",problembat:"713",problemsamp:"1.24%"}]}]
+    #@data = [{name: "合肥",totalbat:"6574",samplingbat:"1232",qualifiedbat:"1200",unqualifiedbat:"193",qualifiedsamp:"4.263%",riskbat:"1222",problembat:"713",problemsamp:"1.24%",children:[{name: "长丰",totalbat:"22",samplingbat:"15",qualifiedbat:"10%",unqualifiedbat:"12",qualifiedsamp:"20",riskbat:"2",problembat:"713",problemsamp:"1.24%"}]}]
+    @q = SpBsb.ransack(params[:q])
+    @products = @q.result(distinct: true)
     @data = []
-    sp_bsbs = SpBsb.where("sp_s_4 != '请选择'").group_by{ |sp| sp.sp_s_4 }
-    sp_bsbs.each do |city,sp_arr|
-      totalbat = sp_arr.length #总批次
-      #samplingbat#监督抽检批次   
+    sp_bsbs = @products.where("sp_s_4 != '请选择'").group_by{ |sp| sp.sp_s_4 }
+    sp_bsbs.each do |city_name,city_arr| #sp_arr:每个市
+      county_sp = city_arr.group_by{ |sp| sp.sp_s_5 }
+      county_result = []
+      county_sp.each do |count_name,county_arr| #arr:每个县
+        #0地区,1总批次,2监督抽检批次,3合格批次,4不合格批次,5不合格样品率,6风险检测批次,7问题样品批次,8问题样品率
+        num0,num1,num2,num3,num4,num5,num6,num7,num8='',0,0,0,0,'',0,0,''
+        num0 = count_name
+        num1 = county_arr.length
+        county_arr.each do |sp| 
+          if sp.sp_s_44 == "监督抽检"
+            num2 += 1 
+            num4 += 1 if /不合格样品|问题样品/ =~ sp.sp_s_71 #不合格批次
+          elsif sp.sp_s_44 == "风险监测"
+            num6 += 1
+            num7 += 1 if /不合格样品|问题样品/ =~ sp.sp_s_71 #问题样品批次
+          end
+        end
+        num3 = num1-num4 #合格批次
+        num5 = ((num4.to_f/num1)*100).to_i.to_s+"%" #不合格样品率
+        num8 = ((num7.to_f/num1)*100).to_i.to_s+"%" #问题样品率
+        county_result << {name: num0,totalbat:num1.to_s,samplingbat:num2.to_s,qualifiedbat:num3.to_s,unqualifiedbat:num4.to_s,qualifiedsamp:num5,riskbat:num6.to_s,problembat:num7.to_s,problemsamp:num8}
+      end
+      #合计该市的信息
+      num1,num2,num3,num4,num5,num6,num7,num8 = 0,0,0,0,'',0,0,''
+      county_result.each do |c| 
+        num1 += c[:totalbat].to_i
+        num2 += c[:samplingbat].to_i
+        num3 += c[:qualifiedbat].to_i
+        num4 += c[:unqualifiedbat].to_i
+        num6 += c[:riskbat].to_i
+        num7 += c[:problembat].to_i
+      end
+      num5 = ((num4.to_f/num1)*100).to_i.to_s+"%"
+      num8 = ((num7.to_f/num1)*100).to_i.to_s+"%"
+      @data << {name: city_name,totalbat:num1.to_s,samplingbat:num2.to_s,qualifiedbat:num3.to_s,unqualifiedbat:num4.to_s,qualifiedsamp:num5,riskbat:num6.to_s,problembat:num7.to_s,problemsamp:num8,children:county_result}
     end
+    @data = @data.to_json
     #总批次 ： sp_bsb.where(地区).count
     #监督抽检批次：sp_s_44
     #风险检测批次 :sp_s_44
@@ -207,5 +261,4 @@ class StatisticsController < ApplicationController
     #问题样品批次 ： SpBsb.bgfl.count
     #问题样品批次/总数
   end
-
 end
