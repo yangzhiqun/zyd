@@ -29,16 +29,15 @@
 
         <!-- 上侧按钮部分 -->
         <div class="foodcate_btn">
-            <form role="form">
                 <div class="form-group foodcateSelect_btn">
                     <!-- 选取栏 -->
                     <!-- 1 -->
-                    <select class="form-control foodcateSelect_option">
+                   <!-- <select class="form-control foodcateSelect_option">
                         <option selected="selected">省级本级</option>
                         <option >省级转移</option>
                         <option >省级专项</option>
                         <option >市级本级</option>
-                    </select>
+                    </select>-->
                     <!-- 2 -->
                     <select class="form-control foodcateSelect_option">
                         <option selected="selected">报送分类a</option>
@@ -46,10 +45,6 @@
                         <option >报送分类a2</option>
                         <option >报送分类a3</option>
                     </select>
-                    <!-- 导出报表 -->
-                    <label for="">
-                        <button type="submit" class="btn btn-default btn-primary foodcate_query bgc1">导出报表</button>
-                    </label>
                 </div>
                 <!-- 时间栏 -->
                 <div class="fillpage-date">
@@ -62,9 +57,15 @@
                     <div class="form-group">
                         <label class="sr-only" for="page-end">结束时间</label>
                         <input type="text" class="form-control" id="page-end" placeholder="结束时间">
-                    </div>    
+                    </div>
                 </div>
-            </form>
+                <!-- 导出报表 -->
+                <div class="taskbtn_operBox">
+                  <button type="submit" class="btn btn-default taskbtn_query" id="search">查询</button>
+                  <button type="submit" class="btn btn-default taskbtn_export bgc1 btn-primary">导出列表</button>
+                </div>
+          <!-- 注释说明 -->
+          <p style="margin:10px; color: red;font-size: 14px;">说明：省市县管理员进入该统计，区域显示不同，如省管理员看到各市信息，以此类推。进入显示该区域下的数据，县级只显示自己数据。</p>
         </div>
 
         <!-- 下侧列表数据部分 -->
@@ -100,8 +101,8 @@
             itemClick: "itemClickEvent",
             columns:[
                 {headerText: "名称", dataField: "name", headerAlign: "center",width: "240", handler: "customOrgName"},
-                {headerText: "序号", dataField: "code", headerAlign: "center", dataAlign: "center"},
-                {headerText: "任务数",dataField: "task", headerAlign: "center", dataAlign: "center", width: "100"},
+//                {headerText: "序号", dataField: "code", headerAlign: "center", dataAlign: "center"},
+//                {headerText: "任务数",dataField: "task", headerAlign: "center", dataAlign: "center", width: "100"},
                 {headerText: "抽样数", dataField: "sampling",headerAlign: "center", dataAlign: "center", width: "100"},
                 {headerText: "检验数", dataField: "test",headerAlign: "center", dataAlign: "center", width: "100"},
                 {headerText: "不合格数",dataField: "unqualified", headerAlign: "center", dataAlign: "center", width: "100"},
@@ -110,21 +111,21 @@
                 {headerText: "处置中", dataField: "Disposal",headerAlign: "center", dataAlign: "center", width: "100"}
             ],
             data:[
-                {name: "报送分类a1", code: "1",task:"128",sampling:"128",test:"80",unqualified:"15",qualified:"65",Disposed:"13",Disposal:"2",},
-                {name: "报送分类a", code: "2",task:"82",sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
-                    {name: "报送分类b", code: "3",task:"82",sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
-                        {name: "食品大类", code: "4",task:"82",sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children: [
-                            {name: "食品亚类", code: "5",task:"82",sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
-                                {name: "食品次亚类", code: "6",task:"82",sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
-                                    {name: "食品细类", code: "7",task:"82",sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",}
+                {name: "报送分类a1", sampling:"128",test:"80",unqualified:"15",qualified:"65",Disposed:"13",Disposal:"2",},
+                {name: "报送分类a", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
+                    {name: "报送分类b", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
+                        {name: "食品大类", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children: [
+                            {name: "食品亚类", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
+                                {name: "食品次亚类", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
+                                    {name: "食品细类", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",}
                                     ]}
                             ]},
                         ]}
                     ]},
-                    {name: "报送分类b1", code: "8",task:"62",sampling:"62",test:"35",unqualified:"3",qualified:"45",Disposed:"3",Disposal:"42",},
-                    {name: "报送分类b2", code: "9",task:"20",sampling:"20",test:"40",unqualified:"2",qualified:"25",Disposed:"6",Disposal:"19",},
+                    {name: "报送分类b1", sampling:"62",test:"35",unqualified:"3",qualified:"45",Disposed:"3",Disposal:"42",},
+                    {name: "报送分类b2", sampling:"20",test:"40",unqualified:"2",qualified:"25",Disposed:"6",Disposal:"19",},
                     
-                ]},{name: "", code: "总计", task:"210", sampling:"210",test:"155",unqualified:"20",qualified:"135",Disposed:"18",Disposal:"2", height:"200"},
+                ]},{name: "总计",  sampling:"210",test:"155",unqualified:"20",qualified:"135",Disposed:"18",Disposal:"2", height:"200"},
             ]
         };
 

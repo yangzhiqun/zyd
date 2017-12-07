@@ -59,6 +59,23 @@
             // 按地区选择表格数据
             var cq_select = $("#cqtj_option");
             cq_select.change(function(){
+              /*  $.ajax({
+               type: "post",
+               contentType: "application/json",
+               url: "WebService1.asmx/Login",
+               data: {
+               "parmas":parmas.join(',')
+               },
+               success: function (data) {
+               if (data == 'true') {
+               window.location.open = 'HTMLPage1.htm';
+               }
+               else {
+               alert("数据错误");
+               }
+               }
+               })
+               */
                 //先销毁表格
                 $('#tb_report').bootstrapTable('destroy');
                 $('#tb_report1').bootstrapTable('destroy');
@@ -67,20 +84,7 @@
                 alert(cq_selected);
                 getData(data1);
                 getData1(data1);
-               /* switch(cq_selected){
-                    case "合肥":
-                    $('.hefei_datastatistics').show()
-                    .siblings().hide();
-                    break;
-                    case "黄山":
-                    $('.huangshan_datastatistics').show()
-                    .siblings().hide();
-                    break;
-                    case "蚌埠":
-                    $('.bengbu_datastatistics').show()
-                    .siblings().hide();
-                    break;
-                }*/
+
             })
         
 

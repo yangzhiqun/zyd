@@ -12,14 +12,75 @@
             <h1>不合格项目统计</h1>
         </div>
         <div class="content">
-            <div>
-                <form action="/nonconformity_statistics">
+          <!-- 选取栏8 -->
+          <div class="check_selectbox">
+            <label for="checkbox_optionH">报送分类A</label>
+            <select class="form-control checkbox_optionH" id="checkbox_optionH">
+              <option selected="selected">请选择</option>
+              <option>抽检监测(市级本级)</option>
+              <option>抽检监测(省级专项)</option>
+              <option>抽检监测(省级转移)</option>
+            </select>
+          </div>
+          <!-- 选取栏9 -->
+          <div class="check_selectbox">
+            <label for="checkbox_optionI">报送分类B</label>
+            <select class="form-control checkbox_optionI" id="checkbox_optionI">
+              <option selected="selected">请选择</option>
+              <option>2017年安徽合肥食品抽检计划</option>
+              <option>2017年安徽宣城跟踪抽检计划</option>
+            </select>
+          </div>
+          </br>
+          <!-- 选取栏10 -->
+          <div class="check_selectbox">
+            <label for="checkbox_optionJ">食品大类</label>
+            <select class="form-control checkbox_optionJ" id="checkbox_optionJ">
+              <option selected="selected">请选择</option>
+              <option>食用油、油脂及制品</option>
+              <option>调味品</option>
+              <option>肉制品</option>
+            </select>
+          </div>
+          <!-- 选取栏11 -->
+          <div class="check_selectbox">
+            <label for="checkbox_optionK">食品亚类</label>
+            <select class="form-control checkbox_optionK" id="checkbox_optionK">
+              <option selected="selected">请选择</option>
+              <option>小麦粉</option>
+              <option>大米</option>
+              <option>挂面</option>
+            </select>
+          </div>
+          <!-- 选取栏12 -->
+          <div class="check_selectbox">
+            <label for="checkbox_optionL">食品次亚类</label>
+            <select class="form-control checkbox_optionL" id="checkbox_optionL">
+              <option selected="selected">请选择</option>
+              <option>小麦粉</option>
+            </select>
+          </div>
+          <!-- 选取栏13 -->
+          <div class="check_selectbox">
+            <label for="checkbox_optionM">食品细类</label>
+            <select class="form-control checkbox_optionM" id="checkbox_optionM">
+              <option selected="selected">请选择</option>
+              <option>通用小麦粉</option>
+              <option>专用小麦粉</option>
+            </select>
+          </div>
+          <div class="taskbtn_operBox">
+            <button type="submit" class="btn btn-default taskbtn_query" id="search">查询</button>
+            <form action="/nonconformity_statistics">
                   <!--<button class="btn btn-default bgc1 btn-primary export_btn">导出报表</button>-->
                   <input type="hidden" name="is_export" id="is_export" value="1">
                   <input type="submit" name="commit" value="导出报表" id="save" class="btn btn-default bgc1 btn-primary export_btn">
                 </form>
             </div>
-            <div style="width:100%;margin-top: 15px;">
+          <!-- 注释说明 -->
+          <p style="margin:10px; color: red;font-size: 14px;">说明：省市县管理员进入该统计，区域显示不同，如省管理员看到各市信息，以此类推。进入显示该区域下的数据，县级只显示自己数据。</p>
+
+          <div style="width:100%;margin-top: 15px;">
                 <div class="content_left">
                     <table>
                         <tr>
@@ -48,6 +109,12 @@
                         </tbody>
                     </table>
                 </div>
+
+              <div class="content_bottom">
+                <table class="table table-bordered" id = "tb_report">
+
+                </table>
+              </div>
             </div>
         </div>
     </div>
@@ -58,13 +125,14 @@
     -->
     <%= javascript_include_tag "statistics/map/china-main-city-map" %>
     <script>
-    var all_data
+    var all_data;
     $(function(){
         all_data = <%= raw @data_items %>
         chartMap();
         main();
+        getData(data);
     })
-    function main(){
+    function main(params){
         //动态渲染左侧区域数据
         var htmlStr='';
         for(var k in cityMap){
@@ -109,7 +177,9 @@ function chartMap(){
             var name = params.batch[0].name;
             var mapCode = cityMap[name];
             if (!mapCode) {
-                alert('无此区域地图显示');
+
+                getSelect();  //需加参数
+              //  alert('无此区域地图显示');
                 return;
             }
             addHtml(all_data[name]);
@@ -144,6 +214,7 @@ function chartMap(){
     
     $(document).on('click','.area_btn',function(){
         var thisTxt=$(this).text();
+        getSelect(thisTxt); //需加参数
         addHtml(all_data[thisTxt]);
         switch(thisTxt){
             case '安徽省':
@@ -217,7 +288,7 @@ function chartMap(){
     function addHtml(obj){
       var htmlStr = ''
       for (var key in obj) {
-        str =  '<tr>'+'<td>'+key+'</td>'+'<td><button class="value_btn">'+obj[key]+'</button></td>'+'</tr>'
+        str =  '<tr>'+'<td><a href=javascript:void(0); onclick=getSelect("'+key+'")>'+key+'</a></td>'+'<td><button class="value_btn">'+obj[key]+'</button></td>'+'</tr>'
         htmlStr += str
       }
       $('.content_right>table>tbody').html(htmlStr);
@@ -418,7 +489,145 @@ function chartMap(){
              }       
         });
     }   
-}       
+}
+var data = [{"area":"合肥","dh":"SC1002134432","ypmc":"茶叶","jyxm":"xxxx","dl":"食用农产品","yl":"茶","cyl":"茶","xl":"茶"}];
+    function getData(info){
+        $('#tb_report').bootstrapTable({
+            //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
+            //method: 'get',                      //请求方式（*）
+            data:info,
+            // datatype:'json',
+            toolbar: '#toolbar',                //工具按钮用哪个容器
+            striped: true,                      //是否显示行间隔色
+            cache: false,                      //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            search: true, //显示搜索框
+            // pagination: true,                   //是否显示分页（*）
+            // sortOrder: "asc",                   //排序方式
+            //queryParams: oTableInit.queryParams,//传递参数（*）
+            // sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
+            // pageNumber: 1,                       //初始化加载第一页，默认第一页
+            // pageSize: 10,                       //每页的记录行数（*）
+            // pageList: [10, 25, 50, 100],      //可供选择的每页的行数（*）
+            columns : [
+                {
+                    title : '序号',//标题  可不加
+                    formatter : function(value,row, index) {
+                        return index + 1;
+                    }
+                },
+                {
+                    field : 'area',
+                    title : '区域',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        return value;
+                    }
+                },
+                {
+                    field : 'dh',
+                    title : '抽样单号',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
+                        return info;
+                    }
+                },{
+                    field : 'ypmc',
+                    title : '样品名称',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
+                        return info;
+                    }
+                },{
+                    field : 'jyxm',
+                    title : '检验项目',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
+                        return info;
+                    }
+                },{
+                    field : 'dl',
+                    title : '大类',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
+                        return info;
+                    }
+                },
+                {
+                    field : 'yl',
+                    title : '亚类',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        return value;
+                    }
+                },
+                {
+                    field : 'cyl',
+                    title : '次亚类',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        return value;
+                    }
+                },
+                {
+                    field : 'xl',
+                    title : '细类',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        return value;
+                    }
+                }
+            ]
+        });
+    }
+    function getSelect(params){
+        //先销毁表格
+        $('#tb_report').bootstrapTable('destroy');
+      /*  $.ajax({
+       type: "post",
+       contentType: "application/json",
+       url: "WebService1.asmx/Login",
+       data: {
+       "parmas":parmas.join(',')
+       },
+       success: function (data) {
+       if (data == 'true') {
+       window.location.open = 'HTMLPage1.htm';
+       }
+       else {
+       alert("数据错误");
+       }
+       }
+       })
+       */
+      var data1 = [{"area":"合肥","dh":"SC1002134432","ypmc":"茶叶","jyxm":"xxxx","dl":"食用农产品","yl":"茶","cyl":"茶","xl":"茶"},
+          {"area":"黄山","dh":"SC10033333332","ypmc":"茶叶","jyxm":"xxxx","dl":"食用农产品","yl":"茶","cyl":"茶","xl":"茶"}];
+        getData(data1);
+    }
+    $("#search").on('click',function(){
+         alert(123);
+         //ajax 参数 为 下拉数据  如$("#xxx").val(); 可定义 params
+      /*  $.ajax({
+       type: "post",
+       contentType: "application/json",
+       url: "WebService1.asmx/Login",
+       data: {
+       "parmas":parmas.join(',')
+       },
+       success: function (data) {
+       if (data == 'true') {
+       window.location.open = 'HTMLPage1.htm';
+       }
+       else {
+       alert("数据错误");
+       }
+       }
+       })
+       */
+    })
     </script>
 </body>
 </html>
