@@ -195,7 +195,7 @@
       </td>
       <td colspan="4">任务来源</td>
       <td colspan="6">
-        <%#= select_tag "rwly", options_for_select(all_departments.map { |name| [name,name, {'parentid' => name}] }.unshift(["全部", "全部"]), params[:rwly]), :style => "width: 185px;",:class => 'form-control input-sm' %>
+        <%= select_tag "rwly", options_for_select(all_departments.map { |name| [name,name, {'parentid' => name}] }.unshift(["全部", "全部"]), params[:rwly]), :style => "width: 185px;",:class => 'form-control input-sm' %>
       </td>
     </tr>
     <tr>
