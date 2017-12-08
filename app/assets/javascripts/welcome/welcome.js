@@ -170,13 +170,13 @@ function getDataTp(info){
         striped: true,                      //是否显示行间隔色
         cache: false,                      //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
         //search: true, //显示搜索框
-        // pagination: true,                   //是否显示分页（*）
+         pagination: true,                   //是否显示分页（*）
         // sortOrder: "asc",                   //排序方式
         //queryParams: oTableInit.queryParams,//传递参数（*）
-        // sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
-        // pageNumber: 1,                       //初始化加载第一页，默认第一页
-        // pageSize: 10,                       //每页的记录行数（*）
-        // pageList: [10, 25, 50, 100],      //可供选择的每页的行数（*）
+         sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
+         pageNumber: 1,                       //初始化加载第一页，默认第一页
+         pageSize: 5,                       //每页的记录行数（*）
+         pageList: [5, 10],      //可供选择的每页的行数（*）
         columns : [
             {
                 title : '序号',//标题  可不加
@@ -188,6 +188,7 @@ function getDataTp(info){
                 field : 'bcydwqy',
                 title : '被抽样单位区域',
                 align : 'center'
+                //sortable : true 排序
             },
             {
                 field : 'bcydwmc',
