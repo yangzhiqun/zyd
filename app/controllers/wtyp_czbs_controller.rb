@@ -49,10 +49,18 @@ class WtypCzbsController < ApplicationController
     @sp_bsb=SpBsb.find(params[:id])
 
     @wtyp_czb = WtypCzb.find_by_wtyp_sp_bsbs_id(@sp_bsb.id)
+    #@wtyp_czb =WtypCzb.find(params[:wtyp_czb_id])
     # 生产部分
     # 生产部分核查处置仅包含：生产 & 流通
+
+    if params[:wtyp_czb_id].present?
+      wtyp_czb_part = WtypCzbPart.where(id: params[:wtyp_czb_id])
+    else
+      wtyp_czb_part = WtypCzbPart.all
+    end
     if !@sp_bsb.sp_s_68.eql?("餐饮") or (@sp_bsb.sp_s_68.eql?('餐饮') and @sp_bsb.sp_s_63.eql?('预包装'))
-      @part_sc = WtypCzbPart.where(wtyp_czb_type: WtypCzbPart::Type::SC, wtyp_czb_id: @wtyp_czb.id).first
+      @part_sc = wtyp_czb_part.where(wtyp_czb_type: WtypCzbPart::Type::SC, wtyp_czb_id: @wtyp_czb.id).first
+     # @part_sc = WtypCzbPart.where(wtyp_czb_type: WtypCzbPart::Type::SC, wtyp_czb_id: @wtyp_czb.id,id: params[:wtyp_czb_id]).first
     end
 
     # [流通/餐饮]部分
@@ -63,9 +71,11 @@ class WtypCzbsController < ApplicationController
     #elsif  @sp_bsb.sp_s_68.eql?('流通') and @sp_bsb.sp_s_2.eql?('网购')
      # @lt_cy_type = WtypCzbPart::Type::WC
     end
-    @part_lt_cy = WtypCzbPart.where(wtyp_czb_type: @lt_cy_type, wtyp_czb_id: @wtyp_czb.id).first
+    @part_lt_cy = wtyp_czb_part.where(wtyp_czb_type: @lt_cy_type, wtyp_czb_id: @wtyp_czb.id).first
+    #@part_lt_cy = WtypCzbPart.where(wtyp_czb_type: @lt_cy_type, wtyp_czb_id: @wtyp_czb.id, id: params[:wtyp_czb_id]).first
     if @sp_bsb.sp_s_68.eql?('流通') and @sp_bsb.sp_s_2.eql?('网购')
-     @part_wc =WtypCzbPart.where(wtyp_czb_type: WtypCzbPart::Type::WC, wtyp_czb_id: @wtyp_czb.id).first
+     @part_wc = wtyp_czb_part.where(wtyp_czb_type: WtypCzbPart::Type::WC, wtyp_czb_id: @wtyp_czb.id).first
+     #@part_wc = WtypCzbPart.where(wtyp_czb_type: WtypCzbPart::Type::WC, wtyp_czb_id: @wtyp_czb.id,id: params[:wtyp_czb_id]).first
     end
     # #47 第10条，如果抽样环节是生产，则只处理生产，不处理流通
     @is_editing = WtypCzbPart.where('bcydw_sheng = ? OR bsscqy_sheng = ? AND wtyp_czb_id = ?', current_user.user_s_province, current_user.user_s_province, @wtyp_czb.id).where('current_state = ?', ::WtypCzb::State::ASSIGNED).count > 0

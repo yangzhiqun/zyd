@@ -433,16 +433,16 @@
     <input type="hidden" id="part-submit" name="part_submit">
 
     <!-- 生产 -->
-    <% if @part_sc.present? and @part_sc.visible_for_user?(current_user, ::WtypCzbPart::Type::SC)%>
+    <% if @part_sc.present? and @part_sc.visible_for_user?(current_user, ::WtypCzbPart::Type::SC) and ((@part_sc.enable_operation?(current_user,1) and @part_sc.type_prov_enabled?(current_user))  or (current_user.is_admin? or is_sheng? or  current_user.hcz_admin == 1 or (@part_sc.current_state == ::WtypCzb::State::PASSED if @part_sc.present?)) )%>
         <%= render "form_part", :czb => @part_sc, :title => "生产环节核查处置情况" %>
         <hr>
     <% end %>
     <!-- 流通/餐饮 -->
-    <% if @part_lt_cy.present? and @part_lt_cy.visible_for_user?(current_user, ::WtypCzbPart::Type::LT) %>
+    <% if @part_lt_cy.present? and @part_lt_cy.visible_for_user?(current_user, ::WtypCzbPart::Type::LT) and  ((@part_lt_cy.enable_operation?(current_user,1) and @part_lt_cy.type_prov_enabled?(current_user)) or (current_user.is_admin? or is_sheng? or current_user.hcz_admin == 1 or (@part_lt_cy.current_state == ::WtypCzb::State::PASSED if @part_lt_cy.present?)) ) %>
         <%= render "form_part", :czb => @part_lt_cy, :title => "经营环节核查处置情况" %>
     <% end %>
     <!-- 网抽 -->
-    <% if @part_wc.present? and @part_wc.visible_for_user?(current_user, ::WtypCzbPart::Type::WC) %>
+    <% if @part_wc.present? and @part_wc.visible_for_user?(current_user, ::WtypCzbPart::Type::WC) and ((@part_wc.enable_operation?(current_user,1) and @part_wc.type_prov_enabled?(current_user)) or (current_user.is_admin? or is_sheng?  or current_user.hcz_admin == 1 or (@part_wc.current_state == ::WtypCzb::State::PASSED if @part_wc.present?))) %>
        <%= render "form_part", :czb => @part_wc, :title => "网抽环节核查处置情况" %>
     <% end %>
 <% end %>

@@ -195,7 +195,7 @@
       </td>
       <td colspan="4">任务来源</td>
       <td colspan="6">
-        <%= select_tag "rwly", options_for_select(all_departments.map { |name| [name,name, {'parentid' => name}] }.unshift(["全部", "全部"]), params[:rwly]), :style => "width: 185px;",:class => 'form-control input-sm' %>
+        <%#= select_tag "rwly", options_for_select(all_departments.map { |name| [name,name, {'parentid' => name}] }.unshift(["全部", "全部"]), params[:rwly]), :style => "width: 185px;",:class => 'form-control input-sm' %>
       </td>
     </tr>
     <tr>
@@ -299,6 +299,9 @@
         <tr>
           <th width="30" align="center"><input type="checkbox" id="select-all"></th>
           <th>采样编号</th>
+          <% if params[:current_tab].eql?('BLZ.QT') %>
+          <th>领取人</th>
+          <% end %>
           <th>领取单位</th>
           <th>领取时间&emsp;&emsp;</th>
           <th>预警信息&emsp;&emsp;&emsp;&emsp;&emsp;</th>
@@ -335,7 +338,7 @@
                     <% end %>
                   </td>
                   <td width="200" class="cjbh">
-                    <a title="<%= wtyp_czb.cjbh %>" class="text-<%= wtyp_czb.deadline_warning %>" href="/wtyp_czbs/<%= wtyp_czb.sp_bsb_id %>/edit"><%= wtyp_czb.cjbh %></a>
+                    <a title="<%= wtyp_czb.cjbh %>" class="text-<%= wtyp_czb.deadline_warning %>" href="/wtyp_czbs/<%= wtyp_czb.sp_bsb_id %>/edit?wtyp_czb_id=<%= "#{wtyp_czb.id}" %>"><%= wtyp_czb.cjbh %></a>
                     <% if Time.now - SpBsb.find(wtyp_czb.sp_bsb_id).updated_at > 5.days and !wtyp_czb.part_submit_flag1 %>
                         <span class="label label-info">未产品控制</span>
                     <% end %>
@@ -348,6 +351,9 @@
                         <span class="label label-danger">未行政处罚</span>
                     <% end %>
                   </td>
+                  <% if  params[:current_tab].eql?('BLZ.QT') %>
+                  <td><%= wtyp_czb.czfzr_desc if wtyp_czb.czfzr_desc.present? %></td>
+                  <% end %>
                   <td><%= wtyp_czb.blbm %></td>
                   <td><%= wtyp_czb.blsj.strftime("%Y-%m-%d") if !wtyp_czb.blsj.nil? %></td>
                   <td><%= wtyp_czb.scqy_info %><br><%= wtyp_czb.bhg_item_info %><br><%= wtyp_czb.spxl_info %></td>
