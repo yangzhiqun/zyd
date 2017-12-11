@@ -1,5 +1,26 @@
 $(function(){
     chart(datainfo1);
+    myChart1=echarts.init(document.getElementById('chart_1'));
+    myChart1.setOption(option1);
+    myChart2=echarts.init(document.getElementById('chart_2'));
+    myChart2.setOption(option2);
+
+    //点击不同的市显示该市下级市县区相应的数据
+    myChart1.on('click',function(params){
+        // console.log(params.componentType);
+        // 获取当前点击的市
+        getChartInfo(this,params.name,2);
+
+    });
+
+
+    myChart2.on('click',function (params) {
+        getChartInfo(this,params.name,3);
+    });
+    //封装点击不同的市显示当前市下级数据
+    //function cityClick(myChart,data){
+    //    myChart.setOption(data);
+    //}
 })
 // function randomData1(){
 //     return Math.round(Math.random()*250);
@@ -19,9 +40,13 @@ $(function(){
 var datainfo1 = {"cyjg":{"x":['合肥','芜湖','蚌埠','淮南','马鞍山','淮北','铜陵','安庆','黄山','滁州','阜阳','宿州','六安市'],"y1":[200, 140, 170, 230, 245, 176, 135, 162, 132, 120, 160, 130,140],"y2":[63.00, 35.71, 52.94, 88.70, 84.50, 43.75, 56.30, 50.61, 35.60, 73.33, 37.5, 94.62,42.86]},
 "cjjg":{"x":['合肥','芜湖','蚌埠','淮南','马鞍山','淮北','铜陵','安庆','黄山','滁州','阜阳','宿州','六安市'],"y1":[200, 140, 170, 230, 245, 176, 135, 162, 132, 120, 160, 130,140],"y2":[63.00, 35.71, 52.94, 88.70, 84.50, 43.75, 56.30, 50.61, 35.60, 73.33, 37.5, 94.62,42.86]}};
 // 图表展示
+var myChart1;
+var myChart2;
+var option1;
+var option2;
 function chart(data){
     // Security Trends
-    var option1 = {
+     option1 = {
         tooltip: {
             trigger: 'axis',
             axisPointer: {
@@ -101,9 +126,9 @@ function chart(data){
         ]
     };
 
-    var myChart1=echarts.init(document.getElementById('chart_1'))
-    myChart1.setOption(option1);
-    var option2 = {
+
+
+     option2 = {
         tooltip: {
             trigger: 'axis',
             axisPointer: {
@@ -182,43 +207,38 @@ function chart(data){
             }
         ]
     };
-    var myChart2=echarts.init(document.getElementById('chart_2'));
-    myChart2.setOption(option2);
+   // var myChart2=echarts.init(document.getElementById('chart_2'));
+   // myChart2.setOption(option2);
 
     //根据相应地区的数据
 
     $(document).on('change','#cqtj_option',function(){
         var optVal=$(this).val();
-        alert(optVal);
-        getChartInfo(myChart1);
-        getChartInfo(myChart2);
+        getChartInfo(myChart1,optVal,"1");
+        getChartInfo(myChart2,optVal,"1");
         });
-    //点击不同的市显示该市下级市县区相应的数据
-    myChart1.on('click',function(params){
-        // console.log(params.componentType);
-        // 获取当前点击的市
-        getChartInfo(this,params.name);
-
-    });
 
 
-    myChart2.on('click',function (params) {
-        getChartInfo(this,params.name);
-    })
-    //封装点击不同的市显示当前市下级数据
-    //function cityClick(myChart,data){
-    //    myChart.setOption(data);
-    //}
-
-
+}
 //数据请求后台
-function getChartInfo(myChart,params){
+function getChartInfo(myChart,params,flag){
+    var time = $("#time").val();
+    if(time==""){
+        alert("请选择时间");
+        return
+    }
     myChart.showLoading();
-    /*  $.ajax({
+      $.ajax({
      type : "post",
-     async : true, //异步执行
+     contentType: "application/json",
+     //async : true, //异步执行
      url : "AcceptData",
      dataType : "json", //返回数据形式为json
+          data:{
+              "time":time,
+              "area":params,
+              "flag": flag //0为表格  1，为图表 ,2 抽样 ,3 承检
+          },
      success : function(json) {
      if (json) {
     var data;
@@ -226,12 +246,12 @@ function getChartInfo(myChart,params){
         data = json.cyjg;
     }else{
         data = json.cjjg;
-    }*/
+    }
     myChart.hideLoading();
     myChart.setOption({
         xAxis: [
             {
-                data: ['长丰县', '庐江县', '庐阳区', '巢湖市', '包河区', '肥东县', '肥西县', '蜀山区', '瑶海区',]
+                data: ['长丰县', '庐江县', '庐阳区', '巢湖市', '包河区', '肥东县', '肥西县', '蜀山区', '瑶海区']
             }
         ],
         series: [
@@ -248,10 +268,11 @@ function getChartInfo(myChart,params){
             }
         ]
     });
-    /*    }
+        }
      },
      error : function(errorMsg) {
      alert("请求数据失败");
-     }*/
-}
+     }
+})
+
 }
