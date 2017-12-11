@@ -46,3 +46,20 @@
     height: 100%;
     margin: 0 15px;
 }
+.check_time{
+    width:80%;
+}
+.check_time .check_selectbox{
+    width:30%;
+    margin:0 15px;
+}
+.check_time .check_selectbox label{
+    display: inline-block;
+    float: left;
+    width:auto;
+}
+.check_time .check_selectbox input[type="text"]{
+    display: inline-block;
+    width: 70%;
+    float: right;
+}
