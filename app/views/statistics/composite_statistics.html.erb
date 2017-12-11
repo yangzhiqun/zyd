@@ -16,7 +16,7 @@
     <script src="../libs/treegrad/jquery-1.3.2.min.js"></script>
     <script src="../libs/treegrad/TreeGrid.js"></script>
     -->
-    <%= javascript_include_tag "statistics/treegrad/jquery-1.3.2.min","statistics/treegrad/TreeGrid" %>
+    <%= javascript_include_tag "statistics/layDate/laydate","statistics/treegrad/jquery-1.3.2.min","statistics/treegrad/TreeGrid" %>
 </head>
 <body>
     <div class="container">
@@ -28,7 +28,6 @@
         <!-- 上侧按钮部分 -->
         <div class="foodcate_btn">
             <%= search_form_for @q, url: composite_statistics_path, html: {role: "form"} do |f|  %>
-            <!--<form role="form">-->
                 <!-- 选项部分 -->
                 <div class="checkquery_option">
                     <label class="checkbox-inline">
@@ -58,132 +57,80 @@
                 </div>
                 
                 <!-- 下拉选项部分 -->
-                <!-- 选取栏1 -->
                 <div class="check_selectbox">
-                    <label for="foodbox_optionA">统计指标</label>
-                    <select class="form-control checkbox_optionA" id="checkbox_optionA">
-                        <option selected="selected">全部</option>
-                        <option>合格批次</option>
-                        <option>不合格批次</option>
-                    </select>
+                    <%= f.label :统计指标 %>
+                    <%= f.select :sp_s_71, options_for_select([['全部', nil], ['合格批次', '合格'], ['不合格批次', '不合格']],params[:q].blank? ? '':params[:q]["sp_s_71"]),{},class:"form-control checkbox_optionA",id:"checkbox_optionA" %>
                 </div>
-                <!-- 选取栏2 -->
                 <div class="check_selectbox">
-                    <label for="checkbox_optionB">抽样环节</label>
-                    <select class="form-control checkbox_optionB" id="checkbox_optionB">
-                        <option selected="selected">请选择</option>
-                        <option>生产</option>
-                        <option>流通</option>
-                        <option>餐饮</option>
-                    </select>
+                    <%= f.label :抽样环节 %>
+                    <%= f.select :sp_s_68_eq, [["生产","生产"],["流通","流通"],["餐饮","餐饮"]],{:include_blank => "请选择"},class:"form-control checkbox_optionB",id:"checkbox_optionB" %>
                 </div>
-                <!-- 选取栏3 -->
                 <div class="check_selectbox">
-                    <label for="checkbox_optionE">被抽样单位</label>
-                    <input type="text" class="form-control checkbox_optionE">
+                    <%= f.label :被抽样单位 %>
+                    <%= f.search_field :sp_s_1_eq,class:"form-control checkbox_optionE" %>
                 </div>
-                <!-- 选取栏4 -->
                 <div class="check_selectbox">
-                    <label for="checkbox_optionF">生产企业</label>
-                    <input type="text" class="form-control checkbox_optionF">
+                    <%= f.label :生产企业 %>
+                    <%= f.search_field :sp_s_64_eq,class:"form-control checkbox_optionF" %>
                 </div>
-                <!-- 选取栏5 -->
                 <div class="check_selectbox">
-                    <label for="checkbox_optionG">承检单位</label>
-                    <select class="form-control checkbox_optionG" id="checkbox_optionG">
-                        <option selected="selected">请选择</option>
-                        <option>六安市检测机构</option>
-                        <option>广州汇标检测技术中心</option>
-                        <option>阳江市检测检验中心</option>
-                    </select>
+                    <%= f.label :承检单位 %>
+                    <%= f.select :sp_s_43_eq, inspecton_body.each{ |jg| [jg,jg]},{:include_blank => "请选择"},class:"form-control checkbox_optionG",id:"checkbox_optionG" %>
                 </div>
-                <!-- 选取栏6 -->
                 <div class="check_selectbox">
-                    <label for="checkbox_optionC">任务类别</label>
-                    <select class="form-control checkbox_optionC" id="checkbox_optionC">
-                        <option selected="selected">全部</option>
-                        <option>监督抽检</option>
-                        <option>抽检检测</option>
-                        <option>风险检测</option>
-                    </select>
+                    <%= f.label :任务类别 %>
+                    <%= f.select :sp_s_44_eq, [["监督抽检","监督抽检"],["抽检检测","抽检检测"],["风险检测","风险检测"]],{:include_blank => "全部"},class:"form-control checkbox_optionC",id:"checkbox_optionC" %>
                 </div>
-                <!-- 选取栏7 -->
                 <div class="check_selectbox">
-                    <label for="checkbox_optionD" style="width: 50%;" >生产单位所在省</label>
-                    <select class="form-control checkbox_optionD" id="checkbox_optionD" style="width: 35%;">
-                        <option selected="selected">全部</option>
-                        <option>吉林</option>
-                        <option>安徽</option>
-                        <option>内蒙古</option>
-                        <option>河北</option>
-                        <option>湖南</option>
-                    </select>
+                    <%= f.label :生产单位所在省, style:"width: 50%" %>
+                    <%= f.select :sp_s_202_eq, SysProvince.where("level like '_' or level like '__'").map{|m| [m.name,m.name]}, {:include_blank => "全部"},class:"form-control checkbox_optionD",id:"checkbox_optionD",style:"width: 35%" %>
                 </div>
                 </br>
-                <!-- 选取栏8 -->
+                <div class="check_selectbox">
+                    <%= f.label :任务来源 %>
+                    <%= f.select :sp_s_2_1_eq, all_super_departments.map { |name| [name, name] },{:include_blank =>"请选择"},class:"form-control checkbox_optionN",id:"checkbox_optionN"%>
+                </div>
                 <div class="check_selectbox">
                     <label for="checkbox_optionH">报送分类A</label>
-                    <select class="form-control checkbox_optionH" id="checkbox_optionH">
-                        <option selected="selected">请选择</option>
-                        <option>抽检监测(市级本级)</option>
-                        <option>抽检监测(省级专项)</option>
-                        <option>抽检监测(省级转移)</option>
-                    </select>
+                    <%= f.select :sp_s_70_eq, BaosongA.all.map { |b| [b.name, b.name] },{:include_blank =>"请选择"},class:"form-control checkbox_optionH",id:"checkbox_optionH"%>
                 </div>
-                <!-- 选取栏9 -->
                 <div class="check_selectbox">
                     <label for="checkbox_optionI">报送分类B</label>
-                    <select class="form-control checkbox_optionI" id="checkbox_optionI">
-                        <option selected="selected">请选择</option>
-                        <option>2017年安徽合肥食品抽检计划</option>
-                        <option>2017年安徽宣城跟踪抽检计划</option>
-                    </select>
+                    <%= f.select :sp_s_67_eq, [],{:include_blank =>"请选择"},class:"form-control checkbox_optionI",id:"checkbox_optionI"%>
                 </div>
                 </br>
-                <!-- 选取栏10 -->
                 <div class="check_selectbox">
-                    <label for="checkbox_optionJ">食品大类</label>
-                    <select class="form-control checkbox_optionJ" id="checkbox_optionJ">
-                        <option selected="selected">请选择</option>
-                        <option>食用油、油脂及制品</option>
-                        <option>调味品</option>
-                        <option>肉制品</option>
-                    </select>
+                    <%= f.label :食品大类 %>
+                    <%= f.select :sp_s_17_eq, [],{:include_blank =>"请选择"},class:"form-control checkbox_optionJ",id:"checkbox_optionJ"%>
                 </div>
-                <!-- 选取栏11 -->
                 <div class="check_selectbox">
-                    <label for="checkbox_optionK">食品亚类</label>
-                    <select class="form-control checkbox_optionK" id="checkbox_optionK">
-                        <option selected="selected">请选择</option>
-                        <option>小麦粉</option>
-                        <option>大米</option>
-                        <option>挂面</option>
-                    </select>
+                    <%= f.label :食品亚类 %>
+                    <%= f.select :sp_s_18_eq, [],{:include_blank =>"请选择"},class:"form-control checkbox_optionK",id:"checkbox_optionK"%>
                 </div>
-                <!-- 选取栏12 -->
                 <div class="check_selectbox">
-                    <label for="checkbox_optionL">食品次亚类</label>
-                    <select class="form-control checkbox_optionL" id="checkbox_optionL">
-                        <option selected="selected">请选择</option>
-                        <option>小麦粉</option>
-                    </select>
+                    <%= f.label :食品次亚类 %>
+                    <%= f.select :sp_s_19_eq, [],{:include_blank =>"请选择"},class:"form-control checkbox_optionL",id:"checkbox_optionL"%>
                 </div>
-                <!-- 选取栏13 -->
                 <div class="check_selectbox">
-                    <label for="checkbox_optionM">食品细类</label>
-                    <select class="form-control checkbox_optionM" id="checkbox_optionM">
-                        <option selected="selected">请选择</option>
-                        <option>通用小麦粉</option>
-                        <option>专用小麦粉</option>
-                    </select>
+                    <%= f.label :食品细类 %>
+                    <%= f.select :sp_s_20_eq, [],{:include_blank =>"请选择"},class:"form-control checkbox_optionM",id:"checkbox_optionM"%>
                 </div>
-
+                </br>
+                <div class="check_time">
+                  <div class="check_selectbox">
+                      <%= f.label :开始时间 %>
+                      <%= f.text_field :created_at_start,class:"form-control checkbox_optionN",value:"#{params[:q].blank? ? '':params[:q]["created_at_start"]}" %>
+                  </div>
+                  <div class="check_selectbox">
+                      <%= f.label :结束时间 %>
+                      <%= f.text_field :created_at_end,class:"form-control checkbox_optionN",value:"#{params[:q].blank? ? '':params[:q]["created_at_end"]}"%>
+                  </div>
+                </div>
                 <!-- 右侧操作按钮 -->
                 <div class="taskbtn_operBox">
                     <button type="submit" class="btn btn-default taskbtn_query">查询</button>
                     <button type="submit" class="btn btn-default taskbtn_export bgc1 btn-primary">导出列表</button>
                 </div>
-            <!-- </form> -->
             <% end %>
         </div>
 
@@ -230,26 +177,127 @@
             {headerText: "问题样品率", dataField: "problemsamp",headerAlign: "center", dataAlign: "center", width: "120"}
         ],
         data: <%= raw @data %> 
-        //data:[
-        //    {name: "合肥",totalbat:"6574",samplingbat:"1232",qualifiedbat:"1200",unqualifiedbat:"193",qualifiedsamp:"4.263%",riskbat:"1222",problembat:"713",problemsamp:"1.24%",children:[
-        //                        {name: "长丰",totalbat:"2131",samplingbat:"231",qualifiedbat:"226",unqualifiedbat:"5",qualifiedsamp:"1.23%",riskbat:"650",problembat:"625",problemsamp:"3.75%",},
-        //                        {name: "肥东",totalbat:"2344",samplingbat:"434",qualifiedbat:"400",unqualifiedbat:"34",qualifiedsamp:"5.17%",riskbat:"654",problembat:"23",problemsamp:"1.25%",},
-        //                        {name: "巢湖",totalbat:"1009",samplingbat:"954",qualifiedbat:"800",unqualifiedbat:"154",qualifiedsamp:"11.5%",riskbat:"380",problembat:"65",problemsamp:"18.7%",},
-        //                        ]},
-        //    {name: "安庆",totalbat:"7500",samplingbat:"6500",qualifiedbat:"6350",unqualifiedbat:"150",qualifiedsamp:"6.2%",riskbat:"2200",problembat:"106",problemsamp:"4.818%",},
-        //    {name: "黄山",totalbat:"10900",samplingbat:"8000",qualifiedbat:"7355",unqualifiedbat:"645",qualifiedsamp:"8.06%",riskbat:"3552",problembat:"72",problemsamp:"2.64%",},
-        //    {name: "六安",totalbat:"7826",samplingbat:"6500",qualifiedbat:"6350",unqualifiedbat:"150",qualifiedsamp:"6.2%",riskbat:"2200",problembat:"106",problemsamp:"4.818%",},
-        //    {name: "总计",totalbat:"32800",samplingbat:"22232",qualifiedbat:"21255",unqualifiedbat:"1138",qualifiedsamp:"6.18%",riskbat:"9174",problembat:"997",problemsamp:"3.379%",height:"200"},
-        //]
     };
 
     $(document).ready(function(){
+        // 时间区域选取
+        // 初始时间
+        laydate.render({
+          elem: '#q_created_at_start', //指定元素
+          type: 'month'
+        });
+        // 结束时间
+        laydate.render({
+          elem: '#q_created_at_end', //指定元素
+          type: 'month'
+        });
         treeGrid.expandAll("N");//默认关闭
         $("#div1 table tr:last td:first").children("img").remove(); //删除最后图标
         $(".allcheck").click(function(){
             $("#tg1").find("input[name='cblbox']").attr("checked",$(this).attr("checked"));
         });
+        
+        //报送分类A
+        $('#checkbox_optionH').change(function () {
+          var o = $(this);
+          if (o.val() != '') {
+            $.get('/baosong_bs/by_name.json', {a_name: o.val()}, function (data) {
+              if (data.status == 'OK') {
+                initSelect(["#checkbox_optionI","#checkbox_optionJ","#checkbox_optionK","#checkbox_optionL","#checkbox_optionM"])
+                $.each(data.data, function () {
+                  $("<option>").attr('data-identifier', this.identifier).attr("value", this.name).text(this.name).appendTo($('#checkbox_optionI'));
+                });
+                <% if params[:q] && params[:q]["sp_s_70_eq"].length != 0 %>
+                  $("#checkbox_optionI").val("<%= params[:q]['sp_s_67_eq'] %>");
+                  $('#checkbox_optionI').change();
+                <% end %>
+              }
+            }, "json")
+          }
+        });
+        //报送分类B
+        $('#checkbox_optionI').change(function () {
+          var o = $(this);
+          if (o.val() != '') {
+            $.get('/a_categories_by_identifier.json', {identifier: o.find('option:selected').attr('data-identifier')},function(data){
+              if (data.status == 'OK') {
+                initSelect(["#checkbox_optionJ","#checkbox_optionK","#checkbox_optionL","#checkbox_optionM"])
+                $.each(data.data, function () {
+                  $('<option>').attr('value', this.name).text(this.name).attr('id', this.id).appendTo($('#checkbox_optionJ'));
+                });
+                <% if params[:q] && params[:q]["sp_s_67_eq"].length != 0 %>
+                  $("#checkbox_optionJ").val("<%= params[:q]['sp_s_17_eq'] %>");
+                  $('#checkbox_optionJ').change();
+                <% end %>
+              }
+            }, 'json');
+          }
+        });
+        //食品大类
+        $('#checkbox_optionJ').change(function () {
+          var o = $(this);
+          if (o.val() != '') {
+            $.get('/b_categories_by_a_id.json', {a_category_id: o.find('option:selected').attr('id')}, function (data) {
+              if (data.status == 'OK') {
+                initSelect(["#checkbox_optionK","#checkbox_optionL","#checkbox_optionM"])
+                $.each(data.data, function () {
+                  $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#checkbox_optionK'));
+                });
+                <% if params[:q] && params[:q]["sp_s_17_eq"].length != 0 %>
+                  $("#checkbox_optionK").val("<%= params[:q]['sp_s_18_eq'] %>");
+                  $('#checkbox_optionK').change();
+                <% end %>
+              }
+            }, 'json');
+          }
+        });
+        //食品亚类
+        $('#checkbox_optionK').change(function () {
+          var o = $(this);
+          if (o.val() != '') {
+            $.get('/c_categories_by_b_id.json', {b_category_id: o.find('option:selected').attr('data-id')}, function (data) {
+              if (data.status == 'OK') {
+                initSelect(["#checkbox_optionL","#checkbox_optionM"])
+                $.each(data.data, function () {
+                  $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#checkbox_optionL'));
+                });
+                <% if params[:q] && params[:q]["sp_s_18_eq"].length != 0 %>
+                  $("#checkbox_optionL").val("<%= params[:q]['sp_s_19_eq'] %>");
+                  $('#checkbox_optionL').change();
+                <% end %>
+              }
+            }, 'json');
+          }
+        });
+        //食品次亚类
+        $('#checkbox_optionL').change(function () {
+          var o = $(this);
+          if (o.val() != '') {
+            $.get('/d_categories_by_c_id.json', {c_category_id: o.find('option:selected').attr('data-id')}, function (data) {
+              if (data.status == 'OK') {
+                initSelect(["#checkbox_optionM"])
+                $.each(data.data, function () {
+                  $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#checkbox_optionM'));
+                });
+                <% if params[:q] && params[:q]["sp_s_19_eq"].length != 0 %>
+                  $("#checkbox_optionM").val("<%= params[:q]['sp_s_20_eq'] %>");
+                  $('#checkbox_optionM').change();
+                <% end %>
+              }
+            }, 'json');
+          }
+        });
+        <% if params[:q] && params[:q]["sp_s_70_eq"].length != 0 %>
+          $('#checkbox_optionH').change();
+        <% end %>
 
+        function initSelect(k){
+          for(var o in k){
+            var _judgeH = $(k[o]).find("option");
+            _judgeH.remove();
+            $(k[o]).append("<option selected='selected'>请选择</option>");
+          }    
+        };
     });
     /*
         单击数据行后触发该事件

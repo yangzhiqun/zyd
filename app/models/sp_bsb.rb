@@ -15,6 +15,9 @@ class SpBsb < ActiveRecord::Base
     "DELETE FROM tmp_sp_bsbs where id=OLD.id"
   end
 
+  scope :qualified,  -> { where("sp_s_71 not like '%不合格样品%' or sp_s_71 not like '%问题样品%'") }
+  scope :unqualified, -> { where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'") }
+
   attr_accessor :ca_source, :ca_sign
   validates_presence_of :sp_s_16, message: '请提供抽检单编号'
   validates_uniqueness_of :sp_s_16, message: '该单号已存在', allow_nil: true
@@ -675,6 +678,7 @@ class SpBsb < ActiveRecord::Base
   has_many :wtyp_czbs, foreign_key: 'wtyp_sp_bsbs_id'
   has_many :wtyp_czb_parts
   has_one :published_sp_bsb, foreign_key: 'cjbh', primary_key: 'sp_s_16'
+  has_many :revision_log, :dependent => :delete_all
 
   def wtyp_czbs
     WtypCzb.where(wtyp_sp_bsbs_id: self.id)
