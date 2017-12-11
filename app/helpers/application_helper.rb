@@ -225,11 +225,30 @@ module ApplicationHelper
   def is_xian_deploy?
     (yy_is_country?&&jg_is_country?)
   end
- def is_level?
-     return "省级"  if  is_sheng?
-     return "市级"  if  is_city?
-     return "县级"  if is_county_level?                              
- end
+
+  def is_level?
+    return "省级"  if  is_sheng?
+    return "市级"  if  is_city?
+    return "县级"  if is_county_level?                              
+  end
+
+  def inspecton_body
+    if current_user.is_admin?
+      @jg_bsbs = JgBsb.where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province').includes(:jg_bsb_names).map{|jg| jg.jg_bsb_names.last.name}
+    else
+      if current_user.jg_bsb.jg_type==1
+        super_jg= JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
+        jg_names=[]
+        jg_names.push(current_user.jg_bsb_id)
+        super_jg.each do |j|
+          jg_names.push(j.jg_bsb_id)
+        end
+        @jg_bsbs = JgBsb.where('status = 0 and jg_detection = 1  and id in (?)',jg_names).order('jg_province').includes(:jg_bsb_names).map{|jg| jg.jg_bsb_names.last.name}
+      elsif current_user.jg_bsb.jg_type==3
+        @jg_bsbs = JgBsb.where('status = 0 and jg_detection = 1 and id in (?) ',current_user.jg_bsb_id).order('jg_province').includes(:jg_bsb_names).map{|jg| jg.jg_bsb_names.last.name}
+      end
+    end
+  end
   
   def get_province?
      if is_shi_deploy?

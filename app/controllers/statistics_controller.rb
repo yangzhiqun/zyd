@@ -88,7 +88,7 @@ class StatisticsController < ApplicationController
         #接样数
         one = sp_bsb.count
         #合格数
-        two = sp_bsb.where("sp_s_71 not like '%不合格样品%' and sp_s_71 not like '%问题样品%'").count
+        two = sp_bsb.where("sp_s_71 not like '%不合格样品%' or sp_s_71 not like '%问题样品%'").count
         #不合格数
         three = one-two
         #处置结果
@@ -149,10 +149,6 @@ class StatisticsController < ApplicationController
     @data = @data.to_json
   end
 
-  #退休统计
-  def retirement_statistics
-  end
-
   #核查处置统计
   def disposal_statistics
     @data = {} #{"大众超市"=>[30,"5%",5,"5%",0,50,4,2],"人民食堂"=>[75,"9%",3,"7%",0,43,0,2]}
@@ -189,14 +185,6 @@ class StatisticsController < ApplicationController
       num4 = ((num3.to_f/sp_bsb_arr.length)*100).to_i.to_s+"%" #不合格处置完成率
       @data[name] = ["经营",num1,num2,num3,num4,num5,num6,num7,num8]
     end
-    #不合格处置数 num = wtyp_czbs = current_state:1  状态
-    #不合格处置率 :num/sp_bsbs
-    #不合格处置完成数 :wtyp_czbs =3
-    #不合格处置完成率:wtyp_czbs/sp_bsbs
-    # 异议数:sp_bsb.sp_yydjb
-    # 复检数:sp_bsb.sp_yydjb.fjsqqk
-    # 复检不合格数:sp_bsb.sp_yydjb.fjsqqk
-    # 立案数:wtyp_czb_parts :spbsb. wtyp_czbs .wtyp_deal_fix3way  页面：行政立案
   end
 
   #企业覆盖率统计
@@ -208,10 +196,42 @@ class StatisticsController < ApplicationController
     #同不合格项目统计
   end
 
+  #退休统计
+  def retirement_statistics
+    @data = {"chouyang"=>[],"chengjian"=>[]} #{"chouyang" =>[{"area"=>"瑶海","cyjg"=>"zhangsan","txsl"=>"10","txl"=>"12"}]}
+    city = params["city"] || "合肥"
+    sp_bsbs  = SpBsb.where(sp_s_4: city)
+    revision = RevisionLog.where(sp_bsb_id: sp_bsbs.map{|s|s.id}).group_by{ |r| r.sp_bsb_id}
+    sp_bsbs.group_by{ |sp| sp.sp_s_35 }.each do |name,sp_bsb_arr|
+      region  = ""   
+      jg_name = name
+      completely    = sp_bsb_arr.length
+      revision_num  = 0
+      sp_bsb_arr.each{ |spbsb| revision_num += revision[spbsb.id].length if revision.has_key?(spbsb.id) } 
+      revision_rate = ((revision_num.to_f/completely)*100).to_i.to_s+"%"  
+      @data["chouyang"] << {"area"=>region,"cyjg"=>jg_name,"txsl"=>completely,"txl"=>revision_rate}
+    end
+    sp_bsbs.group_by{ |sp| sp.sp_s_43 }.each do |name,sp_bsb_arr|
+      region  = ""   
+      jg_name = name
+      completely    = sp_bsb_arr.length
+      revision_num  = 0
+      sp_bsb_arr.each{ |spbsb| revision_num += revision[spbsb.id].length if revision.has_key?(spbsb.id) } 
+      revision_rate = ((revision_num.to_f/completely)*100).to_i.to_s+"%"  
+      @data["chouyang"] << {"area"=>region,"cyjg"=>jg_name,"txsl"=>completely,"txl"=>revision_rate}
+    end
+  end
+
   #复合查询统计
   def composite_statistics
     #@data = [{name: "合肥",totalbat:"6574",samplingbat:"1232",qualifiedbat:"1200",unqualifiedbat:"193",qualifiedsamp:"4.263%",riskbat:"1222",problembat:"713",problemsamp:"1.24%",children:[{name: "长丰",totalbat:"22",samplingbat:"15",qualifiedbat:"10%",unqualifiedbat:"12",qualifiedsamp:"20",riskbat:"2",problembat:"713",problemsamp:"1.24%"}]}]
-    @q = SpBsb.ransack(params[:q])
+    if params.has_key?(:q)
+      @q = SpBsb.send(params[:q]["sp_s_71"]=="合格批次" ? :qualified : :unqualified) if params[:q]["sp_s_71"].present?
+      @q = (@q.nil? ? SpBsb : @q).where(created_at:(params[:q]["created_at_start"]..params[:q]["created_at_end"])) if params[:q]["created_at_start"].present? 
+      @q = @q.nil? ? SpBsb.ransack(params[:q]) : @q.ransack(params[:q])
+    else
+      @q = SpBsb.ransack(params[:q])
+    end
     @products = @q.result(distinct: true)
     @data = []
     sp_bsbs = @products.where("sp_s_4 != '请选择'").group_by{ |sp| sp.sp_s_4 }
@@ -252,13 +272,5 @@ class StatisticsController < ApplicationController
       @data << {name: city_name,totalbat:num1.to_s,samplingbat:num2.to_s,qualifiedbat:num3.to_s,unqualifiedbat:num4.to_s,qualifiedsamp:num5,riskbat:num6.to_s,problembat:num7.to_s,problemsamp:num8,children:county_result}
     end
     @data = @data.to_json
-    #总批次 ： sp_bsb.where(地区).count
-    #监督抽检批次：sp_s_44
-    #风险检测批次 :sp_s_44
-    #合格批次 ：总数-不合格
-    #不合格批次：SpBsb.where("sp_s_71 not like '%不合格样品%' and sp_s_71 not like '%问题样品%'")
-    #不合格样品率:不合格/总数
-    #问题样品批次 ： SpBsb.bgfl.count
-    #问题样品批次/总数
   end
 end
