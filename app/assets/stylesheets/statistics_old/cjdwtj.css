@@ -131,17 +131,17 @@ table#detail_table tr.parent{
 }
 /*抽样及检验超期统计*/
 /*图表样式*/
-.charts_1,.charts_2{
+.charts_1,.charts_2,.charts_3{
     margin: 0 auto;
     width: 1000px;
     height: 500px;
     background-color: #eee;
 }
 
-.charts_2{
+.charts_2,.charts_3{
     margin-top: 60px;
 }
-#chart_1,#chart_2{
+#chart_1,#chart_2,#chart_3{
     margin: 0 auto;
     width: 1000px;
     height: 500px;

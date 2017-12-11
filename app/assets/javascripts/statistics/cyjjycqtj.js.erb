@@ -263,6 +263,117 @@ function chart(){
     };
     var myChart2=echarts.init(document.getElementById('chart_2'));
     myChart2.setOption(option2);
+    var Info = {"x":['合肥','芜湖','蚌埠','淮南','马鞍山','淮北','铜陵','安庆','黄山','滁州','阜阳','宿州','六安市'],"y":{
+        "hclq":[200, 140, 170, 230, 245, 176, 135, 162, 132, 120, 160, 130,140],
+        "hcwc":[63, 35, 52, 88, 84, 43, 56, 50, 35, 73, 37, 94,42],
+        "yycq":[6, 5, 5, 8, 4, 3, 6, 0, 5, 7, 17, 4,14]
+        }};
+
+    var option3 = {
+        title: {
+            text: '核查异议超期'
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross',
+                crossStyle: {
+                    color: '#999'
+                }
+            }
+        },
+        toolbox: {
+            feature: {
+                dataView: {show: true, readOnly: false},
+                magicType: {show: true, type: ['line', 'bar']},
+                restore: {show: true},
+                saveAsImage: {show: true}
+            }
+        },
+        legend: {
+            data:['核查领取超期','处置完成超期','异议登记超期']
+        },
+        xAxis: [
+            {
+                type: 'category',
+                data: Info.x,
+                axisPointer: {
+                    type: 'shadow'
+                }
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value',
+                name: '超期数',
+                min: 0,
+                // max: 250,
+                interval: 10,
+                axisLabel: {
+                    formatter: '{value} '
+                }
+            }
+        ],
+        series: [
+            {
+                name:'核查领取超期',
+                type:'bar',
+                itemStyle: {
+                    normal: {
+                        // 随机显示
+                        color:function(d){
+                            return "#"+Math.floor(Math.random()*(256*256*256-1)).toString(16);
+                        },
+                        label: {
+                            show: true
+                            // position: 'top',
+                            // formatter: '{b}\n{c}'
+                        }
+                    }
+                },
+                data:Info.y.hclq
+            },
+            {
+                name:'处置完成超期',
+                type:'bar',
+                itemStyle: {
+                    normal: {
+                        // 随机显示
+                        color:function(d){
+                            return "#"+Math.floor(Math.random()*(256*256*256-1)).toString(16);
+                        },
+                        label: {
+                            show: true
+                            // position: 'top',
+                            // formatter: '{b}\n{c}'
+                        }
+                    }
+                },
+                data:Info.y.hcwc
+            },
+            {
+                name:'异议登记超期',
+                type:'bar',
+                itemStyle: {
+                    normal: {
+                        // 随机显示
+                        color:function(d){
+                            return "#"+Math.floor(Math.random()*(256*256*256-1)).toString(16);
+                        },
+                        label: {
+                            show: true
+                            // position: 'top',
+                            // formatter: '{b}\n{c}'
+                        }
+                    }
+                },
+                data:Info.y.yycq
+            }
+        ]
+    };
+
+    var myChart3=echarts.init(document.getElementById('chart_3'))
+    myChart3.setOption(option3);
     // 点击下拉框根据区域加载相应地区的数据
     // console.log($('.cqtj_option')[0].value);
 

@@ -118,11 +118,11 @@
                 </br>
                 <div class="check_time">
                   <div class="check_selectbox">
-                      <%= f.label :开始时间 %>
+                      <%= f.label :起始日期 %>
                       <%= f.text_field :created_at_start,class:"form-control checkbox_optionN",value:"#{params[:q].blank? ? '':params[:q]["created_at_start"]}" %>
                   </div>
                   <div class="check_selectbox">
-                      <%= f.label :结束时间 %>
+                      <%= f.label :截止日期 %>
                       <%= f.text_field :created_at_end,class:"form-control checkbox_optionN",value:"#{params[:q].blank? ? '':params[:q]["created_at_end"]}"%>
                   </div>
                 </div>
@@ -180,16 +180,25 @@
     };
 
     $(document).ready(function(){
+        var date=new Date;
+        var year = date.getFullYear();
+        var month=date.getMonth()+1;
+        month =(month<10 ? "0"+month:month);
+        var mydate = (year.toString()+"-"+month.toString());
         // 时间区域选取
         // 初始时间
         laydate.render({
           elem: '#q_created_at_start', //指定元素
-          type: 'month'
+          type: 'month',
+          trigger: 'click',
+          value:year+"-01"
         });
         // 结束时间
         laydate.render({
           elem: '#q_created_at_end', //指定元素
-          type: 'month'
+          type: 'month',
+          trigger: 'click',
+          value:mydate
         });
         treeGrid.expandAll("N");//默认关闭
         $("#div1 table tr:last td:first").children("img").remove(); //删除最后图标
