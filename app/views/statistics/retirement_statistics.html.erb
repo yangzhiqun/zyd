@@ -47,42 +47,29 @@
             // 时间区域选取
             // 初始时间
             laydate.render({
-              elem: '#page-start', //指定元素
-              type: 'month'
+              elem: '#time', //指定元素
+              type: 'month',
+              range: '/',
+              format: 'yyyy-MM'
             });
             // 结束时间
-            laydate.render({
-              elem: '#page-end', //指定元素
-              type: 'month'
-            });
+           // laydate.render({
+           //   elem: '#page-end', //指定元素
+           //   type: 'month'
+           // });
 
             // 按地区选择表格数据
             var cq_select = $("#cqtj_option");
             cq_select.change(function(){
-              /*  $.ajax({
-               type: "post",
-               contentType: "application/json",
-               url: "WebService1.asmx/Login",
-               data: {
-               "parmas":parmas.join(',')
-               },
-               success: function (data) {
-               if (data == 'true') {
-               window.location.open = 'HTMLPage1.htm';
-               }
-               else {
-               alert("数据错误");
-               }
-               }
-               })
+              /*
                */
                 //先销毁表格
                 $('#tb_report').bootstrapTable('destroy');
                 $('#tb_report1').bootstrapTable('destroy');
-                var data1 = [{"area":"瑶海","cyjg":"zhangsan","txsl":"10","txl":"12"},{"area":"庐阳","cyjg":"zhangsdsan","txsl":"23","txl":"22"}];
+                //var data1 = [{"area":"瑶海","cyjg":"zhangsan","txsl":"10","txl":"12"},{"area":"庐阳","cyjg":"zhangsdsan","txsl":"23","txl":"22"}];
                 var cq_selected = $(this).find("option:selected").text();
-                getData(data1);
-                getData1(data1);
+                getinfo(cq_selected);
+
 
             })
         
@@ -213,8 +200,45 @@
             }
             getData1(data);
             changeBtn();
+            //点击查询
+            $('#checkBtn').click(function(event) {
+                var getSelectInfo = $("#cqtj_option").val();
+                if($(".exportR").hasClass("hide")){
+                    getChartInfo(myChart1,getSelectInfo,"1");
+                    getChartInfo(myChart2,getSelectInfo,"1");
+                }else {
+                    getinfo(getSelectInfo);//
+                }
+            });
         })
-        function getinfo(){
+        //ajax封装
+        function getinfo(area){
+            var time = $("#time").val();
+            alert(time);
+            if(time==""){
+                alert("请选择时间");
+                return
+            }
+            $.ajax({
+                type: "post",
+                contentType: "application/json",
+                url: "WebService1.asmx/Login",
+                data: {
+                    "time":time,
+                    "area":area,
+                    "flag": '0' //0为表格  1，为图表
+                },
+                success: function (data) {
+                    if (data == 'true') {
+                       // window.location.open = 'HTMLPage1.htm';
+                        getData(data1);
+                        getData1(data1);
+                    }
+                    else {
+                        alert("数据错误");
+                    }
+                }
+            })
         }
         // 点击切换图表
         function changeBtn(){
@@ -233,6 +257,7 @@
                 }
             });
         }
+
     </script>
 </head>
 <body>
@@ -248,18 +273,20 @@
         <div class="fillpage-date">
             <span>样品填报时间：</span>
             <div class="form-group">
-                <label class="sr-only" for="page-start">开始时间</label>
-                <input type="text" class="form-control" id="page-start" placeholder="开始时间">
+                <label class="sr-only" for="page-start">选择时间</label>
+                <input type="text" class="form-control" id="time" placeholder="选择时间">
             </div>
-            <div style="width:20px;height:3px;margin:0px auto;padding:0px;background-color:#D5D5D5;overflow:hidden;display: inline-block;"></div>
+          <!--  <div style="width:20px;height:3px;margin:0px auto;padding:0px;background-color:#D5D5D5;overflow:hidden;display: inline-block;"></div>
             <div class="form-group">
                 <label class="sr-only" for="page-end">结束时间</label>
                 <input type="text" class="form-control" id="page-end" placeholder="结束时间">
-            </div>    
+            </div>    -->
         </div>
         <!-- 切换显示模式 -->
         <div class="topside_switch">
+
             <button type="button" class="btn btn-default bgc1 btn-primary exportR">导出报表</button>
+            <button type="button" class="btn btn-default bgc1 btn-primary" id="checkBtn">查询</button>
             <button type="button" class="btn btn-default changeType" id="changeBtn">切换图表模式</button>
         </div>
     </div>
