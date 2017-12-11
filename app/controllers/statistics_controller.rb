@@ -202,24 +202,26 @@ class StatisticsController < ApplicationController
     city = params["city"] || "合肥"
     sp_bsbs  = SpBsb.where(sp_s_4: city)
     revision = RevisionLog.where(sp_bsb_id: sp_bsbs.map{|s|s.id}).group_by{ |r| r.sp_bsb_id}
-    sp_bsbs.group_by{ |sp| sp.sp_s_35 }.each do |name,sp_bsb_arr|
-      region  = ""   
-      jg_name = name
-      completely    = sp_bsb_arr.length
-      revision_num  = 0
-      sp_bsb_arr.each{ |spbsb| revision_num += revision[spbsb.id].length if revision.has_key?(spbsb.id) } 
-      revision_rate = ((revision_num.to_f/completely)*100).to_i.to_s+"%"  
-      @data["chouyang"] << {"area"=>region,"cyjg"=>jg_name,"txsl"=>completely,"txl"=>revision_rate}
+    sp_bsbs.group_by{ |sp| sp.sp_s_5 }.each do |county_name,sp_bsb_arr|
+      region  = county_name   
+      sp_bsb_arr.group_by{ |sp| sp.sp_s_35 }.each do |cy_jg,cy_arr|
+        jg_name = cy_jg
+        completely    = cy_arr.length
+        revision_num  = 0
+        cy_arr.each{ |spbsb| revision_num += revision[spbsb.id].length if revision.has_key?(spbsb.id) } 
+        revision_rate = ((revision_num.to_f/completely)*100).to_i.to_s 
+        @data["chouyang"] << {"area"=>region,"cyjg"=>jg_name,"txsl"=>completely,"txl"=>revision_rate}
+      end
+      sp_bsb_arr.group_by{ |sp| sp.sp_s_43 }.each do |cj_jg,cj_arr|
+        jg_name = cj_jg
+        completely    = cj_arr.length
+        revision_num  = 0
+        cj_arr.each{ |spbsb| revision_num += revision[spbsb.id].length if revision.has_key?(spbsb.id) } 
+        revision_rate = ((revision_num.to_f/completely)*100).to_i.to_s 
+        @data["chengjian"] << {"area"=>region,"cyjg"=>jg_name,"txsl"=>completely,"txl"=>revision_rate}
+      end
     end
-    sp_bsbs.group_by{ |sp| sp.sp_s_43 }.each do |name,sp_bsb_arr|
-      region  = ""   
-      jg_name = name
-      completely    = sp_bsb_arr.length
-      revision_num  = 0
-      sp_bsb_arr.each{ |spbsb| revision_num += revision[spbsb.id].length if revision.has_key?(spbsb.id) } 
-      revision_rate = ((revision_num.to_f/completely)*100).to_i.to_s+"%"  
-      @data["chouyang"] << {"area"=>region,"cyjg"=>jg_name,"txsl"=>completely,"txl"=>revision_rate}
-    end
+    @data = @data.to_json
   end
 
   #复合查询统计
@@ -227,7 +229,7 @@ class StatisticsController < ApplicationController
     #@data = [{name: "合肥",totalbat:"6574",samplingbat:"1232",qualifiedbat:"1200",unqualifiedbat:"193",qualifiedsamp:"4.263%",riskbat:"1222",problembat:"713",problemsamp:"1.24%",children:[{name: "长丰",totalbat:"22",samplingbat:"15",qualifiedbat:"10%",unqualifiedbat:"12",qualifiedsamp:"20",riskbat:"2",problembat:"713",problemsamp:"1.24%"}]}]
     if params.has_key?(:q)
       @q = SpBsb.send(params[:q]["sp_s_71"]=="合格批次" ? :qualified : :unqualified) if params[:q]["sp_s_71"].present?
-      @q = (@q.nil? ? SpBsb : @q).where(created_at:(params[:q]["created_at_start"]..params[:q]["created_at_end"])) if params[:q]["created_at_start"].present? 
+      @q = (@q.nil? ? SpBsb : @q).where(created_at:(Time.parse(params[:q]["created_at_start"]+"-01")..Time.parse(params[:q]["created_at_end"]+"-31").end_of_day)) if params[:q]["created_at_start"].present? 
       @q = @q.nil? ? SpBsb.ransack(params[:q]) : @q.ransack(params[:q])
     else
       @q = SpBsb.ransack(params[:q])
