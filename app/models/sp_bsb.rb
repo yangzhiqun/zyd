@@ -136,7 +136,7 @@ class SpBsb < ActiveRecord::Base
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 LIKE ?", "%#{params[:sp_bsa]}%")
     end
     if !params[:sp_bsb].blank? and params[:sp_bsb] !="请选择"
-      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_67 LIKE ?", "%#{params[:sp_bsb]}%")
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_67 LIKE ?", "%#{params[:sp_bsb]}")
     end
 
     unless params[:s7].blank?
