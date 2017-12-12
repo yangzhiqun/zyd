@@ -42,7 +42,6 @@ class SpBsb < ActiveRecord::Base
         @cy_state = part['current_state']
       end
     end
-    logger.error "@sc_state: #{@sc_state}, @lt_state: #{@lt_state}"
     if @sc_state == ::WtypCzb::State::PASSED and (@lt_state == ::WtypCzb::State::PASSED or @wc_state == ::WtypCzb::State::PASSED or @cy_state == ::WtypCzb::State::PASSED)
       "已完成"
     elsif @sc_state == ::WtypCzb::State::PASSED and (@lt_state != ::WtypCzb::State::PASSED or @wc_state != ::WtypCzb::State::PASSED or @cy_state != ::WtypCzb::State::PASSED)
@@ -1084,7 +1083,7 @@ class SpBsb < ActiveRecord::Base
     #filename = Rails.root.join('tmp', "sp_bsbs_#{self.id}.txt")
     cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 108  #{reqMessage} #{pdfpath} #{filename}"
     signSeal_result = `#{cmd}`
-    logger.error "signSeal_result: #{signSeal_result}"
+    logger.error "signSeal_result: #{cmd}"
      return signSeal_result
   end
 
