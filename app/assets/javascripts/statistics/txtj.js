@@ -212,12 +212,12 @@ function chart(data){
 
     //根据相应地区的数据
 
-    $(document).on('change','#cqtj_option',function(){
+   /* $(document).on('change','#cqtj_option',function(){
         var optVal=$(this).val();
         getChartInfo(myChart1,optVal,"1");
         getChartInfo(myChart2,optVal,"1");
         });
-
+*/
 
 }
 //数据请求后台
