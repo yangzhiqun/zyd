@@ -299,7 +299,7 @@
         <tr>
           <th width="30" align="center"><input type="checkbox" id="select-all"></th>
           <th>采样编号</th>
-          <% if params[:current_tab].eql?('BLZ.QT') %>
+          <% if params[:current_tab].eql?('BLZ.QT') or  params[:current_tab].eql?('YBL') %>
           <th>领取人</th>
           <% end %>
           <th>领取单位</th>
@@ -351,7 +351,7 @@
                         <span class="label label-danger">未行政处罚</span>
                     <% end %>
                   </td>
-                  <% if  params[:current_tab].eql?('BLZ.QT') %>
+                  <% if  params[:current_tab].eql?('BLZ.QT') or  params[:current_tab].eql?('YBL') %>
                   <td><%= wtyp_czb.czfzr_desc if wtyp_czb.czfzr_desc.present? %></td>
                   <% end %>
                   <td><%= wtyp_czb.blbm %></td>

@@ -205,10 +205,10 @@ class YyczController < ApplicationController
       @sp_bsbs = SpBsb.select("s.*").group('s.sp_s_16').order('s.updated_at DESC').joins("AS s LEFT JOIN sp_yydjbs AS y ON s.sp_s_16=y.cjbh").where("y.current_state NOT IN (1, 2, 3) OR y.cjbh IS NULL").where("(s.sp_s_71 LIKE ? OR s.sp_s_71 LIKE ?) AND s.sp_i_state = 9", "%问题样品%", "%不合格样品%")
      if !current_user.is_admin?
       if current_user.yyadmin !=1 
-       if is_shi_deploy?
+       if yy_shi_deploy?
        # @sp_bsbs = @sp_bsbs.where("s.sp_s_4 = ? OR s.sp_s_220 = ?", current_user.user_s_province, current_user.user_s_province)
        	@sp_bsbs = @sp_bsbs.where("s.sp_s_4 = ? OR s.sp_s_220 = ?  OR s.sp_s_wcshi =?", current_user.jg_bsb.city, current_user.jg_bsb.city,current_user.jg_bsb.city)
-				elsif is_xian_deploy?
+				elsif yy_xian_deploy?
          @sp_bsbs = @sp_bsbs.where("s.sp_s_5 = ? OR s.sp_s_221 = ?  OR s.sp_s_wcxian =? ",current_user.jg_bsb.country,current_user.jg_bsb.country,current_user.jg_bsb.country)
         end
       end

@@ -218,13 +218,22 @@ module ApplicationHelper
       (is_city? || is_county_level?)   
   end
 
-  def is_shi_deploy?
+  def yy_shi_deploy?
     (yy_is_city?&&jg_is_city?)
   end
 
-  def is_xian_deploy?
+  def yy_xian_deploy?
     (yy_is_country?&&jg_is_country?)
   end
+  
+  def is_shi_deploy?
+    is_city?&&jg_is_city?
+  end
+
+  def is_xian_deploy?
+   is_county_level?&&jg_is_country?
+  end
+
  def is_level?
      return "省级"  if  is_sheng?
      return "市级"  if  is_city?
