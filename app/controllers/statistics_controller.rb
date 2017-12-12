@@ -201,14 +201,13 @@ class StatisticsController < ApplicationController
   #0 表格  1 图表
   def retirement_statistics
     @data = {"chouyang"=>[],"chengjian"=>[]} #{"chouyang" =>[{"area"=>"瑶海","cyjg"=>"zhangsan","txsl"=>"10","txl"=>"12"}]}
-    city = params["area"].blank? ? "合肥" : params["area"]
-    sp_bsbs  = SpBsb.where(sp_s_4: city)
+    sp_bsbs  = SpBsb.where(sp_s_3: "安徽")
     if params["time"].present?
       time = params["time"].split("/") 
-      sp_bsbs = sp_bsbs.where(created_at:Statistic.time_slot(time[0],time[1]))
+      sp_bsbs = sp_bsbs.where(created_at:Statistic.time_slot(time[0],time[1]),sp_s_4:params["area"])
     end
     revision = RevisionLog.where(sp_bsb_id: sp_bsbs.map{|s|s.id}).group_by{ |r| r.sp_bsb_id}
-    packet = sp_bsbs.group_by{ |sp| sp.sp_s_5 }
+    packet = sp_bsbs.group_by{ |sp| sp.send(params["time"].present? ? "sp_s_5":"sp_s_4") }
     @chart = Statistic.retirement(packet,revision) 
     packet.each do |county_name,sp_bsb_arr|
       region  = county_name   

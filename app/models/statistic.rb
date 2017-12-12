@@ -26,4 +26,8 @@ class Statistic < ActiveRecord::Base
     end
     return chart
   end 
+
+  def self.admin_info
+
+  end
 end
