@@ -602,7 +602,7 @@
         <input type="hidden" name="parts[][save_me]" class="save-me">
     <% end %>
 
-    <% if czb.enable_operation?(current_user) and czb.type_prov_enabled?(current_user) %>
+    <% if czb.enable_operation?(current_user) and czb.type_prov_enabled?(current_user)  #and current_user.hcz_admin != 1 %>
         <input type="hidden" name="parts[][tmp_save]" class="tmp-save-tag">
         <input type="hidden" name="parts[][part_submit]" class="part-submit">
         <button class="btn btn-success btn-sm save" type="submit">提交信息入库</button>
@@ -616,7 +616,7 @@
 			<% end %>
 		</span>
     <% else %>
-        <% if czb.type_prov_enabled?(current_user) and current_user.hcz_czbl == 1 and czb.current_state == ::WtypCzb::State::LOGGED %>
+        <% if czb.type_prov_enabled?(current_user)  and current_user.hcz_admin != 1 and czb.current_state == ::WtypCzb::State::LOGGED %>
             <button class="btn btn-success assign-task btn-sm" type="submit">领取</button>
         <% end %>
         <span class="text-danger">[暂无认领]</span>

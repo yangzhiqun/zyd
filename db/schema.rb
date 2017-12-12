@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170816171705) do
+ActiveRecord::Schema.define(version: 20171027173936) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -760,6 +760,33 @@ ActiveRecord::Schema.define(version: 20170816171705) do
     t.datetime "updated_at"
   end
 
+  create_table "sp_bsb_info_publications", force: :cascade do |t|
+    t.string   "cjbh",            limit: 255
+    t.integer  "sjid",            limit: 4
+    t.string   "bcscqymc",        limit: 255
+    t.string   "bcscqydz",        limit: 255
+    t.string   "bcydwmc",         limit: 255
+    t.string   "bcydwdz",         limit: 255
+    t.string   "bcydwsf",         limit: 255
+    t.string   "spmc",            limit: 255
+    t.string   "ggxh",            limit: 255
+    t.string   "sb",              limit: 255
+    t.date     "scrq"
+    t.string   "bhgxm",           limit: 255
+    t.string   "fl",              limit: 255
+    t.string   "ggh",             limit: 255
+    t.date     "ggrq"
+    t.string   "rwly",            limit: 255
+    t.string   "bz",              limit: 255
+    t.string   "jyjg",            limit: 255
+    t.string   "sfhg",            limit: 255
+    t.integer  "userid",          limit: 4
+    t.string   "user_s_province", limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "bcydwshi",        limit: 255
+  end
+
   create_table "sp_bsb_pictures", force: :cascade do |t|
     t.integer  "sp_bsb_id",  limit: 4
     t.string   "desc",       limit: 255
@@ -921,7 +948,7 @@ ActiveRecord::Schema.define(version: 20170816171705) do
     t.string   "czb_reverted_reason",      limit: 255
     t.string   "sp_s_220",                 limit: 50
     t.string   "sp_s_221",                 limit: 50
-    t.string   "sp_s_222",                 limit: 20
+    t.string   "sp_s_222",                 limit: 60
     t.integer  "user_id",                  limit: 4
     t.string   "uid",                      limit: 20
     t.integer  "sp_s_37_user_id",          limit: 4
@@ -969,6 +996,8 @@ ActiveRecord::Schema.define(version: 20170816171705) do
     t.string   "sp_s_wclxr",               limit: 255
     t.string   "sp_s_wctel",               limit: 255
     t.string   "sp_s_wcbh",                limit: 255
+    t.string   "sp_proid",                 limit: 255
+    t.date     "issue_date"
   end
 
   add_index "sp_bsbs", ["application_id"], name: "index_sp_bsbs_on_application_id", using: :btree
@@ -1083,6 +1112,7 @@ ActiveRecord::Schema.define(version: 20170816171705) do
     t.integer  "qylx",       limit: 4,   default: 0
     t.string   "jieduan",    limit: 20
     t.boolean  "benji_only",             default: false
+    t.string   "sp_proid",   limit: 255
   end
 
   create_table "sp_publications", force: :cascade do |t|
