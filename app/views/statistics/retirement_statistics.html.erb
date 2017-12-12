@@ -43,44 +43,6 @@
     -->
     <%= javascript_include_tag "statistics/layDate/laydate","statistics/city_data","statistics/txtj" %>
     <script>
-        $(document).ready(function(){
-            // 时间区域选取
-            // 初始时间
-            laydate.render({
-              elem: '#time', //指定元素
-              type: 'month',
-              range: '/',
-              format: 'yyyy-MM'
-            });
-            // 结束时间
-           // laydate.render({
-           //   elem: '#page-end', //指定元素
-           //   type: 'month'
-           // });
-
-            // 按地区选择表格数据
-            var cq_select = $("#cqtj_option");
-            cq_select.change(function(){
-              /*
-               */
-
-                //var data1 = [{"area":"瑶海","cyjg":"zhangsan","txsl":"10","txl":"12"},{"area":"庐阳","cyjg":"zhangsdsan","txsl":"23","txl":"22"}];
-                var cq_selected = $(this).find("option:selected").text();
-               // console.log(cq_selected[0]);
-                if($(".exportR").hasClass("hide")){
-                    getChartInfo(myChart1,cq_selected[0],"1");
-//                    getChartInfo(myChart2,cq_selected[0],"1");
-                }else {
-                    getinfo(cq_selected[0]);
-                }
-
-            })
-        
-
-        //var data = [{"area":"合肥","cyjg":"zhangsan","txsl":"10","txl":"12"},{"area":"黄山","cyjg":"zhangsdsan","txsl":"23","txl":"2"}];
-       var data = <%= raw @data %>
-       console.log(data);
-
        function getData(info){
         $('#tb_report').bootstrapTable({
             //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
@@ -140,67 +102,116 @@
                 ]
         });
        }
+       function getData1(info){
+           $('#tb_report1').bootstrapTable({
+               //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
+               //method: 'get',                      //请求方式（*）
+               data:info["chengjian"],
+               // datatype:'json',
+               toolbar: '#toolbar',                //工具按钮用哪个容器
+               striped: true,                      //是否显示行间隔色
+               cache: false,                      //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+               search: true, //显示搜索框
+                pagination: true,                   //是否显示分页（*）
+               // sortOrder: "asc",                   //排序方式
+               //queryParams: oTableInit.queryParams,//传递参数（*）
+                sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
+                pageNumber: 1,                       //初始化加载第一页，默认第一页
+                pageSize: 10,                       //每页的记录行数（*）
+                pageList: [10, 25, 50, 100],      //可供选择的每页的行数（*）
+               columns : [
+                   {
+                       title : '序号',//标题  可不加
+                       formatter : function(value,row, index) {
+                           return index + 1;
+                       }
+                   },
+                   {
+                       field : 'area',
+                       title : '区域',
+                       align : 'center',
+                       formatter : function (value, row, index) {
+                           return value;
+                       }
+                   },{
+                       field : 'cyjg',
+                       title : '承检机构名称',
+                       align : 'center',
+                       formatter : function (value, row, index) {
+                           var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
+                           return info;
+                       }
+                   },{
+                       field : 'txsl',
+                       title : '完全提交退修数',
+                       align : 'center',
+                       formatter : function (value, row, index) {
+                           var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
+                           return info;
+                       }
+                   },
+                   {
+                       field : 'txl',
+                       title : '完全提交退修率',
+                       align : 'center',
+                       formatter : function (value, row, index) {
+                           return value+"%";
+                       }
+                   }
+               ]
+           });
+       }
+        $(document).ready(function(){
+            chart(<%= raw @chart %>);
+            myChart1=echarts.init(document.getElementById('chart_1'));
+            myChart1.setOption(option1);
+            // myChart2=echarts.init(document.getElementById('chart_2'));
+            // myChart2.setOption(option2);
+
+            //点击不同的市显示该市下级市县区相应的数据
+            myChart1.on('click',function(params){
+                // console.log(params.componentType);
+                // 获取当前点击的市
+                getChartInfo(this,params.name,2);
+
+            });
+            // 时间区域选取
+            // 初始时间
+            laydate.render({
+              elem: '#time', //指定元素
+              type: 'month',
+              range: '/',
+              format: 'yyyy-MM'
+            });
+            // 结束时间
+           // laydate.render({
+           //   elem: '#page-end', //指定元素
+           //   type: 'month'
+           // });
+
+            // 按地区选择表格数据
+            var cq_select = $("#cqtj_option");
+            cq_select.change(function(){
+              /*
+               */
+
+                //var data1 = [{"area":"瑶海","cyjg":"zhangsan","txsl":"10","txl":"12"},{"area":"庐阳","cyjg":"zhangsdsan","txsl":"23","txl":"22"}];
+                var cq_selected = $(this).find("option:selected").text();
+               // console.log(cq_selected[0]);
+                if($(".exportR").hasClass("hide")){
+                    getChartInfo(myChart1,cq_selected,"1");
+//                    getChartInfo(myChart2,cq_selected[0],"1");
+                }else {
+                    getinfo(cq_selected);
+                }
+
+            })
+        
+        //var data = [{"area":"合肥","cyjg":"zhangsan","txsl":"10","txl":"12"},{"area":"黄山","cyjg":"zhangsdsan","txsl":"23","txl":"2"}];
+       var data = <%= raw @data %>
+
             getData(data);
 
-            function getData1(info){
-                $('#tb_report1').bootstrapTable({
-                    //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
-                    //method: 'get',                      //请求方式（*）
-                    data:info["chengjian"],
-                    // datatype:'json',
-                    toolbar: '#toolbar',                //工具按钮用哪个容器
-                    striped: true,                      //是否显示行间隔色
-                    cache: false,                      //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
-                    search: true, //显示搜索框
-                     pagination: true,                   //是否显示分页（*）
-                    // sortOrder: "asc",                   //排序方式
-                    //queryParams: oTableInit.queryParams,//传递参数（*）
-                     sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
-                     pageNumber: 1,                       //初始化加载第一页，默认第一页
-                     pageSize: 10,                       //每页的记录行数（*）
-                     pageList: [10, 25, 50, 100],      //可供选择的每页的行数（*）
-                    columns : [
-                        {
-                            title : '序号',//标题  可不加
-                            formatter : function(value,row, index) {
-                                return index + 1;
-                            }
-                        },
-                        {
-                            field : 'area',
-                            title : '区域',
-                            align : 'center',
-                            formatter : function (value, row, index) {
-                                return value;
-                            }
-                        },{
-                            field : 'cyjg',
-                            title : '承检机构名称',
-                            align : 'center',
-                            formatter : function (value, row, index) {
-                                var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
-                                return info;
-                            }
-                        },{
-                            field : 'txsl',
-                            title : '完全提交退修数',
-                            align : 'center',
-                            formatter : function (value, row, index) {
-                                var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
-                                return info;
-                            }
-                        },
-                        {
-                            field : 'txl',
-                            title : '完全提交退修率',
-                            align : 'center',
-                            formatter : function (value, row, index) {
-                                return value+"%";
-                            }
-                        }
-                    ]
-                });
-            }
             getData1(data);
             changeBtn();
             //点击查询
@@ -217,28 +228,26 @@
         //ajax封装
         function getinfo(area){
             var time = $("#time").val();
-            alert(time);
             if(time==""){
                 alert("请选择时间");
                 return
             }
             $.ajax({
-                type: "post",
-                contentType: "application/json",
-                url: "WebService1.asmx/Login",
+                type: "get",
+                url: "retirement_statistics",
                 data: {
-                    "time":time,
-                    "area":area,
-                    "flag": '0' //0为表格  1，为图表
+                  "time":time.replace(/\ +/g,""),
+                  "area":area,
+                  "flag": '0' //0为表格  1，为图表
                 },
                 success: function (data) {
-                    if (data == 'true') {
+                    if (data) {
                         //先销毁表格
                         $('#tb_report').bootstrapTable('destroy');
                         $('#tb_report1').bootstrapTable('destroy');
                        // window.location.open = 'HTMLPage1.htm';
-                        getData(data1);
-                        getData1(data1);
+                        getData(data);
+                        getData1(data);
                     }
                     else {
                         alert("数据错误");
