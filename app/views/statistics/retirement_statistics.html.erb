@@ -63,15 +63,13 @@
             cq_select.change(function(){
               /*
                */
-                //先销毁表格
-                $('#tb_report').bootstrapTable('destroy');
-                $('#tb_report1').bootstrapTable('destroy');
+
                 //var data1 = [{"area":"瑶海","cyjg":"zhangsan","txsl":"10","txl":"12"},{"area":"庐阳","cyjg":"zhangsdsan","txsl":"23","txl":"22"}];
                 var cq_selected = $(this).find("option:selected").text();
                // console.log(cq_selected[0]);
                 if($(".exportR").hasClass("hide")){
                     getChartInfo(myChart1,cq_selected[0],"1");
-                    getChartInfo(myChart2,cq_selected[0],"1");
+//                    getChartInfo(myChart2,cq_selected[0],"1");
                 }else {
                     getinfo(cq_selected[0]);
                 }
@@ -210,7 +208,7 @@
                 var getSelectInfo = $("#cqtj_option").val();
                 if($(".exportR").hasClass("hide")){
                     getChartInfo(myChart1,getSelectInfo,"1");
-                    getChartInfo(myChart2,getSelectInfo,"1");
+//                    getChartInfo(myChart2,getSelectInfo,"1");
                 }else {
                     getinfo(getSelectInfo);//
                 }
@@ -235,6 +233,9 @@
                 },
                 success: function (data) {
                     if (data == 'true') {
+                        //先销毁表格
+                        $('#tb_report').bootstrapTable('destroy');
+                        $('#tb_report1').bootstrapTable('destroy');
                        // window.location.open = 'HTMLPage1.htm';
                         getData(data1);
                         getData1(data1);
@@ -333,10 +334,10 @@
     <div class="charts_1">
       <div id="chart_1"></div>
     </div>
-    <h2 class="marginL50">承检机构</h2>
+    <!--<h2 class="marginL50">承检机构</h2>
     <div class="charts_2">
       <div id="chart_2"></div>
-    </div>
+    </div>-->
   </div>
 </div>
 </div>

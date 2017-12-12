@@ -2,8 +2,8 @@ $(function(){
     chart(datainfo1);
     myChart1=echarts.init(document.getElementById('chart_1'));
     myChart1.setOption(option1);
-    myChart2=echarts.init(document.getElementById('chart_2'));
-    myChart2.setOption(option2);
+    // myChart2=echarts.init(document.getElementById('chart_2'));
+    // myChart2.setOption(option2);
 
     //点击不同的市显示该市下级市县区相应的数据
     myChart1.on('click',function(params){
@@ -14,9 +14,9 @@ $(function(){
     });
 
 
-    myChart2.on('click',function (params) {
-        getChartInfo(this,params.name,3);
-    });
+    // myChart2.on('click',function (params) {
+    //     getChartInfo(this,params.name,3);
+    // });
     //封装点击不同的市显示当前市下级数据
     //function cityClick(myChart,data){
     //    myChart.setOption(data);
@@ -41,9 +41,9 @@ var datainfo1 = {"cyjg":{"x":['合肥','芜湖','蚌埠','淮南','马鞍山','�
 "cjjg":{"x":['合肥','芜湖','蚌埠','淮南','马鞍山','淮北','铜陵','安庆','黄山','滁州','阜阳','宿州','六安市'],"y1":[200, 140, 170, 230, 245, 176, 135, 162, 132, 120, 160, 130,140],"y2":[63.00, 35.71, 52.94, 88.70, 84.50, 43.75, 56.30, 50.61, 35.60, 73.33, 37.5, 94.62,42.86]}};
 // 图表展示
 var myChart1;
-var myChart2;
+// var myChart2;
 var option1;
-var option2;
+// var option2;
 function chart(data){
     // Security Trends
      option1 = {
@@ -128,7 +128,7 @@ function chart(data){
 
 
 
-     option2 = {
+     /*option2 = {
         tooltip: {
             trigger: 'axis',
             axisPointer: {
@@ -206,7 +206,7 @@ function chart(data){
                 data:data.cjjg.y2
             }
         ]
-    };
+    };*/
    // var myChart2=echarts.init(document.getElementById('chart_2'));
    // myChart2.setOption(option2);
 
@@ -237,34 +237,28 @@ function getChartInfo(myChart,params,flag){
           data:{
               "time":time,
               "area":params,
-              "flag": flag //0为表格  1，为图表 ,2 抽样 ,3 承检
+              "flag": flag //0为表格  1，为图表
           },
      success : function(json) {
      if (json) {
-    var data;
-    if(myChart==myChart1){
-        data = json.cyjg;
-    }else{
-        data = json.cjjg;
-    }
     myChart.hideLoading();
     myChart.setOption({
         xAxis: [
             {
-                data: ['长丰县', '庐江县', '庐阳区', '巢湖市', '包河区', '肥东县', '肥西县', '蜀山区', '瑶海区']
+                data: json.x
             }
         ],
         series: [
             {
                 // name:'总企业数',
                 // type:'bar',
-                data: [50, 10, 30, 150, 45, 176, 35, 62, 132]
+                data: json.y1
             },
             {
                 // name:'覆盖率',
                 // type:'line',
                 // yAxisIndex: 1,
-                data: [52.00, 100, 63.33, 80.00, 60.00, 43.75, 48.57, 29.03, 35.60]
+                data: json.y2
             }
         ]
     });
