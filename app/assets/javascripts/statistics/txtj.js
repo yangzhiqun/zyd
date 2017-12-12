@@ -1,27 +1,3 @@
-$(function(){
-    chart(datainfo1);
-    myChart1=echarts.init(document.getElementById('chart_1'));
-    myChart1.setOption(option1);
-    // myChart2=echarts.init(document.getElementById('chart_2'));
-    // myChart2.setOption(option2);
-
-    //点击不同的市显示该市下级市县区相应的数据
-    myChart1.on('click',function(params){
-        // console.log(params.componentType);
-        // 获取当前点击的市
-        getChartInfo(this,params.name,2);
-
-    });
-
-
-    // myChart2.on('click',function (params) {
-    //     getChartInfo(this,params.name,3);
-    // });
-    //封装点击不同的市显示当前市下级数据
-    //function cityClick(myChart,data){
-    //    myChart.setOption(data);
-    //}
-})
 // function randomData1(){
 //     return Math.round(Math.random()*250);
 // }
@@ -37,8 +13,6 @@ $(function(){
 //     }
 //     return {'data1':data1,'data2':data2};
 // }
-var datainfo1 = {"cyjg":{"x":['合肥','芜湖','蚌埠','淮南','马鞍山','淮北','铜陵','安庆','黄山','滁州','阜阳','宿州','六安市'],"y1":[200, 140, 170, 230, 245, 176, 135, 162, 132, 120, 160, 130,140],"y2":[63.00, 35.71, 52.94, 88.70, 84.50, 43.75, 56.30, 50.61, 35.60, 73.33, 37.5, 94.62,42.86]},
-"cjjg":{"x":['合肥','芜湖','蚌埠','淮南','马鞍山','淮北','铜陵','安庆','黄山','滁州','阜阳','宿州','六安市'],"y1":[200, 140, 170, 230, 245, 176, 135, 162, 132, 120, 160, 130,140],"y2":[63.00, 35.71, 52.94, 88.70, 84.50, 43.75, 56.30, 50.61, 35.60, 73.33, 37.5, 94.62,42.86]}};
 // 图表展示
 var myChart1;
 // var myChart2;
@@ -70,7 +44,7 @@ function chart(data){
         xAxis: [
             {
                 type: 'category',
-                data: data.cyjg.x,
+                data: data.x,
                 axisPointer: {
                     type: 'shadow'
                 }
@@ -115,13 +89,13 @@ function chart(data){
                         }
                     }
                 },
-                data:data.cyjg.y1
+                data:data.y1
             },
             {
                 name:'完全提交退修率',
                 type:'line',
                 yAxisIndex: 1,
-                data:data.cyjg.y2
+                data:data.y2
             }
         ]
     };
@@ -229,13 +203,13 @@ function getChartInfo(myChart,params,flag){
     }
     myChart.showLoading();
       $.ajax({
-     type : "post",
+     type : "get",
      contentType: "application/json",
      //async : true, //异步执行
-     url : "AcceptData",
+     url : "retirement_statistics",
      dataType : "json", //返回数据形式为json
           data:{
-              "time":time,
+              "time":time.replace(/\ +/g,""),
               "area":params,
               "flag": flag //0为表格  1，为图表
           },

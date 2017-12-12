@@ -196,15 +196,23 @@ class StatisticsController < ApplicationController
     #同不合格项目统计
   end
 
+
   #退休统计
+  #0 表格  1 图表
   def retirement_statistics
     @data = {"chouyang"=>[],"chengjian"=>[]} #{"chouyang" =>[{"area"=>"瑶海","cyjg"=>"zhangsan","txsl"=>"10","txl"=>"12"}]}
-    city = params["city"] || "合肥"
+    city = params["area"].blank? ? "合肥" : params["area"]
     sp_bsbs  = SpBsb.where(sp_s_4: city)
+    if params["time"].present?
+      time = params["time"].split("/") 
+      sp_bsbs = sp_bsbs.where(created_at:Statistic.time_slot(time[0],time[1]))
+    end
     revision = RevisionLog.where(sp_bsb_id: sp_bsbs.map{|s|s.id}).group_by{ |r| r.sp_bsb_id}
-    sp_bsbs.group_by{ |sp| sp.sp_s_5 }.each do |county_name,sp_bsb_arr|
+    packet = sp_bsbs.group_by{ |sp| sp.sp_s_5 }
+    @chart = Statistic.retirement(packet,revision) 
+    packet.each do |county_name,sp_bsb_arr|
       region  = county_name   
-      sp_bsb_arr.group_by{ |sp| sp.sp_s_35 }.each do |cy_jg,cy_arr|
+      sp_bsb_arr.group_by{ |sp| sp.sp_s_35 }.each do |cy_jg,cy_arr| #抽样单位
         jg_name = cy_jg
         completely    = cy_arr.length
         revision_num  = 0
@@ -212,7 +220,7 @@ class StatisticsController < ApplicationController
         revision_rate = ((revision_num.to_f/completely)*100).to_i.to_s 
         @data["chouyang"] << {"area"=>region,"cyjg"=>jg_name,"txsl"=>completely,"txl"=>revision_rate}
       end
-      sp_bsb_arr.group_by{ |sp| sp.sp_s_43 }.each do |cj_jg,cj_arr|
+      sp_bsb_arr.group_by{ |sp| sp.sp_s_43 }.each do |cj_jg,cj_arr| #承检单位
         jg_name = cj_jg
         completely    = cj_arr.length
         revision_num  = 0
@@ -221,7 +229,16 @@ class StatisticsController < ApplicationController
         @data["chengjian"] << {"area"=>region,"cyjg"=>jg_name,"txsl"=>completely,"txl"=>revision_rate}
       end
     end
-    @data = @data.to_json
+    if params["flag"].blank?
+      @data = @data.to_json
+      @chart = @chart.to_json
+    else
+      if params["flag"] == "0"
+        render json: @data
+      else
+        render json: @chart
+      end
+    end
   end
 
   #复合查询统计
@@ -229,7 +246,7 @@ class StatisticsController < ApplicationController
     #@data = [{name: "合肥",totalbat:"6574",samplingbat:"1232",qualifiedbat:"1200",unqualifiedbat:"193",qualifiedsamp:"4.263%",riskbat:"1222",problembat:"713",problemsamp:"1.24%",children:[{name: "长丰",totalbat:"22",samplingbat:"15",qualifiedbat:"10%",unqualifiedbat:"12",qualifiedsamp:"20",riskbat:"2",problembat:"713",problemsamp:"1.24%"}]}]
     if params.has_key?(:q)
       @q = SpBsb.send(params[:q]["sp_s_71"]=="合格批次" ? :qualified : :unqualified) if params[:q]["sp_s_71"].present?
-      @q = (@q.nil? ? SpBsb : @q).where(created_at:(Time.parse(params[:q]["created_at_start"]+"-01")..Time.parse(params[:q]["created_at_end"]+"-31").end_of_day)) if params[:q]["created_at_start"].present? 
+      @q = (@q.nil? ? SpBsb : @q).where(created_at:Statistic.time_slot(params[:q]["created_at_start"],params[:q]["created_at_end"])) if params[:q]["created_at_start"].present? 
       @q = @q.nil? ? SpBsb.ransack(params[:q]) : @q.ransack(params[:q])
     else
       @q = SpBsb.ransack(params[:q])
