@@ -138,7 +138,7 @@
                        title : '承检机构名称',
                        align : 'center',
                        formatter : function (value, row, index) {
-                           var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
+                           var info = "<a href='javascript:void(0);' onclick = 'getShowInfo();'>"+value+"</a>";
                            return info;
                        }
                    },{
@@ -146,7 +146,7 @@
                        title : '完全提交退修数',
                        align : 'center',
                        formatter : function (value, row, index) {
-                           var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
+                           var info = "<a href='javascript:void(0);' onclick = 'getShowInfo();'>"+value+"</a>";
                            return info;
                        }
                    },
@@ -272,14 +272,19 @@
                 }
             });
         }
-
+      function getShowInfo(args){
+          $.post(url,args,function(response){
+              var obj = window.open("about:blank","_blank");
+              obj.document.write(response);
+          })
+      }
     </script>
 </head>
 <body>
 <div class="container">
     <!-- 头部head -->
     <div class="page-header testcompany_header">
-        <h1>退修统计  </h1>
+        <h1>退修统计</h1>
     </div>
     
     <!-- 上侧按钮部分 -->
