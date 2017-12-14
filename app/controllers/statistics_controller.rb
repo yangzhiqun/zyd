@@ -39,30 +39,9 @@ class StatisticsController < ApplicationController
 
   #不合格项目统计
   def nonconformity_statistics
-    #@data_arr:各市不合格批次数量 @data_items:各市不合格项目统计
-    @sp_bsbs = SpBsb.where("sp_i_state = 9 AND (sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%')").includes(:spdata)
-    @data_arr = []
-    @data_items = {"安徽省"=>{}}
-    city = @sp_bsbs.where("sp_s_4 != '请选择'")
-    county = @sp_bsbs.where("sp_s_5 != '请选择'")
-    #地图各省数据
-    city.group(:sp_s_4).count.each{ |k,y| @data_arr << {"name" => k+"市","value" => y} } 
-    county.group(:sp_s_5).count.each{ |k,y| @data_arr << {"name" => k,"value" => y}}
-    @data_arr = @data_arr.to_json
-    #各省不合格项目
-    city.group_by{ |c| c.sp_s_4 }.each do |key,sp_bsbs|
-      name = key+"市"
-      @data_items[name] = {}
-      sp_bsbs.each do |sp|
-        sp.spdata.each do |data| 
-          if data.spdata_2 == "不合格项"
-            @data_items[name].has_key?(data.spdata_0) ? @data_items[name][data.spdata_0]+=1 : @data_items[name][data.spdata_0]=1   
-            @data_items["安徽省"].has_key?(data.spdata_0) ? @data_items["安徽省"][data.spdata_0]+=1 : @data_items["安徽省"][data.spdata_0]=1   
-          end
-        end
-      end
-    end
-    @data_items = @data_items.to_json
+    #{"合肥"=>[{"area":"合肥","dh":"SC1002134432","ypmc":"茶叶","jyxm":"xxxx","dl":"食用农产品","yl":"茶","cyl":"茶","xl":"茶"}]}
+    #@data_arr:各市不合格批次数量 @data_items:各市不合格项目统计 @nonconformity 各市不合格项目详细
+    @data_arr,@data_items,@nonconformity = Statistic.nonconformity.map{ |d| d.to_json }
     if params["is_export"].present?
       send_file(DownloadStatistics.start("Statistic::Nonconformity",["aa"]), :disposition => "attachment")
     end
@@ -193,7 +172,7 @@ class StatisticsController < ApplicationController
 
   #不合格样品及问题样品预警
   def early_warning
-    #同不合格项目统计
+    @data_arr,@data_items,@nonconformity = Statistic.nonconformity.map{ |d| d.to_json }
   end
 
 

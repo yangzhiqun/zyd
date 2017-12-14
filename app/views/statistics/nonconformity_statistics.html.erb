@@ -126,11 +126,13 @@
     <%= javascript_include_tag "statistics/map/china-main-city-map" %>
     <script>
     var all_data;
+    var data
     $(function(){
         all_data = <%= raw @data_items %>
+        data = <%= raw @nonconformity %>
         chartMap();
         main();
-        getData(data);
+        getData(data["安徽省"]);
     })
     function main(params){
         //动态渲染左侧区域数据
@@ -490,7 +492,6 @@ function chartMap(){
         });
     }   
 }
-var data = [{"area":"合肥","dh":"SC1002134432","ypmc":"茶叶","jyxm":"xxxx","dl":"食用农产品","yl":"茶","cyl":"茶","xl":"茶"}];
     function getData(info){
         $('#tb_report').bootstrapTable({
             //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
@@ -501,13 +502,13 @@ var data = [{"area":"合肥","dh":"SC1002134432","ypmc":"茶叶","jyxm":"xxxx","
             striped: true,                      //是否显示行间隔色
             cache: false,                      //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
             search: true, //显示搜索框
-            // pagination: true,                   //是否显示分页（*）
+            pagination: true,                   //是否显示分页（*）
             // sortOrder: "asc",                   //排序方式
             //queryParams: oTableInit.queryParams,//传递参数（*）
             // sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
-            // pageNumber: 1,                       //初始化加载第一页，默认第一页
-            // pageSize: 10,                       //每页的记录行数（*）
-            // pageList: [10, 25, 50, 100],      //可供选择的每页的行数（*）
+            pageNumber: 1,                       //初始化加载第一页，默认第一页
+            pageSize: 10,                       //每页的记录行数（*）
+            pageList: [10, 25, 50, 100],      //可供选择的每页的行数（*）
             columns : [
                 {
                     title : '序号',//标题  可不加
@@ -603,9 +604,7 @@ var data = [{"area":"合肥","dh":"SC1002134432","ypmc":"茶叶","jyxm":"xxxx","
        }
        })
        */
-      var data1 = [{"area":"合肥","dh":"SC1002134432","ypmc":"茶叶","jyxm":"xxxx","dl":"食用农产品","yl":"茶","cyl":"茶","xl":"茶"},
-          {"area":"黄山","dh":"SC10033333332","ypmc":"茶叶","jyxm":"xxxx","dl":"食用农产品","yl":"茶","cyl":"茶","xl":"茶"}];
-        getData(data1);
+       getData(data[params]);
     }
     $("#search").on('click',function(){
          alert(123);
