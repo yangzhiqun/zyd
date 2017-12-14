@@ -75,11 +75,14 @@
     -->
     <%= javascript_include_tag "statistics/map/china-main-city-map" %>
 <script>
+    var all_data;
+    var data
     $(function(){
+        all_data = <%= raw @data_items %>
+        data = <%= raw @nonconformity %>
         chartMap();
         main();
-        init(returnData().anhui.detail);
-        getData(data);
+        getData(data["安徽省"]);
     })
     function main(){
         //动态渲染左侧区域数据
@@ -378,145 +381,146 @@
                                         show: true
                                     }
                                 },
-                                data:[
-                                // 市级数据
-                                {name:'合肥市',value:randomData.hefei.count},
-                                {name:'淮北市',value:randomData.huaibei.count},
-                                {name:'宿州市',value:randomData.suzhou.count},
-                                {name:'阜阳市',value:randomData.fuyang.count},
-                                {name:'淮南市',value:randomData.huainan.count},
-                                {name:'滁州市',value:randomData.chuzhou.count},
-                                {name:'六安市',value:randomData.luan.count},
-                                {name:'马鞍山市',value:randomData.maanshan.count},
-                                {name:'芜湖市',value:randomData.wuhu.count},
-                                {name:'铜陵市',value:randomData.tongling.count},
-                                {name:'宣城市',value:randomData.xuancheng.count},
-                                {name:'池州市',value:randomData.chizhou.count},
-                                {name:'安庆市',value:randomData.anqing.count},
-                                {name:'黄山市',value:randomData.huangshan.count},
-                                {name:'亳州市',value:randomData.bozhou.count},
-                                {name:'蚌埠市',value:randomData.bengbu.count},
-                                // 县级数据
-                                {name:'长丰县',value:0},
-                                {name:'庐江县',value:0},
-                                {name:'庐阳区',value:0},
-                                {name:'巢湖市',value:0},
-                                {name:'包河区',value:0},
-                                {name:'肥东县',value:0},
-                                {name:'肥西县',value:0},
-                                {name:'蜀山区',value:0},
-                                {name:'瑶海区',value:0},
+                                data: <%= raw @data_arr %>
+                                //data:[
+                                //// 市级数据
+                                //{name:'合肥市',value:randomData.hefei.count},
+                                //{name:'淮北市',value:randomData.huaibei.count},
+                                //{name:'宿州市',value:randomData.suzhou.count},
+                                //{name:'阜阳市',value:randomData.fuyang.count},
+                                //{name:'淮南市',value:randomData.huainan.count},
+                                //{name:'滁州市',value:randomData.chuzhou.count},
+                                //{name:'六安市',value:randomData.luan.count},
+                                //{name:'马鞍山市',value:randomData.maanshan.count},
+                                //{name:'芜湖市',value:randomData.wuhu.count},
+                                //{name:'铜陵市',value:randomData.tongling.count},
+                                //{name:'宣城市',value:randomData.xuancheng.count},
+                                //{name:'池州市',value:randomData.chizhou.count},
+                                //{name:'安庆市',value:randomData.anqing.count},
+                                //{name:'黄山市',value:randomData.huangshan.count},
+                                //{name:'亳州市',value:randomData.bozhou.count},
+                                //{name:'蚌埠市',value:randomData.bengbu.count},
+                                //// 县级数据
+                                //{name:'长丰县',value:0},
+                                //{name:'庐江县',value:0},
+                                //{name:'庐阳区',value:0},
+                                //{name:'巢湖市',value:0},
+                                //{name:'包河区',value:0},
+                                //{name:'肥东县',value:0},
+                                //{name:'肥西县',value:0},
+                                //{name:'蜀山区',value:0},
+                                //{name:'瑶海区',value:0},
     
-                                {name:'砀山县',value:0},
-                                {name:'萧县',value:0},
-                                {name:'埇桥区',value:0},
-                                {name:'灵璧县',value:0},
-                                {name:'泗县',value:0},
+                                //{name:'砀山县',value:0},
+                                //{name:'萧县',value:0},
+                                //{name:'埇桥区',value:0},
+                                //{name:'灵璧县',value:0},
+                                //{name:'泗县',value:0},
     
-                                {name:'杜集区',value:0},
-                                {name:'相山区',value:0},
-                                {name:'烈山区',value:0},
-                                {name:'濉溪县',value:0},
+                                //{name:'杜集区',value:0},
+                                //{name:'相山区',value:0},
+                                //{name:'烈山区',value:0},
+                                //{name:'濉溪县',value:0},
     
-                                {name:'固镇县',value:0},
-                                {name:'五河县',value:0},
-                                {name:'怀远县',value:0},
-                                {name:'淮上区',value:0},
-                                {name:'龙子湖区',value:0},
-                                {name:'蚌山区',value:0},
-                                {name:'禹会区',value:0},
+                                //{name:'固镇县',value:0},
+                                //{name:'五河县',value:0},
+                                //{name:'怀远县',value:0},
+                                //{name:'淮上区',value:0},
+                                //{name:'龙子湖区',value:0},
+                                //{name:'蚌山区',value:0},
+                                //{name:'禹会区',value:0},
     
-                                {name:'界首市',value:0},
-                                {name:'太和县',value:0},
-                                {name:'颍泉区',value:0},
-                                {name:'颍东区',value:0},
-                                {name:'颍州区',value:0},
-                                {name:'颍上县',value:0},
-                                {name:'阜南县',value:0},
-                                {name:'临泉县',value:0},
+                                //{name:'界首市',value:0},
+                                //{name:'太和县',value:0},
+                                //{name:'颍泉区',value:0},
+                                //{name:'颍东区',value:0},
+                                //{name:'颍州区',value:0},
+                                //{name:'颍上县',value:0},
+                                //{name:'阜南县',value:0},
+                                //{name:'临泉县',value:0},
     
-                                {name:'凤台县',value:0},
-                                {name:'潘集区',value:0},
-                                {name:'八公山区',value:0},
-                                {name:'谢家集区',value:0},
-                                {name:'田家庵区',value:0},
-                                {name:'大通区',value:0},
+                                //{name:'凤台县',value:0},
+                                //{name:'潘集区',value:0},
+                                //{name:'八公山区',value:0},
+                                //{name:'谢家集区',value:0},
+                                //{name:'田家庵区',value:0},
+                                //{name:'大通区',value:0},
     
-                                {name:'霍邱县',value:0},
-                                {name:'寿县',value:0},
-                                {name:'裕安区',value:0},
-                                {name:'金安区',value:0},
-                                {name:'金寨县',value:0},
-                                {name:'霍山县',value:0},
-                                {name:'舒城县',value:0},
+                                //{name:'霍邱县',value:0},
+                                //{name:'寿县',value:0},
+                                //{name:'裕安区',value:0},
+                                //{name:'金安区',value:0},
+                                //{name:'金寨县',value:0},
+                                //{name:'霍山县',value:0},
+                                //{name:'舒城县',value:0},
     
-                                {name:'凤阳县',value:0},
-                                {name:'明光市',value:0},
-                                {name:'天长市',value:0},
-                                {name:'定远县',value:0},
-                                {name:'南谯区',value:0},
-                                {name:'琅琊区',value:0},
-                                {name:'来安县',value:0},
-                                {name:'全椒县',value:0},
+                                //{name:'凤阳县',value:0},
+                                //{name:'明光市',value:0},
+                                //{name:'天长市',value:0},
+                                //{name:'定远县',value:0},
+                                //{name:'南谯区',value:0},
+                                //{name:'琅琊区',value:0},
+                                //{name:'来安县',value:0},
+                                //{name:'全椒县',value:0},
     
-                                {name:'谯城区',value:0},
-                                {name:'涡阳县',value:0},
-                                {name:'蒙城县',value:0},
-                                {name:'利辛县',value:0},
+                                //{name:'谯城区',value:0},
+                                //{name:'涡阳县',value:0},
+                                //{name:'蒙城县',value:0},
+                                //{name:'利辛县',value:0},
     
-                                {name:'含山县',value:0},
-                                {name:'和县',value:0},
-                                {name:'花山区',value:0},
-                                {name:'雨山区',value:0},
-                                {name:'当涂县',value:0},
+                                //{name:'含山县',value:0},
+                                //{name:'和县',value:0},
+                                //{name:'花山区',value:0},
+                                //{name:'雨山区',value:0},
+                                //{name:'当涂县',value:0},
     
-                                {name:'无为县',value:0},
-                                {name:'鸠江区',value:0},
-                                {name:'镜湖区',value:0},
-                                {name:'弋江区',value:0},
-                                {name:'三山区',value:0},
-                                {name:'芜湖县',value:0},
-                                {name:'繁昌县',value:0},
-                                {name:'南陵县',value:0},
+                                //{name:'无为县',value:0},
+                                //{name:'鸠江区',value:0},
+                                //{name:'镜湖区',value:0},
+                                //{name:'弋江区',value:0},
+                                //{name:'三山区',value:0},
+                                //{name:'芜湖县',value:0},
+                                //{name:'繁昌县',value:0},
+                                //{name:'南陵县',value:0},
     
-                                {name:'贵池区',value:0},
-                                {name:'青阳县',value:0},
-                                {name:'石台县',value:0},
-                                {name:'东至县',value:0},
+                                //{name:'贵池区',value:0},
+                                //{name:'青阳县',value:0},
+                                //{name:'石台县',value:0},
+                                //{name:'东至县',value:0},
     
-                                {name:'岳西县',value:0},
-                                {name:'潜山县',value:0},
-                                {name:'桐城市',value:0},
-                                {name:'枞阳县',value:0},
-                                {name:'怀宁县',value:0},
-                                {name:'宜秀区',value:0},
-                                {name:'望江县',value:0},
-                                {name:'太湖县',value:0},
-                                {name:'宿松县',value:0},
-                                {name:'迎江区',value:0},
-                                {name:'大观区',value:0},
+                                //{name:'岳西县',value:0},
+                                //{name:'潜山县',value:0},
+                                //{name:'桐城市',value:0},
+                                //{name:'枞阳县',value:0},
+                                //{name:'怀宁县',value:0},
+                                //{name:'宜秀区',value:0},
+                                //{name:'望江县',value:0},
+                                //{name:'太湖县',value:0},
+                                //{name:'宿松县',value:0},
+                                //{name:'迎江区',value:0},
+                                //{name:'大观区',value:0},
     
-                                {name:'郎溪县',value:0},
-                                {name:'广德县',value:0},
-                                {name:'宣州区',value:0},
-                                {name:'宁国市',value:0},
-                                {name:'泾县',value:0},
-                                {name:'旌德县',value:0},
-                                {name:'绩溪县',value:0},
+                                //{name:'郎溪县',value:0},
+                                //{name:'广德县',value:0},
+                                //{name:'宣州区',value:0},
+                                //{name:'宁国市',value:0},
+                                //{name:'泾县',value:0},
+                                //{name:'旌德县',value:0},
+                                //{name:'绩溪县',value:0},
     
-                                {name:'黄山区',value:0},
-                                {name:'黟县',value:0},
-                                {name:'徽州区',value:0},
-                                {name:'歙县',value:0},
-                                {name:'屯溪区',value:0},
-                                {name:'休宁县',value:0},
-                                {name:'祁门县',value:0},
+                                //{name:'黄山区',value:0},
+                                //{name:'黟县',value:0},
+                                //{name:'徽州区',value:0},
+                                //{name:'歙县',value:0},
+                                //{name:'屯溪区',value:0},
+                                //{name:'休宁县',value:0},
+                                //{name:'祁门县',value:0},
     
-                                {name:'铜陵县',value:0},
-                                {name:'狮子山区',value:0},
-                                {name:'铜官山区',value:0},
-                                {name:'郊区',value:0},
-                                ]
+                                //{name:'铜陵县',value:0},
+                                //{name:'狮子山区',value:0},
+                                //{name:'铜官山区',value:0},
+                                //{name:'郊区',value:0},
+                                //]
                             }
                         ]
                      };
@@ -531,8 +535,7 @@
             });
         }   
     }
-    var data = [{"area":"合肥","dh":"SC1002134432","bcydw":"大众超市","scqy":"scqy","ypmc":"茶叶","rwly":"安徽省食品药品监督管理局",
-        "jyxm":"xxxx","dl":"食用农产品","yl":"茶","cyl":"茶","xl":"茶"}];
+    //var data = [{"area":"合肥","dh":"SC1002134432","bcydw":"大众超市","scqy":"scqy","ypmc":"茶叶","rwly":"安徽省食品药品监督管理局","jyxm":"xxxx","dl":"食用农产品","yl":"茶","cyl":"茶","xl":"茶"}];
     function getData(info){
         $('#tb_report').bootstrapTable({
             //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
@@ -543,13 +546,13 @@
             striped: true,                      //是否显示行间隔色
             cache: false,                      //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
             search: true, //显示搜索框
-            // pagination: true,                   //是否显示分页（*）
+            pagination: true,                   //是否显示分页（*）
             // sortOrder: "asc",                   //排序方式
             //queryParams: oTableInit.queryParams,//传递参数（*）
             // sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
-            // pageNumber: 1,                       //初始化加载第一页，默认第一页
-            // pageSize: 10,                       //每页的记录行数（*）
-            // pageList: [10, 25, 50, 100],      //可供选择的每页的行数（*）
+            pageNumber: 1,                       //初始化加载第一页，默认第一页
+            pageSize: 10,                       //每页的记录行数（*）
+            pageList: [10, 25, 50, 100],      //可供选择的每页的行数（*）
             columns : [
                 {
                     title : '序号',//标题  可不加
@@ -668,11 +671,7 @@
        }
        })
        */
-        var data1 = [{"area":"合肥","dh":"SC1002134432","bcydw":"大众超市","scqy":"scqy","ypmc":"茶叶","rwly":"安徽省食品药品监督管理局",
-            "jyxm":"xxxx","dl":"食用农产品","yl":"茶","cyl":"茶","xl":"茶"},
-            {"area":"黄山","dh":"SC1002134432","bcydw":"大众超市","scqy":"scqy","ypmc":"茶叶","rwly":"安徽省食品药品监督管理局",
-                "jyxm":"xxxx","dl":"食用农产品","yl":"茶","cyl":"茶","xl":"茶"}];
-        getData(data1);
+        getData(data[params]);
     }
 </script>
 </body>
