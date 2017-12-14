@@ -70,14 +70,20 @@
 
             // 时间区域选取
             // 初始时间
-            laydate.render({
+           /* laydate.render({
               elem: '#page-start', //指定元素
               type: 'month'
-            });
+            });*/
             // 结束时间
-            laydate.render({
+            /*laydate.render({
               elem: '#page-end', //指定元素
               type: 'month'
+            });*/
+            laydate.render({
+                elem: '#time', //指定元素
+                type: 'month',
+                range: '/',
+                format: 'yyyy-MM'
             });
 
         });

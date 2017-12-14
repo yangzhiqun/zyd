@@ -12,21 +12,25 @@
         <!-- 按日期查询按钮 -->
         <div class="fillpage-date">
             <span>样品填报时间：</span>
-            <div class="form-group">
-                <label class="sr-only" for="page-start">开始时间</label>
-                <input type="text" class="form-control" id="page-start" placeholder="开始时间">
-            </div>
-            <div style="width:20px;height:3px;margin:0px auto;padding:0px;background-color:#D5D5D5;overflow:hidden;display: inline-block;"></div>
-            <div class="form-group">
-                <label class="sr-only" for="page-end">结束时间</label>
-                <input type="text" class="form-control" id="page-end" placeholder="结束时间">
-            </div>    
+            <!--<div class="form-group">-->
+                <!--<label class="sr-only" for="page-start">开始时间</label>-->
+                <!--<input type="text" class="form-control" id="page-start" placeholder="开始时间">-->
+            <!--</div>-->
+            <!--<div style="width:20px;height:3px;margin:0px auto;padding:0px;background-color:#D5D5D5;overflow:hidden;display: inline-block;"></div>-->
+            <!--<div class="form-group">-->
+                <!--<label class="sr-only" for="page-end">结束时间</label>-->
+                <!--<input type="text" class="form-control" id="page-end" placeholder="结束时间">-->
+            <!--</div>    -->
+          <div class="form-group">
+            <label class="sr-only" for="page-start">选择时间</label>
+            <input type="text" class="form-control" id="time" placeholder="选择时间">
+          </div>
         </div>
       <div class="form-group foodcateSelect_btn">
         <!-- 选取栏 -->
         <span>任务类型：</span>
         <!-- 2 -->
-        <select class="form-control foodcateSelect_option">
+        <select class="form-control foodcateSelect_option" id="bsfl">
           <option selected="selected">报送分类a</option>
           <option >报送分类a1</option>
           <option >报送分类a2</option>
@@ -57,7 +61,7 @@
       $.ajax({
         type: "get",
         url:  url,
-        data: {"subpage":"true"},
+        data: {"subpage":"true","time":$("#time").val(),"bsfl":$("#bsfl").val()},
         success: function(data){
           $("#subpage").html(data);
           treeGrid.expandAll("N");//默认关闭
