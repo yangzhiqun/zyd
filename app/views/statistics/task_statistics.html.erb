@@ -28,169 +28,75 @@
             <h1>任务统计</h1>
         </div>
 
-        <!-- 上侧按钮部分 -->
-        <div class="topbtn_task">
-            <form role="form">
-                <div class="form-group topbtnSect_task">
-                    <!-- 左侧选取栏 -->
-                    <label>类型选取</label>
-                    <select class="form-control task_option" id="task_option">
-                        <!-- <option >全部</option> -->
-                        <option selected="selected" value="taskbox_sign">任务类型</option>
-                        <option value="foodbox_sign">食品类型</option>
-                        <option value="sampbox_sign">抽样地点</option>
-                        <option value="productLocalbox_sign">被抽样单位所在区域</option>
-                    </select>
-                    
-                    <!-- 右侧操作按钮
-                    <div class="taskbtn_operBox">
-                        <button type="submit" class="btn btn-default taskbtn_query">查询</button>
-                        <button type="submit" class="btn btn-default taskbtn_export bgc1 btn-primary">导出列表</button>
-                    </div>
-                    -->
-                </div>
-            </form>
-        </div>
+     <%= search_form_for @q, url: task_statistics_path, html: {role: "form"} do |f|  %>
+       <div class="topbtn_task">
+           <div class="form-group topbtnSect_task">
+               <label>类型选取</label>
+               <select class="form-control task_option" id="task_option">
+                   <option selected="selected" value="taskbox_sign">任务类型</option>
+                   <option value="foodbox_sign">食品类型</option>
+                   <option value="sampbox_sign">抽样地点</option>
+                   <option value="productLocalbox_sign">被抽样单位所在区域</option>
+               </select>
+               
+               <div class="taskbtn_operBox">
+                   <button type="submit" class="btn btn-default taskbtn_query">查询</button>
+                   <button type="submit" class="btn btn-default taskbtn_export bgc1 btn-primary">导出列表</button>
+               </div>
+           </div>
+       </div>
 
+       <div class="pubbox sampbox" id="sampbox_sign">
+         <div class="sampbox_topCon">
+           <%= f.label :筛选条件 %>
+           <%= f.select :sp_s_68_eq, [["生产","生产"],["流通","流通"],["餐饮","餐饮"]],{:include_blank => "全部"},class:"form-control sampbox_option",id:"sampbox_option" %>
+         </div>
+       </div>
 
-      <!-- 抽样地点 -->
-      <div class="pubbox sampbox" id="sampbox_sign">
-        <!-- 上部 -->
-        <div class="sampbox_topCon">
-          <!-- 左侧选取栏 -->
-          <label for="sampbox_option">筛选条件</label>
-          <select class="form-control sampbox_option" id="sampbox_option">
-            <option selected="selected">全部</option>
-            <option>生产</option>
-            <option>流通</option>
-            <option>餐饮</option>
-          </select>
-        </div>
-        <!-- 查询导出操作按钮 -->
-        <div class="taskbtn_operBox">
-          <button type="submit" class="btn btn-default taskbtn_query">查询</button>
-          <button type="submit" class="btn btn-default taskbtn_export bgc1 btn-primary">导出列表</button>
-        </div>
-        <!-- 注释说明 -->
-        <p style="margin:10px; color: red;font-size: 14px;">说明：省市县管理员进入该统计，区域显示不同，如省管理员看到各市信息，以此类推。进入显示该区域下的数据，县级只显示自己数据。</p>
-      </div>
+       <div class="pubbox taskbox" id="taskbox_sign">
+         <div class="taskbox_topCon">
+           <%= f.label :筛选条件 %>
+           <%= f.select :sp_s_44_eq, [["监督抽检","监督抽检"],["抽检检测","抽检检测"],["风险检测","风险检测"]],{:include_blank => "全部"},class:"form-control taskbox_option",id:"taskbox_option" %>
+         </div>
+       </div>
 
-      <!-- 任务类别 -->
-      <div class="pubbox taskbox" id="taskbox_sign">
-        <!-- 上部 -->
-        <div class="taskbox_topCon">
-          <!-- 左侧选取栏 -->
-          <label for="taskbox_option">筛选条件</label>
-          <select class="form-control taskbox_option" id="taskbox_option">
-            <option selected="selected">全部</option>
-            <option>监督抽检</option>
-            <option>抽检检测</option>
-            <option>风险检测</option>
-          </select>
-        </div>
-        <!-- 查询导出操作按钮 -->
-        <div class="taskbtn_operBox">
-          <button type="submit" class="btn btn-default taskbtn_query">查询</button>
-          <button type="submit" class="btn btn-default taskbtn_export bgc1 btn-primary">导出列表</button>
-        </div>
-        <!-- 注释说明 -->
-        <p style="margin:10px; color: red;font-size: 14px;">说明：省市县管理员进入该统计，区域显示不同，如省管理员看到各市信息，以此类推。进入显示该区域下的数据，县级只显示自己数据。</p>
-      </div>
+       <div class="pubbox foodbox" id="foodbox_sign">
+         <div class="foodbox_topCon">
+           <div class="food_selectbox">
+             <label for="checkbox_optionH">报送分类A</label>
+             <%= f.select :sp_s_70_eq, BaosongA.all.map { |b| [b.name, b.name] },{:include_blank =>"请选择"},class:"form-control checkbox_optionH",id:"checkbox_optionH"%>
+           </div>
+           <div class="food_selectbox">
+             <label for="checkbox_optionI">报送分类B</label>
+             <%= f.select :sp_s_67_eq, [],{:include_blank =>"请选择"},class:"form-control checkbox_optionI",id:"checkbox_optionI"%>
+           </div>
+           </br>
+           <div class="food_selectbox">
+             <%= f.label :食品大类 %>
+             <%= f.select :sp_s_17_eq, [],{:include_blank =>"请选择"},class:"form-control checkbox_optionJ",id:"checkbox_optionJ"%>
+           </div>
+           <div class="food_selectbox">
+             <%= f.label :食品亚类 %>
+             <%= f.select :sp_s_18_eq, [],{:include_blank =>"请选择"},class:"form-control checkbox_optionK",id:"checkbox_optionK"%>
+           </div>
+           <div class="food_selectbox">
+             <%= f.label :食品次亚类 %>
+             <%= f.select :sp_s_19_eq, [],{:include_blank =>"请选择"},class:"form-control checkbox_optionL",id:"checkbox_optionL"%>
+           </div>
+           <div class="food_selectbox">
+             <%= f.label :食品细类 %>
+             <%= f.select :sp_s_20_eq, [],{:include_blank =>"请选择"},class:"form-control checkbox_optionM",id:"checkbox_optionM"%>
+           </div>
+         </div>
+       </div>
 
-      <!-- 食品类别 -->
-      <div class="pubbox foodbox" id="foodbox_sign">
-        <!-- 上部 -->
-        <div class="foodbox_topCon">
-          <!-- 选取栏1 -->
-          <div class="food_selectbox">
-            <label for="foodbox_optionA">报送分类A</label>
-            <select class="form-control foodbox_optionA" id="foodbox_optionA">
-              <option selected="selected">全部</option>
-              <option>抽检监测（市级本级）</option>
-              <option>抽检监测（省级专项）</option>
-              <option>抽检监测（省级转移）</option>
-            </select>
-          </div>
-          <!-- 选取栏2 -->
-          <div class="food_selectbox">
-            <label for="foodbox_optionB">报送分类B</label>
-            <select class="form-control foodbox_optionB" id="foodbox_optionB">
-              <option selected="selected">全部</option>
-              <option>2017年安徽合肥食品抽检计划</option>
-              <option>2017年安徽宣城跟踪抽检计划</option>
-            </select>
-          </div>
-          </br>
-          <!-- 选取栏3 -->
-          <div class="food_selectbox">
-            <label for="foodbox_optionC">食品大类</label>
-            <select class="form-control foodbox_optionC" id="foodbox_optionC">
-              <option selected="selected">请选择</option>
-              <option>粮食加工品</option>
-              <option>食用油、油脂及其制品</option>
-              <option>调味品</option>
-              <option>肉制品</option>
-            </select>
-          </div>
-          <!-- 选取栏4 -->
-          <div class="food_selectbox">
-            <label for="foodbox_optionD">食品亚类</label>
-            <select class="form-control foodbox_optionD" id="foodbox_optionD">
-              <option selected="selected">请选择</option>
-              <option>小麦粉</option>
-              <option>大米</option>
-              <option>挂面</option>
-            </select>
-          </div>
-          <!-- 选取栏3 -->
-          <div class="food_selectbox">
-            <label for="foodbox_optionE">食品次亚类</label>
-            <select class="form-control foodbox_optionE" id="foodbox_optionE">
-              <option selected="selected">请选择</option>
-              <option>小麦粉</option>
-            </select>
-          </div>
-          <!-- 选取栏4 -->
-          <div class="food_selectbox">
-            <label for="foodbox_optionF">食品细类</label>
-            <select class="form-control foodbox_optionF" id="foodbox_optionF">
-              <option selected="selected">请选择</option>
-              <option>通用小麦粉</option>
-              <option>专用小麦粉</option>
-            </select>
-          </div>
-        </div>
-        <!-- 查询导出操作按钮 -->
-        <div class="taskbtn_operBox">
-          <button type="submit" class="btn btn-default taskbtn_query">查询</button>
-          <button type="submit" class="btn btn-default taskbtn_export bgc1 btn-primary">导出列表</button>
-        </div>
-        <!-- 注释说明 -->
-        <p style="margin:10px; color: red;font-size: 14px;">说明：省市县管理员进入该统计，区域显示不同，如省管理员看到各市信息，以此类推。进入显示该区域下的数据，县级只显示自己数据。</p>
-      </div>
-
-      <!-- 生产单位所在省 -->
-      <div class="pubbox productLocalbox" id="productLocalbox_sign">
-        <!-- 上部 -->
-        <div class="productLocalbox_topCon">
-          <!-- 左侧选取栏 -->
-          <label for="productLocalbox_option">筛选条件</label>
-          <select class="form-control productLocalbox_option" id="productLocalbox_option">
-            <option selected="selected">安徽</option>
-            <option>合肥</option>
-            <option>黄山</option>
-          </select>
-        </div>
-        <!-- 查询导出操作按钮 -->
-        <div class="taskbtn_operBox">
-          <button type="submit" class="btn btn-default taskbtn_query">查询</button>
-          <button type="submit" class="btn btn-default taskbtn_export bgc1 btn-primary">导出列表</button>
-        </div>
-        <!-- 注释说明 -->
-        <p style="margin:10px; color: red;font-size: 14px;">说明：省市县管理员进入该统计，区域显示不同，如省管理员看到各市信息，以此类推。进入显示该区域下的数据，县级只显示自己数据。</p>
-      </div>
-
-
+       <div class="pubbox productLocalbox" id="productLocalbox_sign">
+         <div class="productLocalbox_topCon">
+           <%= f.label :筛选条件 %>
+           <%= f.select :sp_s_4_eq, SysProvince.level1.map{|m| [m.name,m.name]}, {:include_blank => "全部"},class:"form-control productLocalbox_option",id:"productLocalbox_option"%>
+         </div>
+       </div>
+     <% end %>
 
       <!--table数据显示部分-->
       <div id="sampbox_bottomCon" style="margin-bottom: 100px;margin-top: 30px;">
@@ -221,16 +127,17 @@
                   {headerText: "已处置", dataField: "Disposed",headerAlign: "center", dataAlign: "center", width: "100"},
                   {headerText: "处置中", dataField: "Disposal",headerAlign: "center", dataAlign: "center", width: "100"}
               ],
-              data:[
-                  {name: "合肥",sampling:"500",test:"250",unqualified:"12",qualified:"238",Disposed:"7",Disposal:"5",children:[
-                      {name: "瑶海",sampling:"100",test:"50",unqualified:"2",qualified:"48",Disposed:"1",Disposal:"1",},
-                      {name: "庐阳",sampling:"200",test:"100",unqualified:"5",qualified:"95",Disposed:"3",Disposal:"2",},
-                      {name: "蜀山",sampling:"200",test:"100",unqualified:"5",qualified:"95",Disposed:"3",Disposal:"2",},
-                  ]},
-                  {name: "黄山",sampling:"200",test:"100",unqualified:"5",qualified:"95",Disposed:"3",Disposal:"2",},
-                  {name: "芜湖",sampling:"100",test:"50",unqualified:"2",qualified:"48",Disposed:"1",Disposal:"1",},
-                  {name: "合计：",sampling:"800",test:"400",unqualified:"19",qualified:"381",Disposed:"11",Disposal:"8",},
-              ]
+              data:<%= raw @data %>
+              //data:[
+              //    {name: "合肥",sampling:"500",test:"250",unqualified:"12",qualified:"238",Disposed:"7",Disposal:"5",children:[
+              //        {name: "瑶海",sampling:"100",test:"50",unqualified:"2",qualified:"48",Disposed:"1",Disposal:"1",},
+              //        {name: "庐阳",sampling:"200",test:"100",unqualified:"5",qualified:"95",Disposed:"3",Disposal:"2",},
+              //        {name: "蜀山",sampling:"200",test:"100",unqualified:"5",qualified:"95",Disposed:"3",Disposal:"2",},
+              //    ]},
+              //    {name: "黄山",sampling:"200",test:"100",unqualified:"5",qualified:"95",Disposed:"3",Disposal:"2",},
+              //    {name: "芜湖",sampling:"100",test:"50",unqualified:"2",qualified:"48",Disposed:"1",Disposal:"1",},
+              //    {name: "合计：",sampling:"800",test:"400",unqualified:"19",qualified:"381",Disposed:"11",Disposal:"8",},
+              //]
           };
 
           $(document).ready(function(){
@@ -309,12 +216,8 @@
               }
           }
       </script>
-
-
-      <!--旧版iframe-->
-      <!--  <iframe src="statistics_task_type" style="width: 100%;float:left;height: -webkit-fill-available;"></iframe>-->
+      <%= render :partial => "baosong_js" %>
     </div>
-    
 </body>
 </html>
 <script>
@@ -325,6 +228,7 @@
     // 选取栏  
     $("select#task_option").change(function(){
         var optVal = $(this).val();
+        console.log(optVal);
         switch(optVal){
             case 'taskbox_sign':
             $('.pubbox').css("display","none");
@@ -344,30 +248,4 @@
             break;
         }
     });
-    $("#search").on('click',function(){
-        alert(123);
-        /**
-         * $("#task_option").val(); 判断 任务类型,食品类型,抽样地点,被抽样单位所在区域
-         * 然后只获取对应类型的下拉作为参数，其余不必做参数。减少清空参数的问题。
-         *
-         * */
-        //ajax 参数 为 下拉数据  如$("#xxx").val(); 可定义 params
-      /*  $.ajax({
-       type: "post",
-       contentType: "application/json",
-       url: "WebService1.asmx/Login",
-       data: {
-       "parmas":parmas.join(',')
-       },
-       success: function (data) {
-       if (data == 'true') {
-       window.location.open = 'HTMLPage1.htm';
-       }
-       else {
-       alert("数据错误");
-       }
-       }
-       })
-       */
-    })
 </script>
