@@ -27,19 +27,25 @@ class Statistic < ActiveRecord::Base
     return chart
   end 
 
-  def self.nonconformity
-    sp_bsbs = SpBsb.where("sp_i_state = 9 AND (sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%')").includes(:spdata)
+  def self.nonconformity(sp_bsbs)
+    sp_bsbs = sp_bsbs.where("sp_i_state = 9 AND (sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%')").includes(:spdata)
     data_arr = []
     data_items = {"安徽省" => {}}
     detailed = {"安徽省" => []}
     city = sp_bsbs.where("sp_s_4 != '请选择'")
     county = sp_bsbs.where("sp_s_5 != '请选择'")
     #地图各省数据
-    city.group(:sp_s_4).count.each{ |k,y| data_arr << {"name" => k+"市","value" => y} } 
-    county.group(:sp_s_5).count.each{ |k,y| data_arr << {"name" => k,"value" => y}}
+    city.group(:sp_s_4).count.each{ |k,y| data_arr << {"name" => k =~ /市/ ? key : k+"市","value" => y} } 
+    county_arr = YAML.load_file("config/anhui_map.yml")["total"]
+    county.group(:sp_s_5).count.each do |k,y|
+      k = k+"市" if county_arr.include?(k+"市")
+      k = k+"县" if county_arr.include?(k+"县")
+      k = k+"区" if county_arr.include?(k+"区")
+      data_arr << {"name" => k,"value" => y}
+    end
     #各省不合格项目
     city.group_by{ |c| c.sp_s_4 }.each do |key,sp_bsbs|
-      name = key+"市"
+      name = key =~ /市/ ? key : key+"市"
       data_items[name] = {}
       detailed[name]   = []
       sp_bsbs.each do |sp|
