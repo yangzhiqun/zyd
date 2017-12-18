@@ -7,7 +7,8 @@ class Statistic < ActiveRecord::Base
   Disposal = ["序号", "处置单位", "处置环节", "不合格处置数", "不合格处置率", "不合格处置完成数", "不合格处置完成率", "异议数", "复检数", "复检不合格数", "立案数"]
   Enterprise = ["序号", "区域", "总企业数", "被抽样单位数", "覆盖率"]
   EarlyWarning = ["序号", "区域", "被抽样单位", "生产企业", "样品名称", "任务来源", "报送分类a", "报送分类b", "大类", "次亚类", "亚类", "细类"]
-  Composite = ["地区", "序号", "总批次", "监督抽检批次", "合格批次", "不合格批次", "不合格样品率", "风险检测批次", "问题样品批次", "问题样品率"]
+  Composite = ["地区", "总批次", "监督抽检批次", "合格批次", "不合格批次", "不合格样品率", "风险检测批次", "问题样品批次", "问题样品率"]
+  Corr = {1=>"sp_s_70",1=>"sp_s_67",2=>"sp_s_17",3=>"sp_s_18",4=>"sp_s_19",5=>"sp_s_20"}
 
   def self.time_slot(start_time,end_time)
     Time.parse(start_time+"-01")..Time.parse(end_time+"-31").end_of_day
@@ -63,9 +64,29 @@ class Statistic < ActiveRecord::Base
     [data_arr,data_items,detailed]
   end
 
-  def self.admin_info
-    return "1",current_user.user_s_province if is_sheng? 
-    return "2",current_user.prov_city if is_city? 
-    return "3",current_user.prov_country if is_county_level? 
+  def self.food(products,type)
+    wtyp_czb_p = WtypCzbPart.where(sp_bsb_id:products.unqualified.map{ |p| p.id }).group_by{ |wt| wt.sp_bsb_id }
+    data = []
+    products.group_by{ |a| a.send(type) }.each do |name,sp_bsbs|
+      #抽样数 检验数 不合格数 合格数 已处置 处置中
+      num1,num2,num3,num4,num5,num6 = 0,0,0,0,0,0 
+      num1 = sp_bsbs.length
+      sp_bsbs.each do |s|
+        if s.sp_i_state == 9
+          num2 +=1 
+          num3 +=1 if s.sp_s_71 =~ /不合格样品|问题样品/
+          wtyp_czb_p[s.id].each do |w|
+            if [1,2].include? w.current_state
+              num6 += 1
+            elsif w.current_state == 3
+              num5 += 1 
+            end
+          end if wtyp_czb_p.has_key?(s.id)
+        end
+      end
+      num4 = num1-num3
+      data << {"name"=>name, "sampling"=>num1.to_s,"test"=>num2.to_s,"unqualified"=>num3.to_s,"qualified"=>num4.to_s,"Disposed"=>num5.to_s,"Disposal"=>num6.to_s}
+    end
+    return data
   end
 end

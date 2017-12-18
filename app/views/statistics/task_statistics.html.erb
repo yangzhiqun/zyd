@@ -31,14 +31,8 @@
      <%= search_form_for @q, url: task_statistics_path, html: {role: "form"} do |f|  %>
        <div class="topbtn_task">
            <div class="form-group topbtnSect_task">
-               <label>类型选取</label>
-               <select class="form-control task_option" id="task_option">
-                   <option selected="selected" value="taskbox_sign">任务类型</option>
-                   <option value="foodbox_sign">食品类型</option>
-                   <option value="sampbox_sign">抽样地点</option>
-                   <option value="productLocalbox_sign">被抽样单位所在区域</option>
-               </select>
-               
+               <%= f.label :类型选取 %>
+               <%= f.select :sp_s_tel, options_for_select([['任务类型','taskbox_sign'], ['食品类型', 'foodbox_sign'], ['抽样地点', 'sampbox_sign'], ['被抽样单位所在区域','productLocalbox_sign']],params[:q].blank? ? '':params[:q]["sp_s_tel"]),{},class:"form-control task_option",id:"task_option" %>
                <div class="taskbtn_operBox">
                    <button type="submit" class="btn btn-default taskbtn_query">查询</button>
                    <button type="submit" class="btn btn-default taskbtn_export bgc1 btn-primary">导出列表</button>

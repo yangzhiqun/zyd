@@ -148,33 +148,29 @@ TreeGrid = function (_config) {
      * ajax请求后台数据
      */
     getInfoNext =function(trid){
-        var result = [{name:"清新分公司1"},{name:"清新分公司2"}];
-        console.log("请求");
-        /* 	$.ajax({
-         type : "post",
-         async : false, //异步执行
-         url : "AcceptData",
-         dataType : "json", //返回数据形式为json
-         data:{
-         params:result,//上级名称
-         time:$("#time").val(),
-         baosongA:$(#checkbox_optionH).val()
-         }
-         success : function(json) {
-         if (data) {
-         result = data;
-         setChildren(data, _config.columns,$("#"+trid));
-         }else{
-         alert("数据请求失败");
-         return;
-         }
-         },
-         error:function(){
-         alert("数据请求失败");
-         return;
-         }
-         })*/
-        setChildren(result, _config.columns,$("#"+trid)); //测试
+        $.ajax({
+          type : "get",
+          async : false, //异步执行
+          url : "/food_subset_statistics",
+          dataType : "json", //返回数据形式为json
+          data:{
+            params: TreeGrid.json2strone(result),//上级名称
+            time:$("#time").val(),
+            baosongA:$("#checkbox_optionH").val()
+          },
+          success: function(data){
+            if (data) {
+              setChildren(data, _config.columns,$("#"+trid));
+            }else{
+              alert("数据请求失败");
+              return;
+            }
+          },
+          error:function(){
+            alert("数据请求失败");
+            return;
+          }
+        })
     }
     /***
      * 组合子节点
@@ -330,6 +326,7 @@ TreeGrid = function (_config) {
 TreeGrid.FOLDER_OPEN_ICON = "images/folderOpen.gif";
 TreeGrid.FOLDER_CLOSE_ICON = "images/folderClose.gif";
 TreeGrid.DEFAULT_LEAF_ICON = "images/defaultLeaf.gif";
+TreeGrid.CORR = {0:"sp_s_70",1:"sp_s_67",2:"sp_s_17",3:"sp_s_18",4:"sp_s_19",5:"sp_s_20"}
 TreeGrid.COUNT = 1;
 
 //将json对象转换成字符串
@@ -355,6 +352,36 @@ TreeGrid.json2str = function(obj){
     for(var i in obj){
         if(typeof obj[i] != 'object'){ //暂时不包括子数据
             arr.push(i + ":" + fmt(obj[i]));
+        }
+    }
+
+    return '{' + arr.join(', ') + '}';
+}
+
+//将json对象转换成字符串
+TreeGrid.json2strone = function(obj){
+    obj = obj.reverse();
+    var arr = [];
+
+    var fmt = function(s){
+        if(typeof s == 'object' && s != null){
+            if(s.length){
+                var _substr = "";
+                for(var x=0;x<s.length;x++){
+                    if(x>0) _substr += ", ";
+                    _substr += TreeGrid.json2str(s[x]);
+                }
+                return "[" + _substr + "]";
+            }else{
+                return TreeGrid.json2str(s);
+            }
+        }
+        return /^(string|number)$/.test(typeof s) ? "'" + s + "'" : s;
+    }
+
+    for(var i in obj){
+        if(typeof obj[i] != 'object'){ //暂时不包括子数据
+            arr.push("'"+TreeGrid.CORR[i]+"'" + "=>" + fmt(obj[i]));
         }
     }
 
