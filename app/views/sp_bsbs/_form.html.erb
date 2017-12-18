@@ -596,7 +596,7 @@
     $('#sp_bsb_sp_s_2_1').change(function () {
       var o = $(this);
       if (o.val() != '') {
-        $.get('/baosong_bs/by_rwly.json', {a_name: o.val()}, function (data) {
+      $.get('/baosong_bs/by_rwly.json', {a_name: o.val(),is_new: <%= action?("new") %>,time:"<%= @sp_bsb.created_at || Time.now %>",wochacha:"<%= @sp_bsb.wochacha_task_id.blank? %>"}, function (data) {
           if (data.status == 'OK') {
             $('#sp_bsb_sp_s_70, #sp_bsb_sp_s_67').empty();
             render_spec_list([]);
@@ -2303,6 +2303,7 @@
           });  
           pdfpath['FXJC']=res.pdfpath.FXJC;
         }else{
+           hashed_signs['FXJC'] = "";
           ep2.emit('fxjc');
         }
 
@@ -3026,14 +3027,14 @@
     <% if @sp_bsb.cyd_file_path.present? %>
         <div style="clear:both"></div>
         <div>
-        <% if is_open_production? && @sp_bsb.wochacha_task_id.blank? %>
+        <% if @sp_bsb.wochacha_task_id.blank? %>
           <a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @sp_bsb.id %>/cyd"><i class="glyphicon glyphicon-download-alt"></i>抽样单电子版</a>
         <% else %>
           <a class="btn btn-default btn-xs" href="<%= @sp_bsb.cyd_file_path %>" target = "_black"><i class="glyphicon glyphicon-download-alt"></i>抽样单电子版</a>
         <% end %>
 
         <% if @sp_bsb.cyjygzs_file_path.present? %>
-          <% if is_open_production? && @sp_bsb.wochacha_task_id.blank? %>
+          <% if @sp_bsb.wochacha_task_id.blank? %>
             <a class="btn btn-default btn-xs" href="/sp_bsbs/<%= @sp_bsb.id %>/cyjygzs"><i class="glyphicon glyphicon-download-alt"></i>抽样检验告知书电子版</a>
           <% else %>
             <a class="btn btn-default btn-xs" href="<%= @sp_bsb. cyjygzs_file_path%>" target = "_black"><i class="glyphicon glyphicon-download-alt"></i>抽样检验告知书电子版</a>

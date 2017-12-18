@@ -49,10 +49,18 @@ class WtypCzbsController < ApplicationController
     @sp_bsb=SpBsb.find(params[:id])
 
     @wtyp_czb = WtypCzb.find_by_wtyp_sp_bsbs_id(@sp_bsb.id)
+    #@wtyp_czb =WtypCzb.find(params[:wtyp_czb_id])
     # 生产部分
     # 生产部分核查处置仅包含：生产 & 流通
+
+    if params[:wtyp_czb_id].present?
+      wtyp_czb_part = WtypCzbPart.where(id: params[:wtyp_czb_id])
+    else
+      wtyp_czb_part = WtypCzbPart.all
+    end
     if !@sp_bsb.sp_s_68.eql?("餐饮") or (@sp_bsb.sp_s_68.eql?('餐饮') and @sp_bsb.sp_s_63.eql?('预包装'))
-      @part_sc = WtypCzbPart.where(wtyp_czb_type: WtypCzbPart::Type::SC, wtyp_czb_id: @wtyp_czb.id).first
+      @part_sc = wtyp_czb_part.where(wtyp_czb_type: WtypCzbPart::Type::SC, wtyp_czb_id: @wtyp_czb.id).first
+     # @part_sc = WtypCzbPart.where(wtyp_czb_type: WtypCzbPart::Type::SC, wtyp_czb_id: @wtyp_czb.id,id: params[:wtyp_czb_id]).first
     end
 
     # [流通/餐饮]部分
@@ -63,9 +71,11 @@ class WtypCzbsController < ApplicationController
     #elsif  @sp_bsb.sp_s_68.eql?('流通') and @sp_bsb.sp_s_2.eql?('网购')
      # @lt_cy_type = WtypCzbPart::Type::WC
     end
-    @part_lt_cy = WtypCzbPart.where(wtyp_czb_type: @lt_cy_type, wtyp_czb_id: @wtyp_czb.id).first
+    @part_lt_cy = wtyp_czb_part.where(wtyp_czb_type: @lt_cy_type, wtyp_czb_id: @wtyp_czb.id).first
+    #@part_lt_cy = WtypCzbPart.where(wtyp_czb_type: @lt_cy_type, wtyp_czb_id: @wtyp_czb.id, id: params[:wtyp_czb_id]).first
     if @sp_bsb.sp_s_68.eql?('流通') and @sp_bsb.sp_s_2.eql?('网购')
-     @part_wc =WtypCzbPart.where(wtyp_czb_type: WtypCzbPart::Type::WC, wtyp_czb_id: @wtyp_czb.id).first
+     @part_wc = wtyp_czb_part.where(wtyp_czb_type: WtypCzbPart::Type::WC, wtyp_czb_id: @wtyp_czb.id).first
+     #@part_wc = WtypCzbPart.where(wtyp_czb_type: WtypCzbPart::Type::WC, wtyp_czb_id: @wtyp_czb.id,id: params[:wtyp_czb_id]).first
     end
     # #47 第10条，如果抽样环节是生产，则只处理生产，不处理流通
     @is_editing = WtypCzbPart.where('bcydw_sheng = ? OR bsscqy_sheng = ? AND wtyp_czb_id = ?', current_user.user_s_province, current_user.user_s_province, @wtyp_czb.id).where('current_state = ?', ::WtypCzb::State::ASSIGNED).count > 0
@@ -145,11 +155,12 @@ class WtypCzbsController < ApplicationController
       params[:parts].each do |part|
         next if part[:wtyp_czb_id].blank?
         next if part[:save_me].to_i == 0
-
         @wtyp_czb_part = WtypCzbPart.where(wtyp_czb_type: part[:wtyp_czb_type], wtyp_czb_id: part[:wtyp_czb_id]).first
-
+   
         @wtyp_czb_part.current_user = current_user
-        @wtyp_czb_part.czfzr = current_user.id
+        #if part[:tmp_save].to_i == 0
+          @wtyp_czb_part.czfzr = current_user.id
+       # end
         @wtyp_czb_part.czbm = current_user.jg_bsb.jg_name
         @wtyp_czb_part.update_attributes(part.permit(:wtyp_czb_id, :xc_attachment_file, :pc_attachment_file, :xz_attachment_file, :qd_attachment_file, :wtyp_contacts, :wtyp_date, :wtyp_deal_detail, :wtyp_deal_jg, :wtyp_deal_way, :wtyp_email, :wtyp_fax, :wtyp_jg, :wtyp_remark, :wtyp_state, :wtyp_tel, :wtyp_verify, :wtyp_sp_bsbs_id, :wtyp_no, :wtyp_deal_segment, :wtyp_deal_affirm, :wtyp_deal_site, :wtyp_deal_result, :wtyp_deal_fix1way, :wtyp_deal_fix2way, :wtyp_deal_fix3way, :wtyp_result_fix1way, :wtyp_result_fix2way, :wtyp_result_fix3way, :wtyp_result_fix4way, :wtyp_result_fix5way, :wtyp_result_fix6way, :wtyp_result_fix7way, :wtyp_result_fix8way, :current_state, :czb_type, :bcydw_sheng, :bsscqy_sheng, :yyzt, :yyfl, :yyczjg, :fjzt, :fjsqr, :fjsqsj, :fjslrq, :fjwcsj, :fjjgou, :blbm, :blr, :blsj, :tbbm, :tbr, :tbsj, :shbm, :shr, :shsj, :cjbh, :ypmc, :ypgg, :ypph, :jyjl, :bcydwmc, :cydwmc, :cydwsf, :bsscqymc, :scrq, :yytcr, :yytcsj, :yysdsj, :yynr, :djbm, :djr, :djsj, :fjsqzk, :bgfl, :yyczqk, :thyy, :czbm, :czfzr, :bgsbh, :cydd, :bcydwdz, :bsscqydz, :cyjs, :jymd, :jyjgzt, :bgfl, :qdhcczrq, :shbm, :czwbrq, :fxpj_1, :fxpj_2, :fxpj_3, :fxpj_4, :cpkzqk_1, :cpkzqk_2, :cpkzqk_3, :cpkzqk_4, :cpkzqk_5, :cpkzqk_6, :cpkzqk_7, :cpkzqk_8, :cpkzqk_9, :cpkzqk_10, :cpkzqk_11, :cpkzqk_12, :cpkzqk_13, :cpkzqk_14, :cpkzqk_15, :cpkzqk_16, :cpkzqk_17, :cpkzqk_18, :cpkzqk_19, :cpkzqk_20, :cpkzqk_21, :cpkzqk_22, :cpkzqk_23, :pczgfc_1, :pczgfc_2, :pczgfc_3, :pczgfc_4, :pczgfc_5, :pczgfc_6, :pczgfc_7, :pczgfc_8, :pczgfc_9, :xzcfqk_1, :xzcfqk_2, :xzcfqk_3, :xzcfqk_4, :xzcfqk_5, :xzcfqk_6, :xzcfqk_7, :xzcfqk_8, :xzcfqk_9, :xzcfqk_10, :xzcfqk_11, :xzcfqk_12, :xzcfqk_13, :xzcfqk_14, :xzcfqk_15, :xzcfqk_16, :xzcfqk_17, :xzcfqk_18, :xzcfqk_19, :xzcfqk_20, :xzcfqk_21, :hccz_type,
                                                      :part_submit_flag1, :part_submit_flag2, :part_submit_flag3, :part_submit_flag4, :part_submit_flag5, :part_submit_flag6, :part_submit_flag7, :wtyp_czb_type, :sp_bsb_id, :pczgfc_10, :pczgfc_11, :pczgfc_12, :pczgfc_16, :pczgfc_14, :pczgfc_15, :pczgfc_16, :pczgfc_17, :current_state_desc, :tmp_save, :part_submit, :save_me, :qdqk_sdrq, :qdqk_sfjs, :cpkzqk_wzhyy, :cpkzqk_sfdw, :cpkzqk_sfhl, :yypc_zsylly, :yypc_bhgscz, :yypc_wzcyy, :yypc_sfhl, :xzcf_rdyj, :xzcf_yjsfsd, :xzcf_cssfsd, :xzcf_wlayy, :xzcf_wcfyy, :xzcf_blasfhl, :zgfc_sftjbg, :zgfc_jgbmyj, :zgfc_zgsfhl, :tbys_tbqtbm, :tbys_xzbmmc, :tbys_sfjgmc, :tbys_sfla, :tbys_sftbys, :cpkzqk_kc, :cpkzqk_zj, :zgfc_fcrq, :tbys_sfsfys, :tbr_dh, :tbr_cz, :shr_dh, :shr_cz, :cpkzqk_kcdw, :yypc_yylbsc, :yypc_yylbys, :yypc_yylbxs, :wtyp_dbtype,:wc_sheng,:wc_shi,:wc_xian))
@@ -266,6 +277,7 @@ class WtypCzbsController < ApplicationController
       @wtyp_czbs.each do |czb|
         czb.thyy = (czb.thyy || '') + '<br>' + '操作时间：' + Time.now.to_s + ', 原因：' + params[:thyy] + ', 操作人员：' + current_user.tname + "(#{current_user.uid})"
         czb.current_user = current_user
+        #czb.czfzr ="NULL"
         czb.reverting = true
         case czb.current_state
           when ::WtypCzb::State::LOGGED
@@ -281,7 +293,7 @@ class WtypCzbsController < ApplicationController
             czb.part_submit_flag5 = false
             czb.part_submit_flag6 = false
             czb.part_submit_flag7 = false
-
+            czb.czfzr = czb.blr_user_id
           when SpYydjb::State::PASSED
             czb.current_state = ::WtypCzb::State::FILLED
         end

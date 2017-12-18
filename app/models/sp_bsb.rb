@@ -46,25 +46,23 @@ class SpBsb < ActiveRecord::Base
         @sc_state = part['current_state']
       elsif part['wtyp_czb_type'] == ::WtypCzbPart::Type::LT
         @lt_state = part['current_state']
+      elsif part['wtyp_czb_type'] == ::WtypCzbPart::Type::WC
+        @wc_state = part['current_state']
       elsif part['wtyp_czb_type'] == ::WtypCzbPart::Type::CY
         @cy_state = part['current_state']
-      elsif part['wtyp_czb_type'] == ::WtypCzbPart::Type::WC  
-        @wc_state = part['current_state']
       end
     end
-   # logger.error "====#{part['wtyp_czb_type']}--#{@sc_state} ---=#{part['current_state']}"
-    logger.error "===#{@sc_state}---#{@lt_state}"
-    if (@sc_state == ::WtypCzb::State::PASSED and (@lt_state == ::WtypCzb::State::PASSED or @cy_state == ::WtypCzb::State::PASSED ))
+    if @sc_state == ::WtypCzb::State::PASSED and (@lt_state == ::WtypCzb::State::PASSED or @wc_state == ::WtypCzb::State::PASSED or @cy_state == ::WtypCzb::State::PASSED)
       "已完成"
-    elsif @sc_state == ::WtypCzb::State::PASSED and @lt_state != ::WtypCzb::State::PASSED
+    elsif @sc_state == ::WtypCzb::State::PASSED and (@lt_state != ::WtypCzb::State::PASSED or @wc_state != ::WtypCzb::State::PASSED or @cy_state != ::WtypCzb::State::PASSED)
       "已完成-生产"
     elsif @sc_state != ::WtypCzb::State::PASSED and @lt_state == ::WtypCzb::State::PASSED
       "已完成-流通"
-    elsif @cy_state == ::WtypCzb::State::PASSED
+    elsif @cy_state == ::WtypCzb::State::PASSED and @sc_state != ::WtypCzb::State::PASSED
       "已完成-餐饮"
-    elsif @wc_state == ::WtypCzb::State::PASSED
-      "已完成-网抽"
-    elsif @sc_state != ::WtypCzb::State::PASSED and @lt_state != ::WtypCzb::State::PASSED
+    elsif @wc_state == ::WtypCzb::State::PASSED and @sc_state != ::WtypCzb::State::PASSED
+       "已完成-网抽"
+    elsif @sc_state != ::WtypCzb::State::PASSED and @lt_state != ::WtypCzb::State::PASSED 
       "进行中"
     else
       "未知"
@@ -148,7 +146,7 @@ class SpBsb < ActiveRecord::Base
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 LIKE ?", "%#{params[:sp_bsa]}%")
     end
     if !params[:sp_bsb].blank? and params[:sp_bsb] !="请选择"
-      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_67 LIKE ?", "%#{params[:sp_bsb]}%")
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_67 LIKE ?", "%#{params[:sp_bsb]}")
     end
 
     unless params[:s7].blank?
@@ -1098,7 +1096,7 @@ class SpBsb < ActiveRecord::Base
     #filename = Rails.root.join('tmp', "sp_bsbs_#{self.id}.txt")
     cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 108  #{reqMessage} #{pdfpath} #{filename}"
     signSeal_result = `#{cmd}`
-    logger.error "cmd: #{cmd}, signSeal_result: #{signSeal_result}"
+    logger.error "signSeal_result: #{cmd}"
      return signSeal_result
   end
 
