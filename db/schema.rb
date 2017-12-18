@@ -1011,6 +1011,7 @@ ActiveRecord::Schema.define(version: 20171211010641) do
     t.string   "sp_s_wclxr",               limit: 255
     t.string   "sp_s_wctel",               limit: 255
     t.string   "sp_s_wcbh",                limit: 255
+    t.string   "sp_proid",                 limit: 255
     t.date     "issue_date"
   end
 

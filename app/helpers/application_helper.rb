@@ -218,18 +218,12 @@ module ApplicationHelper
       (is_city? || is_county_level?)   
   end
 
-  def is_shi_deploy?
+  def yy_shi_deploy?
     (yy_is_city?&&jg_is_city?)
   end
 
-  def is_xian_deploy?
+  def yy_xian_deploy?
     (yy_is_country?&&jg_is_country?)
-  end
-
-  def is_level?
-    return "省级"  if  is_sheng?
-    return "市级"  if  is_city?
-    return "县级"  if is_county_level?                              
   end
 
   def inspecton_body
@@ -249,6 +243,20 @@ module ApplicationHelper
       end
     end
   end
+  
+  def is_shi_deploy?
+    is_city?&&jg_is_city?
+  end
+
+  def is_xian_deploy?
+   is_county_level?&&jg_is_country?
+  end
+
+ def is_level?
+     return "省级"  if  is_sheng?
+     return "市级"  if  is_city?
+     return "县级"  if is_county_level?                              
+ end
   
   def get_province?
      if is_shi_deploy?
@@ -284,6 +292,10 @@ module ApplicationHelper
 
   def is_open_baosong
     !YAML.load_file("config/use_ca.yml")["open_baosong"]
+  end
+
+  def is_belong_name
+    ["江苏","山西","甘肃","兵团","吉林","安徽"].include?(SysConfig.get(SysConfig::Key::PROV))
   end
 
   def sp_bsb_fields
