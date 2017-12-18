@@ -31,55 +31,22 @@
         <div class="foodcate_btn">
             <%= search_form_for @q, url: food_statistics_path, html: {role: "form"} do |f|  %>
                 <div class="form-group foodcateSelect_btn">
-                    <!-- 选取栏 -->
-                    <!-- 1 -->
-                   <!-- <select class="form-control foodcateSelect_option">
-                        <option selected="selected">省级本级</option>
-                        <option >省级转移</option>
-                        <option >省级专项</option>
-                        <option >市级本级</option>
-                    </select>-->
-                    <!-- 2 -->
                     <%= f.select :sp_s_70_eq, BaosongA.all.map { |b| [b.name, b.name] },{:include_blank =>"请选择"},class:"form-control foodcateSelect_option",id:"checkbox_optionH"%>
                 </div>
-                <!-- 时间栏 -->
                 <div class="fillpage-date">
-                    <span>样品填报时间：</span>
-                   <!-- <div class="form-group">
-                        <%#= f.label :起始日期,class:"sr-only",for:"q_created_at_start" %>
-                        <%#= f.text_field :created_at_start,class:"form-control",value:"#{params[:q].blank? ? '':params[:q]["created_at_start"]}" %>
-                    </div>
-                    <div style="width:20px;height:3px;margin:0px auto;padding:0px;background-color:#D5D5D5;overflow:hidden;display: inline-block;"></div>
-                    <div class="form-group">
-                        <%#= f.label :截止日期,class:"sr-only",for:"q_created_at_end" %>
-                        <%#= f.text_field :created_at_end,class:"form-control",value:"#{params[:q].blank? ? '':params[:q]["created_at_end"]}"%>
-                    </div>
-                    -->
+                  <span>样品填报时间：</span>
                   <div class="form-group">
-                    <label class="sr-only" for="page-start">选择时间</label>
-                    <input type="text" class="form-control" id="time" placeholder="选择时间">
+                    <%= f.label :选择时间,class:"sr-only",for:"q_time" %>
+                    <%= f.text_field :time,class:"form-control",id:"time",placeholder:"选择时间",value:"#{params[:q].blank? ? '':params[:q]["time"]}" %>
                   </div>
                 </div>
-                <!-- 导出报表 -->
                 <div class="taskbtn_operBox">
                   <button type="submit" class="btn btn-default taskbtn_query" id="search" >查询</button>
                   <button type="submit" class="btn btn-default taskbtn_export bgc1 btn-primary">导出列表</button>
                 </div>
             <% end %>
-          <!-- 注释说明 -->
-          <p style="margin:10px; color: red;font-size: 14px;">说明：省市县管理员进入该统计，区域显示不同，如省管理员看到各市信息，以此类推。进入显示该区域下的数据，县级只显示自己数据。</p>
         </div>
 
-        <!-- 下侧列表数据部分 -->
-        <!-- 表格操作 -->
-        <!-- <div class="formOperation">
-            <input type="button" value="关闭列表" onclick="expandAll('N')">  
-            <input type="button" value="展开列表" onclick="expandAll('Y')">  
-            <input type="button" value="取得当前行数据" onclick="selectedItem()">
-            <input type="text" id="currentRow" size="110" style="display: none;">
-        </div> -->
-          
-        <!-- 表格数据 -->
         <div id="div1" style="margin-bottom: 100px;">
             <!-- 动态加载数据 -->
         </div>

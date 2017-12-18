@@ -44,6 +44,7 @@
                   <button class="btn btn-default bgc1 btn-primary export_btn">导出报表</button>
                   <input type="hidden" name="is_export" id="is_export" value="1">
                 </form>-->
+            <input type="hidden" name="is_export" value="0" id="is_export">
             <input type="submit" name="commit" value="导出报表" id="save" class="btn btn-default bgc1 btn-primary export_btn">
           </div>
           <% end %>
@@ -103,6 +104,12 @@
         chartMap();
         main();
         getData(data["安徽省"]);
+        $("#search").click(function(){
+          $("#is_export").val("0");
+        });
+        $("#save").click(function(){
+          $("#is_export").val("1");
+        });
     })
     function main(params){
         //动态渲染左侧区域数据

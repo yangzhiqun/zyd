@@ -29,6 +29,10 @@ class SpBsb < ActiveRecord::Base
 
   SpState = {1 => "基本信息(填报中)", 2 => "检测数据(填报)", 3 => "检测数据(填报)", 4 => "检测数据(机构审核中)", 5 => "检测数据(机构批准中)", 6 => "待机构审核", 9 => "检测数据(已提交至秘书处)", 16 => "检测数据(报告发送人审核中)", 32 => "基本信息审核", 35 => "接收样品"} 
 
+  def self.admin_select_1(str)
+    str.present? ? where(str) : self
+  end
+
   # 核查处置完成情况
   def status_desc
     parts = WtypCzbPart.where(sp_bsb_id: self.id).select("wtyp_czb_type, current_state, id").as_json
