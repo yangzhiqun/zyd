@@ -6,63 +6,89 @@ class StatisticsController < ApplicationController
   end
 
   #任务统计
+  #[{name: "合肥",sampling:"500",test:"250",unqualified:"12",qualified:"238",Disposed:"7",Disposal:"5"}]
   def task_statistics
-    #names = ACategory.where.not(name:nil).distinct.pluck(:name)
-    #@item_counts = SpBsb.where("sp_s_17 != ''").group(:sp_s_17).count.sort_by{ |key, value| value }.reverse.to_h
-    #names.each{ |a| @item_counts[a]=0 unless @item_counts.has_key?(a) }
-  end
-
-  #任务统计-任务类型
-  def statistics_task_type
-    render layout: false
-  end
-
-  #任务统计-食品类型
-  def statistics_food_type
-    render layout: false
-  end
-
-  #任务统计-抽样地点
-  def statistics_sampling_sites
-    render layout: false
-  end
-
-  #任务统计-生产单位所在省
-  def statistics_production_unit_province
-    render layout: false
+    @q = SpBsb.ransack(params[:q])
+    @products = @q.result(distinct: true)
+    @data = []
+    sp_bsbs = @products.where("sp_s_4 != '请选择'")
+    wtyp_czb_p = WtypCzbPart.where(sp_bsb_id:sp_bsbs.unqualified.map{ |p| p.id }).group_by{ |wt| wt.sp_bsb_id }
+    sp_bsbs.group_by{ |sp| sp.sp_s_4 }.each do |city_name,city_arr| #sp_arr:每个市
+      county_sp = city_arr.group_by{ |sp| sp.sp_s_5 }
+      county_result = []
+      county_sp.each do |count_name,county_arr| #arr:每个县
+        #0地区,1抽样数,2检验数,3不合格数,4合格数,5已处置,6处置中
+        num0,num1,num2,num3,num4,num5,num6='',0,0,0,0,0,0
+        num0 = count_name
+        num1 = county_arr.length
+        county_arr.each do |sp| 
+          if sp.sp_i_state == 9
+            num2 += 1
+            num3 += 1 if sp.sp_s_71 =~ /不合格样品|问题样品/
+            wtyp_czb_p[sp.id].each do |w|
+              if [1,2].include? w.current_state
+                num6 += 1
+              elsif w.current_state == 3
+                num5 += 1 
+              end
+            end if wtyp_czb_p.has_key?(sp.id)
+          end
+        end
+        num4 = num2-num3 #合格批次
+        county_result << {name: num0,sampling:num1.to_s,test:num2.to_s,unqualified:num3.to_s,qualified:num4.to_s,Disposed:num5.to_s,Disposal:num6.to_s}
+      end
+      #合计该市的信息
+      num1,num2,num3,num4,num5,num6 = 0,0,0,0,0,0
+      county_result.each do |c| 
+        num1 += c[:sampling].to_i
+        num2 += c[:test].to_i
+        num3 += c[:unqualified].to_i
+        num4 += c[:qualified].to_i
+        num5 += c[:Disposed].to_i
+        num6 += c[:Disposal].to_i
+      end
+      @data << {name: city_name,sampling:num1.to_s,test:num2.to_s,unqualified:num3.to_s,qualified:num4.to_s,Disposed:num5.to_s,Disposal:num6.to_s,children:county_result}
+    end
+    @data = @data.to_json
   end
 
   #食品类别统计
+  #[{"name"=>"报送分类a1", "sampling"=>"128","test"=>"80","unqualified"=>"15","qualified"=>"65","Disposed"=>"13","Disposal"=>"2"}]
   def food_statistics
-    @a_categories = ACategory.all
+    @q = params.has_key?(:q) ? SpBsb.where(created_at:Statistic.time_slot(params[:q]["created_at_start"],params[:q]["created_at_end"])).ransack(params[:q]) : SpBsb.ransack(params[:q])
+    @products = @q.result(distinct: true)
+    wtyp_czb_p = WtypCzbPart.where(sp_bsb_id:@products.unqualified.map{ |p| p.id }).group_by{ |wt| wt.sp_bsb_id }
+    @data = []
+    @products.group_by{ |a| a.sp_s_70 }.each do |name,sp_bsbs|
+      #抽样数 检验数 不合格数 合格数 已处置 处置中
+      num1,num2,num3,num4,num5,num6 = 0,0,0,0,0,0 
+      num1 = sp_bsbs.length
+      sp_bsbs.each do |s|
+        if s.sp_i_state == 9
+          num2 +=1 
+          num3 +=1 if s.sp_s_71 =~ /不合格样品|问题样品/
+          wtyp_czb_p[s.id].each do |w|
+            if [1,2].include? w.current_state
+              num6 += 1
+            elsif w.current_state == 3
+              num5 += 1 
+            end
+          end if wtyp_czb_p.has_key?(s.id)
+        end
+      end
+      num4 = num1-num3
+      @data << {"name"=>name, "sampling"=>num1,"test"=>num2,"unqualified"=>num3,"qualified"=>num4,"Disposed"=>num5,"Disposal"=>num6}
+    end
+    @data = @data.to_json
   end
 
   #不合格项目统计
   def nonconformity_statistics
-    #@data_arr:各市不合格批次数量 @data_items:各市不合格项目统计
-    @sp_bsbs = SpBsb.where("sp_i_state = 9 AND (sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%')").includes(:spdata)
-    @data_arr = []
-    @data_items = {"安徽省"=>{}}
-    city = @sp_bsbs.where("sp_s_4 != '请选择'")
-    county = @sp_bsbs.where("sp_s_5 != '请选择'")
-    #地图各省数据
-    city.group(:sp_s_4).count.each{ |k,y| @data_arr << {"name" => k+"市","value" => y} } 
-    county.group(:sp_s_5).count.each{ |k,y| @data_arr << {"name" => k,"value" => y}}
-    @data_arr = @data_arr.to_json
-    #各省不合格项目
-    city.group_by{ |c| c.sp_s_4 }.each do |key,sp_bsbs|
-      name = key+"市"
-      @data_items[name] = {}
-      sp_bsbs.each do |sp|
-        sp.spdata.each do |data| 
-          if data.spdata_2 == "不合格项"
-            @data_items[name].has_key?(data.spdata_0) ? @data_items[name][data.spdata_0]+=1 : @data_items[name][data.spdata_0]=1   
-            @data_items["安徽省"].has_key?(data.spdata_0) ? @data_items["安徽省"][data.spdata_0]+=1 : @data_items["安徽省"][data.spdata_0]=1   
-          end
-        end
-      end
-    end
-    @data_items = @data_items.to_json
+    #{"合肥"=>[{"area":"合肥","dh":"SC1002134432","ypmc":"茶叶","jyxm":"xxxx","dl":"食用农产品","yl":"茶","cyl":"茶","xl":"茶"}]}
+    #@data_arr:各市不合格批次数量 @data_items:各市不合格项目统计 @nonconformity 各市不合格项目详细
+    @q = SpBsb.ransack(params[:q])
+    @products = @q.result(distinct: true)
+    @data_arr,@data_items,@nonconformity = Statistic.nonconformity(@products).map{ |d| d.to_json }
     if params["is_export"].present?
       send_file(DownloadStatistics.start("Statistic::Nonconformity",["aa"]), :disposition => "attachment")
     end
@@ -193,32 +219,49 @@ class StatisticsController < ApplicationController
 
   #不合格样品及问题样品预警
   def early_warning
-    #同不合格项目统计
+    @data_arr,@data_items,@nonconformity = Statistic.nonconformity.map{ |d| d.to_json }
   end
 
   #退休统计
+  #0 表格  1 图表
   def retirement_statistics
     @data = {"chouyang"=>[],"chengjian"=>[]} #{"chouyang" =>[{"area"=>"瑶海","cyjg"=>"zhangsan","txsl"=>"10","txl"=>"12"}]}
-    city = params["city"] || "合肥"
-    sp_bsbs  = SpBsb.where(sp_s_4: city)
-    revision = RevisionLog.where(sp_bsb_id: sp_bsbs.map{|s|s.id}).group_by{ |r| r.sp_bsb_id}
-    sp_bsbs.group_by{ |sp| sp.sp_s_35 }.each do |name,sp_bsb_arr|
-      region  = ""   
-      jg_name = name
-      completely    = sp_bsb_arr.length
-      revision_num  = 0
-      sp_bsb_arr.each{ |spbsb| revision_num += revision[spbsb.id].length if revision.has_key?(spbsb.id) } 
-      revision_rate = ((revision_num.to_f/completely)*100).to_i.to_s+"%"  
-      @data["chouyang"] << {"area"=>region,"cyjg"=>jg_name,"txsl"=>completely,"txl"=>revision_rate}
+    sp_bsbs  = SpBsb.where(sp_s_3: "安徽")
+    if params["time"].present?
+      time = params["time"].split("/") 
+      sp_bsbs = sp_bsbs.where(created_at:Statistic.time_slot(time[0],time[1]),sp_s_4:params["area"])
     end
-    sp_bsbs.group_by{ |sp| sp.sp_s_43 }.each do |name,sp_bsb_arr|
-      region  = ""   
-      jg_name = name
-      completely    = sp_bsb_arr.length
-      revision_num  = 0
-      sp_bsb_arr.each{ |spbsb| revision_num += revision[spbsb.id].length if revision.has_key?(spbsb.id) } 
-      revision_rate = ((revision_num.to_f/completely)*100).to_i.to_s+"%"  
-      @data["chouyang"] << {"area"=>region,"cyjg"=>jg_name,"txsl"=>completely,"txl"=>revision_rate}
+    revision = RevisionLog.where(sp_bsb_id: sp_bsbs.map{|s|s.id}).group_by{ |r| r.sp_bsb_id}
+    packet = sp_bsbs.group_by{ |sp| sp.send(params["time"].present? ? "sp_s_5":"sp_s_4") }
+    @chart = Statistic.retirement(packet,revision) 
+    packet.each do |county_name,sp_bsb_arr|
+      region  = county_name   
+      sp_bsb_arr.group_by{ |sp| sp.sp_s_35 }.each do |cy_jg,cy_arr| #抽样单位
+        jg_name = cy_jg
+        completely    = cy_arr.length
+        revision_num  = 0
+        cy_arr.each{ |spbsb| revision_num += revision[spbsb.id].length if revision.has_key?(spbsb.id) } 
+        revision_rate = ((revision_num.to_f/completely)*100).to_i.to_s 
+        @data["chouyang"] << {"area"=>region,"cyjg"=>jg_name,"txsl"=>completely,"txl"=>revision_rate}
+      end
+      sp_bsb_arr.group_by{ |sp| sp.sp_s_43 }.each do |cj_jg,cj_arr| #承检单位
+        jg_name = cj_jg
+        completely    = cj_arr.length
+        revision_num  = 0
+        cj_arr.each{ |spbsb| revision_num += revision[spbsb.id].length if revision.has_key?(spbsb.id) } 
+        revision_rate = ((revision_num.to_f/completely)*100).to_i.to_s 
+        @data["chengjian"] << {"area"=>region,"cyjg"=>jg_name,"txsl"=>completely,"txl"=>revision_rate}
+      end
+    end
+    if params["flag"].blank?
+      @data = @data.to_json
+      @chart = @chart.to_json
+    else
+      if params["flag"] == "0"
+        render json: @data
+      else
+        render json: @chart
+      end
     end
   end
 
@@ -227,7 +270,7 @@ class StatisticsController < ApplicationController
     #@data = [{name: "合肥",totalbat:"6574",samplingbat:"1232",qualifiedbat:"1200",unqualifiedbat:"193",qualifiedsamp:"4.263%",riskbat:"1222",problembat:"713",problemsamp:"1.24%",children:[{name: "长丰",totalbat:"22",samplingbat:"15",qualifiedbat:"10%",unqualifiedbat:"12",qualifiedsamp:"20",riskbat:"2",problembat:"713",problemsamp:"1.24%"}]}]
     if params.has_key?(:q)
       @q = SpBsb.send(params[:q]["sp_s_71"]=="合格批次" ? :qualified : :unqualified) if params[:q]["sp_s_71"].present?
-      @q = (@q.nil? ? SpBsb : @q).where(created_at:(params[:q]["created_at_start"]..params[:q]["created_at_end"])) if params[:q]["created_at_start"].present? 
+      @q = (@q.nil? ? SpBsb : @q).where(created_at:Statistic.time_slot(params[:q]["created_at_start"],params[:q]["created_at_end"])) if params[:q]["created_at_start"].present? 
       @q = @q.nil? ? SpBsb.ransack(params[:q]) : @q.ransack(params[:q])
     else
       @q = SpBsb.ransack(params[:q])

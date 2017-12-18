@@ -18,7 +18,7 @@
     <script src="../libs/treegrad/TreeGrid.js"></script>
     <script src="../libs/layDate/laydate.js"></script>
     -->
-    <%= javascript_include_tag "statistics/treegrad/jquery-1.3.2.min","statistics/treegrad/TreeGrid","statistics/layDate/laydate" %>
+    <%= javascript_include_tag "statistics/treegrad/jquery-1.3.2.min","statistics/treegrad/TreeGrid_ajax","statistics/layDate/laydate" %>
 </head> 
 <body>
     <div class="container">
@@ -29,6 +29,7 @@
 
         <!-- 上侧按钮部分 -->
         <div class="foodcate_btn">
+            <%= search_form_for @q, url: food_statistics_path, html: {role: "form"} do |f|  %>
                 <div class="form-group foodcateSelect_btn">
                     <!-- 选取栏 -->
                     <!-- 1 -->
@@ -39,31 +40,32 @@
                         <option >市级本级</option>
                     </select>-->
                     <!-- 2 -->
-                    <select class="form-control foodcateSelect_option">
-                        <option selected="selected">报送分类a</option>
-                        <option >报送分类a1</option>
-                        <option >报送分类a2</option>
-                        <option >报送分类a3</option>
-                    </select>
+                    <%= f.select :sp_s_70_eq, BaosongA.all.map { |b| [b.name, b.name] },{:include_blank =>"请选择"},class:"form-control foodcateSelect_option",id:"checkbox_optionH"%>
                 </div>
                 <!-- 时间栏 -->
                 <div class="fillpage-date">
                     <span>样品填报时间：</span>
-                    <div class="form-group">
-                        <label class="sr-only" for="page-start">开始时间</label>
-                        <input type="text" class="form-control" id="page-start" placeholder="开始时间">
+                   <!-- <div class="form-group">
+                        <%#= f.label :起始日期,class:"sr-only",for:"q_created_at_start" %>
+                        <%#= f.text_field :created_at_start,class:"form-control",value:"#{params[:q].blank? ? '':params[:q]["created_at_start"]}" %>
                     </div>
                     <div style="width:20px;height:3px;margin:0px auto;padding:0px;background-color:#D5D5D5;overflow:hidden;display: inline-block;"></div>
                     <div class="form-group">
-                        <label class="sr-only" for="page-end">结束时间</label>
-                        <input type="text" class="form-control" id="page-end" placeholder="结束时间">
+                        <%#= f.label :截止日期,class:"sr-only",for:"q_created_at_end" %>
+                        <%#= f.text_field :created_at_end,class:"form-control",value:"#{params[:q].blank? ? '':params[:q]["created_at_end"]}"%>
                     </div>
+                    -->
+                  <div class="form-group">
+                    <label class="sr-only" for="page-start">选择时间</label>
+                    <input type="text" class="form-control" id="time" placeholder="选择时间">
+                  </div>
                 </div>
                 <!-- 导出报表 -->
                 <div class="taskbtn_operBox">
-                  <button type="submit" class="btn btn-default taskbtn_query" id="search">查询</button>
+                  <button type="submit" class="btn btn-default taskbtn_query" id="search" >查询</button>
                   <button type="submit" class="btn btn-default taskbtn_export bgc1 btn-primary">导出列表</button>
                 </div>
+            <% end %>
           <!-- 注释说明 -->
           <p style="margin:10px; color: red;font-size: 14px;">说明：省市县管理员进入该统计，区域显示不同，如省管理员看到各市信息，以此类推。进入显示该区域下的数据，县级只显示自己数据。</p>
         </div>
@@ -110,23 +112,24 @@
                 {headerText: "已处置", dataField: "Disposed",headerAlign: "center", dataAlign: "center", width: "100"},
                 {headerText: "处置中", dataField: "Disposal",headerAlign: "center", dataAlign: "center", width: "100"}
             ],
-            data:[
-                {name: "报送分类a1", sampling:"128",test:"80",unqualified:"15",qualified:"65",Disposed:"13",Disposal:"2",},
-                {name: "报送分类a", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
-                    {name: "报送分类b", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
-                        {name: "食品大类", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children: [
-                            {name: "食品亚类", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
-                                {name: "食品次亚类", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
-                                    {name: "食品细类", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",}
-                                    ]}
-                            ]},
-                        ]}
-                    ]},
-                    {name: "报送分类b1", sampling:"62",test:"35",unqualified:"3",qualified:"45",Disposed:"3",Disposal:"42",},
-                    {name: "报送分类b2", sampling:"20",test:"40",unqualified:"2",qualified:"25",Disposed:"6",Disposal:"19",},
-                    
-                ]},{name: "总计",  sampling:"210",test:"155",unqualified:"20",qualified:"135",Disposed:"18",Disposal:"2", height:"200"},
-            ]
+            data: <%= raw @data %>
+            //data:[
+            //    {name: "报送分类a1", sampling:"128",test:"80",unqualified:"15",qualified:"65",Disposed:"13",Disposal:"2",},
+            //    {name: "报送分类a", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
+            //        {name: "报送分类b", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
+            //            {name: "食品大类", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children: [
+            //                {name: "食品亚类", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
+            //                    {name: "食品次亚类", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
+            //                        {name: "食品细类", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",}
+            //                        ]}
+            //                ]},
+            //            ]}
+            //        ]},
+            //        {name: "报送分类b1", sampling:"62",test:"35",unqualified:"3",qualified:"45",Disposed:"3",Disposal:"42",},
+            //        {name: "报送分类b2", sampling:"20",test:"40",unqualified:"2",qualified:"25",Disposed:"6",Disposal:"19",},
+            //        
+            //    ]},{name: "总计",  sampling:"210",test:"155",unqualified:"20",qualified:"135",Disposed:"18",Disposal:"2", height:"200"},
+            //]
         };
 
         $(document).ready(function(){
@@ -137,14 +140,20 @@
 
             // 时间区域选取
             // 初始时间
-            laydate.render({
-              elem: '#page-start', //指定元素
+           /* laydate.render({
+              elem: '#q_created_at_start', //指定元素
               type: 'month'
             });
             // 结束时间
             laydate.render({
-              elem: '#page-end', //指定元素
+              elem: '#q_created_at_end', //指定元素
               type: 'month'
+            });*/
+            laydate.render({
+                elem: '#time', //指定元素
+                type: 'month',
+                range: '/',
+                format: 'yyyy-MM'
             });
 
         });

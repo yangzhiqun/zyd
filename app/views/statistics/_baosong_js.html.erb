@@ -1,0 +1,106 @@
+<script type="text/javascript">
+  $(document).ready(function(){
+    //报送分类A
+    $('#checkbox_optionH').change(function () {
+      var o = $(this);
+      if (o.val() != '') {
+        $.get('/baosong_bs/by_name.json', {a_name: o.val()}, function (data) {
+          if (data.status == 'OK') {
+            initSelect(["#checkbox_optionI","#checkbox_optionJ","#checkbox_optionK","#checkbox_optionL","#checkbox_optionM"])
+            $.each(data.data, function () {
+              $("<option>").attr('data-identifier', this.identifier).attr("value", this.name).text(this.name).appendTo($('#checkbox_optionI'));
+            });
+            <% if params[:q] && params[:q]["sp_s_70_eq"].length != 0 %>
+              $("#checkbox_optionI").val("<%= params[:q]['sp_s_67_eq'] %>");
+              $('#checkbox_optionI').change();
+            <% end %>
+          }
+        }, "json")
+      }
+    });
+    //报送分类B
+    $('#checkbox_optionI').change(function () {
+      var o = $(this);
+      if (o.val() != '') {
+        $.get('/a_categories_by_identifier.json', {identifier: o.find('option:selected').attr('data-identifier')},function(data){
+          if (data.status == 'OK') {
+            initSelect(["#checkbox_optionJ","#checkbox_optionK","#checkbox_optionL","#checkbox_optionM"])
+            $.each(data.data, function () {
+              $('<option>').attr('value', this.name).text(this.name).attr('id', this.id).appendTo($('#checkbox_optionJ'));
+            });
+            <% if params[:q] && params[:q]["sp_s_67_eq"].length != 0 %>
+              $("#checkbox_optionJ").val("<%= params[:q]['sp_s_17_eq'] %>");
+              $('#checkbox_optionJ').change();
+            <% end %>
+          }
+        }, 'json');
+      }
+    });
+    //食品大类
+    $('#checkbox_optionJ').change(function () {
+      var o = $(this);
+      if (o.val() != '') {
+        $.get('/b_categories_by_a_id.json', {a_category_id: o.find('option:selected').attr('id')}, function (data) {
+          if (data.status == 'OK') {
+            initSelect(["#checkbox_optionK","#checkbox_optionL","#checkbox_optionM"])
+            $.each(data.data, function () {
+              $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#checkbox_optionK'));
+            });
+            <% if params[:q] && params[:q]["sp_s_17_eq"].length != 0 %>
+              $("#checkbox_optionK").val("<%= params[:q]['sp_s_18_eq'] %>");
+              $('#checkbox_optionK').change();
+            <% end %>
+          }
+        }, 'json');
+      }
+    });
+    //食品亚类
+    $('#checkbox_optionK').change(function () {
+      var o = $(this);
+      if (o.val() != '') {
+        $.get('/c_categories_by_b_id.json', {b_category_id: o.find('option:selected').attr('data-id')}, function (data) {
+          if (data.status == 'OK') {
+            initSelect(["#checkbox_optionL","#checkbox_optionM"])
+            $.each(data.data, function () {
+              $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#checkbox_optionL'));
+            });
+            <% if params[:q] && params[:q]["sp_s_18_eq"].length != 0 %>
+              $("#checkbox_optionL").val("<%= params[:q]['sp_s_19_eq'] %>");
+              $('#checkbox_optionL').change();
+            <% end %>
+          }
+        }, 'json');
+      }
+    });
+    //食品次亚类
+    $('#checkbox_optionL').change(function () {
+      var o = $(this);
+      if (o.val() != '') {
+        $.get('/d_categories_by_c_id.json', {c_category_id: o.find('option:selected').attr('data-id')}, function (data) {
+          if (data.status == 'OK') {
+            initSelect(["#checkbox_optionM"])
+            $.each(data.data, function () {
+              $('<option>').attr('value', this.name).text(this.name).attr('data-id', this.id).appendTo($('#checkbox_optionM'));
+            });
+            <% if params[:q] && params[:q]["sp_s_19_eq"].length != 0 %>
+              $("#checkbox_optionM").val("<%= params[:q]['sp_s_20_eq'] %>");
+              $('#checkbox_optionM').change();
+            <% end %>
+          }
+        }, 'json');
+      }
+    });
+
+    <% if params[:q] && params[:q]["sp_s_70_eq"].length != 0 %>
+      $('#checkbox_optionH').change();
+    <% end %>
+
+    function initSelect(k){
+      for(var o in k){
+        var _judgeH = $(k[o]).find("option");
+        _judgeH.remove();
+        $(k[o]).append("<option value>请选择</option>");
+      }    
+    };
+  });
+</script>

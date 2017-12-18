@@ -43,69 +43,23 @@
     -->
     <%= javascript_include_tag "statistics/layDate/laydate","statistics/city_data","statistics/txtj" %>
     <script>
-        $(document).ready(function(){
-            // 时间区域选取
-            // 初始时间
-            laydate.render({
-              elem: '#page-start', //指定元素
-              type: 'month'
-            });
-            // 结束时间
-            laydate.render({
-              elem: '#page-end', //指定元素
-              type: 'month'
-            });
-
-            // 按地区选择表格数据
-            var cq_select = $("#cqtj_option");
-            cq_select.change(function(){
-              /*  $.ajax({
-               type: "post",
-               contentType: "application/json",
-               url: "WebService1.asmx/Login",
-               data: {
-               "parmas":parmas.join(',')
-               },
-               success: function (data) {
-               if (data == 'true') {
-               window.location.open = 'HTMLPage1.htm';
-               }
-               else {
-               alert("数据错误");
-               }
-               }
-               })
-               */
-                //先销毁表格
-                $('#tb_report').bootstrapTable('destroy');
-                $('#tb_report1').bootstrapTable('destroy');
-                var data1 = [{"area":"瑶海","cyjg":"zhangsan","txsl":"10","txl":"12"},{"area":"庐阳","cyjg":"zhangsdsan","txsl":"23","txl":"22"}];
-                var cq_selected = $(this).find("option:selected").text();
-                getData(data1);
-                getData1(data1);
-
-            })
-        
-
-        var data = [{"area":"合肥","cyjg":"zhangsan","txsl":"10","txl":"12"},{"area":"黄山","cyjg":"zhangsdsan","txsl":"23","txl":"2"}];
-
        function getData(info){
         $('#tb_report').bootstrapTable({
             //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
             //method: 'get',                      //请求方式（*）
-            data:info,
+            data:info["chouyang"],
            // datatype:'json',
             toolbar: '#toolbar',                //工具按钮用哪个容器
             striped: true,                      //是否显示行间隔色
             cache: false,                      //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
             search: true, //显示搜索框
-           // pagination: true,                   //是否显示分页（*）
+            pagination: true,                   //是否显示分页（*）
            // sortOrder: "asc",                   //排序方式
             //queryParams: oTableInit.queryParams,//传递参数（*）
-           // sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
-           // pageNumber: 1,                       //初始化加载第一页，默认第一页
-           // pageSize: 10,                       //每页的记录行数（*）
-           // pageList: [10, 25, 50, 100],      //可供选择的每页的行数（*）
+            sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1,                       //初始化加载第一页，默认第一页
+            pageSize: 10,                       //每页的记录行数（*）
+            pageList: [10, 25, 50, 100],      //可供选择的每页的行数（*）
             columns : [
                 {
                     title : '序号',//标题  可不加
@@ -148,71 +102,158 @@
                 ]
         });
        }
+       function getData1(info){
+           $('#tb_report1').bootstrapTable({
+               //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
+               //method: 'get',                      //请求方式（*）
+               data:info["chengjian"],
+               // datatype:'json',
+               toolbar: '#toolbar',                //工具按钮用哪个容器
+               striped: true,                      //是否显示行间隔色
+               cache: false,                      //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+               search: true, //显示搜索框
+                pagination: true,                   //是否显示分页（*）
+               // sortOrder: "asc",                   //排序方式
+               //queryParams: oTableInit.queryParams,//传递参数（*）
+                sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
+                pageNumber: 1,                       //初始化加载第一页，默认第一页
+                pageSize: 10,                       //每页的记录行数（*）
+                pageList: [10, 25, 50, 100],      //可供选择的每页的行数（*）
+               columns : [
+                   {
+                       title : '序号',//标题  可不加
+                       formatter : function(value,row, index) {
+                           return index + 1;
+                       }
+                   },
+                   {
+                       field : 'area',
+                       title : '区域',
+                       align : 'center',
+                       formatter : function (value, row, index) {
+                           return value;
+                       }
+                   },{
+                       field : 'cyjg',
+                       title : '承检机构名称',
+                       align : 'center',
+                       formatter : function (value, row, index) {
+                           var info = "<a href='javascript:void(0);' onclick = 'getShowInfo();'>"+value+"</a>";
+                           return info;
+                       }
+                   },{
+                       field : 'txsl',
+                       title : '完全提交退修数',
+                       align : 'center',
+                       formatter : function (value, row, index) {
+                           var info = "<a href='javascript:void(0);' onclick = 'getShowInfo();'>"+value+"</a>";
+                           return info;
+                       }
+                   },
+                   {
+                       field : 'txl',
+                       title : '完全提交退修率',
+                       align : 'center',
+                       formatter : function (value, row, index) {
+                           return value+"%";
+                       }
+                   }
+               ]
+           });
+       }
+        $(document).ready(function(){
+            chart(<%= raw @chart %>);
+            myChart1=echarts.init(document.getElementById('chart_1'));
+            myChart1.setOption(option1);
+            // myChart2=echarts.init(document.getElementById('chart_2'));
+            // myChart2.setOption(option2);
+
+            //点击不同的市显示该市下级市县区相应的数据
+            myChart1.on('click',function(params){
+                // console.log(params.componentType);
+                // 获取当前点击的市
+                getChartInfo(this,params.name,2);
+
+            });
+            // 时间区域选取
+            // 初始时间
+            laydate.render({
+              elem: '#time', //指定元素
+              type: 'month',
+              range: '/',
+              format: 'yyyy-MM'
+            });
+            // 结束时间
+           // laydate.render({
+           //   elem: '#page-end', //指定元素
+           //   type: 'month'
+           // });
+
+            // 按地区选择表格数据
+            var cq_select = $("#cqtj_option");
+            cq_select.change(function(){
+              /*
+               */
+
+                //var data1 = [{"area":"瑶海","cyjg":"zhangsan","txsl":"10","txl":"12"},{"area":"庐阳","cyjg":"zhangsdsan","txsl":"23","txl":"22"}];
+                var cq_selected = $(this).find("option:selected").text();
+               // console.log(cq_selected[0]);
+                if($(".exportR").hasClass("hide")){
+                    getChartInfo(myChart1,cq_selected,"1");
+//                    getChartInfo(myChart2,cq_selected[0],"1");
+                }else {
+                    getinfo(cq_selected);
+                }
+
+            })
+        
+        //var data = [{"area":"合肥","cyjg":"zhangsan","txsl":"10","txl":"12"},{"area":"黄山","cyjg":"zhangsdsan","txsl":"23","txl":"2"}];
+       var data = <%= raw @data %>
+
             getData(data);
 
-            function getData1(info){
-                $('#tb_report1').bootstrapTable({
-                    //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
-                    //method: 'get',                      //请求方式（*）
-                    data:info,
-                    // datatype:'json',
-                    toolbar: '#toolbar',                //工具按钮用哪个容器
-                    striped: true,                      //是否显示行间隔色
-                    cache: false,                      //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
-                    search: true, //显示搜索框
-                    // pagination: true,                   //是否显示分页（*）
-                    // sortOrder: "asc",                   //排序方式
-                    //queryParams: oTableInit.queryParams,//传递参数（*）
-                    // sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
-                    // pageNumber: 1,                       //初始化加载第一页，默认第一页
-                    // pageSize: 10,                       //每页的记录行数（*）
-                    // pageList: [10, 25, 50, 100],      //可供选择的每页的行数（*）
-                    columns : [
-                        {
-                            title : '序号',//标题  可不加
-                            formatter : function(value,row, index) {
-                                return index + 1;
-                            }
-                        },
-                        {
-                            field : 'area',
-                            title : '区域',
-                            align : 'center',
-                            formatter : function (value, row, index) {
-                                return value;
-                            }
-                        },{
-                            field : 'cyjg',
-                            title : '承检机构名称',
-                            align : 'center',
-                            formatter : function (value, row, index) {
-                                var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
-                                return info;
-                            }
-                        },{
-                            field : 'txsl',
-                            title : '完全提交退修数',
-                            align : 'center',
-                            formatter : function (value, row, index) {
-                                var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
-                                return info;
-                            }
-                        },
-                        {
-                            field : 'txl',
-                            title : '完全提交退修率',
-                            align : 'center',
-                            formatter : function (value, row, index) {
-                                return value+"%";
-                            }
-                        }
-                    ]
-                });
-            }
             getData1(data);
             changeBtn();
+            //点击查询
+            $('#checkBtn').click(function(event) {
+                var getSelectInfo = $("#cqtj_option").val();
+                if($(".exportR").hasClass("hide")){
+                    getChartInfo(myChart1,getSelectInfo,"1");
+//                    getChartInfo(myChart2,getSelectInfo,"1");
+                }else {
+                    getinfo(getSelectInfo);//
+                }
+            });
         })
-        function getinfo(){
+        //ajax封装
+        function getinfo(area){
+            var time = $("#time").val();
+            if(time==""){
+                alert("请选择时间");
+                return
+            }
+            $.ajax({
+                type: "get",
+                url: "retirement_statistics",
+                data: {
+                  "time":time.replace(/\ +/g,""),
+                  "area":area,
+                  "flag": '0' //0为表格  1，为图表
+                },
+                success: function (data) {
+                    if (data) {
+                        //先销毁表格
+                        $('#tb_report').bootstrapTable('destroy');
+                        $('#tb_report1').bootstrapTable('destroy');
+                       // window.location.open = 'HTMLPage1.htm';
+                        getData(data);
+                        getData1(data);
+                    }
+                    else {
+                        alert("数据错误");
+                    }
+                }
+            })
         }
         // 点击切换图表
         function changeBtn(){
@@ -231,13 +272,19 @@
                 }
             });
         }
+      function getShowInfo(args){
+          $.post(url,args,function(response){
+              var obj = window.open("about:blank","_blank");
+              obj.document.write(response);
+          })
+      }
     </script>
 </head>
 <body>
 <div class="container">
     <!-- 头部head -->
     <div class="page-header testcompany_header">
-        <h1>退修统计  </h1>
+        <h1>退修统计</h1>
     </div>
     
     <!-- 上侧按钮部分 -->
@@ -246,18 +293,20 @@
         <div class="fillpage-date">
             <span>样品填报时间：</span>
             <div class="form-group">
-                <label class="sr-only" for="page-start">开始时间</label>
-                <input type="text" class="form-control" id="page-start" placeholder="开始时间">
+                <label class="sr-only" for="page-start">选择时间</label>
+                <input type="text" class="form-control" id="time" placeholder="选择时间">
             </div>
-            <div style="width:20px;height:3px;margin:0px auto;padding:0px;background-color:#D5D5D5;overflow:hidden;display: inline-block;"></div>
+          <!--  <div style="width:20px;height:3px;margin:0px auto;padding:0px;background-color:#D5D5D5;overflow:hidden;display: inline-block;"></div>
             <div class="form-group">
                 <label class="sr-only" for="page-end">结束时间</label>
                 <input type="text" class="form-control" id="page-end" placeholder="结束时间">
-            </div>    
+            </div>    -->
         </div>
         <!-- 切换显示模式 -->
         <div class="topside_switch">
+
             <button type="button" class="btn btn-default bgc1 btn-primary exportR">导出报表</button>
+            <button type="button" class="btn btn-default bgc1 btn-primary" id="checkBtn">查询</button>
             <button type="button" class="btn btn-default changeType" id="changeBtn">切换图表模式</button>
         </div>
     </div>
@@ -299,10 +348,10 @@
     <div class="charts_1">
       <div id="chart_1"></div>
     </div>
-    <h2 class="marginL50">承检机构</h2>
+    <!--<h2 class="marginL50">承检机构</h2>
     <div class="charts_2">
       <div id="chart_2"></div>
-    </div>
+    </div>-->
   </div>
 </div>
 </div>
