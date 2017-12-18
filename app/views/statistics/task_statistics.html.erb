@@ -139,7 +139,7 @@
               $(".allcheck").click(function(){
                   $("#tg1").find("input[name='cblbox']").attr("checked",$(this).attr("checked"));
               });
-
+              treeGrid.expandAll("N");//默认关闭
           });
           /*
            单击数据行后触发该事件
