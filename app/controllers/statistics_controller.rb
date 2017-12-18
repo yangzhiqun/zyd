@@ -55,31 +55,22 @@ class StatisticsController < ApplicationController
   #食品类别统计
   #[{"name"=>"报送分类a1", "sampling"=>"128","test"=>"80","unqualified"=>"15","qualified"=>"65","Disposed"=>"13","Disposal"=>"2"}]
   def food_statistics
-    @q = params.has_key?(:q) ? SpBsb.where(created_at:Statistic.time_slot(params[:q]["created_at_start"],params[:q]["created_at_end"])).ransack(params[:q]) : SpBsb.ransack(params[:q])
-    @products = @q.result(distinct: true)
-    wtyp_czb_p = WtypCzbPart.where(sp_bsb_id:@products.unqualified.map{ |p| p.id }).group_by{ |wt| wt.sp_bsb_id }
-    @data = []
-    @products.group_by{ |a| a.sp_s_70 }.each do |name,sp_bsbs|
-      #抽样数 检验数 不合格数 合格数 已处置 处置中
-      num1,num2,num3,num4,num5,num6 = 0,0,0,0,0,0 
-      num1 = sp_bsbs.length
-      sp_bsbs.each do |s|
-        if s.sp_i_state == 9
-          num2 +=1 
-          num3 +=1 if s.sp_s_71 =~ /不合格样品|问题样品/
-          wtyp_czb_p[s.id].each do |w|
-            if [1,2].include? w.current_state
-              num6 += 1
-            elsif w.current_state == 3
-              num5 += 1 
-            end
-          end if wtyp_czb_p.has_key?(s.id)
-        end
-      end
-      num4 = num1-num3
-      @data << {"name"=>name, "sampling"=>num1,"test"=>num2,"unqualified"=>num3,"qualified"=>num4,"Disposed"=>num5,"Disposal"=>num6}
+    if params.has_key?(:q)
+      time = params[:q]["time"].gsub(/\s/,"").split("/")
+      @q = SpBsb.where(created_at:Statistic.time_slot(time[0],time[1])).ransack(params[:q])
+    else
+      @q = SpBsb.ransack(params[:q])
     end
-    @data = @data.to_json
+    @products = @q.result(distinct: true)
+    @data = Statistic.food(@products,"sp_s_70").to_json
+  end
+
+  def food_subset_statistics
+    time = params["time"].gsub(/\s/,"").split("/")
+    category = eval(params["params"])
+    sp_bsbs = SpBsb.where(category).where(created_at:Statistic.time_slot(time[0],time[1]),sp_s_70:params["baosongA"])
+    @data = Statistic.food(sp_bsbs,Statistic::Corr[category.length])
+    render json: @data
   end
 
   #不合格项目统计
@@ -89,8 +80,8 @@ class StatisticsController < ApplicationController
     @q = SpBsb.ransack(params[:q])
     @products = @q.result(distinct: true)
     @data_arr,@data_items,@nonconformity = Statistic.nonconformity(@products).map{ |d| d.to_json }
-    if params["is_export"].present?
-      send_file(DownloadStatistics.start("Statistic::Nonconformity",["aa"]), :disposition => "attachment")
+    if params["is_export"] == "1"
+      send_file(DownloadStatistics.start(Statistic::Nonconformity,["aa"]), :disposition => "attachment")
     end
   end
 
@@ -215,6 +206,9 @@ class StatisticsController < ApplicationController
 
   #企业覆盖率统计
   def enterprise_statistics
+    p "1"*100
+    p SpBsb.admin_select(region)
+    p "1"*100
   end
 
   #不合格样品及问题样品预警
@@ -314,6 +308,15 @@ class StatisticsController < ApplicationController
       num8 = ((num7.to_f/num1)*100).to_i.to_s+"%"
       @data << {name: city_name,totalbat:num1.to_s,samplingbat:num2.to_s,qualifiedbat:num3.to_s,unqualifiedbat:num4.to_s,qualifiedsamp:num5,riskbat:num6.to_s,problembat:num7.to_s,problemsamp:num8,children:county_result}
     end
+    if params["is_export"] == "1"
+      send_file(DownloadStatistics.start("Statistic::Composite",@data), :disposition => "attachment")
+    end
     @data = @data.to_json
+  end
+
+  def region
+    return "" if is_sheng? 
+    return "sp_s_4 = '#{current_user.prov_city}'" if is_city? 
+    return "sp_s_5 = '#{current_user.prov_country}'" if is_county_level? 
   end
 end
