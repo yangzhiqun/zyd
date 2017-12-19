@@ -7,7 +7,7 @@ development:
   database: anhui_ceshi
   pool: 25
   username: root
-  password: 123456
+  password: admin
 
 production:
   adapter: mysql2
@@ -16,4 +16,4 @@ production:
   database: anhui_ceshi
   pool: 25
   username: root
-  password: 123456
+  password: admin
