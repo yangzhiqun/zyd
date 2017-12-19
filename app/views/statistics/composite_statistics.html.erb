@@ -247,17 +247,46 @@
         num = row[col.dataField].length;
         name = row[col.dataField] || [];
 
-        var a = "<a href='javascript:void(0);' onclick = ajaxInfo('"+name+"')>"+num+"</a>"
+        var a = "<a href='javascript:void(0);' onclick = openPostWindow('"+name+"')>"+num+"</a>"
         return a;
     }
 //请求后台方法，弹出详情页面
-    function ajaxInfo(args){
+    /*function ajaxInfo(args){
       $.post("particulars",{"params":args},function(response){
             var obj = window.open("about:blank","_blank");
             obj.document.write(response);
         })
+    }*/
+    function openPostWindow(data){
+        var tempForm = document.createElement("form");
+        tempForm.id = "tempForm1";
+        tempForm.method = "post";
+        tempForm.action = "particulars";
+        tempForm.target="_blank"; //打开新页面
+        var hideInput1 = document.createElement("input");
+        hideInput1.type = "hidden";
+        hideInput1.name="opid"; //后台要接受这个参数来取值
+        hideInput1.value = data; //后台实际取到的值
+      /*var hideInput2 = document.createElement("input");
+       hideInput2.type = "hidden";
+       hideInput2.name="xtmc";
+       hideInput2.value = data2;  这里就是如果需要第二个参数的时候可以自己再设置*/
+        tempForm.appendChild(hideInput1);
+        //tempForm.appendChild(hideInput2);
+        if(document.all){
+            tempForm.attachEvent("onsubmit",function(){});        //IE
+        }else{
+            var subObj = tempForm.addEventListener("submit",function(){},false);    //firefox
+        }
+        document.body.appendChild(tempForm);
+        if(document.all){
+            tempForm.fireEvent("onsubmit");
+        }else{
+            tempForm.dispatchEvent(new Event("submit"));
+        }
+        tempForm.submit();
+        document.body.removeChild(tempForm);
     }
-
     function customLook(row, col){
 
         return "<a href='javascript:void(0)' onclick='showrowname(\""+row.code+"\",\""+row.name+"\")' style='color:blue;'>查看</a>";

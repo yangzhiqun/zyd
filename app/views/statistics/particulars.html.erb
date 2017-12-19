@@ -2,15 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>详情页</title>
-  <%= stylesheet_link_tag "welcome_index", :media => "all" %>
-  <%= javascript_include_tag "statistics/particulars","statistics/treegrad/jquery-1.3.2.min" %>
+  <!--<link rel="stylesheet" href="../assets/styesheet/bootstrap.css">-->
+  <%= stylesheet_link_tag "application.css","welcome_index", :media => "all" %>
+  <%#= javascript_include_tag "statistics/jquery.min","bootstrap-table","bootstrap-table-zh-CN","statistics/particulars" %>
+  <%= javascript_include_tag "application.js","statistics/particulars" %>
 </head>
 <script>
   $(document).ready(function(){
-      //var data = <%= raw @data %>;
-      //getDataTp(data);
+      alert(123);
+      //var data = <%#= raw @data %>;
+      getDataTp(info);
    })
+  var info = [{"id":"1","sf":"安徽","bcydws":"阜阳","rwly":"安庆市食品药品监督管理局",
+      "cybh":"121903","ypmc":"大豆油","cydwmc":"安庆市食品药品监督管理局","jyjgmc":"安庆市检验检测机构01","ypsfqr":"样品未确认","tbzt":"2"},
+      {"id":"1","sf":"安徽","bcydws":"阜阳","rwly":"安庆市食品药品监督管理局",
+          "cybh":"121903","ypmc":"大豆油","cydwmc":"安庆市食品药品监督管理局","jyjgmc":"安庆市检验检测机构01","ypsfqr":"样品未确认","tbzt":"2"},
+      {"id":"1","sf":"安徽","bcydws":"阜阳","rwly":"安庆市食品药品监督管理局",
+          "cybh":"121903","ypmc":"大豆油","cydwmc":"安庆市食品药品监督管理局","jyjgmc":"安庆市检验检测机构01","ypsfqr":"样品未确认","tbzt":"2"},
+      {"id":"1","sf":"安徽","bcydws":"阜阳","rwly":"安庆市食品药品监督管理局",
+          "cybh":"121903","ypmc":"大豆油","cydwmc":"安庆市食品药品监督管理局","jyjgmc":"安庆市检验检测机构01","ypsfqr":"样品未确认","tbzt":"2"},
+      {"id":"1","sf":"安徽","bcydws":"阜阳","rwly":"安庆市食品药品监督管理局",
+          "cybh":"121903","ypmc":"大豆油","cydwmc":"安庆市食品药品监督管理局","jyjgmc":"安庆市检验检测机构01","ypsfqr":"样品未确认","tbzt":"2"},
+      {"id":"1","sf":"安徽","bcydws":"阜阳","rwly":"安庆市食品药品监督管理局",
+          "cybh":"121903","ypmc":"大豆油","cydwmc":"安庆市食品药品监督管理局","jyjgmc":"安庆市检验检测机构01","ypsfqr":"样品未确认","tbzt":"2"},
+      {"id":"1","sf":"安徽","bcydws":"阜阳","rwly":"安庆市食品药品监督管理局",
+          "cybh":"121903","ypmc":"大豆油","cydwmc":"安庆市食品药品监督管理局","jyjgmc":"安庆市检验检测机构01","ypsfqr":"样品未确认","tbzt":"2"},
+      {"id":"1","sf":"安徽","bcydws":"阜阳","rwly":"安庆市食品药品监督管理局",
+          "cybh":"121903","ypmc":"大豆油","cydwmc":"安庆市食品药品监督管理局","jyjgmc":"安庆市检验检测机构01","ypsfqr":"样品未确认","tbzt":"2"},
+      {"id":"1","sf":"安徽","bcydws":"阜阳","rwly":"安庆市食品药品监督管理局",
+          "cybh":"121903","ypmc":"大豆油","cydwmc":"安庆市食品药品监督管理局","jyjgmc":"安庆市检验检测机构01","ypsfqr":"样品未确认","tbzt":"2"},
+      {"id":"1","sf":"安徽","bcydws":"阜阳","rwly":"安庆市食品药品监督管理局",
+          "cybh":"121903","ypmc":"大豆油","cydwmc":"安庆市食品药品监督管理局","jyjgmc":"安庆市检验检测机构01","ypsfqr":"样品未确认","tbzt":"2"},
+      {"id":"1","sf":"安徽","bcydws":"阜阳","rwly":"安庆市食品药品监督管理局",
+          "cybh":"121903","ypmc":"大豆油","cydwmc":"安庆市食品药品监督管理局","jyjgmc":"安庆市检验检测机构01","ypsfqr":"样品未确认","tbzt":"2"},
+      {"id":"1","sf":"安徽","bcydws":"阜阳","rwly":"安庆市食品药品监督管理局",
+          "cybh":"121903","ypmc":"大豆油","cydwmc":"安庆市食品药品监督管理局","jyjgmc":"安庆市检验检测机构01","ypsfqr":"样品未确认","tbzt":"2"},
+      {"id":"1","sf":"安徽","bcydws":"阜阳","rwly":"安庆市食品药品监督管理局",
+          "cybh":"121903","ypmc":"大豆油","cydwmc":"安庆市食品药品监督管理局","jyjgmc":"安庆市检验检测机构01","ypsfqr":"样品未确认","tbzt":"2"},
+      {"id":"1","sf":"安徽","bcydws":"阜阳","rwly":"安庆市食品药品监督管理局",
+          "cybh":"121903","ypmc":"大豆油","cydwmc":"安庆市食品药品监督管理局","jyjgmc":"安庆市检验检测机构01","ypsfqr":"样品未确认","tbzt":"2"}];
+
 </script>
 <br>
   <div class="myTable">

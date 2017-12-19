@@ -1,9 +1,7 @@
-$(function(){
-    getDataTp(info);
-})
+//$(function(){
+//    getDataTp(info);
+//})
 
-var info = [{"id":"1","sf":"安徽","bcydws":"阜阳","rwly":"安庆市食品药品监督管理局",
-"cybh":"121903","ypmc":"大豆油","cydwmc":"安庆市食品药品监督管理局","jyjgmc":"安庆市检验检测机构01","ypsfqr":"样品未确认","tbzt":"2"}];
 //加载列表
 function getDataTp(info){
     $('#tb_report1').bootstrapTable({
@@ -93,8 +91,8 @@ function getDataTp(info){
                     else {
                         name = "填报样品信息";
                     }
-
-                    var info = "<a href='/sp_bsbs/"+row.field.id+"/edit' >"+name+"</a>";
+                    console.log(row);
+                    var info = "<a target='_blank' href='/sp_bsbs/"+row.id+"/edit' >"+name+"</a>";
                     return info;
                 }
             }
