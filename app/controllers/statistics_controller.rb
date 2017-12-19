@@ -297,9 +297,10 @@ class StatisticsController < ApplicationController
     end
     @products = @q.result(distinct: true)
     @data = []
-    sp_bsbs = @products.group_by{ |sp| sp.sp_s_4 }
+    power = region_power
+    sp_bsbs = @products.admin_select(power[0]).group_by{ |sp| sp.send(power[1]) }
     sp_bsbs.each do |city_name,city_arr| #sp_arr:每个市
-      county_sp = city_arr.group_by{ |sp| sp.sp_s_5 }
+      county_sp = power[1]=="sp_s_4" ? city_arr.group_by{ |sp| sp.sp_s_5 } : sp_bsbs
       county_result = []
       county_sp.each do |count_name,county_arr| #arr:每个县
         #0地区,1总批次,2监督抽检批次,3合格批次,4不合格批次,5不合格样品率,6风险检测批次,7问题样品批次,8问题样品率
@@ -321,19 +322,23 @@ class StatisticsController < ApplicationController
         num8 = ((num7.length.to_f/num1.length)*100).to_i.to_s+"%" #问题样品率
         county_result << {name: num0,totalbat:num1,samplingbat:num2,qualifiedbat:num3,unqualifiedbat:num4,qualifiedsamp:num5,riskbat:num6,problembat:num7,problemsamp:num8}
       end
-      #合计该市的信息
-      num1,num2,num3,num4,num5,num6,num7,num8 = [],[],[],[],'',[],[],''
-      county_result.each do |c| 
-        num1.concat c[:totalbat]
-        num2.concat c[:samplingbat]
-        num3.concat c[:qualifiedbat]
-        num4.concat c[:unqualifiedbat]
-        num6.concat c[:riskbat]
-        num7.concat c[:problembat]
+      #如果是省市管理员:合计该市的信息
+      if power[1]=="sp_s_4"
+        num1,num2,num3,num4,num5,num6,num7,num8 = [],[],[],[],'',[],[],''
+        county_result.each do |c| 
+          num1.concat c[:totalbat]
+          num2.concat c[:samplingbat]
+          num3.concat c[:qualifiedbat]
+          num4.concat c[:unqualifiedbat]
+          num6.concat c[:riskbat]
+          num7.concat c[:problembat]
+        end
+        num5 = ((num4.length.to_f/num1.length)*100).to_i.to_s+"%"
+        num8 = ((num7.length.to_f/num1.length)*100).to_i.to_s+"%"
+        @data << {name: city_name,totalbat:num1,samplingbat:num2,qualifiedbat:num3,unqualifiedbat:num4,qualifiedsamp:num5,riskbat:num6,problembat:num7,problemsamp:num8,children:county_result}
+      else
+        @data = county_result
       end
-      num5 = ((num4.length.to_f/num1.length)*100).to_i.to_s+"%"
-      num8 = ((num7.length.to_f/num1.length)*100).to_i.to_s+"%"
-      @data << {name: city_name,totalbat:num1,samplingbat:num2,qualifiedbat:num3,unqualifiedbat:num4,qualifiedsamp:num5,riskbat:num6,problembat:num7,problemsamp:num8,children:county_result}
     end
     if params["is_export"] == "1"
       send_file(DownloadStatistics.start("Statistic::Composite",@data), :disposition => "attachment")
@@ -342,8 +347,8 @@ class StatisticsController < ApplicationController
   end
 
   def region_power
-    return "" if is_sheng? 
-    return "sp_s_4 = '#{current_user.prov_city}'" if is_city? 
-    return "sp_s_5 = '#{current_user.prov_country}'" if is_county_level? 
+    return "","sp_s_4" if is_sheng? 
+    return "sp_s_4 = '#{current_user.prov_city}'","sp_s_4" if is_city? 
+    return "sp_s_5 = '#{current_user.prov_country}'","sp_s_5" if is_county_level? 
   end
 end
