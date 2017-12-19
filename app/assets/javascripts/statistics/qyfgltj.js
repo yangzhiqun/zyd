@@ -19,81 +19,7 @@ $(function(){
 
 // 图表展示
 function chart(){   
-    // Security Trends
-    var option1 = {
-        tooltip: {
-            trigger: 'axis',
-            axisPointer: {
-                type: 'cross',
-                crossStyle: {
-                    color: '#999'
-                }
-            }
-        },
-        toolbox: {
-            feature: {
-                dataView: {show: true, readOnly: false},
-                magicType: {show: true, type: ['line', 'bar']},
-                restore: {show: true},
-                saveAsImage: {show: true}
-            }
-        },
-        legend: {
-            data:['总企业数','被检企业数','覆盖率']
-        },
-        xAxis: [
-            {
-                type: 'category',
-                data: ['合肥','芜湖','蚌埠','淮南','马鞍山','淮北','铜陵','安庆','黄山','滁州','阜阳','宿州','六安市'],
-                axisPointer: {
-                    type: 'shadow'
-                }
-            }
-        ],
-        yAxis: [
-            {
-                type: 'value',
-                name: '企业数',
-                min: 0,
-                max: 250,
-                interval: 50,
-                axisLabel: {
-                    formatter: '{value} '
-                }
-            },
-            {
-                type: 'value',
-                name: '覆盖率',
-                min: 0,
-                max: 100,
-                interval: 5,
-                axisLabel: {
-                    formatter: '{value} %'
-                }
-            }
-        ],
-        series: [
-            {
-                name:'总企业数',
-                type:'bar',
-                data:[200, 140, 170, 230, 245, 176, 135, 162, 132, 120, 160, 130,140]
-            },
-            {
-                name:'被检企业数',
-                type:'bar',
-                data:[126, 50, 90, 204, 207, 77, 76, 82, 47, 88, 60, 123,60]
-            },
-            {
-                name:'覆盖率',
-                type:'line',
-                yAxisIndex: 1,
-                data:[63.00, 35.71, 52.94, 88.70, 84.50, 43.75, 56.30, 50.61, 35.60, 73.33, 37.5, 94.62,42.86]
-            }
-        ]
-    };
-
-    var myChart1=echarts.init(document.getElementById('chart_1'))
-    myChart1.setOption(option1);
+    //生产企业覆盖率
     var option2 = {
         tooltip: {
             trigger: 'axis',
@@ -241,56 +167,30 @@ function chart(){
         }
         ]
     }
-    //点击不同的市显示该市下级市县区相应的数据
-    myChart1.on('click',function(params){
-        // console.log(params.componentType);
-        // 获取当前点击的市
-        switch(params.name){
-            case '安徽省':
-            cityClick(myChart1,anhui);
-            cityClick(myChart2,anhui);
-            break;
-            case '合肥':
-            cityClick(this,hefei);
-            break;
-            case '芜湖':
-            cityClick(this,wuhu);
-            break;
-            case '蚌埠':
-            cityClick(this,bengbu);
-            break;
-            default:
-            cityClick(myChart1,anhui);
-            break;
-        }
-        
-    });
+
+
     //根据下拉框的下拉选中项显示相应地区的数据
     
     $(document).on('change','#cqtj_option',function(){
         var optVal=$(this).val();
         switch(optVal){
             case '安徽省':
-            cityClick(myChart1,anhui);
             cityClick(myChart2,anhui);
             break;
             case '合肥':
-            cityClick(myChart1,hefei);
             cityClick(myChart2,hefei);
             break;
             case '芜湖':
-            cityClick(myChart1,wuhu);
             cityClick(myChart2,wuhu);
             break;
             case '蚌埠':
-            cityClick(myChart1,bengbu);
             cityClick(myChart2,bengbu);
             break;
             default:
             break;
         }
     });
-
+//点击不同的市显示该市下级市县区相应的数据
     myChart2.on('click',function (params) {
         switch(params.name){
             case '合肥':

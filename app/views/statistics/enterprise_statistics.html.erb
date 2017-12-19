@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="../css/cjdwtj.css">
     -->
     <%#= stylesheet_link_tag "statistics_old/bootstrap/dist/css/bootstrap.min.css", :media => "all" %>
-    <%= stylesheet_link_tag "statistics_old/reset","statistics_old/cjdwtj", :media => "all" %>
+    <%= stylesheet_link_tag "statistics_old/reset","statistics_old/cjdwtj","welcome_index", :media => "all" %>
     <!-- js -->
     <!--
     <script src="../libs/jquery-2.1.4/dist/jquery.min.js"></script>
@@ -67,6 +67,62 @@
             }
         });
     }
+    var info = [];
+    function getData(info){
+        $('#tb_report').bootstrapTable({
+            //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
+            //method: 'get',                      //请求方式（*）
+            data:info,
+            // datatype:'json',
+            toolbar: '#toolbar',                //工具按钮用哪个容器
+            striped: true,                      //是否显示行间隔色
+            cache: false,                      //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            search: true, //显示搜索框
+            pagination: true,                   //是否显示分页（*）
+            // sortOrder: "asc",                   //排序方式
+            //queryParams: oTableInit.queryParams,//传递参数（*）
+            sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1,                       //初始化加载第一页，默认第一页
+            pageSize: 10,                       //每页的记录行数（*）
+            pageList: [10, 25, 50, 100],      //可供选择的每页的行数（*）
+            columns : [
+                {
+                    title : '序号',//标题  可不加
+                    formatter : function(value,row, index) {
+                        return index + 1;
+                    }
+                },
+                {
+                    field : 'area',
+                    title : '区域',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        return value;
+                    }
+                },{
+                    field : 'cyjg',
+                    title : '抽样机构名称',
+                    align : 'center'
+                },{
+                    field : 'txsl',
+                    title : '完全提交退修数',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        var info = "<a href='javascript:void(0);' onclick = openPostWindow('"+value+"')>"+value+"</a>";
+                        return info;
+                    }
+                },
+                {
+                    field : 'txl',
+                    title : '完全提交退修率',
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        return value+"%";
+                    }
+                }
+            ]
+        });
+    }
     </script>
 </head>
 <body>
@@ -95,46 +151,7 @@
     </div>
 
      <!-- 右侧表格 -->
-    <div class="content_bottom" style="width: 80%;margin:0 auto 80px;">
-        <!-- 被抽样单位覆盖率 -->
-        <h4 class="tableTit_h3">被抽样单位覆盖率</h4>
-        <table class="table table-bordered">
-            <tr class="info">
-                <th>序号</th>
-                <th>区域</th>
-                <th>总企业数</th>
-                <th>被抽样单位数</th>
-                <th>覆盖率</th>
-            </tr>
-            <tr>
-                <td>1</td>
-                <td>合肥</td>
-                <td>100</td>
-                <td>78</td>
-                <td>78%</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>芜湖</td>
-                <td>132</td>
-                <td>91</td>
-                <td>68.18%</td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>蚌埠</td>
-                <td>109</td>
-                <td>82</td>
-                <td>75.23%</td>
-            </tr>
-            <tr>
-                <td>合计</td>
-                <td></td>
-                <td>341</td>
-                <td>251</td>
-                <td>73.803%</td>
-            </tr>
-        </table>
+    <div class="content_bottom data-list" style="width: 80%;margin:0 auto 80px;">
         <!-- 生产企业覆盖率 -->
         <h4 class="tableTit_h3">生产企业覆盖率</h4>
         <table class="table table-bordered">
@@ -178,10 +195,6 @@
 
     <!-- 右侧图表    -->
     <div class="charts hide">
-        <h2 class="chart_title1 marginL50">被抽检单位覆盖率</h2>
-        <div class="charts_1">
-            <div id="chart_1"></div>
-        </div>
         <h2 class="marginL50">企业生产覆盖率</h2>
         <div class="charts_2">
             <div id="chart_2"></div>

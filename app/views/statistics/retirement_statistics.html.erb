@@ -11,7 +11,7 @@
     -->
   <link href="http://cdn.bootcss.com/bootstrap-table/1.9.1/bootstrap-table.min.css" rel="stylesheet"/>
   <%#= stylesheet_link_tag "statistics_old/bootstrap/dist/css/bootstrap.min.css", :media => "all" %>
-    <%= stylesheet_link_tag "statistics_old/reset","statistics_old/cjdwtj", :media => "all" %>
+    <%= stylesheet_link_tag "statistics_old/reset","statistics_old/cjdwtj","welcome_index", :media => "all" %>
   <style>
     h4.tableTit_h3{
       display: inline-block;
@@ -77,17 +77,13 @@
                 },{
                     field : 'cyjg',
                     title : '抽样机构名称',
-                    align : 'center',
-                    formatter : function (value, row, index) {
-                        var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
-                        return info;
-                    }
+                    align : 'center'
                 },{
                     field : 'txsl',
                     title : '完全提交退修数',
                     align : 'center',
                     formatter : function (value, row, index) {
-                        var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
+                        var info = "<a href='javascript:void(0);' onclick = openPostWindow('"+value+"')>"+value+"</a>";
                         return info;
                     }
                 },
@@ -136,17 +132,14 @@
                    },{
                        field : 'cyjg',
                        title : '承检机构名称',
-                       align : 'center',
-                       formatter : function (value, row, index) {
-                           var info = "<a href='javascript:void(0);' onclick = 'getShowInfo();'>"+value+"</a>";
-                           return info;
-                       }
+                       align : 'center'
                    },{
                        field : 'txsl',
                        title : '完全提交退修数',
                        align : 'center',
                        formatter : function (value, row, index) {
-                           var info = "<a href='javascript:void(0);' onclick = 'getShowInfo();'>"+value+"</a>";
+
+                           var info = "<a href='javascript:void(0);' onclick = openPostWindow('"+value+"')>"+value+"</a>";
                            return info;
                        }
                    },
@@ -165,8 +158,6 @@
             chart(<%= raw @chart %>);
             myChart1=echarts.init(document.getElementById('chart_1'));
             myChart1.setOption(option1);
-            // myChart2=echarts.init(document.getElementById('chart_2'));
-            // myChart2.setOption(option2);
 
             //点击不同的市显示该市下级市县区相应的数据
             myChart1.on('click',function(params){
@@ -177,11 +168,17 @@
             });
             // 时间区域选取
             // 初始时间
+            var date=new Date;
+            var year = date.getFullYear();
+            var month=date.getMonth()+1;
+            month =(month<10 ? "0"+month:month);
+            var mydate = (year.toString()+"-"+month.toString());
             laydate.render({
               elem: '#time', //指定元素
               type: 'month',
               range: '/',
-              format: 'yyyy-MM'
+              format: 'yyyy-MM',
+              value: year+'-01 / '+mydate
             });
             // 结束时间
            // laydate.render({
@@ -272,12 +269,42 @@
                 }
             });
         }
-      function getShowInfo(args){
+     /* function getShowInfo(args){
           $.post(url,args,function(response){
               var obj = window.open("about:blank","_blank");
               obj.document.write(response);
           })
-      }
+      }*/
+       function openPostWindow(data){
+           var tempForm = document.createElement("form");
+           tempForm.id = "tempForm1";
+           tempForm.method = "post";
+           tempForm.action = "particulars";
+           tempForm.target="_blank"; //打开新页面
+           var hideInput1 = document.createElement("input");
+           hideInput1.type = "hidden";
+           hideInput1.name="opid"; //后台要接受这个参数来取值
+           hideInput1.value = data; //后台实际取到的值
+         /*var hideInput2 = document.createElement("input");
+          hideInput2.type = "hidden";
+          hideInput2.name="xtmc";
+          hideInput2.value = data2;  这里就是如果需要第二个参数的时候可以自己再设置*/
+           tempForm.appendChild(hideInput1);
+           //tempForm.appendChild(hideInput2);
+           if(document.all){
+               tempForm.attachEvent("onsubmit",function(){});        //IE
+           }else{
+               var subObj = tempForm.addEventListener("submit",function(){},false);    //firefox
+           }
+           document.body.appendChild(tempForm);
+           if(document.all){
+               tempForm.fireEvent("onsubmit");
+           }else{
+               tempForm.dispatchEvent(new Event("submit"));
+           }
+           tempForm.submit();
+           document.body.removeChild(tempForm);
+       }
     </script>
 </head>
 <body>
@@ -331,7 +358,7 @@
     </table>
   </div>
   <!-- 右侧表格 -->
-  <div id="main_id" class="content_main" style="float: right;width: 85%;">
+  <div id="main_id" class="content_main data-list" style="float: right;width: 85%;">
     <!-- 抽样机构 -->
     <h4 class="tableTit_h3">抽样机构</h4>
     <table class="table table-bordered" id="tb_report">
