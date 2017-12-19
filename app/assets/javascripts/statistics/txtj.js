@@ -39,7 +39,7 @@ function chart(data){
             }
         },
         legend: {
-            data:['完全提交退修数','完全提交退修率']
+            data:['抽样机构完全提交退修数','抽样机构完全提交退修率','检验机构完全提交退修数','检验机构完全提交退修率']
         },
         xAxis: [
             {
@@ -78,7 +78,7 @@ function chart(data){
         yAxis: [
             {
                 type: 'value',
-                name: '完全提交退修数',
+                name: '退修数',
                 min: 0,
                // max: 250,
                 interval: 50,
@@ -88,7 +88,7 @@ function chart(data){
             },
             {
                 type: 'value',
-                name: '完全提交退修率',
+                name: '退修率',
                 min: 0,
                 max: 100,
                 interval: 5,
@@ -99,7 +99,7 @@ function chart(data){
         ],
         series: [
             {
-                name:'完全提交退修数',
+                name:'抽样机构完全提交退修数',
                 type:'bar',
                 itemStyle: {
                     normal: {
@@ -117,7 +117,31 @@ function chart(data){
                 data:data.y1
             },
             {
-                name:'完全提交退修率',
+                name:'抽样机构完全提交退修率',
+                type:'line',
+                yAxisIndex: 1,
+                data:data.y2
+            },
+            {
+                name:'检验机构完全提交退修数',
+                type:'bar',
+                itemStyle: {
+                    normal: {
+                        // 随机显示
+                        color:function(d){
+                            return "#"+Math.floor(Math.random()*(256*256*256-1)).toString(16);
+                        },
+                        label: {
+                            show: true
+                            // position: 'top',
+                            // formatter: '{b}\n{c}'
+                        }
+                    }
+                },
+                data:data.y1
+            },
+            {
+                name:'检验机构完全提交退修率',
                 type:'line',
                 yAxisIndex: 1,
                 data:data.y2
@@ -248,6 +272,17 @@ function getChartInfo(myChart,params,flag){
             }
         ],
         series: [
+            {
+                // name:'总企业数',
+                // type:'bar',
+                data: json.y1
+            },
+            {
+                // name:'覆盖率',
+                // type:'line',
+                // yAxisIndex: 1,
+                data: json.y2
+            },
             {
                 // name:'总企业数',
                 // type:'bar',

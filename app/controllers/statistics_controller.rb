@@ -220,9 +220,9 @@ class StatisticsController < ApplicationController
 
   #企业覆盖率统计
   def enterprise_statistics
-    p "1"*100
-    p SpBsb.admin_select(region_power)
-    p "1"*100
+   # p "1"*100
+   # p SpBsb.admin_select(region_power)
+   # p "1"*100
   end
 
   #不合格样品及问题样品预警
