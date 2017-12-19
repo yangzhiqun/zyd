@@ -168,13 +168,13 @@
         itemClick: "itemClickEvent",
         columns:[
             {headerText: "地区", dataField: "name", headerAlign: "center",width: "200", handler: "customOrgName"},
-            {headerText: "总批次",dataField: "totalbat", headerAlign: "center", dataAlign: "center", width: "100"},
-            {headerText: "监督抽检批次", dataField: "samplingbat",headerAlign: "center", dataAlign: "center", width: "120"},
-            {headerText: "合格批次", dataField: "qualifiedbat",headerAlign: "center", dataAlign: "center", width: "120"},
-            {headerText: "不合格批次",dataField: "unqualifiedbat", headerAlign: "center", dataAlign: "center", width: "120"},
+            {headerText: "总批次",dataField: "totalbat", headerAlign: "center", dataAlign: "center", width: "100",handler:"formatting"},
+            {headerText: "监督抽检批次", dataField: "samplingbat",headerAlign: "center", dataAlign: "center", width: "120",handler:"formatting"},
+            {headerText: "合格批次", dataField: "qualifiedbat",headerAlign: "center", dataAlign: "center", width: "120",handler:"formatting"},
+            {headerText: "不合格批次",dataField: "unqualifiedbat", headerAlign: "center", dataAlign: "center", width: "120",handler:"formatting"},
             {headerText: "不合格样品率", dataField: "qualifiedsamp",headerAlign: "center", dataAlign: "center", width: "120"},
-            {headerText: "风险检测批次", dataField: "riskbat",headerAlign: "center", dataAlign: "center", width: "120"},
-            {headerText: "问题样品批次", dataField: "problembat",headerAlign: "center", dataAlign: "center", width: "120"},
+            {headerText: "风险检测批次", dataField: "riskbat",headerAlign: "center", dataAlign: "center", width: "120",handler:"formatting"},
+            {headerText: "问题样品批次", dataField: "problembat",headerAlign: "center", dataAlign: "center", width: "120",handler:"formatting"},
             {headerText: "问题样品率", dataField: "problemsamp",headerAlign: "center", dataAlign: "center", width: "120"}
         ],
         data: <%= raw @data %> 
@@ -235,6 +235,27 @@
     function customOrgName(row, col){
         var name = row[col.dataField] || "";
         return name;
+    }
+    /***
+     * 格式化
+     * */
+    function formatting(row, col){
+        console.log(row);
+        console.log(row[col.dataField].length);
+        var num = 0;
+        var name = "";
+        num = row[col.dataField].length;
+        name = row[col.dataField] || [];
+
+        var a = "<a href='javascript:void(0);' onclick = ajaxInfo('"+name+"')>"+num+"</a>"
+        return a;
+    }
+//请求后台方法，弹出详情页面
+    function ajaxInfo(args){
+        $.post(url,args,function(response){
+            var obj = window.open("about:blank","_blank");
+            obj.document.write(response);
+        })
     }
 
     function customLook(row, col){
