@@ -1,6 +1,7 @@
 class StatisticsController < ApplicationController
 
   require 'food/download_statistics'
+  skip_before_filter :session_expiry, :verify_authenticity_token, :authenticate_user!,:only => [:particulars]
 
   def statistics
   end
@@ -55,20 +56,33 @@ class StatisticsController < ApplicationController
   #食品类别统计
   #[{"name"=>"报送分类a1", "sampling"=>"128","test"=>"80","unqualified"=>"15","qualified"=>"65","Disposed"=>"13","Disposal"=>"2"}]
   def food_statistics
-    if params.has_key?(:q)
+    if params.has_key?(:q) && params[:q]["time"].present?
       time = params[:q]["time"].gsub(/\s/,"").split("/")
       @q = SpBsb.where(created_at:Statistic.time_slot(time[0],time[1])).ransack(params[:q])
     else
       @q = SpBsb.ransack(params[:q])
     end
     @products = @q.result(distinct: true)
-    @data = Statistic.food(@products,"sp_s_70").to_json
+    @data = Statistic.food(@products,"sp_s_70")
+    num1,num2,num3,num4,num5,num6 = 0,0,0,0,0,0
+    @data.each do |d|
+      num1 += d["sampling"].to_i
+      num2 += d["test"].to_i
+      num3 += d["unqualified"].to_i
+      num4 += d["qualified"].to_i
+      num5 += d["Disposed"].to_i
+      num6 += d["Disposal"].to_i
+    end
+    @data << {"name"=>"总计", "sampling"=>num1.to_s,"test"=>num2.to_s,"unqualified"=>num3.to_s,"qualified"=>num4.to_s,"Disposed"=>num5.to_s,"Disposal"=>num6.to_s}
+    @data = @data.to_json
   end
 
   def food_subset_statistics
     time = params["time"].gsub(/\s/,"").split("/")
     category = eval(params["params"])
-    sp_bsbs = SpBsb.where(category).where(created_at:Statistic.time_slot(time[0],time[1]),sp_s_70:params["baosongA"])
+    sp_bsbs = SpBsb.where(category)
+    sp_bsbs = sp_bsbs.where(created_at:Statistic.time_slot(time[0],time[1])) if params["time"].present?
+    sp_bsbs = sp_bsbs.where(sp_s_70:params["baosongA"]) if params["baosongA"].present?
     @data = Statistic.food(sp_bsbs,Statistic::Corr[category.length])
     render json: @data
   end
@@ -207,13 +221,19 @@ class StatisticsController < ApplicationController
   #企业覆盖率统计
   def enterprise_statistics
     p "1"*100
-    p SpBsb.admin_select(region)
+    p SpBsb.admin_select(region_power)
     p "1"*100
   end
 
   #不合格样品及问题样品预警
   def early_warning
     @data_arr,@data_items,@nonconformity = Statistic.nonconformity.map{ |d| d.to_json }
+  end
+
+  #详细页
+  #[{"id"=>"1","sf"=>"安徽","bcydws"=>"阜阳","rwly"=>"安庆市食品药品监督管理局","cybh"=>"121903","ypmc"=>"大豆油","cydwmc"=>"安庆市食品药品监督管理局","jyjgmc"=>"安庆市检验检测机构01","ypsfqr"=>"样品未确认","tbzt"=>"2"}]
+  def particulars
+    @data = [{"id"=>"1","sf"=>"安徽","bcydws"=>"阜阳","rwly"=>"安庆市食品药品监督管理局","cybh"=>"121903","ypmc"=>"大豆油","cydwmc"=>"安庆市食品药品监督管理局","jyjgmc"=>"安庆市检验检测机构01","ypsfqr"=>"样品未确认","tbzt"=>"2"}]
   end
 
   #退休统计
@@ -263,7 +283,7 @@ class StatisticsController < ApplicationController
   def composite_statistics
     #@data = [{name: "合肥",totalbat:"6574",samplingbat:"1232",qualifiedbat:"1200",unqualifiedbat:"193",qualifiedsamp:"4.263%",riskbat:"1222",problembat:"713",problemsamp:"1.24%",children:[{name: "长丰",totalbat:"22",samplingbat:"15",qualifiedbat:"10%",unqualifiedbat:"12",qualifiedsamp:"20",riskbat:"2",problembat:"713",problemsamp:"1.24%"}]}]
     if params.has_key?(:q)
-      @q = SpBsb.send(params[:q]["sp_s_71"]=="合格批次" ? :qualified : :unqualified) if params[:q]["sp_s_71"].present?
+      @q = SpBsb.send(params[:q]["sp_s_71"]=="合格" ? :qualified : :unqualified) if params[:q]["sp_s_71"].present?
       @q = (@q.nil? ? SpBsb : @q).where(created_at:Statistic.time_slot(params[:q]["created_at_start"],params[:q]["created_at_end"])) if params[:q]["created_at_start"].present? 
       @q = @q.nil? ? SpBsb.ransack(params[:q]) : @q.ransack(params[:q])
     else
@@ -271,42 +291,43 @@ class StatisticsController < ApplicationController
     end
     @products = @q.result(distinct: true)
     @data = []
-    sp_bsbs = @products.where("sp_s_4 != '请选择'").group_by{ |sp| sp.sp_s_4 }
+    sp_bsbs = @products.group_by{ |sp| sp.sp_s_4 }
     sp_bsbs.each do |city_name,city_arr| #sp_arr:每个市
       county_sp = city_arr.group_by{ |sp| sp.sp_s_5 }
       county_result = []
       county_sp.each do |count_name,county_arr| #arr:每个县
         #0地区,1总批次,2监督抽检批次,3合格批次,4不合格批次,5不合格样品率,6风险检测批次,7问题样品批次,8问题样品率
-        num0,num1,num2,num3,num4,num5,num6,num7,num8='',0,0,0,0,'',0,0,''
+        num0,num1,num2,num3,num4,num5,num6,num7,num8='',[],[],[],[],'',[],[],''
         num0 = count_name
-        num1 = county_arr.length
+        num1 = county_arr.map(&:id)
         county_arr.each do |sp| 
           if sp.sp_s_44 == "监督抽检"
-            num2 += 1 
-            num4 += 1 if /不合格样品|问题样品/ =~ sp.sp_s_71 #不合格批次
+            num2 << sp.id 
+            num4 << sp.id if /不合格样品|问题样品/ =~ sp.sp_s_71 #不合格批次
           elsif sp.sp_s_44 == "风险监测"
-            num6 += 1
-            num7 += 1 if /不合格样品|问题样品/ =~ sp.sp_s_71 #问题样品批次
+            num6 << sp.id
+            num7 << sp.id if /不合格样品|问题样品/ =~ sp.sp_s_71 #问题样品批次
           end
+          #num3 << if (/^((?!监测问题样品).)*$/ =~ sp.sp_s_71) && (/([^不]合格)/ =~ sp.sp_s_71) #合格批次
         end
-        num3 = num1-num4 #合格批次
-        num5 = ((num4.to_f/num1)*100).to_i.to_s+"%" #不合格样品率
-        num8 = ((num7.to_f/num1)*100).to_i.to_s+"%" #问题样品率
-        county_result << {name: num0,totalbat:num1.to_s,samplingbat:num2.to_s,qualifiedbat:num3.to_s,unqualifiedbat:num4.to_s,qualifiedsamp:num5,riskbat:num6.to_s,problembat:num7.to_s,problemsamp:num8}
+        num3 = (num1-num4)-num7 #合格批次
+        num5 = ((num4.length.to_f/num1.length)*100).to_i.to_s+"%" #不合格样品率
+        num8 = ((num7.length.to_f/num1.length)*100).to_i.to_s+"%" #问题样品率
+        county_result << {name: num0,totalbat:num1,samplingbat:num2,qualifiedbat:num3,unqualifiedbat:num4,qualifiedsamp:num5,riskbat:num6,problembat:num7,problemsamp:num8}
       end
       #合计该市的信息
-      num1,num2,num3,num4,num5,num6,num7,num8 = 0,0,0,0,'',0,0,''
+      num1,num2,num3,num4,num5,num6,num7,num8 = [],[],[],[],'',[],[],''
       county_result.each do |c| 
-        num1 += c[:totalbat].to_i
-        num2 += c[:samplingbat].to_i
-        num3 += c[:qualifiedbat].to_i
-        num4 += c[:unqualifiedbat].to_i
-        num6 += c[:riskbat].to_i
-        num7 += c[:problembat].to_i
+        num1.concat c[:totalbat]
+        num2.concat c[:samplingbat]
+        num3.concat c[:qualifiedbat]
+        num4.concat c[:unqualifiedbat]
+        num6.concat c[:riskbat]
+        num7.concat c[:problembat]
       end
-      num5 = ((num4.to_f/num1)*100).to_i.to_s+"%"
-      num8 = ((num7.to_f/num1)*100).to_i.to_s+"%"
-      @data << {name: city_name,totalbat:num1.to_s,samplingbat:num2.to_s,qualifiedbat:num3.to_s,unqualifiedbat:num4.to_s,qualifiedsamp:num5,riskbat:num6.to_s,problembat:num7.to_s,problemsamp:num8,children:county_result}
+      num5 = ((num4.length.to_f/num1.length)*100).to_i.to_s+"%"
+      num8 = ((num7.length.to_f/num1.length)*100).to_i.to_s+"%"
+      @data << {name: city_name,totalbat:num1,samplingbat:num2,qualifiedbat:num3,unqualifiedbat:num4,qualifiedsamp:num5,riskbat:num6,problembat:num7,problemsamp:num8,children:county_result}
     end
     if params["is_export"] == "1"
       send_file(DownloadStatistics.start("Statistic::Composite",@data), :disposition => "attachment")
@@ -314,7 +335,7 @@ class StatisticsController < ApplicationController
     @data = @data.to_json
   end
 
-  def region
+  def region_power
     return "" if is_sheng? 
     return "sp_s_4 = '#{current_user.prov_city}'" if is_city? 
     return "sp_s_5 = '#{current_user.prov_country}'" if is_county_level? 

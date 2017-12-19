@@ -15,7 +15,7 @@ class SpBsb < ActiveRecord::Base
     "DELETE FROM tmp_sp_bsbs where id=OLD.id"
   end
 
-  scope :qualified,  -> { where("(sp_s_71 not like '%不合格样品%' or sp_s_71 not like '%问题样品%') and sp_i_state = 9") }
+  scope :qualified,  -> { where("(sp_s_71 not like '%_不合格样品%' and sp_s_71 not like '%问题样品%') and sp_i_state = 9") }
   scope :unqualified, -> { where("(sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%') and sp_i_state = 9") }
 
   attr_accessor :ca_source, :ca_sign

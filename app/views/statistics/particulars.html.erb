@@ -4,8 +4,14 @@
   <meta charset="UTF-8">
   <title>详情页</title>
   <%= stylesheet_link_tag "welcome_index", :media => "all" %>
-  <%= javascript_include_tag "statistics/particulars" %>
+  <%= javascript_include_tag "statistics/particulars","statistics/treegrad/jquery-1.3.2.min" %>
 </head>
+<script>
+  $(document).ready(function(){
+      //var data = <%= raw @data %>;
+      //getDataTp(data);
+   })
+</script>
 <br>
   <div class="myTable">
     <h2 class="data-title">信息详情</h2>
@@ -15,7 +21,6 @@
     </div>
   </div>
 </br>
-
 </div>
 </body>
 </html>

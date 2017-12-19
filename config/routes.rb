@@ -2,7 +2,7 @@ Rails.application.routes.draw do
 
   get 'report_forms/index'
   get 'report_forms/update'
-  get 'sp_bsbs/:type/prompt_report' => 'sp_bsbs#prompt_report'
+  match 'sp_bsbs/prompt_report' => 'sp_bsbs#prompt_report', via: [:get, :post]
 
   get 'log_management/index'
   get 'log_management/search'
@@ -451,5 +451,6 @@ Rails.application.routes.draw do
   match 'composite_statistics' => 'statistics#composite_statistics', via: [:get, :post], as: :composite_statistics
   get 'retirement_statistics' => 'statistics#retirement_statistics'
   get 'nonconformity_statistics_data/:id' => 'statistics#nonconformity_statistics_data'
+  match 'particulars' => 'statistics#particulars', via: [:get, :post]
 
 end
