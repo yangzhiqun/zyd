@@ -233,7 +233,12 @@ class StatisticsController < ApplicationController
   #详细页
   #[{"id"=>"1","sf"=>"安徽","bcydws"=>"阜阳","rwly"=>"安庆市食品药品监督管理局","cybh"=>"121903","ypmc"=>"大豆油","cydwmc"=>"安庆市食品药品监督管理局","jyjgmc"=>"安庆市检验检测机构01","ypsfqr"=>"样品未确认","tbzt"=>"2"}]
   def particulars
- #   @data = [{"id"=>"1","sf"=>"安徽","bcydws"=>"阜阳","rwly"=>"安庆市食品药品监督管理局","cybh"=>"121903","ypmc"=>"大豆油","cydwmc"=>"安庆市食品药品监督管理局","jyjgmc"=>"安庆市检验检测机构01","ypsfqr"=>"样品未确认","tbzt"=>"2"}]
+    @data = []
+    arr = params["opid"].split(",")
+    SpBsb.where(id:arr).each do |sp_bsb|
+      @data << {"id"=>sp_bsb.id,"sf"=>sp_bsb.sp_s_3,"bcydws"=>sp_bsb.sp_s_4,"rwly"=>sp_bsb.sp_s_2_1,"cybh"=>sp_bsb.sp_s_16,"ypmc"=>sp_bsb.sp_s_14,"cydwmc"=>sp_bsb.sp_s_35,"jyjgmc"=>sp_bsb.sp_s_43,"ypsfqr"=>sp_bsb.sp_s_214,"tbzt"=>sp_bsb.sp_i_state}
+    end
+    @data = @data.to_json
     render layout: false
   end
 
@@ -309,9 +314,9 @@ class StatisticsController < ApplicationController
             num6 << sp.id
             num7 << sp.id if /不合格样品|问题样品/ =~ sp.sp_s_71 #问题样品批次
           end
-          #num3 << if (/^((?!监测问题样品).)*$/ =~ sp.sp_s_71) && (/([^不]合格)/ =~ sp.sp_s_71) #合格批次
+          num3 << sp.id if (/^((?!监测问题样品).)*$/ =~ sp.sp_s_71) && (/([^不]合格)/ =~ sp.sp_s_71) #合格批次
         end
-        num3 = (num1-num4)-num7 #合格批次
+        #num3 = (num1-num4)-num7 #合格批次
         num5 = ((num4.length.to_f/num1.length)*100).to_i.to_s+"%" #不合格样品率
         num8 = ((num7.length.to_f/num1.length)*100).to_i.to_s+"%" #问题样品率
         county_result << {name: num0,totalbat:num1,samplingbat:num2,qualifiedbat:num3,unqualifiedbat:num4,qualifiedsamp:num5,riskbat:num6,problembat:num7,problemsamp:num8}

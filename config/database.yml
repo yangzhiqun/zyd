@@ -8,6 +8,7 @@ development:
   pool: 25
   username: root
   password: admin
+  password: zml
 
 production:
   adapter: mysql2
@@ -16,4 +17,4 @@ production:
   database: anhui_ceshi
   pool: 25
   username: root
-  password: admin
+  password: zml
