@@ -252,7 +252,7 @@
     }
 //请求后台方法，弹出详情页面
     function ajaxInfo(args){
-        $.post(url,args,function(response){
+      $.post("particulars",{"params":args},function(response){
             var obj = window.open("about:blank","_blank");
             obj.document.write(response);
         })

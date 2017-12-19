@@ -9,9 +9,16 @@ class Statistic < ActiveRecord::Base
   EarlyWarning = ["序号", "区域", "被抽样单位", "生产企业", "样品名称", "任务来源", "报送分类a", "报送分类b", "大类", "次亚类", "亚类", "细类"]
   Composite = ["地区", "总批次", "监督抽检批次", "合格批次", "不合格批次", "不合格样品率", "风险检测批次", "问题样品批次", "问题样品率"]
   Corr = {1=>"sp_s_70",1=>"sp_s_67",2=>"sp_s_17",3=>"sp_s_18",4=>"sp_s_19",5=>"sp_s_20"}
+  Daily = YAML.load_file("config/anhui_map.yml")
+  
 
   def self.time_slot(start_time,end_time)
     Time.parse(start_time+"-01")..Time.parse(end_time+"-31").end_of_day
+  end
+
+  def self.time_ranges(start_time,end_time)
+    range = (start_time.to_date..end_time.to_date).to_a.map(&:to_s)
+    return range-Daily["time"]
   end
 
   def self.retirement(sp_bsbs,revision)
@@ -37,7 +44,7 @@ class Statistic < ActiveRecord::Base
     county = sp_bsbs.where("sp_s_5 != '请选择'")
     #地图各省数据
     city.group(:sp_s_4).count.each{ |k,y| data_arr << {"name" => k =~ /市/ ? key : k+"市","value" => y} } 
-    county_arr = YAML.load_file("config/anhui_map.yml")["total"]
+    county_arr = Daily["total"]
     county.group(:sp_s_5).count.each do |k,y|
       k = k+"市" if county_arr.include?(k+"市")
       k = k+"县" if county_arr.include?(k+"县")
