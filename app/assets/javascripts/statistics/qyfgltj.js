@@ -113,6 +113,18 @@ function chart(data){
             getInfo(optVal, '0');
         }
     });
+
+    //点击查询
+    $('#checkBtn').click(function(event) {
+        var getSelectInfo = $("#cqtj_option").val();
+        if($(".exportR").hasClass("hide")){
+            getChartInfo(myChart2,getSelectInfo,"1");
+//                    getChartInfo(myChart2,getSelectInfo,"1");
+        }else {
+            getInfo(getSelectInfo,'0');//
+        }
+    });
+
 //点击不同的市显示该市下级市县区相应的数据
     myChart2.on('click',function (params) {
         clearTimeout(timeFn);
