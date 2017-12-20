@@ -154,18 +154,25 @@
                ]
            });
        }
+       var timeFn = null;
         $(document).ready(function(){
             chart(<%= raw @chart %>);
             myChart1=echarts.init(document.getElementById('chart_1'));
             myChart1.setOption(option1);
 
             //点击不同的市显示该市下级市县区相应的数据
+            clearTimeout(timeFn);
+            //由于单击事件和双击事件冲突，故单击的响应事件延迟250毫秒执行
             myChart1.on('click',function(params){
-                // console.log(params.componentType);
                 // 获取当前点击的市
-                getChartInfo(this,params.name,2);
+                timeFn = setTimeout(getChartInfo(this,params.name,2),250);
 
             });
+            //双击返回最上级
+            myChart1.on('dblclick',function (params) {
+                clearTimeout(timeFn);
+                getChartInfo(this,'','2');//请求后台数据
+            })
             // 时间区域选取
             // 初始时间
             var date=new Date;

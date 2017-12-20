@@ -55,6 +55,9 @@
             "fgl":[63.00, 35.71, 52.94, 88.70, 84.50, 43.75, 56.30, 50.61, 35.60, 73.33, 37.5, 94.62,42.86]};
 
         chart(info1);
+        $('#restBtn').click(function(event) {
+            $('#cqtj_option').val('');
+        });
     })
     // 点击切换图表
     function changeBtn(){
@@ -202,6 +205,8 @@
         <!-- 切换显示模式 -->
         <div class="topside_switch">
             <button type="button" class="btn btn-default bgc1 btn-primary exportR">导出报表</button>
+          <button type="button" class="btn btn-default bgc1 btn-primary" id="checkBtn">查询</button>
+          <button type="button" class="btn btn-default bgc1 btn-primary" id="restBtn">重置</button>
             <button type="button" class="btn btn-default changeType" id="changeBtn">切换图表模式</button>
         </div>
 

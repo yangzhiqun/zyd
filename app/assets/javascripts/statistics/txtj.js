@@ -273,25 +273,15 @@ function getChartInfo(myChart,params,flag){
         ],
         series: [
             {
-                // name:'总企业数',
-                // type:'bar',
                 data: json.y1
             },
             {
-                // name:'覆盖率',
-                // type:'line',
-                // yAxisIndex: 1,
                 data: json.y2
             },
             {
-                // name:'总企业数',
-                // type:'bar',
                 data: json.y1
             },
             {
-                // name:'覆盖率',
-                // type:'line',
-                // yAxisIndex: 1,
                 data: json.y2
             }
         ]
