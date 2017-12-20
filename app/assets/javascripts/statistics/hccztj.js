@@ -103,7 +103,7 @@ function chart(data){
         '20171':[240,460,237,349,149,47],
         '20172':[123,246,347,409,349,149]
     }]};
-    var myChart=echarts.init(document.getElementById('chart'))
+    var myChart=echarts.init(document.getElementById('chart'));
     myChart.showLoading();
    // myChart.setOption(getData(anhui_data));
     // 点击查询
@@ -125,7 +125,7 @@ function chart(data){
         myChart.setOption(option);
         myChart.hideLoading();
     })
-    $(document).on('change','#area_selcet',function(){
+  /*  $(document).on('change','#area_selcet',function(){
         var areaVal=$(this).val();
         var option;
         switch(areaVal){
@@ -137,7 +137,7 @@ function chart(data){
                 break;
         }
         myChart.hideLoading();
-    })
+    }) */
 
 // 获取数据
 function getData(anhui_data){
@@ -295,10 +295,10 @@ function changeBtn(){
         $('.charts_1').toggleClass('hide');
         if($('.content_bottom').is(':hidden')){
             that.text('切换表格模式');
-            // $('.exportR').addClass('hide');
+             $('.exportR').addClass('hide');
         }else{
             that.text('切换图表模式');
-            // $('.exportR').removeClass('hide');
+             $('.exportR').removeClass('hide');
         }
     });
 
