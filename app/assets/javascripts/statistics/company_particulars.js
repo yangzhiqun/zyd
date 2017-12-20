@@ -1,6 +1,3 @@
-//$(function(){
-//    getDataTp(info);
-//})
 
 //加载列表
 function getDataTp(info){
@@ -27,74 +24,43 @@ function getDataTp(info){
                     return index + 1;
                 }
             },{
-                field : 'sf',
-                title : '省份',
+                field : 'xkzh',
+                title : '生产许可证编号',
                 align : 'center'
                 //sortable : true 排序
             },
             {
-                field : 'bcydws',
-                title : '被抽样单位市',
+                field : 'fzdw',
+                title : '发证单位',
                 align : 'center'
                 //sortable : true 排序
             },
             {
-                field : 'rwly',
-                title : '任务来源',
+                field : 'qymc',
+                title : '企业名称',
                 align : 'center'
             },{
-                field : 'cybh',
-                title : '抽样编号',
+                field : 'province',
+                title : '所在省',
                 align : 'center'
             },{
-                field : 'ypmc',
-                title : '样品名称',
+                field : 'city',
+                title : '所在市',
                 align : 'center'
             },{
-                field : 'cydwmc',
-                title : '采样单位名称',
+                field : 'county',
+                title : '所在县',
                 align : 'center'
             },{
-                field : 'jyjgmc',
-                title : '检验机构名称',
-                align : 'center'
-            },{
-                field : 'ypsfqr',
-                title : '样品是否确认',
-                align : 'center'
-            },{
-                field : 'tbzt',
-                title : '填报状态',
+                field : 'id',
+                title : '详情',
                 align : 'center',
                 formatter : function (value, row, index) {
-                    var n = Number(value);
-                    var name = "";
-                    if(n<2){
-                        name = "填报样品信息";
-                    }else if(n < 3){
-                        name = "填报检测数据";
-                    }else if(n==3){
-                        name = "退回待修数据";
-                    }else if(n==4){
-                        name = "待机构审核";
-                    }else if(n==5){
-                        name = "待机构批准";
-                    }else if(n==16){
-                        name = "报告发送人";
-                    }
-                    else if(n==9){
-                        name = "完全提交";
-                    }
-                    else if(n==6){
-                        name = "待省局审核";
-                    }
-                    else {
-                        name = "填报样品信息";
-                    }
-                    var info = "<a target='_blank' href='/sp_bsbs/"+row.id+"/edit' >"+name+"</a>";
+                    var info = "<a target='_blank' href='/sp_production_infos/"+row.id+"/edit' >"+name+"</a>";
                     return info;
                 }
             }
         ]
     });
 }
+
