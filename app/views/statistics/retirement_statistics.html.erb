@@ -83,7 +83,7 @@
                     title : '完全提交退修数',
                     align : 'center',
                     formatter : function (value, row, index) {
-                        var info = "<a href='javascript:void(0);' onclick = openPostWindow('"+value+"')>"+value+"</a>";
+                        var info = "<a href='javascript:void(0);' onclick = openPostWindow('"+value+"')>"+value.length+"</a>";
                         return info;
                     }
                 },
@@ -139,7 +139,7 @@
                        align : 'center',
                        formatter : function (value, row, index) {
 
-                           var info = "<a href='javascript:void(0);' onclick = openPostWindow('"+value+"')>"+value+"</a>";
+                           var info = "<a href='javascript:void(0);' onclick = openPostWindow('"+value+"')>"+value.length+"</a>";
                            return info;
                        }
                    },
@@ -336,8 +336,7 @@
         </div>
         <!-- 切换显示模式 -->
         <div class="topside_switch">
-
-            <button type="button" class="btn btn-default bgc1 btn-primary exportR">导出报表</button>
+            <a class="btn btn-default bgc1 btn-primary exportR" href="/retirement_statistics?is_export=1">导出报表</a>
             <button type="button" class="btn btn-default bgc1 btn-primary" id="checkBtn">查询</button>
             <button type="button" class="btn btn-default bgc1 btn-primary" id="restBtn">重置</button>
             <button type="button" class="btn btn-default changeType" id="changeBtn">切换图表模式</button>

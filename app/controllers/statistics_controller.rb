@@ -1,7 +1,7 @@
 class StatisticsController < ApplicationController
 
   require 'food/download_statistics'
-  skip_before_filter :session_expiry, :verify_authenticity_token, :authenticate_user!,:only => [:particulars]
+  skip_before_filter :session_expiry, :verify_authenticity_token, :authenticate_user!,:only => [:particulars,:company_particulars]
 
   def statistics
   end
@@ -218,19 +218,12 @@ class StatisticsController < ApplicationController
     end
   end
 
-  #企业覆盖率统计
-  def enterprise_statistics
-   # p "1"*100
-   # p SpBsb.admin_select(region_power)
-   # p "1"*100
-  end
-
   #不合格样品及问题样品预警
   def early_warning
     @data_arr,@data_items,@nonconformity = Statistic.nonconformity.map{ |d| d.to_json }
   end
 
-  #详细页
+  #检验信息详细页
   #[{"id"=>"1","sf"=>"安徽","bcydws"=>"阜阳","rwly"=>"安庆市食品药品监督管理局","cybh"=>"121903","ypmc"=>"大豆油","cydwmc"=>"安庆市食品药品监督管理局","jyjgmc"=>"安庆市检验检测机构01","ypsfqr"=>"样品未确认","tbzt"=>"2"}]
   def particulars
     @data = []
@@ -242,36 +235,81 @@ class StatisticsController < ApplicationController
     render layout: false
   end
 
+  #生产企业详细页
+  def company_particulars 
+    @data = []
+    arr = params["opid"].split(",")
+    SpProductionInfo.where(id:arr).each do |company|
+      @data << {"id"=>company.id,"xkzh"=>company.scbh,"fzdw"=>company.fzdw,"qymc"=>company.qymc,"province"=>company.sp_s_3,"city"=>company.sp_s_4,"county"=>company.sp_s_5}
+    end
+    @data = @data.to_json
+    render layout: false
+  end
+
+  #企业覆盖率统计
+  #sp_s_64:标示企业名称
+  #[{"area":"合肥","zqys":"12","bcqys":[1,2,3,4,5],"fgl":"12"}]
+  def enterprise_statistics
+    @data = []
+    power = region_power
+    sp_type  = power[2] == 0 ? "sp_s_4":"sp_s_5"
+    sp_name  = SpBsb.group("sp_s_64").count
+    sp_scbh  = SpBsb.group("sp_s_13").count
+    pro_info = SpProductionInfo.where(power[0]).group_by{ |info| info.send(sp_type) }
+    pro_info.each do |name,info|
+      if name.present?
+        sum_num  = info.map(&:id)
+        bcqy_arr = []
+        info.each do |i|
+          if sp_name.has_key?(i.qymc)
+            bcqy_arr << i.id
+          elsif sp_scbh.has_key?(i.scbh)
+            bcqy_arr << i.id
+          end
+        end
+        fgl = ((bcqy_arr.length.to_f/sum_num.length)*100).to_i.to_s 
+        @data << {"area"=>name,"zqys"=>sum_num,"bcqys"=>bcqy_arr,"fgl"=>fgl}  
+      end
+    end
+    @data = @data.to_json
+  end
+
   #退休统计
   #0 表格  1 图表
   def retirement_statistics
     @data = {"chouyang"=>[],"chengjian"=>[]} #{"chouyang" =>[{"area"=>"瑶海","cyjg"=>"zhangsan","txsl"=>"10","txl"=>"12"}]}
-    sp_bsbs  = SpBsb.where(sp_s_3: "安徽")
-    if params["time"].present?
+    power = region_power
+    sp_type = power[2] == 0 ? "sp_s_4":"sp_s_5"
+    sp_bsbs  = SpBsb.where(sp_i_state:9).admin_select(power[0])
+    if params["time"].present? && params["area"].present?
       time = params["time"].split("/") 
-      sp_bsbs = sp_bsbs.where(created_at:Statistic.time_slot(time[0],time[1]),sp_s_4:params["area"])
+      sp_bsbs = sp_bsbs.where(created_at:Statistic.time_slot(time[0],time[1]),"#{sp_type}"=>params["area"])
+      sp_type = "sp_s_5"
     end
     revision = RevisionLog.where(sp_bsb_id: sp_bsbs.map{|s|s.id}).group_by{ |r| r.sp_bsb_id}
-    packet = sp_bsbs.group_by{ |sp| sp.send(params["time"].present? ? "sp_s_5":"sp_s_4") }
+    packet = sp_bsbs.group_by{ |sp| sp.send(sp_type) }
     @chart = Statistic.retirement(packet,revision) 
     packet.each do |county_name,sp_bsb_arr|
       region  = county_name   
       sp_bsb_arr.group_by{ |sp| sp.sp_s_35 }.each do |cy_jg,cy_arr| #抽样单位
         jg_name = cy_jg
-        completely    = cy_arr.length
+        completely    = cy_arr.map(&:id)
         revision_num  = 0
         cy_arr.each{ |spbsb| revision_num += revision[spbsb.id].length if revision.has_key?(spbsb.id) } 
-        revision_rate = ((revision_num.to_f/completely)*100).to_i.to_s 
+        revision_rate = ((revision_num.to_f/completely.length)*100).to_i.to_s 
         @data["chouyang"] << {"area"=>region,"cyjg"=>jg_name,"txsl"=>completely,"txl"=>revision_rate}
       end
       sp_bsb_arr.group_by{ |sp| sp.sp_s_43 }.each do |cj_jg,cj_arr| #承检单位
         jg_name = cj_jg
-        completely    = cj_arr.length
+        completely    = cj_arr.map(&:id)
         revision_num  = 0
         cj_arr.each{ |spbsb| revision_num += revision[spbsb.id].length if revision.has_key?(spbsb.id) } 
-        revision_rate = ((revision_num.to_f/completely)*100).to_i.to_s 
+        revision_rate = ((revision_num.to_f/completely.length)*100).to_i.to_s 
         @data["chengjian"] << {"area"=>region,"cyjg"=>jg_name,"txsl"=>completely,"txl"=>revision_rate}
       end
+    end
+    if params["is_export"] == "1"
+      send_file(DownloadStatistics.retirement("Statistic::Retirement",@data), :disposition => "attachment")
     end
     if params["flag"].blank?
       @data = @data.to_json
@@ -341,14 +379,14 @@ class StatisticsController < ApplicationController
       end
     end
     if params["is_export"] == "1"
-      send_file(DownloadStatistics.start("Statistic::Composite",@data), :disposition => "attachment")
+      send_file(DownloadStatistics.composite("Statistic::Composite",@data), :disposition => "attachment")
     end
     @data = @data.to_json
   end
 
   def region_power
-    return "","sp_s_4" if is_sheng? 
-    return "sp_s_4 = '#{current_user.prov_city}'","sp_s_4" if is_city? 
-    return "sp_s_5 = '#{current_user.prov_country}'","sp_s_5" if is_county_level? 
+    return "","sp_s_4",0 if is_sheng? 
+    return "sp_s_4 = '#{current_user.prov_city}'","sp_s_4",1 if is_city? 
+    return "sp_s_5 = '#{current_user.prov_country}'","sp_s_5",2 if is_county_level? 
   end
 end

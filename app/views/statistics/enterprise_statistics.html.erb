@@ -68,10 +68,11 @@
             }
         });
     }
-    var info = [{"area":"合肥","zqys":"12","bcqys":[1,2,3,4,5],"fgl":"12"},
-        {"area":"合肥","zqys":"12","bcqys":[1,2,3,4,5],"fgl":"12"},
-        {"area":"合肥","zqys":"12","bcqys":[1,2,3,4,5],"fgl":"12"},
-        {"area":"合肥","zqys":"12","bcqys":[1,2,3,4,5],"fgl":"12"}];
+    //var info = [{"area":"合肥","zqys":"12","bcqys":[1,2,3,4,5],"fgl":"12"},
+    //    {"area":"合肥","zqys":"12","bcqys":[1,2,3,4,5],"fgl":"12"},
+    //    {"area":"合肥","zqys":"12","bcqys":[1,2,3,4,5],"fgl":"12"},
+    //    {"area":"合肥","zqys":"12","bcqys":[1,2,3,4,5],"fgl":"12"}];
+    var info = <%= raw @data %>
     function getData(info){
         $('#tb_report').bootstrapTable({
             //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
@@ -106,7 +107,11 @@
                 },{
                     field : 'zqys',
                     title : '总企业数',
-                    align : 'center'
+                    align : 'center',
+                    formatter : function (value, row, index) {
+                        var info = "<a href='javascript:void(0);' onclick = openPostWindow('"+value+"')>"+value.length+"</a>";
+                        return info;
+                    }
                 },{
                     field : 'bcqys',
                     title : '被抽企业数',
@@ -127,26 +132,35 @@
             ]
         });
     }
-    function getInfo(params,flag){
-       /* $.ajax({
-            type: "get",
-            async : false, //同步执行
-            url: "",
-            data: {
-                "area":area,
-                "flag": flag //0为表格  1，为图表
-            },
-            success: function (data) {
-                if (data) {
-                    //先销毁表格
-                    $('#tb_report').bootstrapTable('destroy');
-                    getData(data);
-                }
-                else {
-                    alert("数据错误");
-                }
-            }
-        })*/
+    function openPostWindow(data){
+        var tempForm = document.createElement("form");
+        tempForm.id = "tempForm1";
+        tempForm.method = "post";
+        tempForm.action = "/company_particulars";
+        tempForm.target="_blank"; //打开新页面
+        var hideInput1 = document.createElement("input");
+        hideInput1.type = "hidden";
+        hideInput1.name="opid"; //后台要接受这个参数来取值
+        hideInput1.value = data; //后台实际取到的值
+      /*var hideInput2 = document.createElement("input");
+       hideInput2.type = "hidden";
+       hideInput2.name="xtmc";
+       hideInput2.value = data2;  这里就是如果需要第二个参数的时候可以自己再设置*/
+        tempForm.appendChild(hideInput1);
+        //tempForm.appendChild(hideInput2);
+        if(document.all){
+            tempForm.attachEvent("onsubmit",function(){});        //IE
+        }else{
+            var subObj = tempForm.addEventListener("submit",function(){},false);    //firefox
+        }
+        document.body.appendChild(tempForm);
+        if(document.all){
+            tempForm.fireEvent("onsubmit");
+        }else{
+            tempForm.dispatchEvent(new Event("submit"));
+        }
+        tempForm.submit();
+        document.body.removeChild(tempForm);
     }
     </script>
 </head>

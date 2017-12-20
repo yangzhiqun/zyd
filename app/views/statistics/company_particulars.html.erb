@@ -11,11 +11,9 @@
 </head>
 <script>
   $(document).ready(function(){
-      var data = [{"id":"12","xkzh":"XK16 030 7704","fzdw":"宣城市食品药品监督管理局","qymc":"泾县怡仁堂酒厂",
-          "province":"安徽","city":"宣城","county":"泾县"}];
-     // var data = <%#= raw @data %>;
-      getDataTp(data);
-   })
+    var data = <%= raw @data %>
+    getDataTp(data);
+  })
 </script>
 <br>
   <div class="myTable">
