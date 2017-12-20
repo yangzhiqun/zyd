@@ -56,7 +56,7 @@ function getDataTp(info){
                 title : '详情',
                 align : 'center',
                 formatter : function (value, row, index) {
-                    var info = "<a target='_blank' href='/sp_production_infos/"+row.id+"/edit' >"+name+"</a>";
+                    var info = "<a target='_blank' href='/sp_production_infos/"+row.id+"/edit' >详情</a>";
                     return info;
                 }
             }

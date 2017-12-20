@@ -128,6 +128,7 @@ Rails.application.routes.draw do
 
   resources :sys_provinces
   get 'prov_data' => 'sys_provinces#prov_data'
+  get 'new_prov_data' => 'sys_provinces#new_prov_data'
   get 'prov' => 'sys_provinces#prov'
   get 'sub_provs' => 'sys_provinces#sub_provs'
   post 'create_prov' => 'sys_provinces#create_prov'
@@ -452,5 +453,6 @@ Rails.application.routes.draw do
   get 'retirement_statistics' => 'statistics#retirement_statistics'
   get 'nonconformity_statistics_data/:id' => 'statistics#nonconformity_statistics_data'
   match 'particulars' => 'statistics#particulars', via: [:get, :post]
+  match 'company_particulars' => 'statistics#company_particulars', via: [:get, :post]
 
 end
