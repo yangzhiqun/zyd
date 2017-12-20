@@ -254,7 +254,7 @@ function getChartInfo(myChart,params,flag){
       $.ajax({
      type : "get",
      contentType: "application/json",
-     //async : true, //异步执行
+     async : false, //同步执行
      url : "retirement_statistics",
      dataType : "json", //返回数据形式为json
           data:{

@@ -221,6 +221,10 @@
                     getinfo(getSelectInfo);//
                 }
             });
+
+            $('#restBtn').click(function(event) {
+                $('#cqtj_option').val('');
+            });
         })
         //ajax封装
         function getinfo(area){
@@ -231,6 +235,7 @@
             }
             $.ajax({
                 type: "get",
+                async : false, //同步执行
                 url: "retirement_statistics",
                 data: {
                   "time":time.replace(/\ +/g,""),
@@ -334,6 +339,7 @@
 
             <button type="button" class="btn btn-default bgc1 btn-primary exportR">导出报表</button>
             <button type="button" class="btn btn-default bgc1 btn-primary" id="checkBtn">查询</button>
+            <button type="button" class="btn btn-default bgc1 btn-primary" id="restBtn">重置</button>
             <button type="button" class="btn btn-default changeType" id="changeBtn">切换图表模式</button>
         </div>
     </div>

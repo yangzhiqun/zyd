@@ -37,34 +37,35 @@
             // 按地区选择表格数据
             var cq_select = $(".topbtnSect_cqtj");
             cq_select.change(function(){
+                var data = [{"czdw":"处置单位111","czhj":"处置环节","bhgczs":"不合格处置数","bhgczl":"不合格处置率","bhgczwcs":"不合格处置完成数",
+                    "yys":"异议数","fjs":"复检数","fjbhgs":[1,2,3,4,7],"las":[1,2,3,4,5,6,7]}];
+                var cq_selected = $(this).find("option:selected").text();
               /*  $.ajax({
                type: "post",
                contentType: "application/json",
-               url: "WebService1.asmx/Login",
+               async : false, //同步执行
+               url: "",
                data: {
-               "parmas":parmas.join(',')
+                  "parmas":cq_selected
                },
                success: function (data) {
-               if (data == 'true') {
-               window.location.open = 'HTMLPage1.htm';
-               }
+               if (data) {*/
+                 $('#tb_report').bootstrapTable('destroy');
+                 getData(data);
+               /*}
                else {
-               alert("数据错误");
+                  alert("数据错误");
                }
                }
                })
                */
-                var data = [{"czdw":"处置单位","czhj":"处置环节","bhgczs":"不合格处置数","bhgczl":"不合格处置率","bhgczwcs":"不合格处置完成数",
-                    "yys":"异议数","fjs":"复检数","fjbhgs":[1,2,3,4,7],"las":[1,2,3,4,5,6,7]}];
-                $('#tb_report').bootstrapTable('destroy');
-                var cq_selected = $(this).find("option:selected").text();
-                 alert(cq_selected);
-                getData(data)
+
+
             })
             getData(data);
         })
-        var data = [{"czdw":"处置单位","czhj":"处置环节","bhgczs":"不合格处置数","bhgczl":"不合格处置率","bhgczwcs":"不合格处置完成数",
-            "yys":"异议数","fjs":"复检数","fjbhgs":"复检不合格数","las":[1,2,3,4,5,6,7]}];
+        var data = [{"czdw":"处置单位","czhj":"处置环节","bhgczs":[1,2,3,4,5],"bhgczl":"不合格处置率","bhgczwcs":[1,2,3,4,5],
+            "yys":[1,2,3,4,5],"fjs":[1,2,3,4,5],"fjbhgs":[12,12,3,21,3],"las":[1,2,3,4,5,6,7]}];
 
         function getData(info){
             $('#tb_report').bootstrapTable({
@@ -76,13 +77,13 @@
                 striped: true,                      //是否显示行间隔色
                 cache: false,                      //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
                 search: true, //显示搜索框
-                // pagination: true,                   //是否显示分页（*）
+                 pagination: true,                   //是否显示分页（*）
                 // sortOrder: "asc",                   //排序方式
                 //queryParams: oTableInit.queryParams,//传递参数（*）
-                // sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
-                // pageNumber: 1,                       //初始化加载第一页，默认第一页
-                // pageSize: 10,                       //每页的记录行数（*）
-                // pageList: [10, 25, 50, 100],      //可供选择的每页的行数（*）
+                 sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
+                 pageNumber: 1,                       //初始化加载第一页，默认第一页
+                 pageSize: 10,                       //每页的记录行数（*）
+                 pageList: [10, 25, 50, 100],      //可供选择的每页的行数（*）
                 columns : [
                     {
                         title : '序号',//标题  可不加
@@ -100,11 +101,7 @@
                     },{
                         field : 'czhj',
                         title : '处置环节',
-                        align : 'center',
-                        formatter : function (value, row, index) {
-                            var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
-                            return info;
-                        }
+                        align : 'center'
                     },{
                         field : 'bhgczs',
                         title : '不合格处置数',
