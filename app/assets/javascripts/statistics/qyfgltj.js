@@ -1,10 +1,4 @@
-$(function(){
-	chart(info1);
-})
-
-var info1 = {"x":['合肥','芜湖','蚌埠','淮南','马鞍山','淮北','铜陵','安庆','黄山','滁州','阜阳','宿州','六安市'],
-"zqys":[200, 140, 170, 230, 245, 176, 135, 162, 132, 120, 160, 130,140],"bjqys":[126, 50, 90, 204, 207, 77, 76, 82, 47, 88, 60, 123,60],
-"fgl":[63.00, 35.71, 52.94, 88.70, 84.50, 43.75, 56.30, 50.61, 35.60, 73.33, 37.5, 94.62,42.86]};
+var timeFn = null;
 // 图表展示
 function chart(data){
     //生产企业覆盖率
@@ -121,8 +115,17 @@ function chart(data){
     });
 //点击不同的市显示该市下级市县区相应的数据
     myChart2.on('click',function (params) {
-        getChartInfo(myChart2,params.name,'1');//请求后台数据
+        clearTimeout(timeFn);
+        //由于单击事件和双击事件冲突，故单击的响应事件延迟250毫秒执行
+        timeFn = setTimeout(getChartInfo(myChart2,params.name,'1'),250);//请求后台数据
+    });
+
+    myChart2.on('dblclick',function (params) {
+        clearTimeout(timeFn);
+       // alert(123);
+        getChartInfo(myChart2,'','1');//请求后台数据
     })
+
 
 }
 //数据请求后台
