@@ -134,6 +134,9 @@ GEM
     nokogiri (1.6.8.rc3)
       mini_portile2 (~> 2.1.0)
       pkg-config (~> 1.1.7)
+    nokogiri (1.6.8.rc3-x64-mingw32)
+      mini_portile2 (~> 2.1.0)
+      pkg-config (~> 1.1.7)
     nori (2.6.0)
     orm_adapter (0.5.0)
     paranoia (2.1.5)
@@ -332,6 +335,3 @@ DEPENDENCIES
   wicked_pdf
   will_paginate (~> 3.0.5)
   wkhtmltopdf-binary
-
-BUNDLED WITH
-   1.11.2
