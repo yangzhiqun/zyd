@@ -168,13 +168,13 @@
         itemClick: "itemClickEvent",
         columns:[
             {headerText: "地区", dataField: "name", headerAlign: "center",width: "200", handler: "customOrgName"},
-            {headerText: "总批次",dataField: "totalbat", headerAlign: "center", dataAlign: "center", width: "100"},
-            {headerText: "监督抽检批次", dataField: "samplingbat",headerAlign: "center", dataAlign: "center", width: "120"},
-            {headerText: "合格批次", dataField: "qualifiedbat",headerAlign: "center", dataAlign: "center", width: "120"},
-            {headerText: "不合格批次",dataField: "unqualifiedbat", headerAlign: "center", dataAlign: "center", width: "120"},
+            {headerText: "总批次",dataField: "totalbat", headerAlign: "center", dataAlign: "center", width: "100",handler:"formatting"},
+            {headerText: "监督抽检批次", dataField: "samplingbat",headerAlign: "center", dataAlign: "center", width: "120",handler:"formatting"},
+            {headerText: "合格批次", dataField: "qualifiedbat",headerAlign: "center", dataAlign: "center", width: "120",handler:"formatting"},
+            {headerText: "不合格批次",dataField: "unqualifiedbat", headerAlign: "center", dataAlign: "center", width: "120",handler:"formatting"},
             {headerText: "不合格样品率", dataField: "qualifiedsamp",headerAlign: "center", dataAlign: "center", width: "120"},
-            {headerText: "风险检测批次", dataField: "riskbat",headerAlign: "center", dataAlign: "center", width: "120"},
-            {headerText: "问题样品批次", dataField: "problembat",headerAlign: "center", dataAlign: "center", width: "120"},
+            {headerText: "风险检测批次", dataField: "riskbat",headerAlign: "center", dataAlign: "center", width: "120",handler:"formatting"},
+            {headerText: "问题样品批次", dataField: "problembat",headerAlign: "center", dataAlign: "center", width: "120",handler:"formatting"},
             {headerText: "问题样品率", dataField: "problemsamp",headerAlign: "center", dataAlign: "center", width: "120"}
         ],
         data: <%= raw @data %> 
@@ -202,7 +202,7 @@
           value:mydate
         });
         treeGrid.expandAll("N");//默认关闭
-        $("#div1 table tr:last td:first").children("img").remove(); //删除最后图标
+        //$("#div1 table tr:last td:first").children("img").remove(); //删除最后图标
         $(".allcheck").click(function(){
             $("#tg1").find("input[name='cblbox']").attr("checked",$(this).attr("checked"));
         });
@@ -236,7 +236,57 @@
         var name = row[col.dataField] || "";
         return name;
     }
+    /***
+     * 格式化
+     * */
+    function formatting(row, col){
+        console.log(row);
+        console.log(row[col.dataField].length);
+        var num = 0;
+        var name = "";
+        num = row[col.dataField].length;
+        name = row[col.dataField] || [];
 
+        var a = "<a href='javascript:void(0);' onclick = openPostWindow('"+name+"')>"+num+"</a>"
+        return a;
+    }
+//请求后台方法，弹出详情页面
+    /*function ajaxInfo(args){
+      $.post("particulars",{"params":args},function(response){
+            var obj = window.open("about:blank","_blank");
+            obj.document.write(response);
+        })
+    }*/
+    function openPostWindow(data){
+        var tempForm = document.createElement("form");
+        tempForm.id = "tempForm1";
+        tempForm.method = "post";
+        tempForm.action = "particulars";
+        tempForm.target="_blank"; //打开新页面
+        var hideInput1 = document.createElement("input");
+        hideInput1.type = "hidden";
+        hideInput1.name="opid"; //后台要接受这个参数来取值
+        hideInput1.value = data; //后台实际取到的值
+      /*var hideInput2 = document.createElement("input");
+       hideInput2.type = "hidden";
+       hideInput2.name="xtmc";
+       hideInput2.value = data2;  这里就是如果需要第二个参数的时候可以自己再设置*/
+        tempForm.appendChild(hideInput1);
+        //tempForm.appendChild(hideInput2);
+        if(document.all){
+            tempForm.attachEvent("onsubmit",function(){});        //IE
+        }else{
+            var subObj = tempForm.addEventListener("submit",function(){},false);    //firefox
+        }
+        document.body.appendChild(tempForm);
+        if(document.all){
+            tempForm.fireEvent("onsubmit");
+        }else{
+            tempForm.dispatchEvent(new Event("submit"));
+        }
+        tempForm.submit();
+        document.body.removeChild(tempForm);
+    }
     function customLook(row, col){
 
         return "<a href='javascript:void(0)' onclick='showrowname(\""+row.code+"\",\""+row.name+"\")' style='color:blue;'>查看</a>";

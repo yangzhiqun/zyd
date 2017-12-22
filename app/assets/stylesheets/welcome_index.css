@@ -112,7 +112,7 @@ a:link{
 }
 .data-list table th,.data-list table td{
 	border:1px solid #f1f2f7;
-	height: 52px;
+	height: 30px;
 	min-width: 55px;
 	text-align: center;
 }

@@ -15,8 +15,9 @@ class SpBsb < ActiveRecord::Base
     "DELETE FROM tmp_sp_bsbs where id=OLD.id"
   end
 
-  scope :qualified,  -> { where("(sp_s_71 not like '%不合格样品%' or sp_s_71 not like '%问题样品%') and sp_i_state = 9") }
+  scope :qualified,  -> { where("(sp_s_71 not like '%_不合格样品%' and sp_s_71 not like '%问题样品%') and sp_i_state = 9") }
   scope :unqualified, -> { where("(sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%') and sp_i_state = 9") }
+  scope :admin_select, ->(str) { where(str) if str.present? }
 
   attr_accessor :ca_source, :ca_sign
   validates_presence_of :sp_s_16, message: '请提供抽检单编号'
@@ -28,10 +29,6 @@ class SpBsb < ActiveRecord::Base
   audited only: [:sp_s_215,:sp_s_14,:sp_d_28,:sp_s_13,:sp_d_38,:sp_i_state]
 
   SpState = {1 => "基本信息(填报中)", 2 => "检测数据(填报)", 3 => "检测数据(填报)", 4 => "检测数据(机构审核中)", 5 => "检测数据(机构批准中)", 6 => "待机构审核", 9 => "检测数据(已提交至秘书处)", 16 => "检测数据(报告发送人审核中)", 32 => "基本信息审核", 35 => "接收样品"} 
-
-  def self.admin_select_1(str)
-    str.present? ? where(str) : self
-  end
 
   # 核查处置完成情况
   def status_desc

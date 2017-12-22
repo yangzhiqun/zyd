@@ -1,10 +1,9 @@
-$(function(){
+/*$(function(){
     //console.log(getTimeline());
-    chart();
-    changeBtn();
-})
+
+})*/
 // 图表展示
-function chart(data){
+
     var anhui_data={'s':[[80,20],[120,40],[100,30],[70,20],[90,10],[60,40],[100,20]],'x':['人民食堂','食品网','食品企业','大众超市'],'datas':[{
         '20168':[500,42,20,115],
         '20169':[48,34,40,40],
@@ -103,61 +102,87 @@ function chart(data){
         '20171':[240,460,237,349,149,47],
         '20172':[123,246,347,409,349,149]
     }]};
-    var myChart=echarts.init(document.getElementById('chart'))
-    myChart.showLoading();
-   // myChart.setOption(getData(anhui_data));
+
+function chart(){
+    var myChart=echarts.init(document.getElementById('chart'));
+    //getCharData(data);
     // 点击查询
     $('#checkBtn').bind('click',function(){
-        /*  $.ajax({
-         type : "post",
-         async : true, //异步执行
-         url : "AcceptData",
-         dataType : "json", //返回数据形式为json
-         success : function(json) {
-         if (json) {
-         var data;
-         if(myChart==myChart1){
-         data = json;
-         }else{
-         data = json;
-         }*/
-        var option=getData(anhui_data);
-        myChart.setOption(option);
-        myChart.hideLoading();
-    })
-    $(document).on('change','#area_selcet',function(){
-        var areaVal=$(this).val();
-        var option;
-        switch(areaVal){
-            case '蚌埠':
-                option=getData(anhui_data1);
-                myChart.setOption(option);
-                break;
-            default :
-                break;
+        var time = $("#time").val();
+        if(time==""){
+            alert("请选择时间");
+            return
         }
-        myChart.hideLoading();
+        if($(".exportR").hasClass("hide")) {
+            myChart.showLoading();
+            /*  $.ajax({
+             type : "post",
+             async : true, //异步执行
+             url : "",
+             dataType : "json", //返回数据形式为json
+             data:{
+                time:time.replace(/\ +/g,""),
+                area:$('cqtj_option').val()
+             },
+             success : function(json) {
+             if (json) {
+             if(json){
+                 var option=getCharData(json);
+                 myChart.setOption(option);
+                 myChart.hideLoading();
+             }else{
+             alert('数据错误');
+             },
+             error : function(){
+             alert('数据错误');
+             }*/
+            var option = getCharData(anhui_data);
+            myChart.setOption(option);
+            myChart.hideLoading();
+        }else{
+            /*  $.ajax({
+             type : "post",
+             async : true, //异步执行
+             url : "",
+             dataType : "json", //返回数据形式为json
+             data:{
+                 time:time.replace(/\ +/g,""),
+                 area:$('cqtj_option').val()
+             },
+             success : function(json) {
+             if (json) {
+             if(json){
+                 $('#tb_report').bootstrapTable('destroy');
+                 getData(json);
+             }else{
+             alert('数据错误');
+             },
+             error : function(){
+             alert('数据错误');
+             }*/
+        }
     })
 
+
 // 获取数据
-function getData(anhui_data){
+function getCharData(data){
     var dataMap = {};
     // 获取时间轴数据
-    var startT=getTimeline().startT;
+   /* var startT=getTimeline().startT;
     var endT=getTimeline().endT;
     var startY=getTimeline().startY;
     var endY=getTimeline().endY;
-    var timeLen=getTimeline().timeLen;
+    var timeLen=getTimeline().timeLen;*/
     var timeArr=getTimeline().timeArr;
     var timeArr1=getTimeline().timeArr1;
     var options=[];
     var obj={};
-    dataMap.dataBHege = dataFormatter(anhui_data.datas[0],anhui_data.x,timeArr1);//不合格处置数
-    dataMap.dataBuhege = dataFormatter(anhui_data.datas[1],anhui_data.x,timeArr1);//不合格处置完成数
-    dataMap.dataYiyi = dataFormatter(anhui_data.datas[2],anhui_data.x,timeArr1); //异议数
-    dataMap.dataFujian = dataFormatter(anhui_data.datas[3],anhui_data.x,timeArr1);//复检数
-    dataMap.dataFujianbhg = dataFormatter(anhui_data.datas[4],anhui_data.x,timeArr1); //复检不合格数
-    dataMap.dataLian = dataFormatter(anhui_data.datas[5],anhui_data.x,timeArr1);//立案数
+    dataMap.dataBHege = dataFormatter(data.datas[0],data.x,timeArr1);//不合格处置数
+    dataMap.dataBuhege = dataFormatter(data.datas[1],data.x,timeArr1);//不合格处置完成数
+    dataMap.dataYiyi = dataFormatter(data.datas[2],data.x,timeArr1); //异议数
+    dataMap.dataFujian = dataFormatter(data.datas[3],data.x,timeArr1);//复检数
+    dataMap.dataFujianbhg = dataFormatter(data.datas[4],data.x,timeArr1); //复检不合格数
+    dataMap.dataLian = dataFormatter(data.datas[5],data.x,timeArr1);//立案数
 
     for(var i=0,len=timeArr1.length;i<len;i++){
         obj= {
@@ -170,8 +195,8 @@ function getData(anhui_data){
                 {data: dataMap.dataFujianbhg[timeArr1[i]]},
                 {data: dataMap.dataLian[timeArr1[i]]},
                 {data: [
-                    {name: '不合格处置数', value: anhui_data.s[i][0]},
-                    {name: '不合格处置完成数', value: anhui_data.s[i][1]}
+                    {name: '不合格处置数', value: data.s[i][0]},
+                    {name: '不合格处置完成数', value: data.s[i][1]}
                 ]}
             ]
         }
@@ -189,7 +214,7 @@ function getData(anhui_data){
             },
             legend: {
                 x: 'right',
-                data: ['不合格处置数', '不合格处置完成数', '异议数', '复检数', '复检不合格数', '立案数'],
+                data: ['不合格处置数', '不合格处置完成数', '异议数', '复检数', '复检不合格数', '立案数']
             },
             calculable : true,
             grid: {
@@ -212,7 +237,7 @@ function getData(anhui_data){
                 {
                     'type':'category',
                     'axisLabel':{'interval':0},
-                    'data':anhui_data.x,
+                    'data':data.x,
                     splitLine: {show: false}
                 }
             ],
@@ -264,10 +289,15 @@ function dataFormatter(obj,plist,timeline) {
 
 // 获取时间轴数据
 function getTimeline(){
-    var startT=$('#page-start').val().split('-')[1]-0;
-    var endT=$('#page-end').val().split('-')[1]-0;
-    var startY=$('#page-start').val().split('-')[0]-0;
-    var endY=$('#page-end').val().split('-')[0]-0;
+    var time = $("#time").val().replace(/\ +/g,"");
+    var timeS = time.split('/')[0];
+    var timeE = time.split('/')[1];
+    console.log(timeS);
+    console.log(timeE);
+    var startT=timeS.split('-')[1]-0;
+    var endT=timeE.split('-')[1]-0;
+    var startY=timeS.split('-')[0]-0;
+    var endY=timeE.split('-')[0]-0;
     var timeLen=endY-startY==0?endT-startT:12-startT+endT;
     var timeArr=[];
     var timeArr1=[];
@@ -295,10 +325,10 @@ function changeBtn(){
         $('.charts_1').toggleClass('hide');
         if($('.content_bottom').is(':hidden')){
             that.text('切换表格模式');
-            // $('.exportR').addClass('hide');
+             $('.exportR').addClass('hide');
         }else{
             that.text('切换图表模式');
-            // $('.exportR').removeClass('hide');
+             $('.exportR').removeClass('hide');
         }
     });
 
