@@ -9,13 +9,13 @@
 </head>
 <script>
   $(document).ready(function(){
-    var data = [{"id":"123","sp_bsb_id":"123","cjbh":"SC17340675027","present":"张三",
-        "blbm":"芜湖市食品药品监督管理局","blsj":"2017-09-04","wtyp_czb_type_desc":"生产","ypmc":"咕噜绿豆沙冰雪泥",
-        "bsscqy_sheng":"安徽","bsscqy_shi":"芜湖","bsscqy_xian":"繁昌",
-        "bcydw_sheng":"安徽","bcydw_shi":"芜湖",
-        "bcydw_xian":"芜湖县","bsscqymc":"繁昌县玖加玖食品公司","jyjl":"纯抽检不合格样品	",
-        "yyczzt":"123","yyczjg":"未提出异议","wtyp_date":"2017-09-12","qdhcczrq":"2017-09-08"}];
-    getDataTp(data);
+    //var data = [{"id":"123","sp_bsb_id":"123","cjbh":"SC17340675027","present":"张三",
+    //    "blbm":"芜湖市食品药品监督管理局","blsj":"2017-09-04","wtyp_czb_type_desc":"生产","ypmc":"咕噜绿豆沙冰雪泥",
+    //    "bsscqy_sheng":"安徽","bsscqy_shi":"芜湖","bsscqy_xian":"繁昌",
+    //    "bcydw_sheng":"安徽","bcydw_shi":"芜湖",
+    //    "bcydw_xian":"芜湖县","bsscqymc":"繁昌县玖加玖食品公司","jyjl":"纯抽检不合格样品	",
+    //    "yyczzt":"123","yyczjg":"未提出异议","wtyp_date":"2017-09-12","qdhcczrq":"2017-09-08"}];
+    getDataTp(<%= raw @data %>);
   })
 
   //加载列表
@@ -125,7 +125,8 @@
                   title : '详情',
                   align : 'center',
                   formatter : function (value, row, index) {
-                      var info = "<a target='_blank' href='/wpty_czbs/"+row.sp_bsb_id+"/edit?wtyp_czb_id='"+row.id+"' >详情</a>";
+                    console.log(row);
+                      var info = "<a target='_blank' href='/wtyp_czbs/"+row.sp_bsb_id+"/edit?wtyp_czb_id="+row.id+"' >详情</a>";
                       return info;
                   }
               }

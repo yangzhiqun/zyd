@@ -145,54 +145,54 @@ function chart(data){
 }
 //数据请求后台
 function getChartInfo(myChart,params,flag){
-    var data = {"x":['长丰县','庐江县','庐阳区','巢湖市','包河区','肥东县','肥西县','蜀山区','瑶海区'],
-    "zqys":[50, 10, 30, 150, 45, 176, 35, 62, 132],
-        "bjqys":[26, 10, 19, 120, 27, 77, 17, 18, 47],
-        "fgl":[52.00, 100, 63.33, 80.00, 60.00, 43.75, 48.57, 29.03, 35.60]};
+    //var data = {"x":['长丰县','庐江县','庐阳区','巢湖市','包河区','肥东县','肥西县','蜀山区','瑶海区'],
+    //"zqys":[50, 10, 30, 150, 45, 176, 35, 62, 132],
+    //    "bjqys":[26, 10, 19, 120, 27, 77, 17, 18, 47],
+    //    "fgl":[52.00, 100, 63.33, 80.00, 60.00, 43.75, 48.57, 29.03, 35.60]};
     myChart.showLoading();
-  /*  $.ajax({
+    $.ajax({
         type : "get",
         contentType: "application/json",
         async : false, //同步执行
-        url : "",
+        url : "/enterprise_statistics",
         dataType : "json", //返回数据形式为json
         data:{
             "area":params,
             "flag": flag //0为表格  1，为图表
         },
         success : function(json) {
-            if (json) { */
+            if (json) {
                 myChart.hideLoading();
                 myChart.setOption({
                     xAxis: [
                         {
-                            data: data.x
+                            data: json.x
                         }
                     ],
                     series: [
                         {
                             // name:'总企业数',
                             // type:'bar',
-                            data:data.zqys
+                            data:json.zqys
                         },
                         {
                             // name:'被检企业数',
                             // type:'bar',
-                            data:data.bjqys
+                            data:json.bjqys
                         },
                         {
                             // name:'覆盖率',
                             // type:'line',
                             // yAxisIndex: 1,
-                            data:data.fgl
+                            data:json.fgl
                         }
                     ]
                 });
-       /*     }
+            }
         },
         error : function(errorMsg) {
             alert("请求数据失败");
         }
-    })*/
+    })
 
 }

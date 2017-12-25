@@ -53,7 +53,8 @@
         $('#restBtn').click(function(event) {
             $('#cqtj_option').val('');
         });
-        chart(<%= raw @chart %>);
+        var data = <%= raw @chart %>
+        chart(data);
     })
     // 点击切换图表
     function changeBtn(){
@@ -167,25 +168,25 @@
         document.body.removeChild(tempForm);
     }
     function getInfo(params,flag){
-      /* $.ajax({
-       type: "get",
-       async : false, //同步执行
-       url: "",
-       data: {
-       "area":area,
-       "flag": flag //0为表格  1，为图表
-       },
-       success: function (data) {
-       if (data) {
-       //先销毁表格
-       $('#tb_report').bootstrapTable('destroy');
-       getData(data);
-       }
-       else {
-       alert("数据错误");
-       }
-       }
-       })*/
+      $.ajax({
+        type: "get",
+        async : false, //同步执行
+        url: "/enterprise_statistics",
+        data: {
+          "area":params,
+          "flag": flag //0为表格  1，为图表
+        },
+        success: function (data) {
+          if (data) {
+            //先销毁表格
+            $('#tb_report').bootstrapTable('destroy');
+            getData(data);
+          }
+          else {
+            alert("数据错误");
+          }
+        }
+      })
     }
     </script>
 </head>
