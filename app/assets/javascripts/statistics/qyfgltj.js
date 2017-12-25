@@ -65,7 +65,7 @@ function chart(data){
                 type: 'value',
                 name: '企业数',
                 min: 0,
-                max: 250,
+                //max: 250,
                 interval: 50,
                 axisLabel: {
                     formatter: '{value} '
