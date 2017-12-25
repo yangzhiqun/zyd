@@ -53,8 +53,9 @@
             chart();
 
         })
-        var data = [{"czdw":"处置单位","bhgczs":[1,2,3,4,5],"bhgczl":"不合格处置率","bhgczwcs":[1,2,3,4,5],
-            "yys":[1,2,3,4,5],"fjs":[1,2,3,4,5],"fjbhgs":[12,12,3,21,3],"las":[1,2,3,4,5,6,7]}];
+        //var data = [{"czdw":"处置单位","bhgczs":[1,2,3,4,5],"bhgczl":"不合格处置率","bhgczwcs":[1,2,3,4,5],
+        //    "yys":[1,2,3,4,5],"fjs":[1,2,3,4,5],"fjbhgs":[12,12,3,21,3],"las":[1,2,3,4,5,6,7]}];
+        data = <%= raw @data %>
 
         function getData(info){
             console.log(info);
@@ -94,7 +95,7 @@
                         align : 'center',
                         formatter : function (value, row, index) {
                             var num = value.length;
-                            var info = "<a href='javascript:void(0);' onclick = getinfo('"+value+"');>"+num+"</a>";
+                            var info = "<a href='javascript:void(0);' onclick = getinfo('"+value+"','hccz_particulars');>"+num+"</a>";
                             return info;
                         }
                     },
@@ -111,7 +112,7 @@
                         align : 'center',
                         formatter : function (value, row, index) {
                             var num = value.length;
-                            var info = "<a href='javascript:void(0);' onclick = getinfo('"+value+"');>"+num+"</a>";
+                            var info = "<a href='javascript:void(0);' onclick = getinfo('"+value+"','hccz_particulars');>"+num+"</a>";
                             return info;
                         }
                     },{
@@ -120,7 +121,7 @@
                         align : 'center',
                         formatter : function (value, row, index) {
                             var num = value.length;
-                            var info = "<a href='javascript:void(0);' onclick = getinfo('"+value+"');>"+num+"</a>";
+                            var info = "<a href='javascript:void(0);' onclick = getinfo('"+value+"','spyy_particulars');>"+num+"</a>";
                             return info;
                         }
                     },{
@@ -129,7 +130,7 @@
                         align : 'center',
                         formatter : function (value, row, index) {
                             var num = value.length;
-                            var info = "<a href='javascript:void(0);' onclick = getinfo('"+value+"');>"+num+"</a>";
+                            var info = "<a href='javascript:void(0);' onclick = getinfo('"+value+"','spyy_particulars');>"+num+"</a>";
                             return info;
                         }
                     },{
@@ -138,7 +139,7 @@
                         align : 'center',
                         formatter : function (value, row, index) {
                             var num = value.length;
-                            var info = "<a href='javascript:void(0);' onclick = getinfo('"+value+"');>"+num+"</a>";
+                            var info = "<a href='javascript:void(0);' onclick = getinfo('"+value+"','spyy_particulars');>"+num+"</a>";
                             return info;
                         }
                     },{
@@ -147,7 +148,7 @@
                         align : 'center',
                         formatter : function (value, row, index) {
                             var num = value.length;
-                            var info = "<a href='javascript:void(0);' onclick = getinfo('"+value+"');>"+num+"</a>";
+                            var info = "<a href='javascript:void(0);' onclick = getinfo('"+value+"','hccz_particulars');>"+num+"</a>";
                             return info;
                         }
                     }
@@ -155,12 +156,13 @@
             });
         }
         //点击数量弹出列表
-        function getinfo(parmas){
-            console.log(parmas);
-        /**    var tempForm = document.createElement("form");
+        function getinfo(data,url){
+          console.log(data);
+          console.log(url);
+            var tempForm = document.createElement("form");
             tempForm.id = "tempForm1";
             tempForm.method = "post";
-            tempForm.action = ""; //url不同
+            tempForm.action = url; //url不同
             tempForm.target="_blank"; //打开新页面
             var hideInput1 = document.createElement("input");
             hideInput1.type = "hidden";
@@ -180,7 +182,7 @@
                 tempForm.dispatchEvent(new Event("submit"));
             }
             tempForm.submit();
-            document.body.removeChild(tempForm);  */
+            document.body.removeChild(tempForm);
         }
     </script>
 </head>
@@ -212,6 +214,7 @@
         </div>
         <!-- 切换显示模式 -->
         <div class="topside_switch">
+            <a class="btn btn-default bgc1 btn-primary exportR" href="/disposal_statistics?is_export=1">导出报表</a>
             <button type="button" class="btn btn-default bgc1 btn-primary exportR">导出报表</button>
             <button type="button" class="btn btn-default bgc1 btn-primary" id="checkBtn">查询</button>
             <button type="button" class="btn btn-default changeType" id="changeBtn">切换图表模式</button>
@@ -228,7 +231,7 @@
             <div class="form-group topbtnSect_cqtj">
               <label>环节：</label>
               <select class="form-control cqtj_option" id="hj">
-                <option selected="selected" value="QB">全部</option>
+                <option selected="selected" value>全部</option>
                 <option value="SC">生产</option>
                 <option value="JY">经营</option>
                 <option value="WC">网抽</option>

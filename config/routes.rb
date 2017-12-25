@@ -447,6 +447,7 @@ Rails.application.routes.draw do
   get 'unit_statistics' => 'statistics#unit_statistics'
   get 'overtime_statistics' => 'statistics#overtime_statistics'
   get 'disposal_statistics' => 'statistics#disposal_statistics'
+  get 'disposal_month_statistics' => 'statistics#disposal_month_statistics'
   get 'enterprise_statistics' => 'statistics#enterprise_statistics'
   get 'early_warning' => 'statistics#early_warning'
   match 'composite_statistics' => 'statistics#composite_statistics', via: [:get, :post], as: :composite_statistics
@@ -454,5 +455,7 @@ Rails.application.routes.draw do
   get 'nonconformity_statistics_data/:id' => 'statistics#nonconformity_statistics_data'
   match 'particulars' => 'statistics#particulars', via: [:get, :post]
   match 'company_particulars' => 'statistics#company_particulars', via: [:get, :post]
+  match 'hccz_particulars' => 'statistics#hccz_particulars', via: [:get, :post]
+  match 'spyy_particulars' => 'statistics#spyy_particulars', via: [:get, :post]
 
 end
