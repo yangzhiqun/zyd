@@ -18,36 +18,27 @@
     <script src="../libs/treegrad/TreeGrid.js"></script>
     <script src="../libs/layDate/laydate.js"></script>
     -->
-    <%= javascript_include_tag "statistics/treegrad/jquery-1.3.2.min","statistics/treegrad/TreeGrid_ajax","statistics/layDate/laydate" %>
+    <%= javascript_include_tag "statistics/treegrad/jquery-1.3.2.min","statistics/treegrad/TreeGrid" %>
 </head> 
 <body>
     <div class="container">
         <!-- 头部head -->
         <div class="page-header testcompany_header">
-            <h1>食品类别统计</h1>
+            <h1>单号查询统计</h1>
         </div>
 
         <!-- 上侧按钮部分 -->
         <div class="foodcate_btn">
-            <%= search_form_for @q, url: food_statistics_path, html: {role: "form"} do |f|  %>
               <div class="fillpage-date">
-                <span>任务来源：</span>
+                <span>抽样单号：</span>
                 <div class="form-group foodcateSelect_btn">
-                    <%= f.select :sp_s_70_eq, BaosongA.all.map { |b| [b.name, b.name] },{:include_blank =>"请选择"},class:"form-control foodcateSelect_option",id:"checkbox_optionH"%>
+                  <input type="text" class="form-control" id="cydh" placeholder="抽样单号">
                 </div>
               </div>
-                <div class="fillpage-date">
-                  <span>样品填报时间：</span>
-                  <div class="form-group">
-                    <%= f.label :选择时间,class:"sr-only",for:"q_time" %>
-                    <%= f.text_field :time,class:"form-control",id:"time",placeholder:"选择时间",value:"#{params[:q].blank? ? '':params[:q]["time"]}" %>
-                  </div>
-                </div>
                 <div class="taskbtn_operBox">
                   <button type="submit" class="btn btn-default taskbtn_query" id="search" >查询</button>
                   <button type="submit" class="btn btn-default taskbtn_export bgc1 btn-primary">导出列表</button>
                 </div>
-            <% end %>
         </div>
 
         <div id="div1" style="margin-bottom: 100px;">
@@ -72,38 +63,27 @@
             folderColumnIndex: "0",
             itemClick: "itemClickEvent",
             columns:[
-                {headerText: "名称", dataField: "name", headerAlign: "center",width: "240", handler: "customOrgName"},
-//                {headerText: "序号", dataField: "code", headerAlign: "center", dataAlign: "center"},
-//                {headerText: "任务数",dataField: "task", headerAlign: "center", dataAlign: "center", width: "100"},
-                {headerText: "抽样数", dataField: "sampling",headerAlign: "center", dataAlign: "center", width: "100"},
-                {headerText: "检验数", dataField: "test",headerAlign: "center", dataAlign: "center", width: "100"},
-                {headerText: "不合格数",dataField: "unqualified", headerAlign: "center", dataAlign: "center", width: "100"},
-                {headerText: "合格数", dataField: "qualified",headerAlign: "center", dataAlign: "center", width: "100"},
-                {headerText: "已处置", dataField: "Disposed",headerAlign: "center", dataAlign: "center", width: "100"},
-                {headerText: "处置中", dataField: "Disposal",headerAlign: "center", dataAlign: "center", width: "100"}
+                {headerText: "单号", dataField: "dh", headerAlign: "center",width: "240", handler: "customOrgName"},
+                {headerText: "不合格项名称", dataField: "bhgxmmc",headerAlign: "center", dataAlign: "center", width: "100"},
+                {headerText: "样品名称", dataField: "ypmc",headerAlign: "center", dataAlign: "center", width: "100"},
+                {headerText: "区域", dataField: "qy",headerAlign: "center", dataAlign: "center", width: "100"},
+                {headerText: "大类",dataField: "dl", headerAlign: "center", dataAlign: "center", width: "100"},
+                {headerText: "亚类", dataField: "yl",headerAlign: "center", dataAlign: "center", width: "100"},
+                {headerText: "次亚类", dataField: "cyl",headerAlign: "center", dataAlign: "center", width: "100"},
+                {headerText: "细类", dataField: "xl",headerAlign: "center", dataAlign: "center", width: "100"}
             ],
-            data: <%= raw @data %>
-            //data:[
-            //    {name: "报送分类a1", sampling:"128",test:"80",unqualified:"15",qualified:"65",Disposed:"13",Disposal:"2",},
-            //    {name: "报送分类a", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
-            //        {name: "报送分类b", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
-            //            {name: "食品大类", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children: [
-            //                {name: "食品亚类", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
-            //                    {name: "食品次亚类", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",children:[
-            //                        {name: "食品细类", sampling:"82",test:"75",unqualified:"5",qualified:"70",Disposed:"5",Disposal:"0",}
-            //                        ]}
-            //                ]},
-            //            ]}
-            //        ]},
-            //        {name: "报送分类b1", sampling:"62",test:"35",unqualified:"3",qualified:"45",Disposed:"3",Disposal:"42",},
-            //        {name: "报送分类b2", sampling:"20",test:"40",unqualified:"2",qualified:"25",Disposed:"6",Disposal:"19",},
-            //        
-            //    ]},{name: "总计",  sampling:"210",test:"155",unqualified:"20",qualified:"135",Disposed:"18",Disposal:"2", height:"200"},
-            //]
+           // data: <#%= raw @data %>
+            data:[
+                { dh:"SC17340155315",bhgxmmc:"",ypmc:"",qy:"",dl:"",yl:"",cyl:"",xl:""},
+                {dh:"SC17340100000",bhgxmmc:"",ypmc:"",qy:"",dl:"",yl:"",cyl:"",xl:"",children:[
+                    { dh:"",bhgxmmc:"铅(以Pb计)",ypmc:"黄大茶",qy:"合肥",dl:"食品大类",yl:"食品亚类",cyl:"食品次亚类",xl:"食品细类"},
+                    { dh:"",bhgxmmc:"六六六",ypmc:"黄大茶",qy:"合肥",dl:"食品大类",yl:"食品亚类",cyl:"食品次亚类",xl:"食品细类"}
+                ]}
+            ]
         };
 
         $(document).ready(function(){
-            $("#div1 table tr:last td:first").children("img").remove(); //删除最后图标
+//            $("#div1 table tr:last td:first").children("img").remove(); //删除最后图标
             $(".allcheck").click(function(){
                 $("#tg1").find("input[name='cblbox']").attr("checked",$(this).attr("checked"));
             });
@@ -119,12 +99,12 @@
               elem: '#q_created_at_end', //指定元素
               type: 'month'
             });*/
-            laydate.render({
+           /* laydate.render({
                 elem: '#time', //指定元素
                 type: 'month',
                 range: '/',
                 format: 'yyyy-MM'
-            });
+            });*/
 
         });
         /*

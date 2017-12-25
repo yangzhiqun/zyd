@@ -655,7 +655,7 @@
             </ul>
           </dd>-->
       <% end %>
-      <dd>
+      <!--<dd>
       <div class="title">
         <span><img src="/assets/leftico06.png"/></span>结果发布
       </div>
@@ -667,7 +667,7 @@
           <cite></cite><a href="/spsearch_publish_check">食品监督抽检信息查重</a><i></i>
         </li>
       </ul>
-      </dd>
+      </dd> -->
       <% if (!current_user.is_admin? and current_user.is_jg_manager?) or(is_shengshi? and !current_user.is_admin?)  %>
           <dd>
             <div class="title">
@@ -761,12 +761,12 @@
           <li class="<%= "active" if action?("disposal_statistics") %>">
             <cite></cite><a href="/disposal_statistics">核查处置统计</a><i></i>
           </li>
+          <li class="<%#= "active" if action?("") %>">
+            <cite></cite><a href="/">单号查询统计</a><i></i>
+          </li>
           <li class="<%= "active" if action?("enterprise_statistics") %>">
             <cite></cite><a href="/enterprise_statistics">企业覆盖率统计</a><i></i>
           </li>
-          <!--<li class="<%#= "active" if action?("early_warning") %>">-->
-            <!--<cite></cite><a href="/early_warning">不合格样品及问题样品预警</a><i></i>-->
-          <!--</li>-->
           <li class="<%= "active" if action?("retirement_statistics") %>">
             <cite></cite><a href="/retirement_statistics">退修统计</a><i></i>
           </li>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>核查处置详情页</title>
+  <%= stylesheet_link_tag "application.css","welcome_index", :media => "all" %>
+  <%= javascript_include_tag "application.js" %>
+</head>
+<script>
+  $(document).ready(function(){
+    var data = [{"id":"123","sp_bsb_id":"123","cjbh":"SC17340675027","present":"张三",
+        "blbm":"芜湖市食品药品监督管理局","blsj":"2017-09-04","wtyp_czb_type_desc":"生产","ypmc":"咕噜绿豆沙冰雪泥",
+        "bsscqy_sheng":"安徽","bsscqy_shi":"芜湖","bsscqy_xian":"繁昌",
+        "bcydw_sheng":"安徽","bcydw_shi":"芜湖",
+        "bcydw_xian":"芜湖县","bsscqymc":"繁昌县玖加玖食品公司","jyjl":"纯抽检不合格样品	",
+        "yyczzt":"123","yyczjg":"未提出异议","wtyp_date":"2017-09-12","qdhcczrq":"2017-09-08"}];
+    getDataTp(data);
+  })
+
+  //加载列表
+  function getDataTp(info){
+      $('#tb_report1').bootstrapTable({
+          //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
+          //method: 'get',                      //请求方式（*）
+          data:info,
+          // datatype:'json',
+          toolbar: '#toolbar',                //工具按钮用哪个容器
+          striped: true,                      //是否显示行间隔色
+          cache: false,                      //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+          search: true, //显示搜索框
+          pagination: true,                   //是否显示分页（*）
+          // sortOrder: "asc",                   //排序方式
+          //queryParams: oTableInit.queryParams,//传递参数（*）
+          sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
+          pageNumber: 1,                       //初始化加载第一页，默认第一页
+          pageSize: 5,                       //每页的记录行数（*）
+          pageList: [5, 10],      //可供选择的每页的行数（*）
+          columns : [
+              {
+                  title : '序号',//标题  可不加
+                  formatter : function(value,row, index) {
+                      return index + 1;
+                  }
+              },{
+                  field : 'cjbh',
+                  title : '采样编号',
+                  align : 'center'
+                  //sortable : true 排序
+              },
+              {
+                  field : 'present',
+                  title : '领取人',
+                  align : 'center'
+                  //sortable : true 排序
+              },
+              {
+                  field : 'blbm',
+                  title : '领取单位',
+                  align : 'center'
+                  //sortable : true 排序
+              },
+              {
+                  field : 'blsj',
+                  title : '领取时间',
+                  align : 'center'
+              },{
+                  field : 'wtyp_czb_type_desc',
+                  title : '抽样环节',
+                  align : 'center'
+              },{
+                  field : 'ypmc',
+                  title : '样品名称',
+                  align : 'center'
+              },{
+                  field : 'bsscqy_sheng',
+                  title : '标示生产企业省份',
+                  align : 'center'
+              },{
+                  field : 'bsscqy_shi',
+                  title : '标示生产企业市/区',
+                  align : 'center'
+              },{
+                  field : 'bsscqy_xian',
+                  title : '标示生产企业县',
+                  align : 'center'
+              },{
+                  field : 'bcydw_sheng',
+                  title : '被抽样单位省份',
+                  align : 'center'
+              },{
+                  field : 'bcydw_shi',
+                  title : '被抽样单位市/区',
+                  align : 'center'
+              },{
+                  field : 'bcydw_xian',
+                  title : '被抽样单位市县',
+                  align : 'center'
+              },{
+                  field : 'bsscqymc',
+                  title : '标示生产企业名称',
+                  align : 'center'
+              },{
+                  field : 'jyjl',
+                  title : '检验结论',
+                  align : 'center'
+              },{
+                  field : 'yyczzt',
+                  title : '检验结果状态',
+                  align : 'center'
+              },{
+                  field : 'yyczjg',
+                  title : '异议状态',
+                  align : 'center'
+              },{
+                  field : 'wtyp_date',
+                  title : '收到检验报告日期',
+                  align : 'center'
+              },{
+                  field : 'qdhcczrq',
+                  title : '启动核查处置日期',
+                  align : 'center'
+              },{
+                  field : 'id',
+                  title : '详情',
+                  align : 'center',
+                  formatter : function (value, row, index) {
+                      var info = "<a target='_blank' href='/wpty_czbs/"+row.sp_bsb_id+"/edit?wtyp_czb_id='"+row.id+"' >详情</a>";
+                      return info;
+                  }
+              }
+          ]
+      });
+  }
+
+
+</script>
+<br>
+  <div class="myTable">
+    <h2 class="data-title">核查处置详情</h2>
+    <div class="data-list">
+      <table id = "tb_report1">
+      </table>
+    </div>
+  </div>
+</br>
+</div>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>异议详情页</title>
+  <%= stylesheet_link_tag "application.css","welcome_index", :media => "all" %>
+  <%= javascript_include_tag "application.js" %>
+</head>
+<script>
+  $(document).ready(function(){
+    var data = [{"id":"123","cjbh":"SC17340205311","ypmc":"精选百合花",
+        "scrq":"2017-03-26","bsscqy":"安徽北方药业有限公司","bsscqysf":"安徽","bsscqys":"芜湖",
+        "bcydw":"亳州市秦汉生物科技有限责任公司","bcydwsf":"安徽","bcydws":"芜湖",
+        "jyjl":"纯抽检不合格样品","yyczbm":"黄山市黄山区食品药品监督管理局",
+        "yyczqk":"受理","yyczjg":"异议处理中","yyfl":"检验结果异议	",
+        "jyjl":"纯抽检不合格样品","yyczbm":"黄山市黄山区食品药品监督管理局","yyczfzr":"吴嵩"}];
+    getDataTp(data);
+  })
+
+  //加载列表
+  function getDataTp(info){
+      $('#tb_report1').bootstrapTable({
+          //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
+          //method: 'get',                      //请求方式（*）
+          data:info,
+          // datatype:'json',
+          toolbar: '#toolbar',                //工具按钮用哪个容器
+          striped: true,                      //是否显示行间隔色
+          cache: false,                      //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+          search: true, //显示搜索框
+          pagination: true,                   //是否显示分页（*）
+          // sortOrder: "asc",                   //排序方式
+          //queryParams: oTableInit.queryParams,//传递参数（*）
+          sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
+          pageNumber: 1,                       //初始化加载第一页，默认第一页
+          pageSize: 5,                       //每页的记录行数（*）
+          pageList: [5, 10],      //可供选择的每页的行数（*）
+          columns : [
+              {
+                  title : '序号',//标题  可不加
+                  formatter : function(value,row, index) {
+                      return index + 1;
+                  }
+              },{
+                  field : 'cjbh',
+                  title : '抽检编号',
+                  align : 'center'
+                  //sortable : true 排序
+              },
+              {
+                  field : 'ypmc',
+                  title : '样品名称',
+                  align : 'center'
+                  //sortable : true 排序
+              },
+              {
+                  field : 'scrq',
+                  title : '生产日期',
+                  align : 'center'
+                  //sortable : true 排序
+              },
+              {
+                  field : 'bsscqy',
+                  title : '标示生产企业名称',
+                  align : 'center'
+              },{
+                  field : 'bsscqysf',
+                  title : '生产企业省份',
+                  align : 'center'
+              },{
+                  field : 'bsscqys',
+                  title : '生产企业市/区',
+                  align : 'center'
+              },{
+                  field : 'bcydw',
+                  title : '被抽样单位名称',
+                  align : 'center'
+              },{
+                  field : 'bcydwsf',
+                  title : '被抽样单位省份',
+                  align : 'center'
+              },{
+                  field : 'bcydws',
+                  title : '被抽样单位市/区',
+                  align : 'center'
+              },{
+                  field : 'jyjl',
+                  title : '检验结果',
+                  align : 'center'
+              },{
+                  field : 'yyczbm',
+                  title : '检验机构名称',
+                  align : 'center'
+              },{
+                  field : 'yyczqk',
+                  title : '异议处置情况',
+                  align : 'center'
+              },{
+                  field : 'yyczjg',
+                  title : '异议处置结论',
+                  align : 'center'
+              },{
+                  field : 'yyfl',
+                  title : '异议分类',
+                  align : 'center'
+              },{
+                  field : 'jyjl',
+                  title : '抽检结论',
+                  align : 'center'
+              },{
+                  field : 'yyczbm',
+                  title : '异议处置部门',
+                  align : 'center'
+              },{
+                  field : 'yyczfzr',
+                  title : '异议处置负责人',
+                  align : 'center'
+              },{
+                  field : 'id',
+                  title : '详情',
+                  align : 'center',
+                  formatter : function (value, row, index) {
+                      var info = "<a target='_blank' href='/yycz/"+row.id+".html'>详情</a>";
+                      return info;
+                  }
+              }
+          ]
+      });
+  }
+
+
+</script>
+<br>
+  <div class="myTable">
+    <h2 class="data-title">异议详情</h2>
+    <div class="data-list">
+      <table id = "tb_report1">
+      </table>
+    </div>
+  </div>
+</br>
+</div>
+</body>
+</html>

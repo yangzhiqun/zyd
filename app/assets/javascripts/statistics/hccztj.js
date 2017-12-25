@@ -122,7 +122,8 @@ function chart(){
              dataType : "json", //返回数据形式为json
              data:{
                 time:time.replace(/\ +/g,""),
-                area:$('cqtj_option').val()
+                hj:$('#hj').val(),
+                area:$('#cqtj_option').val()
              },
              success : function(json) {
              if (json) {
@@ -147,7 +148,8 @@ function chart(){
              dataType : "json", //返回数据形式为json
              data:{
                  time:time.replace(/\ +/g,""),
-                 area:$('cqtj_option').val()
+                 hj:$('#hj').val(),
+                 area:$('#cqtj_option').val()
              },
              success : function(json) {
              if (json) {
