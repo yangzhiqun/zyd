@@ -53,7 +53,7 @@
             chart();
 
         })
-        var data = [{"czdw":"处置单位","czhj":"处置环节","bhgczs":[1,2,3,4,5],"bhgczl":"不合格处置率","bhgczwcs":[1,2,3,4,5],
+        var data = [{"czdw":"处置单位","bhgczs":[1,2,3,4,5],"bhgczl":"不合格处置率","bhgczwcs":[1,2,3,4,5],
             "yys":[1,2,3,4,5],"fjs":[1,2,3,4,5],"fjbhgs":[12,12,3,21,3],"las":[1,2,3,4,5,6,7]}];
 
         function getData(info){
@@ -88,10 +88,6 @@
                         formatter : function (value, row, index) {
                             return value;
                         }
-                    },{
-                        field : 'czhj',
-                        title : '处置环节',
-                        align : 'center'
                     },{
                         field : 'bhgczs',
                         title : '不合格处置数',
@@ -224,13 +220,20 @@
 
      <!-- 上侧按钮部分 -->
     <div class="topbtn_cqtj">
-        <form role="form">
             <div class="form-group topbtnSect_cqtj">
                 <!-- 左侧选取栏 -->
                 <label>区域：</label>
                 <select class="form-control cqtj_option" id="cqtj_option"></select>
             </div>
-        </form>
+            <div class="form-group topbtnSect_cqtj">
+              <label>环节：</label>
+              <select class="form-control cqtj_option" id="hj">
+                <option selected="selected" value="QB">全部</option>
+                <option value="SC">生产</option>
+                <option value="JY">经营</option>
+                <option value="WC">网抽</option>
+              </select>
+            </div>
     </div>
 
     <!-- 表格数据 -->

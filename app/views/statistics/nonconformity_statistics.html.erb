@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>不合格样品及问题样品预警</title>
     <%#= stylesheet_link_tag "statistics_old/bootstrap/dist/css/bootstrap.min.css", :media => "all" %>
-    <%= stylesheet_link_tag "statistics_old/reset","statistics_old/unproject", :media => "all" %>
+    <%= stylesheet_link_tag "statistics_old/reset","statistics_old/unproject","welcome_index", :media => "all" %>
 </head>
 <body>
     <div class="container">
@@ -81,7 +81,7 @@
                     </table>
                 </div>
 
-              <div class="content_bottom">
+              <div class="content_bottom data-list" >
                 <table class="table table-bordered" id = "tb_report">
 
                 </table>
@@ -127,13 +127,42 @@
         // });
     
         // 点击检验值弹出对应区域的数据详情
-        $(document).on('click','.value_btn',function(){
-             var iTop = (window.screen.availHeight-400)/ 2;
-             var iLeft = (window.screen.availWidth-800)/ 2;
-             window.open('./detailList.html', '_blank','height=400, width=800, top='+iTop+',left='+iLeft+', toolbar=no,menubar=no, scrollbars=no,resizable=no, location=no, status=no');
-        });
+       /* $(document).on('click','.value_btn',function(){
+            alert(this.value);
+        });*/
        
-    }        
+    }
+
+    function openPostWindow(data){
+        var tempForm = document.createElement("form");
+        tempForm.id = "tempForm1";
+        tempForm.method = "post";
+        tempForm.action = "particulars";
+        tempForm.target="_blank"; //打开新页面
+        var hideInput1 = document.createElement("input");
+        hideInput1.type = "hidden";
+        hideInput1.name="opid"; //后台要接受这个参数来取值
+        hideInput1.value = data; //后台实际取到的值
+      /*var hideInput2 = document.createElement("input");
+       hideInput2.type = "hidden";
+       hideInput2.name="xtmc";
+       hideInput2.value = data2;  这里就是如果需要第二个参数的时候可以自己再设置*/
+        tempForm.appendChild(hideInput1);
+        //tempForm.appendChild(hideInput2);
+        if(document.all){
+            tempForm.attachEvent("onsubmit",function(){});        //IE
+        }else{
+            var subObj = tempForm.addEventListener("submit",function(){},false);    //firefox
+        }
+        document.body.appendChild(tempForm);
+        if(document.all){
+            tempForm.fireEvent("onsubmit");
+        }else{
+            tempForm.dispatchEvent(new Event("submit"));
+        }
+        tempForm.submit();
+        document.body.removeChild(tempForm);
+    }
 function chartMap(){
     var myChart = echarts.init(document.getElementById('mainMap'));
     //存储切换的每一级地图信息
@@ -155,8 +184,8 @@ function chartMap(){
         timeFn = setTimeout(function(){
             var name = params.batch[0].name;
             var mapCode = cityMap[name];
-            alert(name);
-            alert(mapCode);
+           // alert(name);
+           // alert(mapCode);
             if (!mapCode) {
 
                 getSelect(name);  //需加参数
@@ -175,7 +204,7 @@ function chartMap(){
     /*
        绑定双击事件，并加载上一级地图
     */
-    myChart.on('dblclick', function(params) {
+  /*  myChart.on('dblclick', function(params) {
         //当双击事件发生时，清除单击事件，仅响应双击事件
         clearTimeout(timeFn);
         var map = mapStack.pop();
@@ -187,7 +216,7 @@ function chartMap(){
         if(map.mapName=='anhui'){
            addHtml(randomData.anhui);
         }
-    });
+    });*/
     /**
        加载地图：根据地图所在省市的行政编号
     */
@@ -267,9 +296,9 @@ function chartMap(){
         });
     }
     function addHtml(obj){
-      var htmlStr = ''
+      var htmlStr = '';
       for (var key in obj) {
-        str =  '<tr>'+'<td><a href=javascript:void(0); onclick=getSelect("'+key+'")>'+key+'</a></td>'+'<td><button class="value_btn">'+obj[key]+'</button></td>'+'</tr>'
+        str =  '<tr>'+'<td><a>'+key+'</a></td>'+'<td><a  href=javascript:void(0); class="value_btn" onclick=openPostWindow("'+obj[key]+'")>'+obj[key]+'</a></td>'+'</tr>';
         htmlStr += str
       }
       $('.content_right>table>tbody').html(htmlStr);
@@ -430,13 +459,13 @@ function chartMap(){
       /*  $.ajax({
        type: "post",
        contentType: "application/json",
-       url: "WebService1.asmx/Login",
+       url: "",
        data: {
-       "parmas":parmas.join(',')
+       "parmas":parmas
        },
        success: function (data) {
-       if (data == 'true') {
-       window.location.open = 'HTMLPage1.htm';
+       if (data) {
+        getData(data[params]);
        }
        else {
        alert("数据错误");
