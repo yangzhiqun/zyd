@@ -9,13 +9,13 @@
 </head>
 <script>
   $(document).ready(function(){
-    var data = [{"id":"123","cjbh":"SC17340205311","ypmc":"精选百合花",
-        "scrq":"2017-03-26","bsscqy":"安徽北方药业有限公司","bsscqysf":"安徽","bsscqys":"芜湖",
-        "bcydw":"亳州市秦汉生物科技有限责任公司","bcydwsf":"安徽","bcydws":"芜湖",
-        "jyjl":"纯抽检不合格样品","yyczbm":"黄山市黄山区食品药品监督管理局",
-        "yyczqk":"受理","yyczjg":"异议处理中","yyfl":"检验结果异议	",
-        "jyjl":"纯抽检不合格样品","yyczbm":"黄山市黄山区食品药品监督管理局","yyczfzr":"吴嵩"}];
-    getDataTp(data);
+    //var data = [{"id":"123","cjbh":"SC17340205311","ypmc":"精选百合花",
+    //    "scrq":"2017-03-26","bsscqy":"安徽北方药业有限公司","bsscqysf":"安徽","bsscqys":"芜湖",
+    //    "bcydw":"亳州市秦汉生物科技有限责任公司","bcydwsf":"安徽","bcydws":"芜湖",
+    //    "jyjl":"纯抽检不合格样品","yyczbm":"黄山市黄山区食品药品监督管理局",
+    //    "yyczqk":"受理","yyczjg":"异议处理中","yyfl":"检验结果异议	",
+    //    "jyjl":"纯抽检不合格样品","yyczbm":"黄山市黄山区食品药品监督管理局","yyczfzr":"吴嵩"}];
+    getDataTp(<%= raw @data %>);
   })
 
   //加载列表
