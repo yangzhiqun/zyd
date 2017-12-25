@@ -248,9 +248,10 @@ class StatisticsController < ApplicationController
 
   #企业覆盖率统计
   #sp_s_64:标示企业名称
-  #[{"area":"合肥","zqys":"12","bcqys":[1,2,3,4,5],"fgl":"12"}]
+  #[{"area":"合肥","zqys":[1,2,3,4,5],"bcqys":[1,2,3,4,5],"fgl":"12"}]
+  #{"x":['合肥','芜湖','蚌埠','淮南'],"zqys":[200, 140, 170, 230],"bjqys":[126, 50, 90, 204],"fgl":[63.00, 35.71, 52.94, 88.70]}
   def enterprise_statistics
-    @data = []
+    @data,@chart = [],{"x"=>[],"zqys"=>[],"bjqys"=>[],"fgl"=>[]}
     power = region_power
     sp_type  = power[2] == 0 ? "sp_s_4":"sp_s_5"
     sp_name  = SpBsb.group("sp_s_64").count
@@ -269,9 +270,15 @@ class StatisticsController < ApplicationController
         end
         fgl = ((bcqy_arr.length.to_f/sum_num.length)*100).to_i.to_s 
         @data << {"area"=>name,"zqys"=>sum_num,"bcqys"=>bcqy_arr,"fgl"=>fgl}  
+        @chart["x"] << name
+        @chart["zqys"] << sum_num.length
+        @chart["bjqys"] << bcqy_arr.length
+        @chart["fgl"] << fgl
       end
     end
+    send_file(DownloadStatistics.enterprise("Statistic::Enterprise",@data), :disposition => "attachment") and return if params["is_export"] == "1"
     @data = @data.to_json
+    @chart = @chart.to_json
   end
 
   #退休统计

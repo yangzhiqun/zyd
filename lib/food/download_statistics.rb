@@ -3,6 +3,24 @@
 module DownloadStatistics
   class << self 
 
+    def enterprise(type,data)
+      book = Spreadsheet::Workbook.new
+      sheet = book.create_worksheet :name => "抽样机构"
+      sheet.row(0).concat eval(type)
+      count_row,num = 1,0 
+      data.each do |info|
+        info.each do |key,value|
+          sheet[count_row, num] = value.class == Array ? value.length : value
+          num += 1
+        end
+        count_row += 1
+        num = 0
+      end
+      savetempfile="public/#{Time.now.strftime("%Y")}-统计结果.xls"
+      book.write(savetempfile)
+      return savetempfile
+    end
+
     def retirement(type,data)
       book = Spreadsheet::Workbook.new
       sheet = book.create_worksheet :name => "抽样机构"
