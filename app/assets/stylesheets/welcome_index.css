@@ -1,0 +1,128 @@
+@charset "UTF-8";
+/*base*/
+body, div, p, h1, h2, h3, h4, h5, h6, ul, li, dt, dd {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: 微软雅黑;
+    /*font-size: 14px;*/
+}
+h2,h4{
+	font-weight: normal;
+}
+html,body{
+	width: 100%;
+	height: 100%;
+}
+a,
+a:hover,
+a:link{
+    text-decoration: none;
+}
+.clearfix:after {
+    content: "";
+    height: 0;
+    line-height: 0;
+    display: block;
+    clear: both;
+    visibility: hidden;
+}
+.clearfix {
+    zoom: 1;
+}
+
+.wrapper{
+	width: 90%;
+	min-width: 768px;
+	margin:0 auto;
+}
+.wrapper .item li{
+	width: 20%;
+	float: left;
+	height: 82px;
+	border-radius: 5px;
+	margin:2.5%;
+	color: #fff;
+}
+.item li>div{
+	height: 58px;
+	margin:12px;
+	padding-left: 60px;
+	text-align: center;
+}
+.item li>div h4{
+	font-size: 16px;
+	padding: 3px 0;
+}
+.item li>div h2{
+	font-size: 16px;
+}
+.item1,.item7{
+	background-color: #57c8f2;
+}
+.item2,.item8{
+	background-color: #6ccac9;
+}
+.item3,.item6{
+	background-color: #ff6c60;
+}
+.item4,.item5{
+	background-color: #f8d749;
+}
+.item1>div{
+	background: url('data-detection-icon-1_03-06.png') no-repeat;
+}
+.item2>div{
+	background: url('data-detection-icon-1_03-08.png') no-repeat;
+}
+.item3>div{
+	background: url('bu.png') no-repeat;
+}
+.item4>div{
+	background: url('data-detection-icon-1_03-11.png') no-repeat;
+}
+.item5>div{
+	background: url('data-detection-icon-1_03-17.png') no-repeat;
+}
+.item6>div{
+	background: url('data-detection-icon-1_03-21.png') no-repeat;
+}
+.item7>div{
+	background: url('quan.png') no-repeat;
+}
+.item8>div{
+	background: url('24.png') no-repeat;
+}
+/*table*/
+.myTable{
+	width: 100%;
+}
+.myTable h2.data-title{
+	border-left: 2px solid #57c8f2;
+	padding-left: 10px;
+	margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    height: 20px;
+    line-height: 20px;
+}
+.myTable .data-list table{
+	width: 100%;
+	border-collapse: collapse;
+}
+.data-list table th,.data-list table td{
+	border:1px solid #f1f2f7;
+	height: 30px;
+	min-width: 55px;
+	text-align: center;
+}
+.data-list table td:nth-child(6),.data-list table td:nth-child(12){
+	color: #57c8f2;
+}
+.data-list table td:nth-child(11){
+	color: #d10b0b;
+}
+.data-list table th{
+	background-color: #2fbaed;
+	color: #fff;
+}

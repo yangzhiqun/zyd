@@ -218,13 +218,40 @@ module ApplicationHelper
       (is_city? || is_county_level?)   
   end
 
-  def is_shi_deploy?
+  def yy_shi_deploy?
     (yy_is_city?&&jg_is_city?)
   end
 
-  def is_xian_deploy?
+  def yy_xian_deploy?
     (yy_is_country?&&jg_is_country?)
   end
+
+  def inspecton_body
+    if current_user.is_admin?
+      @jg_bsbs = JgBsb.where('status = 0 and jg_detection = 1', current_user.user_s_province).order('jg_province').includes(:jg_bsb_names).map{|jg| jg.jg_bsb_names.last.name}
+    else
+      if current_user.jg_bsb.jg_type==1
+        super_jg= JgBsbSuper.where(super_jg_bsb_id: current_user.jg_bsb.id ).group("jg_bsb_id")
+        jg_names=[]
+        jg_names.push(current_user.jg_bsb_id)
+        super_jg.each do |j|
+          jg_names.push(j.jg_bsb_id)
+        end
+        @jg_bsbs = JgBsb.where('status = 0 and jg_detection = 1  and id in (?)',jg_names).order('jg_province').includes(:jg_bsb_names).map{|jg| jg.jg_bsb_names.last.name}
+      elsif current_user.jg_bsb.jg_type==3
+        @jg_bsbs = JgBsb.where('status = 0 and jg_detection = 1 and id in (?) ',current_user.jg_bsb_id).order('jg_province').includes(:jg_bsb_names).map{|jg| jg.jg_bsb_names.last.name}
+      end
+    end
+  end
+  
+  def is_shi_deploy?
+    is_city?&&jg_is_city?
+  end
+
+  def is_xian_deploy?
+   is_county_level?&&jg_is_country?
+  end
+
  def is_level?
      return "省级"  if  is_sheng?
      return "市级"  if  is_city?
@@ -265,6 +292,10 @@ module ApplicationHelper
 
   def is_open_baosong
     !YAML.load_file("config/use_ca.yml")["open_baosong"]
+  end
+
+  def is_belong_name
+    ["江苏","山西","甘肃","兵团","吉林","安徽"].include?(SysConfig.get(SysConfig::Key::PROV))
   end
 
   def sp_bsb_fields

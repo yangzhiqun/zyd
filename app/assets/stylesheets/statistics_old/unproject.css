@@ -4,6 +4,8 @@
 }
 .content_right{
 	float: right;
+    height: 400px;
+    overflow-y: scroll;
 }
 .content_left{
 	width: 15%;
@@ -49,4 +51,47 @@ td .area_btn,td .value_btn{
 	border:none;
 	outline: none;
 	background-color: transparent;
+}
+/*2017-12-7-zhuangsiyu*/
+.content .check_selectbox{
+    display: inline-block;
+    width: 24.5%;
+    padding-bottom: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.content .check_selectbox label{
+    display: inline-block;
+    width: 34%;
+    text-align: right;
+    line-height: 32px;
+    vertical-align: bottom;
+    margin-left: 10px;
+}
+.content .check_selectbox select{
+    display: inline-block;
+    height: 36px;
+    width: 58%;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+    font-size: 16px;
+}
+.content .taskbtn_operBox{
+    height: 100%;
+    width: 100%;
+    display: inline-block;
+    vertical-align: bottom;
+    float: left;
+    margin-left: 25px;
+    margin-bottom: 40px;
+}
+.content .taskbtn_operBox form{
+    display: inline-block;
+}
+.content .taskbtn_operBox .taskbtn_query,
+.content .taskbtn_operBox form input[name="commit"]{
+    width: 150px;
+    height: 100%;
+    margin: 0 15px;
 }

@@ -1,177 +1,93 @@
-<!-- Button to trigger modal -->
-<style type="text/css">
-  .modal {
-    position: fixed;
-    top: 10%;
-    left: 50%;
-    z-index: 1050;
-    width: 560px;
-    margin-left: -280px;
-    padding-right: 0px !important;
-    background-color: #ffffff;
-    border: 1px solid #999;
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    *border: 1px solid #999;
-    -webkit-border-radius: 6px;
-    -moz-border-radius: 6px;
-    border-radius: 6px;
-    outline: none;
-    -webkit-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-    -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-    -webkit-background-clip: padding-box;
-    -moz-background-clip: padding-box;
-    background-clip: padding-box;
-  }
-
-  .modal.fade {
-    top: -25%;
-    -webkit-transition: opacity 0.3s linear, top 0.3s ease-out;
-    -moz-transition: opacity 0.3s linear, top 0.3s ease-out;
-    -o-transition: opacity 0.3s linear, top 0.3s ease-out;
-    transition: opacity 0.3s linear, top 0.3s ease-out;
-  }
-
-  .modal.fade.in {
-    top: 10%;
-  }
-
-  .modal-header {
-    padding: 9px 15px;
-    border-bottom: 1px solid #eee;
-  }
-
-  .modal-header .close {
-    margin-top: 2px;
-  }
-
-  .modal-header h3 {
-    margin: 0;
-    line-height: 30px;
-  }
-
-  .modal-body {
-    position: relative;
-    max-height: 400px;
-    padding: 15px;
-    overflow-y: auto;
-  }
-
-  .modal-form {
-    margin-bottom: 0;
-  }
-
-  .modal-footer {
-    padding: 14px 15px 15px;
-    margin-bottom: 0;
-    text-align: right;
-    background-color: #f5f5f5;
-    border-top: 1px solid #ddd;
-    -webkit-border-radius: 0 0 6px 6px;
-    -moz-border-radius: 0 0 6px 6px;
-    border-radius: 0 0 6px 6px;
-    *zoom: 1;
-    -webkit-box-shadow: inset 0 1px 0 #ffffff;
-    -moz-box-shadow: inset 0 1px 0 #ffffff;
-    box-shadow: inset 0 1px 0 #ffffff;
-  }
-
-  .modal-footer:before,
-  .modal-footer:after {
-    display: table;
-    line-height: 0;
-    content: "";
-  }
-
-  .modal-footer:after {
-    clear: both;
-  }
-
-  .modal-footer .btn + .btn {
-    margin-bottom: 0;
-    margin-left: 5px;
-  }
-
-  .modal-footer .btn-group .btn + .btn {
-    margin-left: -1px;
-  }
-
-  .modal-footer .btn-block + .btn-block {
-    margin-left: 0;
-  }
-</style>
-<script type="text/javascript">
-  $(function () {
-    $('#ImportantNotice').modal('show');
-  })
-</script>
-<div id="ImportantNotice" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:9999; width:580px; height:270px;">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="myModalLabel"><b>通知</b></h3>
-  </div>
-  <div class="modal-body">
-  <p>　　欢迎使用国家食品安全抽检监测信息二级站系统 <br><br>
-  <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/sp_bsbs/limited_report/prompt_report"> 24小时限时报告共：<%= @sp_bsbs %>条</a><br><br>
-<!--　　&nbsp; 技术支持：
-           &nbsp;&nbsp;&nbsp;   北京数字认证股份有限公司　　<br>
-      &nbsp;　联系人：　　<br>
-								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	刘文清　　 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   13439018456<br>
-								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	杨晓明　　 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   18613807223<br>
-　　　　　　　　　　　　　　　　　　　　　　　　　　　　</p>-->
-<!--<p>　　重要通知,请看首页!数据下载在<a href="http://sp.ganggang.me" target="_blank()">http://sp.ganggang.me</a></p>-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>首页</title>
+  <%= stylesheet_link_tag "welcome_index", :media => "all" %>
+  <%= javascript_include_tag "welcome/anhui","welcome/welcome" %>
+</head>
+<br>
+<div class="wrapper">
+  <div class="item">
+    <ul class="clearfix">
+      <li class="item1">
+        <div>
+          <h4>1122331</h4>
+          <h2>总抽检批次</h2>
+        </div>
+      </li>
+      <!--<li class="item2">
+        <div>
+          <h4>1122331</h4>
+          <h2>今日检测批次数</h2>
+        </div>
+      </li>-->
+      <li class="item3">
+        <div>
+          <h4>1122331</h4>
+          <h2>今日不合格批次</h2>
+        </div>
+      </li>
+      <li class="item4">
+        <div>
+          <h4>1122331</h4>
+          <h2>总不合格批次</h2>
+        </div>
+      </li>
+      <!--<li class="item5">
+        <div>
+          <h4>1122331</h4>
+          <h2>待处理任务数</h2>
+        </div>
+      </li>-->
+      <li class="item8">
+        <div>
+          <h4>1122331</h4>
+          <h2>24小时时限报告批次</h2>
+        </div>
+      </li>
+      <li class="item6">
+        <div>
+          <h4>1122331</h4>
+          <h2>今日完全提交批次</h2>
+        </div>
+      </li>
+      <li class="item7">
+        <div>
+          <h4>1122331</h4>
+          <h2>总完全提交批次</h2>
+        </div>
+      </li>
+    </ul>
   </div>
 </div>
+  <div class="myTable">
+    <h2 class="data-title">被抽样单位不合格批次TOP10</h2>
+    <div class="data-list">
+      <table id = "tb_report1">
+      </table>
+    </div>
+  </div>
+</br>
+  <div class="myTable">
+    <h2 class="data-title">全省预警</h2>
+    </br>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="float:left;height:500px;width:40%;border:0px solid black;background-color:#f3f3f3"></div>
+    <div style="float:right;height:500px;width:60%;">
+      <div class="data-list" style="height:250px;padding: 5px;">
+        <table id = "tb_report2">
 
-<!--<H2 style="TEXT-ALIGN: center"><%#= flash[:notice] %>欢迎使用</H2>
-<P>尊敬的用户：<BR>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  欢迎您使用检验检测数据管理平台，本平台根据中国食品药品检定研究院特点和需要定制开发，充分发挥了现代信息技术对检验检测数据的管理作用，通过平台有效整合资源、提高工作效率、提升管理水平，进一步推动我院向“精细化管理”转变。平台主要功能如下：<BR>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  1、录入包括保健食品安全检测数据填报表，化妆品安全检测数据填报表、餐饮服务食品安全检测数据填报表；<BR>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2、对需审批的项目进行审批操作；<BR>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3、通过数据统计功能对库内表单进行统计；<BR>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  4、备份数据及查看操作日志；<BR>
-  <BR>
-  &nbsp;
-</P>-->
-  <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/sp_bsbs/limited_report/prompt_report"> 24小时限时报告共：<%= @sp_bsbs %>条</a><br><br>
-<H2 style="TEXT-ALIGN: center">重要通知</H2>
-1、为了保障数据安全，请大家收到用户名和初始密码后尽快登陆，并于5个工作日内修改登陆密码，否则将关闭用户（如：在5月14日总局本级抽检监测承检机构培训班上已公布用户名和密码的本级承检机构数据系统使用人员，请于5月21日前修改各自的登录密码）。
-<BR>
-2、为了方便工作中的联系，便于各单位使用有关文书，系统已挂出“食品安全抽检监测工作各省局联系方式”、“食品安全抽检监测工作组牵头单位基本信息表”、“食品监督抽检和风险监测实施细则修改单（1号）2014年5月15日”、“食品安全监督抽检和风险监测工作规范（试行）附件”等工作材料，请尽快按需下载。其中，“食品安全监督抽检和风险监测工作规范（试行）附件---局本级任务专用”与“食品抽样检验抽样单编号规则（总局本级专用）”仅适用于承担总局本级食品抽检监测任务的指定承检机构，请承担各省食药局分配的地方食品抽检监测任务的检验机构不要下载。
-<BR>
-3、“省级食品药品监督管理局委托抽检监测任务合同书（式样）”内容及式样仅供省级食品药品监督管理局作为工作参考。<BR>
+        </table>
+      </div>
+      <div class="data-list" style="height:250px;padding: 5px;">
+        <table id = "tb_report3">
 
-<% @welcome_notices.each do |welcome_notice| %>
-    <A
-    <% if !welcome_notice.url.blank? %>  href="<%= welcome_notice.url %>" target="_blank()"
-    <% end %>
-    <% if welcome_notice.url.blank? && !welcome_notice.attachment_path_file.blank? %>  href="/welcome_notices/<%= welcome_notice.id %>/attachment"
-    <% end %>
-    <% if welcome_notice.red == 1 %>  style="color:#F00"
-    <% end %>
-    >
-      <%= welcome_notice.title %></A>
-    <% if current_user.is_admin? %>
-        <% if welcome_notice.top != 0 %><font style="color:#999"><%= welcome_notice.top %>级置顶</font>
-        <% end %>
-        &nbsp;&nbsp;&nbsp;<%= link_to '修改', edit_welcome_notice_path(welcome_notice) %>
-        <%= link_to '删除', welcome_notice, method: :delete, data: {confirm: '确定删除？'} %>
-    <% end %>
-    <BR>
-<% end %>
+        </table>
+      </div>
+    </div>
 
-<BR>
-<% if current_user.is_admin? %>
-    <%= link_to '新建通知', new_welcome_notice_path %><BR><BR>
-<% end %>
-<BR>
-<p>
-  国家卫生计生委2015年1月29日发布了<font color="red">关于批准β－半乳糖苷酶为食品添加剂新品种等的公告（2015年
-  第1号）</font>，请关注，<a target="_blank" href="http://www.nhfpc.gov.cn/sps/s7890/201501/8455dc01b026484ebdef3122808abccd.shtml">点击此处查看</a>
-</p>
-<br>
-<font color="red">最新注意事项：</font>关于样品判定结论的说明：全部为监测项目的产品，结论中才可以选择：不判定；其他样品都要根据抽检项目检测结果下结论。对监测项目，如发现被检样品存在安全问题或较高风险问题的，
-应在该监测项的说明里进行情况说明，并将相关情况报省局进行风险研判，针对其可能存在较大风险隐患的情况，按文件要求及时上报。<BR>
+  </div>
+</div>
+</body>
+</html>

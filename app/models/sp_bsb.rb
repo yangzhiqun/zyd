@@ -14,6 +14,10 @@ class SpBsb < ActiveRecord::Base
     "DELETE FROM tmp_sp_bsbs where id=OLD.id"
   end
 
+  scope :qualified,  -> { where("(sp_s_71 not like '%_不合格样品%' and sp_s_71 not like '%问题样品%') and sp_i_state = 9") }
+  scope :unqualified, -> { where("(sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%') and sp_i_state = 9") }
+  scope :admin_select, ->(str) { where(str) if str.present? }
+
   attr_accessor :ca_source, :ca_sign
   validates_presence_of :sp_s_16, message: '请提供抽检单编号'
   validates_uniqueness_of :sp_s_16, message: '该单号已存在', allow_nil: true
@@ -38,23 +42,23 @@ class SpBsb < ActiveRecord::Base
         @sc_state = part['current_state']
       elsif part['wtyp_czb_type'] == ::WtypCzbPart::Type::LT
         @lt_state = part['current_state']
+      elsif part['wtyp_czb_type'] == ::WtypCzbPart::Type::WC
+        @wc_state = part['current_state']
       elsif part['wtyp_czb_type'] == ::WtypCzbPart::Type::CY
         @cy_state = part['current_state']
-      elsif part['wtyp_czb_type'] == ::WtypCzbPart::Type::WC  
-        @wc_state = part['current_state']
       end
     end
-    if (@sc_state == ::WtypCzb::State::PASSED and (@lt_state == ::WtypCzb::State::PASSED or @cy_state == ::WtypCzb::State::PASSED ))
+    if @sc_state == ::WtypCzb::State::PASSED and (@lt_state == ::WtypCzb::State::PASSED or @wc_state == ::WtypCzb::State::PASSED or @cy_state == ::WtypCzb::State::PASSED)
       "已完成"
-    elsif @sc_state == ::WtypCzb::State::PASSED and @lt_state != ::WtypCzb::State::PASSED
+    elsif @sc_state == ::WtypCzb::State::PASSED and (@lt_state != ::WtypCzb::State::PASSED or @wc_state != ::WtypCzb::State::PASSED or @cy_state != ::WtypCzb::State::PASSED)
       "已完成-生产"
     elsif @sc_state != ::WtypCzb::State::PASSED and @lt_state == ::WtypCzb::State::PASSED
       "已完成-流通"
-    elsif @cy_state == ::WtypCzb::State::PASSED
+    elsif @cy_state == ::WtypCzb::State::PASSED and @sc_state != ::WtypCzb::State::PASSED
       "已完成-餐饮"
-    elsif @wc_state == ::WtypCzb::State::PASSED
-      "已完成-网抽"
-    elsif @sc_state != ::WtypCzb::State::PASSED and @lt_state != ::WtypCzb::State::PASSED
+    elsif @wc_state == ::WtypCzb::State::PASSED and @sc_state != ::WtypCzb::State::PASSED
+       "已完成-网抽"
+    elsif @sc_state != ::WtypCzb::State::PASSED and @lt_state != ::WtypCzb::State::PASSED 
       "进行中"
     else
       "未知"
@@ -138,7 +142,7 @@ class SpBsb < ActiveRecord::Base
       @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_70 LIKE ?", "%#{params[:sp_bsa]}%")
     end
     if !params[:sp_bsb].blank? and params[:sp_bsb] !="请选择"
-      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_67 LIKE ?", "%#{params[:sp_bsb]}%")
+      @sp_bsbs = @sp_bsbs.where("sp_bsbs.sp_s_67 LIKE ?", "%#{params[:sp_bsb]}")
     end
 
     unless params[:s7].blank?
@@ -703,6 +707,7 @@ class SpBsb < ActiveRecord::Base
   has_many :wtyp_czbs, foreign_key: 'wtyp_sp_bsbs_id'
   has_many :wtyp_czb_parts
   has_one :published_sp_bsb, foreign_key: 'cjbh', primary_key: 'sp_s_16'
+  has_many :revision_log, :dependent => :delete_all
 
   def wtyp_czbs
     WtypCzb.where(wtyp_sp_bsbs_id: self.id)
@@ -1118,7 +1123,7 @@ class SpBsb < ActiveRecord::Base
     #filename = Rails.root.join('tmp', "sp_bsbs_#{self.id}.txt")
     cmd = "java -jar #{Rails.root.join('bin', 'mssg-pdf-client-1.1.0.jar')}  #{Rails.application.config.site[:ip]} #{Rails.application.config.site[:port]} 108  #{reqMessage} #{pdfpath} #{filename}"
     signSeal_result = `#{cmd}`
-    logger.error "cmd: #{cmd}, signSeal_result: #{signSeal_result}"
+    logger.error "signSeal_result: #{cmd}"
      return signSeal_result
   end
 

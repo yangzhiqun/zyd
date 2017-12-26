@@ -2,7 +2,7 @@ Rails.application.routes.draw do
 
   get 'report_forms/index'
   get 'report_forms/update'
-  get 'sp_bsbs/:type/prompt_report' => 'sp_bsbs#prompt_report'
+  match 'sp_bsbs/prompt_report' => 'sp_bsbs#prompt_report', via: [:get, :post]
 
   get 'log_management/index'
   get 'log_management/search'
@@ -128,6 +128,7 @@ Rails.application.routes.draw do
 
   resources :sys_provinces
   get 'prov_data' => 'sys_provinces#prov_data'
+  get 'new_prov_data' => 'sys_provinces#new_prov_data'
   get 'prov' => 'sys_provinces#prov'
   get 'sub_provs' => 'sys_provinces#sub_provs'
   post 'create_prov' => 'sys_provinces#create_prov'
@@ -439,22 +440,22 @@ Rails.application.routes.draw do
   #数据统计
   resources :statistics
   get 'statistics' => 'statistics#statistics'
-  get 'task_statistics' => 'statistics#task_statistics'
-  get 'food_statistics' => 'statistics#food_statistics'
-  get 'nonconformity_statistics' => 'statistics#nonconformity_statistics'
+  match 'task_statistics' => 'statistics#task_statistics', via: [:get, :post], as: :task_statistics
+  match 'food_statistics' => 'statistics#food_statistics', via: [:get, :post], as: :food_statistics
+  get 'food_subset_statistics' => 'statistics#food_subset_statistics'
+  get 'nonconformity_statistics' => 'statistics#nonconformity_statistics', via: [:get, :post], as: :nonconformity_statistics
   get 'unit_statistics' => 'statistics#unit_statistics'
   get 'overtime_statistics' => 'statistics#overtime_statistics'
   get 'disposal_statistics' => 'statistics#disposal_statistics'
+  get 'disposal_month_statistics' => 'statistics#disposal_month_statistics'
   get 'enterprise_statistics' => 'statistics#enterprise_statistics'
   get 'early_warning' => 'statistics#early_warning'
-  get 'composite_statistics' => 'statistics#composite_statistics'
+  match 'composite_statistics' => 'statistics#composite_statistics', via: [:get, :post], as: :composite_statistics
   get 'retirement_statistics' => 'statistics#retirement_statistics'
-  #任务子模板
-  get 'statistics_task_type' => 'statistics#statistics_task_type'
-  get 'statistics_food_type' => 'statistics#statistics_food_type'
-  get 'statistics_sampling_sites' => 'statistics#statistics_sampling_sites'
-  get 'statistics_production_unit_province' => 'statistics#statistics_production_unit_province'
-
   get 'nonconformity_statistics_data/:id' => 'statistics#nonconformity_statistics_data'
+  match 'particulars' => 'statistics#particulars', via: [:get, :post]
+  match 'company_particulars' => 'statistics#company_particulars', via: [:get, :post]
+  match 'hccz_particulars' => 'statistics#hccz_particulars', via: [:get, :post]
+  match 'spyy_particulars' => 'statistics#spyy_particulars', via: [:get, :post]
 
 end

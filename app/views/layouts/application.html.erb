@@ -519,7 +519,7 @@
   <div class="main_left" style="background:#f0f9fd; width:15%;">
     <div class="lefttop"><span></span>操作列表</div>
     <dl class="leftmenu">
-      <% if (current_user.pad_permission.to_i > 0 || current_user.is_admin? || is_shengshi? ) and is_open_production? %>
+      <% if ((current_user.pad_permission.to_i > 0 || current_user.is_admin? || is_shengshi? ) and is_open_production?) %>
           <dd>
             <div class="title">
               <span><img src="<%= asset_path('leftico05.png') %>"/></span>样品采集
@@ -547,7 +547,7 @@
               <span><img src="<%= asset_path('leftico01.png') %>"/></span>数据报送
             </div>
             <ul class="menuson" style="<%= "display: block;" if controller?("sp_bsbs") or controller?("sp_bsbs_spsearch") %>">
-              <% if current_user.user_d_authority == 1 and is_open_production? %>
+              <% if (current_user.user_d_authority == 1 and is_open_production?) %>
                   <li class="<%= "active" if action?("new") %>"><cite></cite><a href="/sp_bsbs/new">食品检验数据录入</a><i></i>
                   </li>
               <% end %>
@@ -655,7 +655,7 @@
             </ul>
           </dd>-->
       <% end %>
-      <dd>
+      <!--<dd>
       <div class="title">
         <span><img src="/assets/leftico06.png"/></span>结果发布
       </div>
@@ -667,7 +667,7 @@
           <cite></cite><a href="/spsearch_publish_check">食品监督抽检信息查重</a><i></i>
         </li>
       </ul>
-      </dd>
+      </dd> -->
       <% if (!current_user.is_admin? and current_user.is_jg_manager?) or(is_shengshi? and !current_user.is_admin?)  %>
           <dd>
             <div class="title">
@@ -750,7 +750,7 @@
             <cite></cite><a href="/food_statistics">食品类别统计</a><i></i>
           </li>
           <li class="<%= "active" if action?("nonconformity_statistics") %>">
-            <cite></cite><a href="/nonconformity_statistics">不合格项目统计</a><i></i>
+            <cite></cite><a href="/nonconformity_statistics">不合格样品及问题样品预警</a><i></i>
           </li>
           <li class="<%= "active" if action?("unit_statistics") %>">
             <cite></cite><a href="/unit_statistics">承检单位统计</a><i></i>
@@ -761,11 +761,11 @@
           <li class="<%= "active" if action?("disposal_statistics") %>">
             <cite></cite><a href="/disposal_statistics">核查处置统计</a><i></i>
           </li>
+          <li class="<%#= "active" if action?("") %>">
+            <cite></cite><a href="/">单号查询统计</a><i></i>
+          </li>
           <li class="<%= "active" if action?("enterprise_statistics") %>">
             <cite></cite><a href="/enterprise_statistics">企业覆盖率统计</a><i></i>
-          </li>
-          <li class="<%= "active" if action?("early_warning") %>">
-            <cite></cite><a href="/early_warning">不合格样品及问题样品预警</a><i></i>
           </li>
           <li class="<%= "active" if action?("retirement_statistics") %>">
             <cite></cite><a href="/retirement_statistics">退修统计</a><i></i>

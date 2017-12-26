@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>抽样及检验超期统计</title>
+    <title>超期统计</title>
     <!-- css
     <link rel="stylesheet" href="../libs/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/reset.css">
@@ -22,7 +22,7 @@
 <div class="container">
     <!-- 头部head -->
     <div class="page-header testcompany_header">
-        <h1>抽样及检验超期统计</h1>
+        <h1>超期统计</h1>
     </div>
     
     <!-- 上侧按钮部分 -->
@@ -48,12 +48,15 @@
         <div class="charts_2">
             <div id="chart_2"></div>
         </div>
+        <div class="charts_3">
+          <div id="chart_3"></div>
+        </div>
     </div>
 </div>
 </body>
 <script>
         var data = <%= raw @data %>
-        console.log(data);
+        //console.log(data);
         var idTmr;  
         function  getExplorer() {  
             var explorer = window.navigator.userAgent ;  

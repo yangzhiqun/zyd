@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171109023237) do
+ActiveRecord::Schema.define(version: 20171211010641) do
 
   create_table "a_categories", force: :cascade do |t|
     t.integer  "bgfl_id",    limit: 4
@@ -710,6 +710,14 @@ ActiveRecord::Schema.define(version: 20171109023237) do
     t.datetime "updated_at",                 null: false
   end
 
+  create_table "revision_logs", force: :cascade do |t|
+    t.integer  "sp_bsb_id",  limit: 4
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  add_index "revision_logs", ["sp_bsb_id"], name: "index_revision_logs_on_sp_bsb_id", using: :btree
+
   create_table "sample_members", force: :cascade do |t|
     t.string   "jg_name",       limit: 255
     t.string   "username",      limit: 255
@@ -1003,6 +1011,7 @@ ActiveRecord::Schema.define(version: 20171109023237) do
     t.string   "sp_s_wclxr",               limit: 255
     t.string   "sp_s_wctel",               limit: 255
     t.string   "sp_s_wcbh",                limit: 255
+    t.string   "sp_proid",                 limit: 255
     t.date     "issue_date"
   end
 

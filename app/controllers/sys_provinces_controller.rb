@@ -147,6 +147,19 @@ class SysProvincesController < ApplicationController
     render json: {status: 'OK', msg: 'OK', prov_data: @prov_data}
   end
 
+  def new_prov_data
+    if is_sheng?   
+      level = SysProvince.find_by_name(current_user.user_s_province).level
+      @prov_arr = SysProvince.where("level like '#{level}._' or level like '#{level}.__'").pluck(:name)
+    elsif is_city? 
+      level = SysProvince.find_by_name(current_user.prov_city).level
+      @prov_arr = SysProvince.where("level like '#{level}._' or level like '#{level}.__'").pluck(:name)
+    else
+      @prov_arr = ["#{current_user.prov_country}"]
+    end
+    render json: {status: 'OK', msg: 'OK', prov_data: @prov_arr}
+  end
+
   # DELETE /sys_provinces/1
   # DELETE /sys_provinces/1.json
   def destroy
