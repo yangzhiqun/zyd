@@ -101,10 +101,9 @@
         data = <%= raw @nonconformity %>
         area = <%= raw @region %>
         super_area = <%= raw @super %>
-            console.log(super_area);
         chartMap();
         main(area);
-        getData(data["安徽省"]);
+        getData(data[super_area[0]]);
         $("#search").click(function(){
           $("#is_export").val("0");
         });
@@ -169,8 +168,8 @@ function chartMap(){
     // function randomData() {
     //     return Math.round(Math.random()*100);
     // }    
-    loadMap('340000', 'anhui','安徽省');
-    addHtml(all_data["安徽省"]);
+    loadMap(super_area[1], super_area[0],super_area[0]);
+    addHtml(all_data[super_area[0]]);
     
     myChart.on('mapselectchanged', function(params) {
         clearTimeout(timeFn);
@@ -220,6 +219,10 @@ function chartMap(){
         //console.log(thisVal);
         getSelect(thisTxt); //需加参数
         addHtml(all_data[thisTxt]);
+        if(!thisVal){ //获取上级地图
+            thisTxt = super_area[0];
+            thisVal = super_area[1];
+        }
         click_slide(thisVal,thisTxt,thisTxt);
         /*switch(thisTxt){
             case '安徽省':
@@ -464,8 +467,8 @@ function chartMap(){
            all_data = info[0];
            data = info[1];
            chartMap();
-           main();
-           getSelect(data["安徽省"]);
+           main(info[3]); //这里是传回来的 area
+           getSelect(data[super_area[0]]);
        }
        else {
           alert("数据错误");
