@@ -115,20 +115,18 @@ class StatisticsController < ApplicationController
   #不合格项目-县
   def nonconformity_county_statistics
     data_items = {}
-    detailed = {}
+    detailed = []
     county  = params["county"]
     county_g= params["county"].gsub(/[县区市]/,"")
     city = SpBsb.unqualified.where("sp_s_5='#{county}' or sp_s_5='#{county_g}'").includes(:spdata)
     city.group_by{ |c| c.sp_s_5 }.each do |key,sp_bsbs|
       name = key
-      data_items[name] = {}
-      detailed[name]   = []
       sp_bsbs.each do |sp|
         sp.spdata.each do |data| 
           if data.spdata_2 == "不合格项" or data.spdata_2 == "问题项"
-            data_items[name].has_key?(data.spdata_0) ? data_items[name][data.spdata_0]+=1 : data_items[name][data.spdata_0]=1   
+            data_items.has_key?(data.spdata_0) ? data_items[data.spdata_0]+=1 : data_items[data.spdata_0]=1   
             hash = {"area"=>name,"dh"=>sp.sp_s_16,"bcydw"=>sp.sp_s_1,"scqy"=>sp.sp_s_64,"rwly"=>sp.sp_s_2_1,"ypmc"=>sp.sp_s_14,"jyxm"=>data.spdata_0,"dl"=>sp.sp_s_17,"yl"=>sp.sp_s_18,"cyl"=>sp.sp_s_19,"xl"=>sp.sp_s_20}
-            detailed[name] << hash
+            detailed << hash
           end
         end
       end
