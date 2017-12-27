@@ -95,10 +95,13 @@
     var all_data;
     var data;
     var area;
+    var super_area;
     $(function(){
         all_data = <%= raw @data_items %>
         data = <%= raw @nonconformity %>
         area = <%= raw @region %>
+        super_area = <%= raw @super %>
+            console.log(super_area);
         chartMap();
         main(area);
         getData(data["安徽省"]);
