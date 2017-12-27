@@ -110,59 +110,57 @@ function chart(){
     $('#checkBtn').bind('click',function(){
         var time = $("#time").val();
         if(time==""){
-            alert("请选择时间");
-            return
+          alert("请选择时间");
+          return
         }
         if($(".exportR").hasClass("hide")) {
-            myChart.showLoading();
-            /*  $.ajax({
-             type : "post",
-             async : true, //异步执行
-             url : "",
-             dataType : "json", //返回数据形式为json
-             data:{
-                time:time.replace(/\ +/g,""),
-                area:$('cqtj_option').val()
-             },
-             success : function(json) {
-             if (json) {
-             if(json){
-                 var option=getCharData(json);
-                 myChart.setOption(option);
-                 myChart.hideLoading();
-             }else{
-             alert('数据错误');
-             },
-             error : function(){
-             alert('数据错误');
-             }*/
-            var option = getCharData(anhui_data);
-            myChart.setOption(option);
-            myChart.hideLoading();
+          myChart.showLoading();
+          $.ajax({
+            type : "get",
+            async : true, //异步执行
+            url : "/disposal_month_statistics",
+            dataType : "json", //返回数据形式为json
+            data:{
+              time:time.replace(/\ +/g,""),
+              hj:$('#hj').val(),
+              area:$('#cqtj_option').val(),
+            },
+            success : function(json) {
+              if(json){
+                var option=getCharData(json);
+                myChart.setOption(option);
+                myChart.hideLoading();
+              }else{
+                alert('数据错误');
+              }
+            }
+          });
+          var option = getCharData(anhui_data);
+          myChart.setOption(option);
+          myChart.hideLoading();
         }else{
-            /*  $.ajax({
-             type : "post",
-             async : true, //异步执行
-             url : "",
-             dataType : "json", //返回数据形式为json
-             data:{
-                 time:time.replace(/\ +/g,""),
-                 area:$('cqtj_option').val()
-             },
-             success : function(json) {
-             if (json) {
-             if(json){
-                 $('#tb_report').bootstrapTable('destroy');
-                 getData(json);
-             }else{
-             alert('数据错误');
-             },
-             error : function(){
-             alert('数据错误');
-             }*/
+          $.ajax({
+            type : "get",
+            async : true, //异步执行
+            url : "/disposal_statistics",
+            dataType : "json", //返回数据形式为json
+            data:{
+              time:time.replace(/\ +/g,""),
+              hj:$('#hj').val(),
+              area:$('#cqtj_option').val(),
+              flag:0
+            },
+            success : function(json) {
+              if(json){
+                $('#tb_report').bootstrapTable('destroy');
+                getData(json);
+              }else{
+                alert('数据错误');
+              }
+            }
+          });
         }
-    })
-
+    });
 
 // 获取数据
 function getCharData(data){

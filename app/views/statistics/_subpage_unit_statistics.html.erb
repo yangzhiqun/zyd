@@ -42,11 +42,11 @@
                 {headerText: "地区", dataField: "name", headerAlign: "center",width: "300", handler: "customOrgName"},
 //                {headerText: "序号", dataField: "code", headerAlign: "center", dataAlign: "center"},
 //                {headerText: "任务数",dataField: "task", headerAlign: "center", dataAlign: "center",},
-                {headerText: "接样数", dataField: "sampling",headerAlign: "center", dataAlign: "center", },
-                {headerText: "合格数", dataField: "qualified",headerAlign: "center", dataAlign: "center", },
-                {headerText: "不合格数",dataField: "unqualified", headerAlign: "center", dataAlign: "center", },
-                {headerText: "已处置", dataField: "dcisposed",headerAlign: "center", dataAlign: "center", },
-                {headerText: "处置中", dataField: "disposeing",headerAlign: "center", dataAlign: "center", },
+                {headerText: "接样数", dataField: "sampling",headerAlign: "center", dataAlign: "center",handler:"formatting" },
+                {headerText: "合格数", dataField: "qualified",headerAlign: "center", dataAlign: "center",handler:"formatting" },
+                {headerText: "不合格数",dataField: "unqualified", headerAlign: "center", dataAlign: "center",handler:"formatting" },
+                {headerText: "已处置", dataField: "dcisposed",headerAlign: "center", dataAlign: "center",handler:"formatting" },
+                {headerText: "处置中", dataField: "disposeing",headerAlign: "center", dataAlign: "center",handler:"formatting" },
             ],
             data: <%= raw data %>
             //data:[
@@ -132,7 +132,54 @@
         function expandAll(isOpen){
             treeGrid.expandAll(isOpen);
         }
-
+    /***
+     * 格式化
+     * */
+    function formatting(row, col){
+        var num = 0;
+        var name = "";
+        var url = '';
+        num = row[col.dataField].length;
+        name = row[col.dataField] || [];
+        if(col.dataField=='dcisposed'||col.dataField=='disposeing'){
+            url = '';
+        }else{
+            url = 'particulars';
+        }
+        var a = "<a href='javascript:void(0);' onclick = openPostWindow('"+name+"','"+url+"')>"+num+"</a>"
+        return a;
+    }
+    //请求后台方法，弹出详情页面
+    function openPostWindow(data,url){
+        var tempForm = document.createElement("form");
+        tempForm.id = "tempForm1";
+        tempForm.method = "post";
+        tempForm.action = url;
+        tempForm.target="_blank"; //打开新页面
+        var hideInput1 = document.createElement("input");
+        hideInput1.type = "hidden";
+        hideInput1.name="opid"; //后台要接受这个参数来取值
+        hideInput1.value = data; //后台实际取到的值
+      /*var hideInput2 = document.createElement("input");
+       hideInput2.type = "hidden";
+       hideInput2.name="xtmc";
+       hideInput2.value = data2;  这里就是如果需要第二个参数的时候可以自己再设置*/
+        tempForm.appendChild(hideInput1);
+        //tempForm.appendChild(hideInput2);
+        if(document.all){
+            tempForm.attachEvent("onsubmit",function(){});        //IE
+        }else{
+            var subObj = tempForm.addEventListener("submit",function(){},false);    //firefox
+        }
+        document.body.appendChild(tempForm);
+        if(document.all){
+            tempForm.fireEvent("onsubmit");
+        }else{
+            tempForm.dispatchEvent(new Event("submit"));
+        }
+        tempForm.submit();
+        document.body.removeChild(tempForm);
+    }
         /*
             取得当前选中的行，方法返回TreeGridItem对象
         */

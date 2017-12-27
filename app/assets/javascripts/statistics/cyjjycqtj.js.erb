@@ -1,7 +1,7 @@
 $(function(){
 	chart();
 })
-var data = {"cycq":{"x":[],"y":[]},"jycq":{"x":[],"y":[]},"hcczcq":{"x":[],"y":[]},"yycq":{"x":[],"y":[]}}
+//var data = {"cycq":{"x":[],"y":[]},"jycq":{"x":[],"y":[]},"hcczcq":{"x":[],"y":[]},"yycq":{"x":[],"y":[]}}
 function chart(){
 	var option1 = {
         title: {
@@ -400,12 +400,11 @@ function chart(){
     var myChart3=echarts.init(document.getElementById('chart_3'))
     myChart3.setOption(option3);
     // 点击下拉框根据区域加载相应地区的数据
-    // console.log($('.cqtj_option')[0].value);
-
         $(document).on('change','select#cqtj_option',function(){
             var optionVal=$(this).val();//获取当前选中项的value值
-            getChartInfo(myChart1);
-            getChartInfo(myChart2);
+            getChartInfo(myChart1,optionVal,'0');
+            getChartInfo(myChart2,optionVal,'1');
+            getChartInfo(myChart3,optionVal,'2');
             //console.log(data);
             //myChart1.setOption(data[optionVal][0]);
             //myChart2.setOption(data[optionVal][1]);
@@ -427,40 +426,57 @@ function chart(){
             //}          
         });
     //数据请求后台
-    function getChartInfo(myChart,params){
+    function getChartInfo(myChart,params,flag){
         myChart.showLoading();
       /*  $.ajax({
        type : "post",
        async : true, //异步执行
-       url : "AcceptData",
+       url : "",
        dataType : "json", //返回数据形式为json
+       data:{
+         "params" : params,
+         "flag" : flag
+       },
        success : function(json) {
-       if (json) {
-       var data;
-       if(myChart==myChart1){
-       data = json.cyjg;
-       }else{
-       data = json.cjjg;
-       }*/
-        myChart.hideLoading();
-        myChart.setOption({
-            xAxis:[{
-                data:['抽样单位1','抽样单位2','抽样单位3','抽样单位4','抽样单位5','抽样单位6','抽样单位7']
-            }],
-            series:[
-                {
-                    data:[5, 2, 8, 5, 3, 1, 9]
-                }
-            ]
-        });
+       if (json) {  //返回 json.x    json.y
+         if(flag=='3'){
+             myChart.hideLoading();
+             myChart.setOption({
+             xAxis:[{
+             data:json.x
+             }],
+             series:[
+             {
+             data:json.y.hclq
+             },
+             {
+             data:json.y.hcwc
+             },
+             {
+             data:json.y.yycq
+             }
+             ]
+             });
+         }else{*/
+              myChart.hideLoading();
+              myChart.setOption({
+                  xAxis:[{
+                      data:['抽样单位1','抽样单位2','抽样单位3','抽样单位4','抽样单位5','抽样单位6','抽样单位7']
+                  }],
+                  series:[
+                      {
+                          data:[5, 2, 8, 5, 3, 1, 9]
+                      }
+                  ]
+              });
       /*    }
        },
        error : function(errorMsg) {
        alert("请求数据失败");
        }*/
     }
-    //点击不同的市显示相应的数据列表
-    myChart1.on('click',function(params){
+    //点击不同的市显示相应的数据列表 (不需要)
+    /*myChart1.on('click',function(params){
         switch(params.name){
             case '抽样单位1':
                 var iTop = (window.screen.availHeight-400)/ 2;
@@ -468,5 +484,5 @@ function chart(){
                 window.open('./chaoqiList.html', '_blank','height=400, width=1000, top='+iTop+',left='+iLeft+', toolbar=no,menubar=no, scrollbars=no,resizable=no, location=no, status=no');
                 break;
         }
-    })
+    })*/
 }

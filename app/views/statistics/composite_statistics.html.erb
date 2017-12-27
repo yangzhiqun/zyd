@@ -251,12 +251,6 @@
         return a;
     }
 //请求后台方法，弹出详情页面
-    /*function ajaxInfo(args){
-      $.post("particulars",{"params":args},function(response){
-            var obj = window.open("about:blank","_blank");
-            obj.document.write(response);
-        })
-    }*/
     function openPostWindow(data){
         var tempForm = document.createElement("form");
         tempForm.id = "tempForm1";

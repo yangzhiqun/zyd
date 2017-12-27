@@ -1,4 +1,7 @@
 var timeFn = null;
+//var info1 = {"x":['合肥','芜湖','蚌埠','淮南','马鞍山','淮北','铜陵','安庆','黄山','滁州','阜阳','宿州','六安市'],
+//"zqys":[200, 140, 170, 230, 245, 176, 135, 162, 132, 120, 160, 130,140],"bjqys":[126, 50, 90, 204, 207, 77, 76, 82, 47, 88, 60, 123,60],
+//"fgl":[63.00, 35.71, 52.94, 88.70, 84.50, 43.75, 56.30, 50.61, 35.60, 73.33, 37.5, 94.62,42.86]};
 // 图表展示
 function chart(data){
     //生产企业覆盖率
@@ -62,7 +65,7 @@ function chart(data){
                 type: 'value',
                 name: '企业数',
                 min: 0,
-                max: 250,
+                //max: 250,
                 interval: 50,
                 axisLabel: {
                     formatter: '{value} '
@@ -142,54 +145,54 @@ function chart(data){
 }
 //数据请求后台
 function getChartInfo(myChart,params,flag){
-    var data = {"x":['长丰县','庐江县','庐阳区','巢湖市','包河区','肥东县','肥西县','蜀山区','瑶海区'],
-    "zqys":[50, 10, 30, 150, 45, 176, 35, 62, 132],
-        "bjqys":[26, 10, 19, 120, 27, 77, 17, 18, 47],
-        "fgl":[52.00, 100, 63.33, 80.00, 60.00, 43.75, 48.57, 29.03, 35.60]};
+    //var data = {"x":['长丰县','庐江县','庐阳区','巢湖市','包河区','肥东县','肥西县','蜀山区','瑶海区'],
+    //"zqys":[50, 10, 30, 150, 45, 176, 35, 62, 132],
+    //    "bjqys":[26, 10, 19, 120, 27, 77, 17, 18, 47],
+    //    "fgl":[52.00, 100, 63.33, 80.00, 60.00, 43.75, 48.57, 29.03, 35.60]};
     myChart.showLoading();
-  /*  $.ajax({
+    $.ajax({
         type : "get",
         contentType: "application/json",
         async : false, //同步执行
-        url : "",
+        url : "/enterprise_statistics",
         dataType : "json", //返回数据形式为json
         data:{
             "area":params,
             "flag": flag //0为表格  1，为图表
         },
         success : function(json) {
-            if (json) { */
+            if (json) {
                 myChart.hideLoading();
                 myChart.setOption({
                     xAxis: [
                         {
-                            data: data.x
+                            data: json.x
                         }
                     ],
                     series: [
                         {
                             // name:'总企业数',
                             // type:'bar',
-                            data:data.zqys
+                            data:json.zqys
                         },
                         {
                             // name:'被检企业数',
                             // type:'bar',
-                            data:data.bjqys
+                            data:json.bjqys
                         },
                         {
                             // name:'覆盖率',
                             // type:'line',
                             // yAxisIndex: 1,
-                            data:data.fgl
+                            data:json.fgl
                         }
                     ]
                 });
-       /*     }
+            }
         },
         error : function(errorMsg) {
             alert("请求数据失败");
         }
-    })*/
+    })
 
 }

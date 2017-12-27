@@ -1,7 +1,7 @@
 class StatisticsController < ApplicationController
 
   require 'food/download_statistics'
-  skip_before_filter :session_expiry, :verify_authenticity_token, :authenticate_user!,:only => [:particulars,:company_particulars]
+  skip_before_filter :session_expiry, :verify_authenticity_token, :authenticate_user!,:only => [:particulars,:company_particulars,:hccz_particulars]
 
   def statistics
   end
@@ -182,45 +182,139 @@ class StatisticsController < ApplicationController
 
   #核查处置统计
   def disposal_statistics
-    @data = {} #{"大众超市"=>[30,"5%",5,"5%",0,50,4,2],"人民食堂"=>[75,"9%",3,"7%",0,43,0,2]}
-    city = params["city"] || "合肥"
-    sp_bsbs = SpBsb.where("(sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%') and (sp_s_wcshi='#{city}' or sp_s_4='#{city}' or sp_s_220='#{city}')")
+    @data = [] #[{"czdw":"处置单位","bhgczs":[],"bhgczl":"不合格处置率","bhgczwcs":[],"yys":[],"fjs":[],"fjbhgs":[],"las":[]}]
+    sp_bsbs = SpBsb.where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").where(disposal_power)
+    if params["time"].present? 
+      time = params["time"].split("/")
+      sp_bsbs = sp_bsbs.where(sp_d_38:Statistic.time_slot(time[0],time[1])).where(disposal_power(params["area"]))
+    end
     sp_bsb_ids = sp_bsbs.map{|s| s.id }
     sp_yydjbs = {}
     wtyp_czb_p = WtypCzbPart.where(sp_bsb_id:sp_bsb_ids).group_by{ |wt| wt.sp_bsb_id }
     SpYydjb.where(id:sp_bsb_ids).each{ |spyy| sp_yydjbs[spyy.id] = spyy }
     sp_bsbs.group_by{ |sp| sp.sp_s_35 }.each do |name,sp_bsb_arr|  
-      #不合格处置数,不合格处置率,不合格处置完成数,不合格处置完成率,异议数,复检数,复检不合格数,立案数
-      num1,num2,num3,num4,num5,num6,num7,num8 = 0,'',0,'',0,0,0,0
+      #1不合格处置数,2不合格处置率,3不合格处置完成数,4异议数,5复检数,6复检不合格数,7立案数
+      num1,num2,num3,num4,num5,num6,num7 = [],'',[],[],[],[],[]
       sp_bsb_arr.each do |sp_bsb|
         if wtyp_czb_p.has_key?(sp_bsb.id)
           wtyp_czb_p[sp_bsb.id].each do |wp|
-            if wp.current_state == 1
-              num1 += 1
-            elsif wp.current_state == 3
-              num3 += 1
+            if params["hj"].blank? 
+              if wp.current_state == 1
+                num1 << wp.id
+              elsif wp.current_state == 3
+                num3 << wp.id
+              end
+              num7 << wp.id if wp.xzcfqk_1 == "是"
+            else
+              pan = wp.wtyp_czb_type == 1 if params["hj"]=="SC"    
+              pan = [2,3].include?(wp.wtyp_czb_type) if params["hj"]=="JY"    
+              pan = wp.wtyp_czb_type == 4 if params["hj"]=="WC"    
+              if pan
+                if wp.current_state == 1
+                  num1 << wp.id
+                elsif wp.current_state == 3
+                  num3 << wp.id
+                end
+                num7 << wp.id if wp.xzcfqk_1 == "是"
+              end
             end
-            num8 += 1 if wp.xzcfqk_1 == "是"
           end
         end
         if sp_yydjbs.has_key?(sp_bsb.id)
-          num5 += 1
+          num4 << sp_bsb.id
           if sp_yydjbs[sp_bsb.id] == 0
-            num7 += 1 
+            num6 << sp_bsb.id 
           elsif sp_yydjbs[sp_bsb.id] == 1
-            num6 += 1
+            num5 << sp_bsb.id
           end
         end
       end
-      num2 = ((num1.to_f/sp_bsb_arr.length)*100).to_i.to_s+"%" #不合格处置率
-      num4 = ((num3.to_f/sp_bsb_arr.length)*100).to_i.to_s+"%" #不合格处置完成率
-      @data[name] = ["经营",num1,num2,num3,num4,num5,num6,num7,num8]
+      num2 = ((num1.length.to_f/sp_bsb_arr.length)*100).to_i.to_s #不合格处置率
+      @data << {"czdw"=>name,"bhgczs"=>num1,"bhgczl"=>num2,"bhgczwcs"=>num3,"yys"=>num4,"fjs"=>num5,"fjbhgs"=>num6,"las"=>num7}
+    end
+    send_file(DownloadStatistics.enterprise("Statistic::Disposal",@data), :disposition => "attachment") and return if params["is_export"] == "1"
+    if params["flag"].blank?
+      @data = @data.to_json
+    else
+      render json: @data
     end
   end
+
+  #核查处置月份统计
+  def disposal_month_statistics 
+    @chart = {"s"=>[],"x"=>[],"datas"=>[]} #{"s"=>[[不合格处置数,不合格处置完成数]],"x"=>[名称],"datas"=>[]}
+    sp_bsbs = SpBsb.where("sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%'").where(disposal_power)
+    if params["time"].present? 
+      time = params["time"].split("/")
+      sp_bsbs = sp_bsbs.where(sp_d_38:Statistic.time_slot(time[0],time[1])).where(disposal_power(params["area"]))
+    end
+    sp_bsb_ids = sp_bsbs.map{|s| s.id }
+    sp_yydjbs = {}
+    wtyp_czb_p = WtypCzbPart.where(sp_bsb_id:sp_bsb_ids).group_by{ |wt| wt.sp_bsb_id }
+    SpYydjb.where(id:sp_bsb_ids).each{ |spyy| sp_yydjbs[spyy.id] = spyy }
+    sp_bsbs.group_by{ |sp| sp.sp_s_35 }.each do |name,sp_bsb_arr|  
+      #1不合格处置数,2不合格处置率,3不合格处置完成数,4异议数,5复检数,6复检不合格数,7立案数
+      num1,num2,num3,num4,num5,num6,num7 = [],'',[],[],[],[],[]
+      sp_bsb_arr.each do |sp_bsb|
+        if wtyp_czb_p.has_key?(sp_bsb.id)
+          wtyp_czb_p[sp_bsb.id].each do |wp|
+            if params["hj"].blank? 
+              if wp.current_state == 1
+                num1 << wp.id
+              elsif wp.current_state == 3
+                num3 << wp.id
+              end
+              num7 << wp.id if wp.xzcfqk_1 == "是"
+            else
+              pan = wp.wtyp_czb_type == 1 if params["hj"]=="SC"    
+              pan = [2,3].include?(wp.wtyp_czb_type) if params["hj"]=="JY"    
+              pan = wp.wtyp_czb_type == 4 if params["hj"]=="WC"    
+              if pan
+                if wp.current_state == 1
+                  num1 << wp.id
+                elsif wp.current_state == 3
+                  num3 << wp.id
+                end
+                num7 << wp.id if wp.xzcfqk_1 == "是"
+              end
+            end
+          end
+        end
+        if sp_yydjbs.has_key?(sp_bsb.id)
+          num4 << sp_bsb.id
+          if sp_yydjbs[sp_bsb.id] == 0
+            num6 << sp_bsb.id 
+          elsif sp_yydjbs[sp_bsb.id] == 1
+            num5 << sp_bsb.id
+          end
+        end
+      end
+      num2 = ((num1.length.to_f/sp_bsb_arr.length)*100).to_i.to_s #不合格处置率
+      @chart["s"] << [num1,num3]
+      @chart["x"] << [name]
+    end
+    render json: @chart
+  end
+
 
   #不合格样品及问题样品预警
   def early_warning
     @data_arr,@data_items,@nonconformity = Statistic.nonconformity.map{ |d| d.to_json }
+  end
+
+  #核查处置详情页
+  def hccz_particulars
+    @data = []
+    arr = params["opid"].split(",")
+    WtypCzbPart.where(id:arr).each do |wty_czb|
+      @data << {"id"=>wty_czb.id,"sp_bsb_id"=>wty_czb.sp_bsb_id,"cjbh"=>wty_czb.cjbh,"present"=>wty_czb.czfzr_desc,"blbm"=>wty_czb.blbm,"blsj"=>wty_czb.blsj.blank? ? "":wty_czb.blsj.strftime("%Y-%m-%d"),"wtyp_czb_type_desc"=>wty_czb.wtyp_czb_type_desc,"ypmc"=>wty_czb.ypmc,"bsscqy_sheng"=>wty_czb.bsscqy_sheng,"bsscqy_shi"=>(wty_czb.sp_s_220 or wty_czb.bsscqy_shi),"bsscqy_xian"=>(wty_czb.sp_s_221 or wty_czb.bsscqy_xian),"bcydw_sheng"=>wty_czb.bcydw_sheng,"bcydw_shi"=>(wty_czb.bcydw_shi or wty_czb.sp_s_4),"bcydw_xian"=>(wty_czb.bcydw_xian or wty_czb.sp_s_5),"bsscqymc"=>wty_czb.bsscqymc,"jyjl"=>wty_czb.jyjl,"yyczzt"=>wty_czb.yydjb.nil? ? "":wty_czb.yydjb.yyczzt,"yyczjg"=>wty_czb.yydjb.blank? ? "未提出异议" : wty_czb.yydjb.yyczjg,"wtyp_date"=>wty_czb.wtyp_date,"qdhcczrq"=>wty_czb.qdhcczrq}
+    end
+    @data = @data.to_json
+    render layout: false
+  end
+
+  #异议详情页
+  def spyy_particulars
   end
 
   #检验信息详细页
@@ -248,15 +342,20 @@ class StatisticsController < ApplicationController
 
   #企业覆盖率统计
   #sp_s_64:标示企业名称
-  #[{"area":"合肥","zqys":"12","bcqys":[1,2,3,4,5],"fgl":"12"}]
+  #[{"area":"合肥","zqys":[1,2,3,4,5],"bcqys":[1,2,3,4,5],"fgl":"12"}]
+  #{"x":['合肥','芜湖','蚌埠','淮南'],"zqys":[200, 140, 170, 230],"bjqys":[126, 50, 90, 204],"fgl":[63.00, 35.71, 52.94, 88.70]}
   def enterprise_statistics
-    @data = []
+    @data,@chart = [],{"x"=>[],"zqys"=>[],"bjqys"=>[],"fgl"=>[]}
     power = region_power
     sp_type  = power[2] == 0 ? "sp_s_4":"sp_s_5"
     sp_name  = SpBsb.group("sp_s_64").count
     sp_scbh  = SpBsb.group("sp_s_13").count
-    pro_info = SpProductionInfo.where(power[0]).group_by{ |info| info.send(sp_type) }
-    pro_info.each do |name,info|
+    pro_info = SpProductionInfo.where(power[0])
+    if params["area"].present?
+      pro_info = pro_info.where("#{sp_type}"=>params["area"])
+      sp_type = "sp_s_5"
+    end
+    pro_info.group_by{ |info| info.send(sp_type) }.each do |name,info|
       if name.present?
         sum_num  = info.map(&:id)
         bcqy_arr = []
@@ -269,9 +368,23 @@ class StatisticsController < ApplicationController
         end
         fgl = ((bcqy_arr.length.to_f/sum_num.length)*100).to_i.to_s 
         @data << {"area"=>name,"zqys"=>sum_num,"bcqys"=>bcqy_arr,"fgl"=>fgl}  
+        @chart["x"] << name
+        @chart["zqys"] << sum_num.length
+        @chart["bjqys"] << bcqy_arr.length
+        @chart["fgl"] << fgl
       end
     end
-    @data = @data.to_json
+    send_file(DownloadStatistics.enterprise("Statistic::Enterprise",@data), :disposition => "attachment") and return if params["is_export"] == "1"
+    if params["flag"].blank?
+      @data = @data.to_json
+      @chart = @chart.to_json
+    else
+      if params["flag"] == "0"
+        render json: @data
+      else
+        render json: @chart
+      end
+    end
   end
 
   #退休统计
@@ -283,7 +396,7 @@ class StatisticsController < ApplicationController
     sp_bsbs  = SpBsb.where(sp_i_state:9).admin_select(power[0])
     if params["time"].present? && params["area"].present?
       time = params["time"].split("/") 
-      sp_bsbs = sp_bsbs.where(created_at:Statistic.time_slot(time[0],time[1]),"#{sp_type}"=>params["area"])
+      sp_bsbs = sp_bsbs.where(sp_d_38:Statistic.time_slot(time[0],time[1]),"#{sp_type}"=>params["area"])
       sp_type = "sp_s_5"
     end
     revision = RevisionLog.where(sp_bsb_id: sp_bsbs.map{|s|s.id}).group_by{ |r| r.sp_bsb_id}
@@ -388,5 +501,16 @@ class StatisticsController < ApplicationController
     return "","sp_s_4",0 if is_sheng? 
     return "sp_s_4 = '#{current_user.prov_city}'","sp_s_4",1 if is_city? 
     return "sp_s_5 = '#{current_user.prov_country}'","sp_s_5",2 if is_county_level? 
+  end
+
+  def disposal_power(region=nil)
+    if region.blank?
+      return "" if is_sheng? 
+      return "sp_s_4='#{current_user.prov_city}' or sp_s_wcshi='#{current_user.prov_city}' or sp_s_220='#{current_user.prov_city}'" if is_city? 
+      return "sp_s_5='#{current_user.prov_country}' or sp_s_wcxian='#{current_user.prov_country}' or sp_s_221='#{current_user.prov_country}'" if is_county_level? 
+    else
+      return "sp_s_4='#{region}' or sp_s_wcshi='#{region}' or sp_s_220='#{region}'" if is_sheng?
+      return "sp_s_5='#{region}' or sp_s_wcxian='#{region}' or sp_s_221='#{region}'" if is_city? or is_county_level? 
+    end
   end
 end
