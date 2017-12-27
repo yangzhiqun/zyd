@@ -184,6 +184,9 @@ function chartMap(){
               //  alert('无此区域地图显示');
                 return;
             }
+            //先销毁表格
+            $('#tb_report').bootstrapTable('destroy');
+            getData(data[name]);
             addHtml(all_data[name]);
             loadMap(mapCode, name,name); 
             //将上一级地图信息压入mapStack
@@ -293,15 +296,7 @@ function chartMap(){
             mapName: curMap.mapName
         });
     }
-    function addHtml(obj){
-        $('.content_right>table>tbody').html('');
-      var htmlStr = '';
-      for (var key in obj) {
-        str =  '<tr>'+'<td><a>'+key+'</a></td>'+'<td><a  href=javascript:void(0); class="value_btn" onclick=openPostWindow("'+obj[key]+'")>'+obj[key].length+'</a></td>'+'</tr>';
-        htmlStr += str
-      }
-      $('.content_right>table>tbody').html(htmlStr);
-    }
+
     // 地图方法封装
     function loadMap(mapCode, mapName,titleName) {
         // alert(mapCode)
@@ -360,7 +355,17 @@ function chartMap(){
         });
     }   
 }
+    function addHtml(obj){
+        $('.content_right>table>tbody').html('');
+        var htmlStr = '';
+        for (var key in obj) {
+            str =  '<tr>'+'<td><a>'+key+'</a></td>'+'<td><a  href=javascript:void(0); class="value_btn" onclick=openPostWindow("'+obj[key]+'")>'+obj[key].length+'</a></td>'+'</tr>';
+            htmlStr += str
+        }
+        $('.content_right>table>tbody').html(htmlStr);
+    }
     function getData(info){
+
         $('#tb_report').bootstrapTable({
             //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
             //method: 'get',                      //请求方式（*）
@@ -436,6 +441,7 @@ function chartMap(){
           },
           success: function (data) {
             if (data) {
+                console.log(data);
               addHtml(data.data_items);
               getData(data.detailed);
             } else {
@@ -445,7 +451,7 @@ function chartMap(){
        })
        //getData(data[params]);
     }
-    $("#search").on('click',function(){
+ /*   $("#search").on('click',function(){
        //  alert(123);
          //ajax 参数 为 下拉数据  如$("#xxx").val(); 可定义 params
         $.ajax({
@@ -474,7 +480,7 @@ function chartMap(){
        }
        })
 
-    })
+    })*/
     </script>
     <%= render :partial => "baosong_js" %>
 </body>
