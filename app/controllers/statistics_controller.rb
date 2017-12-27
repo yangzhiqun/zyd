@@ -95,6 +95,7 @@ class StatisticsController < ApplicationController
   def nonconformity_statistics
     #{"合肥"=>[{"area":"合肥","dh":"SC1002134432","ypmc":"茶叶","jyxm":"xxxx","dl":"食用农产品","yl":"茶","cyl":"茶","xl":"茶"}]}
     #@data_arr:各市不合格批次数量 @data_items:各市不合格项目统计 @nonconformity 各市不合格项目详细
+    @region = nonconformity_power 
     @q = SpBsb.ransack(params[:q])
     power = region_power
     @products = @q.result(distinct: true).admin_select(power[0])
@@ -105,6 +106,7 @@ class StatisticsController < ApplicationController
     @data_arr = @data_arr.to_json
     @data_items = @data_items.to_json
     @nonconformity = @nonconformity.to_json
+    @region = @region.json
   end
 
   def nonconformity_statistics_data
@@ -541,4 +543,16 @@ class StatisticsController < ApplicationController
     return "city = '#{current_user.prov_city}'","city" if is_city?
     return "country = '#{current_user.prov_country}'","country" if is_county_level?
   end 
+
+  def nonconformity_power
+    #region = []
+    #if is_sheng?
+    #  region = Daily["region"]    
+    #elsif is_city?
+    #  Daily["region"].has_key?(current_user.prov_city) ? 
+    #else
+    #end
+    region = {"安徽省"=>"340000","合肥市"=>"340100","芜湖市"=>"340200","蚌埠市"=>"340300","淮南市"=>"340400","马鞍山市"=>"340500","淮北市"=>"340600","铜陵市"=>"340700","安庆市"=>"340800","黄山市"=>"341000","滁州市"=>"341100","阜阳市"=>"341200","宿州市"=>"341300","六安市"=>"341500","亳州市"=>"341600","池州市"=>"341700","宣城市"=>"341800"}
+    return region
+  end
 end
