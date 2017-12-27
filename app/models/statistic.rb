@@ -1,7 +1,7 @@
 class Statistic < ActiveRecord::Base
-  Task = ["区域","任务数","抽样数","检验数","不合格数","合格数","已处置","处置中"] 
-  Food = ["名称", "序号", "任务数", "抽样数", "检验数", "不合格数", "合格数", "已处置", "处置中"]
-  Nonconformity = ["市","检验不合格项目","不合格批次"]
+  Task = ["区域","抽样数","检验数","不合格数","合格数","已处置","处置中"] 
+  Food = ["名称","抽样数", "检验数", "不合格数", "合格数", "已处置", "处置中"]
+  Nonconformity = ["区域", "抽样单号", "样品名称", "检验项目", "大类", "亚类", "次亚类", "细类"]
   Unit = ["地区", "序号", "任务数", "接样数", "合格数", "不合格数", "已处置", "处置中"]
   Overtime = ["抽样单位","天数"]
   Disposal = ["处置单位", "不合格处置数", "不合格处置率", "不合格处置完成数", "异议数", "复检数", "复检不合格数", "立案数"]
@@ -77,23 +77,23 @@ class Statistic < ActiveRecord::Base
     data = []
     products.group_by{ |a| a.send(type) }.each do |name,sp_bsbs|
       #抽样数 检验数 不合格数 合格数 已处置 处置中
-      num1,num2,num3,num4,num5,num6 = 0,0,0,0,0,0 
-      num1 = sp_bsbs.length
+      num1,num2,num3,num4,num5,num6 = [],[],[],[],[],[] 
+      num1 = sp_bsbs.map(&:id)
       sp_bsbs.each do |s|
         if s.sp_i_state == 9
-          num2 +=1 
-          num3 +=1 if s.sp_s_71 =~ /不合格样品|问题样品/
+          num2 << s.id 
+          num3 << s.id if s.sp_s_71 =~ /不合格样品|问题样品/
           wtyp_czb_p[s.id].each do |w|
             if [1,2].include? w.current_state
-              num6 += 1
+              num6 << w.id
             elsif w.current_state == 3
-              num5 += 1 
+              num5 << w.id
             end
           end if wtyp_czb_p.has_key?(s.id)
         end
+        num4 << s.id if (/^((?!监测问题样品).)*$/ =~ s.sp_s_71) && (/([^不]合格)/ =~ s.sp_s_71) #合格批次
       end
-      num4 = num1-num3
-      data << {"name"=>name, "sampling"=>num1.to_s,"test"=>num2.to_s,"unqualified"=>num3.to_s,"qualified"=>num4.to_s,"Disposed"=>num5.to_s,"Disposal"=>num6.to_s}
+      data << {"name"=>name, "sampling"=>num1,"test"=>num2,"unqualified"=>num3,"qualified"=>num4,"Disposed"=>num5,"Disposal"=>num6}
     end
     return data
   end

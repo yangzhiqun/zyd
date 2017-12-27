@@ -2,47 +2,32 @@
 <%= stylesheet_link_tag "statistics_old/reset","statistics_old/cjdwtj","statistics_old/TreeGrid", :media => "all" %>
 <body>
 <div class="container">
-    <!-- 头部head -->
     <div class="page-header testcompany_header">
         <h1>承检单位统计</h1>
     </div>
     
-    <!-- 上侧按钮部分 -->
     <div class="btn-group topside_date" role="group" aria-label="...">
-        <!-- 按日期查询按钮 -->
+      <%= search_form_for @q, url: unit_statistics_path, html: {role: "form"} do |f|  %>
         <div class="fillpage-date">
-            <span>样品填报时间：</span>
-            <!--<div class="form-group">-->
-                <!--<label class="sr-only" for="page-start">开始时间</label>-->
-                <!--<input type="text" class="form-control" id="page-start" placeholder="开始时间">-->
-            <!--</div>-->
-            <!--<div style="width:20px;height:3px;margin:0px auto;padding:0px;background-color:#D5D5D5;overflow:hidden;display: inline-block;"></div>-->
-            <!--<div class="form-group">-->
-                <!--<label class="sr-only" for="page-end">结束时间</label>-->
-                <!--<input type="text" class="form-control" id="page-end" placeholder="结束时间">-->
-            <!--</div>    -->
           <div class="form-group">
-            <label class="sr-only" for="page-start">选择时间</label>
-            <input type="text" class="form-control" id="time" placeholder="选择时间">
+            <span>样品填报时间：</span>
+            <%= f.label :样品填报时间,class:"sr-only",for:"q_time" %>
+            <%= f.text_field :time,class:"form-control",id:"time",placeholder:"选择时间",value:"#{params[:q].blank? ? '':params[:q]["time"]}" %>
           </div>
         </div>
-      <div class="form-group foodcateSelect_btn">
-        <!-- 选取栏 -->
-        <span>任务类型：</span>
-        <!-- 2 -->
-        <select class="form-control foodcateSelect_option" id="bsfl">
-          <option selected="selected">报送分类a</option>
-          <option >报送分类a1</option>
-          <option >报送分类a2</option>
-          <option >报送分类a3</option>
-        </select>
-      </div>
-        <!-- 切换显示模式 -->
+        <div class="form-group foodcateSelect_btn">
+          <span>任务来源：</span>
+          <div class="form-group foodcateSelect_btn">
+              <%= f.select :sp_s_70_eq, BaosongA.all.map { |b| [b.name, b.name] },{:include_blank =>"请选择"},class:"form-control foodcateSelect_option",id:"checkbox_optionH"%>
+          </div>
+        </div>
         <div class="topside_switch">
-          <button type="button" class="btn btn-default bgc1 btn-primary exportR" id="export">导出报表</button>
-          <button type="button" class="btn btn-default bgc1 btn-primary" id="select">查询</button>
+          <button type="submit" class="btn btn-default taskbtn_query" id="search">查询</button>
+          <button type="submit" class="btn btn-default taskbtn_export bgc1 btn-primary" id="save">导出列表</button>
+          <input type="hidden" name="is_export" value="0" id="is_export">
           <button type="button" class="btn btn-default changeType" id="changeBtn">切换图表模式</button>
         </div>
+      <% end %>
     </div>
 
     <div id="subpage">

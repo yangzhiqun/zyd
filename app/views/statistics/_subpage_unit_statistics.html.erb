@@ -63,7 +63,6 @@
 
         $(document).ready(function(){
             treeGrid.expandAll("N");//默认关闭
-            $("#table_testCompany table tr:last td:first").children("img").remove(); //删除最后图标
             $(".allcheck").click(function(){
                 $("#tg1").find("input[name='cblbox']").attr("checked",$(this).attr("checked"));
             });
@@ -142,7 +141,7 @@
         num = row[col.dataField].length;
         name = row[col.dataField] || [];
         if(col.dataField=='dcisposed'||col.dataField=='disposeing'){
-            url = '';
+            url = 'hccz_particulars';
         }else{
             url = 'particulars';
         }

@@ -444,7 +444,7 @@ Rails.application.routes.draw do
   match 'food_statistics' => 'statistics#food_statistics', via: [:get, :post], as: :food_statistics
   get 'food_subset_statistics' => 'statistics#food_subset_statistics'
   get 'nonconformity_statistics' => 'statistics#nonconformity_statistics', via: [:get, :post], as: :nonconformity_statistics
-  get 'unit_statistics' => 'statistics#unit_statistics'
+  match 'unit_statistics' => 'statistics#unit_statistics', via: [:get, :post], as: :unit_statistics
   get 'overtime_statistics' => 'statistics#overtime_statistics'
   get 'disposal_statistics' => 'statistics#disposal_statistics'
   get 'disposal_month_statistics' => 'statistics#disposal_month_statistics'
