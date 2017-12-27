@@ -3,6 +3,46 @@
 module DownloadStatistics
   class << self 
 
+    def food(type,data)
+      book = Spreadsheet::Workbook.new
+      sheet = book.create_worksheet :name => "totles"
+      sheet.row(0).concat eval(type)
+      count_row=1
+      data.each do |info|
+        num = 0
+        info.each do |key,value|
+          sheet[count_row, num] = value.class == Array ? value.length : value
+          num += 1
+        end 
+        num = 0
+        count_row+=1
+      end
+      savetempfile="public/#{Time.now.strftime("%Y")}-统计结果.xls"
+      book.write(savetempfile)
+      return savetempfile
+    end
+
+    def nonconformity(type,data)
+      book = Spreadsheet::Workbook.new
+      sheet = book.create_worksheet :name => "totles"
+      sheet.row(0).concat eval(type)
+      count_row=1
+      data_arr = []
+      data.values.each{ |d| data_arr.concat d }
+      data_arr.each do |info|
+        num = 0
+        info.each do |key,value|
+          sheet[count_row, num] = value
+          num += 1
+        end 
+        num = 0
+        count_row+=1
+      end
+      savetempfile="public/#{Time.now.strftime("%Y")}-统计结果.xls"
+      book.write(savetempfile)
+      return savetempfile
+    end
+
     def enterprise(type,data)
       book = Spreadsheet::Workbook.new
       sheet = book.create_worksheet :name => "抽样机构"

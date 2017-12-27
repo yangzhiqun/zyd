@@ -1,7 +1,7 @@
 class StatisticsController < ApplicationController
 
   require 'food/download_statistics'
-  skip_before_filter :session_expiry, :verify_authenticity_token, :authenticate_user!,:only => [:particulars,:company_particulars,:hccz_particulars]
+  skip_before_filter :session_expiry, :verify_authenticity_token, :authenticate_user!,:only => [:particulars,:company_particulars,:hccz_particulars,:spyy_particulars]
 
   def statistics
   end
@@ -12,43 +12,53 @@ class StatisticsController < ApplicationController
     @q = SpBsb.ransack(params[:q])
     @products = @q.result(distinct: true)
     @data = []
-    sp_bsbs = @products.where("sp_s_4 != '请选择'")
+    power = region_power
+    sp_bsbs = @products.admin_select(power[0])
     wtyp_czb_p = WtypCzbPart.where(sp_bsb_id:sp_bsbs.unqualified.map{ |p| p.id }).group_by{ |wt| wt.sp_bsb_id }
-    sp_bsbs.group_by{ |sp| sp.sp_s_4 }.each do |city_name,city_arr| #sp_arr:每个市
-      county_sp = city_arr.group_by{ |sp| sp.sp_s_5 }
+    sp_bsbs = sp_bsbs.group_by{ |sp| sp.send(power[1]) }
+    sp_bsbs.each do |city_name,city_arr| #sp_arr:每个市
+      county_sp = power[1]=="sp_s_4" ? city_arr.group_by{ |sp| sp.sp_s_5 } : sp_bsbs
       county_result = []
       county_sp.each do |count_name,county_arr| #arr:每个县
         #0地区,1抽样数,2检验数,3不合格数,4合格数,5已处置,6处置中
-        num0,num1,num2,num3,num4,num5,num6='',0,0,0,0,0,0
+        num0,num1,num2,num3,num4,num5,num6='',[],[],[],[],[],[]
         num0 = count_name
-        num1 = county_arr.length
+        num1 = county_arr.map(&:id)
         county_arr.each do |sp| 
           if sp.sp_i_state == 9
-            num2 += 1
-            num3 += 1 if sp.sp_s_71 =~ /不合格样品|问题样品/
+            num2 << sp.id
+            num3 << sp.id if sp.sp_s_71 =~ /不合格样品|问题样品/
             wtyp_czb_p[sp.id].each do |w|
               if [1,2].include? w.current_state
-                num6 += 1
+                num6 << w.id
               elsif w.current_state == 3
-                num5 += 1 
+                num5 << w.id 
               end
             end if wtyp_czb_p.has_key?(sp.id)
           end
+          num4 << sp.id if (/^((?!监测问题样品).)*$/ =~ sp.sp_s_71) && (/([^不]合格)/ =~ sp.sp_s_71) #合格批次
         end
-        num4 = num2-num3 #合格批次
-        county_result << {name: num0,sampling:num1.to_s,test:num2.to_s,unqualified:num3.to_s,qualified:num4.to_s,Disposed:num5.to_s,Disposal:num6.to_s}
+        county_result << {name: num0,sampling:num1,test:num2,unqualified:num3,qualified:num4,Disposed:num5,Disposal:num6}
       end
-      #合计该市的信息
-      num1,num2,num3,num4,num5,num6 = 0,0,0,0,0,0
-      county_result.each do |c| 
-        num1 += c[:sampling].to_i
-        num2 += c[:test].to_i
-        num3 += c[:unqualified].to_i
-        num4 += c[:qualified].to_i
-        num5 += c[:Disposed].to_i
-        num6 += c[:Disposal].to_i
+      #如果是省市管理员:合计该市的信息
+      if power[1]=="sp_s_4"
+        num1,num2,num3,num4,num5,num6 = [],[],[],[],[],[]
+        p county_result
+        county_result.each do |c| 
+          num1.concat c[:sampling]
+          num2.concat c[:test]
+          num3.concat c[:unqualified]
+          num4.concat c[:qualified]
+          num5.concat c[:Disposed]
+          num6.concat c[:Disposal]
+        end
+        @data << {name: city_name,sampling:num1,test:num2,unqualified:num3,qualified:num4,Disposed:num5,Disposal:num6,children:county_result}
+      else
+        @data = county_result
       end
-      @data << {name: city_name,sampling:num1.to_s,test:num2.to_s,unqualified:num3.to_s,qualified:num4.to_s,Disposed:num5.to_s,Disposal:num6.to_s,children:county_result}
+    end
+    if params["is_export"] == "1"
+      send_file(DownloadStatistics.composite("Statistic::Task",@data), :disposition => "attachment") and return
     end
     @data = @data.to_json
   end
@@ -58,22 +68,16 @@ class StatisticsController < ApplicationController
   def food_statistics
     if params.has_key?(:q) && params[:q]["time"].present?
       time = params[:q]["time"].gsub(/\s/,"").split("/")
-      @q = SpBsb.where(created_at:Statistic.time_slot(time[0],time[1])).ransack(params[:q])
+      @q = SpBsb.where(sp_d_38:Statistic.time_slot(time[0],time[1])).ransack(params[:q])
     else
       @q = SpBsb.ransack(params[:q])
     end
-    @products = @q.result(distinct: true)
+    power = region_power
+    @products = @q.result(distinct: true).admin_select(power[0])
     @data = Statistic.food(@products,"sp_s_70")
-    num1,num2,num3,num4,num5,num6 = 0,0,0,0,0,0
-    @data.each do |d|
-      num1 += d["sampling"].to_i
-      num2 += d["test"].to_i
-      num3 += d["unqualified"].to_i
-      num4 += d["qualified"].to_i
-      num5 += d["Disposed"].to_i
-      num6 += d["Disposal"].to_i
+    if params["is_export"] == "1"
+      send_file(DownloadStatistics.food("Statistic::Food",@data), :disposition => "attachment") and return
     end
-    @data << {"name"=>"总计", "sampling"=>num1.to_s,"test"=>num2.to_s,"unqualified"=>num3.to_s,"qualified"=>num4.to_s,"Disposed"=>num5.to_s,"Disposal"=>num6.to_s}
     @data = @data.to_json
   end
 
@@ -81,7 +85,7 @@ class StatisticsController < ApplicationController
     time = params["time"].gsub(/\s/,"").split("/")
     category = eval(params["params"])
     sp_bsbs = SpBsb.where(category)
-    sp_bsbs = sp_bsbs.where(created_at:Statistic.time_slot(time[0],time[1])) if params["time"].present?
+    sp_bsbs = sp_bsbs.where(sp_d_38:Statistic.time_slot(time[0],time[1])) if params["time"].present?
     sp_bsbs = sp_bsbs.where(sp_s_70:params["baosongA"]) if params["baosongA"].present?
     @data = Statistic.food(sp_bsbs,Statistic::Corr[category.length])
     render json: @data
@@ -92,11 +96,15 @@ class StatisticsController < ApplicationController
     #{"合肥"=>[{"area":"合肥","dh":"SC1002134432","ypmc":"茶叶","jyxm":"xxxx","dl":"食用农产品","yl":"茶","cyl":"茶","xl":"茶"}]}
     #@data_arr:各市不合格批次数量 @data_items:各市不合格项目统计 @nonconformity 各市不合格项目详细
     @q = SpBsb.ransack(params[:q])
-    @products = @q.result(distinct: true)
-    @data_arr,@data_items,@nonconformity = Statistic.nonconformity(@products).map{ |d| d.to_json }
+    power = region_power
+    @products = @q.result(distinct: true).admin_select(power[0])
+    @data_arr,@data_items,@nonconformity = Statistic.nonconformity(@products)
     if params["is_export"] == "1"
-      send_file(DownloadStatistics.start(Statistic::Nonconformity,["aa"]), :disposition => "attachment")
+      send_file(DownloadStatistics.nonconformity("Statistic::Nonconformity",@nonconformity), :disposition => "attachment") and return
     end
+    @data_arr = @data_arr.to_json
+    @data_items = @data_items.to_json
+    @nonconformity = @nonconformity.to_json
   end
 
   def nonconformity_statistics_data
@@ -109,42 +117,49 @@ class StatisticsController < ApplicationController
     #@data_test = [{name: "合肥", code: "1",task:"22",sampling:"15",qualified:"10",unqualified:"12",Disposed:"20",Disposeing:"2",children:[{name: "合肥承检1", code: "2",task:"10",sampling:"5",qualified:"8",unqualified:"2",Disposed:"10",Disposeing:"0",},{name: "合肥承检2", code: "3",task:"5",sampling:"5",qualified:"5",unqualified:"0",Disposed:"4",Disposeing:"1",},{name: "合肥承检3", code: "4",task:"7",sampling:"5",qualified:"5",unqualified:"2",Disposed:"5",Disposeing:"2",}]},{name: "黄山", code: "5", task:"20",sampling:"15",qualified:"11",unqualified:"1",Disposed:"1",Disposeing:"1",},{name: "蚌埠", code: "6", task:"15",sampling:"15",qualified:"11",unqualified:"10",Disposed:"2",Disposeing:"2",},{name: "", code: "总计",task:"57",sampling:"45",qualified:"32",unqualified:"23",Disposed:"23",Disposeing:"5"}]
     #SpBsb.where(created_at:(Time.now.midnight - 1.year)..Time.now.midnight) sp_d_86 时间
     @data = []
-    jg_bsbs = JgBsb.where("city != '-请选择-'").includes(:jg_bsb_names)
+    power = unit_power
+    jg_bsbs = JgBsb.where(power[0])
+    if params.has_key?(:q) && params[:q]["time"].present?
+      time = params[:q]["time"].gsub(/\s/,"").split("/")
+      @q = SpBsb.where(sp_d_38:Statistic.time_slot(time[0],time[1])).ransack(params[:q])
+    else
+      @q = SpBsb.ransack(params[:q])
+    end
     jg_names = {}
-    jg_bsbs.each{|jg| jg_names[jg.id] = jg.jg_name}
-    jg_bsbs.group_by{|j|j.city}.each do |key,value|
-      hash = {name: key, code: "无", task:"无",sampling:0,qualified:0,unqualified:0,dcisposed:0,disposeing:0,children:[]}
+    JgBsbName.where(jg_bsb_id:jg_bsbs.map(&:id)).group_by{ |jg| jg.jg_bsb_id }.each{ |id,names| jg_names[id] = names.last.name }
+    sp_bsbs = @q.result(distinct: true).where(sp_s_43:jg_names.values).group_by{ |sp_bsb| sp_bsb.sp_s_43 }
+    wtyp_czb_p = WtypCzbPart.all.group_by{ |wt| wt.sp_bsb_id }
+    jg_bsbs.group_by{|j|j.send(power[1])}.each do |key,value|
+      hash = {name: key,sampling:[],qualified:[],unqualified:[],dcisposed:[],disposeing:[],children:[]}
       value.each do |jg|
-        sp_bsb = SpBsb.where(sp_s_43:jg_names[jg.id]).includes(:wtyp_czb_parts)
-        #接样数
-        one = sp_bsb.count
-        #合格数
-        two = sp_bsb.where("sp_s_71 not like '%不合格样品%' or sp_s_71 not like '%问题样品%'").count
-        #不合格数
-        three = one-two
-        #处置结果
-        num = WtypCzbPart.where(cydwmc:jg_names[jg.id]).group(:cydwmc).length
-        #已处置
-        four = WtypCzbPart.where(cydwmc:jg_names[jg.id],current_state:3).group(:cydwmc).length
-        #处置中 
-        five = num-four
-
-        hash[:sampling]    += one
-        hash[:qualified]   += two
-        hash[:unqualified] += three
-        hash[:dcisposed]   += four 
-        hash[:disposeing]  += five
-
-        hash[:children] << {name: jg_names[jg.id], code: "无", task:"无",sampling:one.to_s,qualified:two.to_s,unqualified:three.to_s,dcisposed: four.to_s,disposeing: five.to_s}
+        #1接样数,2合格数,3不合格数,4已处置,5处置中
+        num1,num2,num3,num4,num5 = [],[],[],[],[]
+        if jg_names.has_key?(jg.id) && sp_bsbs.has_key?(jg_names[jg.id])
+          sp_bsb = sp_bsbs[jg_names[jg.id]]
+          num1 = sp_bsb.map(&:id)
+          sp_bsb.each do |s| 
+            num2 << s.id if (/^((?!监测问题样品).)*$/ =~ s.sp_s_71) && (/([^不]合格)/ =~ s.sp_s_71)
+            num3 << s.id if s.sp_s_71 =~ /不合格样品|问题样品/
+            wtyp_czb_p[s.id].each do |w|
+              if [1,2].include? w.current_state
+                num5 << w.id
+              elsif w.current_state == 3
+                num4 << w.id 
+              end
+            end if wtyp_czb_p.has_key?(s.id)
+          end
+        end
+        hash[:sampling].concat    num1
+        hash[:qualified].concat   num2
+        hash[:unqualified].concat num3
+        hash[:dcisposed].concat   num4 
+        hash[:disposeing].concat  num5
+        hash[:children] << {name: jg_names[jg.id],sampling:num1,qualified:num2,unqualified:num3,dcisposed:num4,disposeing:num5}
       end
       #把数值转换为字符串,否则0会不显示
-      hash.each{ |key,value| hash[key] = value.to_s if key!=:children }
       @data << hash
     end
     @data = @data.to_json 
-    if params["subpage"]
-      render :partial => "subpage_unit_statistics", :locals => {:data => @data}
-    end
   end
 
   #抽样及检验超期统计
@@ -315,6 +330,13 @@ class StatisticsController < ApplicationController
 
   #异议详情页
   def spyy_particulars
+    @data = []
+    arr = params["opid"].split(",")
+    SpYydjb.where(id:arr).each do |yycz|
+      @data << {"id"=>yycz.id,"cjbh"=>yycz.cjbh,"ypmc"=>yycz.ypmc,"scrq"=>yycz.scrq.blank? ? "":(yycz.scrq + 8.hours).strftime("%Y-%m-%d"),"bsscqy"=>yycz.bsscqy,"bsscqysf"=>yycz.bsscqysf,"bsscqys"=>SpBsb.find_by_sp_s_16(yycz.cjbh).blank? ? "" : SpBsb.find_by_sp_s_16(yycz.cjbh).sp_s_220,"bcydw"=>yycz.bcydw,"bcydwsf"=>yycz.bcydwsf,"bcydws"=>SpBsb.find_by_sp_s_16(yycz.cjbh).blank? ? "" : SpBsb.find_by_sp_s_16(yycz.cjbh).sp_s_4,"jyjl"=>yycz.jyjl,"yyczbm"=>yycz.yyczbm,"yyczqk"=>yycz.yyczqk,"yyczjg"=>yycz.yyczjg,"yyfl"=>yycz.yyfl,"jyjl"=>yycz.jyjl,"yyczbm"=>yycz.yyczbm,"yyczfzr"=>yycz.yyczfzr}
+    end
+    @data = @data.to_json
+    render layout: false
   end
 
   #检验信息详细页
@@ -441,7 +463,7 @@ class StatisticsController < ApplicationController
     #@data = [{name: "合肥",totalbat:"6574",samplingbat:"1232",qualifiedbat:"1200",unqualifiedbat:"193",qualifiedsamp:"4.263%",riskbat:"1222",problembat:"713",problemsamp:"1.24%",children:[{name: "长丰",totalbat:"22",samplingbat:"15",qualifiedbat:"10%",unqualifiedbat:"12",qualifiedsamp:"20",riskbat:"2",problembat:"713",problemsamp:"1.24%"}]}]
     if params.has_key?(:q)
       @q = SpBsb.send(params[:q]["sp_s_71"]=="合格" ? :qualified : :unqualified) if params[:q]["sp_s_71"].present?
-      @q = (@q.nil? ? SpBsb : @q).where(created_at:Statistic.time_slot(params[:q]["created_at_start"],params[:q]["created_at_end"])) if params[:q]["created_at_start"].present? 
+      @q = (@q.nil? ? SpBsb : @q).where(sp_d_38:Statistic.time_slot(params[:q]["created_at_start"],params[:q]["created_at_end"])) if params[:q]["created_at_start"].present? 
       @q = @q.nil? ? SpBsb.ransack(params[:q]) : @q.ransack(params[:q])
     else
       @q = SpBsb.ransack(params[:q])
@@ -513,4 +535,10 @@ class StatisticsController < ApplicationController
       return "sp_s_5='#{region}' or sp_s_wcxian='#{region}' or sp_s_221='#{region}'" if is_city? or is_county_level? 
     end
   end
+
+  def unit_power
+    return "city != '-请选择-' and jg_province = '#{current_user.user_s_province}'","city" if is_sheng?
+    return "city = '#{current_user.prov_city}'","city" if is_city?
+    return "country = '#{current_user.prov_country}'","country" if is_county_level?
+  end 
 end
