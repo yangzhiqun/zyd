@@ -106,7 +106,7 @@ class StatisticsController < ApplicationController
     @data_arr = @data_arr.to_json
     @data_items = @data_items.to_json
     @nonconformity = @nonconformity.to_json
-    @region = @region.json
+    @region = @region.to_json
   end
 
   def nonconformity_statistics_data
