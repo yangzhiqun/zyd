@@ -7,7 +7,8 @@ $(function(){
 function randomData() {
     return Math.round(Math.random()*1000);
 }
-var data = {"sc":[
+var data = {"sc":[],"lt":[],"cy":[]};
+/*var data = {"sc":[
     {name: '合肥市',value: randomData() },
     {name: '芜湖市',value: randomData() },
     {name: '蚌埠市',value: randomData() },
@@ -42,7 +43,7 @@ var data = {"sc":[
     {name: '滁州市',value: randomData() },
     {name: '宿州市',value: randomData() },
     {name: '阜阳市',value: randomData() }
-]};
+]};*/
 function charts(data){
       var option = {
             title: {
