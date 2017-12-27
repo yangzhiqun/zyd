@@ -101,6 +101,8 @@ class StatisticsController < ApplicationController
     @products = @q.result(distinct: true).admin_select(power[0])
     @data_arr,@data_items,@nonconformity = Statistic.nonconformity(@products)
     if params["is_export"] == "1"
+      sheng = SysConfig.get(SysConfig::Key::PROV)+"省"
+      @nonconformity.delete(sheng)
       send_file(DownloadStatistics.nonconformity("Statistic::Nonconformity",@nonconformity), :disposition => "attachment") and return
     end
     @data_arr = @data_arr.to_json
