@@ -548,11 +548,11 @@ class StatisticsController < ApplicationController
   def nonconformity_power
     region = {}
     code_h = Statistic::Daily["region"].to_h
-    return code_h,[code_h.first].to_h if is_sheng?
+    return code_h,code_h.first if is_sheng?
     name = code_h.has_key?(current_user.prov_city+"市") ? current_user.prov_city+"市" : current_user.prov_city
     region[name] = code_h[name] if code_h.has_key?(name)
-    return region,region if is_city?
+    return region,region.first if is_city?
     region[current_user.prov_country] = ""
-    return region,[region.first].to_h
+    return region,region.first
   end
 end
