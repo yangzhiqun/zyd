@@ -37,10 +37,11 @@ class Statistic < ActiveRecord::Base
   end 
 
   def self.nonconformity(sp_bsbs)
-    sp_bsbs = sp_bsbs.where("sp_i_state = 9 AND (sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%')").includes(:spdata)
+    sheng = SysConfig.get(SysConfig::Key::PROV)+"省"
+    sp_bsbs = sp_bsbs.unqualified.includes(:spdata)
     data_arr = []
-    data_items = {"安徽省" => {}}
-    detailed = {"安徽省" => []}
+    data_items = {sheng => {}}
+    detailed = {sheng => []}
     city = sp_bsbs.where("sp_s_4 != '请选择'")
     county = sp_bsbs.where("sp_s_5 != '请选择'")
     #地图各省数据
@@ -59,12 +60,12 @@ class Statistic < ActiveRecord::Base
       detailed[name]   = []
       sp_bsbs.each do |sp|
         sp.spdata.each do |data| 
-          if data.spdata_2 == "不合格项"
+          if data.spdata_2 == "不合格项" or data.spdata_2 == "问题项"
             data_items[name].has_key?(data.spdata_0) ? data_items[name][data.spdata_0]+=1 : data_items[name][data.spdata_0]=1   
-            data_items["安徽省"].has_key?(data.spdata_0) ? data_items["安徽省"][data.spdata_0]+=1 : data_items["安徽省"][data.spdata_0]=1 
+            data_items[sheng].has_key?(data.spdata_0) ? data_items[sheng][data.spdata_0]+=1 : data_items[sheng][data.spdata_0]=1 
             hash = {"area"=>name,"dh"=>sp.sp_s_16,"bcydw"=>sp.sp_s_1,"scqy"=>sp.sp_s_64,"rwly"=>sp.sp_s_2_1,"ypmc"=>sp.sp_s_14,"jyxm"=>data.spdata_0,"dl"=>sp.sp_s_17,"yl"=>sp.sp_s_18,"cyl"=>sp.sp_s_19,"xl"=>sp.sp_s_20}
             detailed[name] << hash
-            detailed["安徽省"] << hash
+            detailed[sheng] << hash
           end
         end
       end

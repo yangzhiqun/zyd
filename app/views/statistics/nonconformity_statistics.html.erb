@@ -217,11 +217,11 @@ function chartMap(){
         var thisTxt=$(this).text();
         var thisVal=$(this).val();
         //console.log(thisVal);
-        getSelect(thisTxt); //需加参数
         addHtml(all_data[thisTxt]);
         if(!thisVal){ //获取上级地图
             thisTxt = super_area[0];
             thisVal = super_area[1];
+            getSelect(thisTxt); //需加参数
         }
         click_slide(thisVal,thisTxt,thisTxt);
         /*switch(thisTxt){
@@ -427,25 +427,23 @@ function chartMap(){
     function getSelect(params){
         //先销毁表格
         $('#tb_report').bootstrapTable('destroy');
-      /*  $.ajax({
-       type: "post",
-       contentType: "application/json",
-       url: "",
-       data: {
-       "parmas":parmas
-       },
-       success: function (data) {
-       if (data) {
-        addHtml(data[xxx]);
-        getData(data[params]);
-       }
-       else {
-       alert("数据错误");
-       }
-       }
+        $.ajax({
+          type: "get",
+          contentType: "application/json",
+          url: "nonconformity_county_statistics",
+          data: {
+            "county":params
+          },
+          success: function (data) {
+            if (data) {
+              addHtml(data.data_items);
+              getData(data.detailed);
+            } else {
+              alert("数据错误");
+            }
+          }
        })
-       */
-       getData(data[params]);
+       //getData(data[params]);
     }
     $("#search").on('click',function(){
        //  alert(123);
