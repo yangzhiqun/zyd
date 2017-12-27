@@ -296,6 +296,7 @@ function chartMap(){
         });
     }
     function addHtml(obj){
+        $('.content_right>table>tbody').html('');
       var htmlStr = '';
       for (var key in obj) {
         str =  '<tr>'+'<td><a>'+key+'</a></td>'+'<td><a  href=javascript:void(0); class="value_btn" onclick=openPostWindow("'+obj[key]+'")>'+obj[key]+'</a></td>'+'</tr>';
@@ -465,6 +466,7 @@ function chartMap(){
        },
        success: function (data) {
        if (data) {
+        addHtml(data[xxx]);
         getData(data[params]);
        }
        else {
