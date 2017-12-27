@@ -110,6 +110,30 @@ class StatisticsController < ApplicationController
     @super = arr[1].to_json
   end
 
+  #不合格项目-县
+  def nonconformity_county_statistics
+    data_items = {}
+    detailed = {}
+    county  = params["county"]
+    county_g= params["county"].gsub(/[县区市]/,"")
+    city = SpBsb.unqualified.where("sp_s_5='#{county}' or sp_s_5='#{county_g}'").includes(:spdata)
+    city.group_by{ |c| c.sp_s_5 }.each do |key,sp_bsbs|
+      name = key
+      data_items[name] = {}
+      detailed[name]   = []
+      sp_bsbs.each do |sp|
+        sp.spdata.each do |data| 
+          if data.spdata_2 == "不合格项" or data.spdata_2 == "问题项"
+            data_items[name].has_key?(data.spdata_0) ? data_items[name][data.spdata_0]+=1 : data_items[name][data.spdata_0]=1   
+            hash = {"area"=>name,"dh"=>sp.sp_s_16,"bcydw"=>sp.sp_s_1,"scqy"=>sp.sp_s_64,"rwly"=>sp.sp_s_2_1,"ypmc"=>sp.sp_s_14,"jyxm"=>data.spdata_0,"dl"=>sp.sp_s_17,"yl"=>sp.sp_s_18,"cyl"=>sp.sp_s_19,"xl"=>sp.sp_s_20}
+            detailed[name] << hash
+          end
+        end
+      end
+    end
+    render json: {"data_items"=>data_items,"detailed"=>detailed}
+  end
+
   def nonconformity_statistics_data
     data = File.open("#{Rails.root.to_s}/app/assets/javascripts/statistics/map/china-main-city/#{params["id"]}.json").read
     render json: data 
@@ -363,6 +387,10 @@ class StatisticsController < ApplicationController
     end
     @data = @data.to_json
     render layout: false
+  end
+
+  #单号查询统计
+  def sampling_statistics
   end
 
   #企业覆盖率统计
