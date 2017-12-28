@@ -2,7 +2,7 @@ class Statistic < ActiveRecord::Base
   Task = ["区域","抽样数","检验数","不合格数","合格数","已处置","处置中"] 
   Food = ["名称","抽样数", "检验数", "不合格数", "合格数", "已处置", "处置中"]
   Nonconformity = ["区域", "抽样单号", "样品名称", "检验项目", "大类", "亚类", "次亚类", "细类"]
-  Unit = ["地区", "序号", "任务数", "接样数", "合格数", "不合格数", "已处置", "处置中"]
+  Unit = ["地区", "接样数", "合格数", "不合格数", "已处置", "处置中"]
   Overtime = ["抽样单位","天数"]
   Disposal = ["处置单位", "不合格处置数", "不合格处置率", "不合格处置完成数", "异议数", "复检数", "复检不合格数", "立案数"]
   Enterprise = ["区域", "总企业数", "被抽样单位数", "覆盖率"]
@@ -12,14 +12,17 @@ class Statistic < ActiveRecord::Base
   Corr = {1=>"sp_s_70",1=>"sp_s_67",2=>"sp_s_17",3=>"sp_s_18",4=>"sp_s_19",5=>"sp_s_20"}
   Daily = YAML.load_file("config/anhui_map.yml")
   
-
   def self.time_slot(start_time,end_time)
     Time.parse(start_time+"-01")..Time.parse(end_time+"-31").end_of_day
   end
 
   def self.time_ranges(start_time,end_time)
-    range = (start_time.to_date..end_time.to_date).to_a.map(&:to_s)
-    return range-Daily["time"]
+    all_range = (start_time.to_date..end_time.to_date).map(&:to_s)
+    num = 0
+    (all_range-Daily["jie_time"]).each do |range|
+      num += 1 if (1..5).include?(range.to_date.wday) || Daily["dao_time"].include?(range)
+    end
+    return num
   end
 
   def self.retirement(sp_bsbs,revision)
@@ -30,7 +33,7 @@ class Statistic < ActiveRecord::Base
       sp_bsb_arr.each{ |spbsb| revision_num += revision[spbsb.id].length if revision.has_key?(spbsb.id) } 
       revision_rate = ((revision_num.to_f/completely)*100).to_i.to_s 
       chart["x"]  << county_name           
-      chart["y1"] << completely
+      chart["y1"] << revision_num
       chart["y2"] << revision_rate
     end
     return chart
@@ -61,8 +64,8 @@ class Statistic < ActiveRecord::Base
       sp_bsbs.each do |sp|
         sp.spdata.each do |data| 
           if data.spdata_2 == "不合格项" or data.spdata_2 == "问题项"
-            data_items[name].has_key?(data.spdata_0) ? data_items[name][data.spdata_0]+=1 : data_items[name][data.spdata_0]=1   
-            data_items[sheng].has_key?(data.spdata_0) ? data_items[sheng][data.spdata_0]+=1 : data_items[sheng][data.spdata_0]=1 
+            data_items[name].has_key?(data.spdata_0) ? data_items[name][data.spdata_0]<< sp.id : data_items[name][data.spdata_0]=[sp.id] 
+            data_items[sheng].has_key?(data.spdata_0) ? data_items[sheng][data.spdata_0]<< sp.id : data_items[sheng][data.spdata_0]=[sp.id] 
             hash = {"area"=>name,"dh"=>sp.sp_s_16,"bcydw"=>sp.sp_s_1,"scqy"=>sp.sp_s_64,"rwly"=>sp.sp_s_2_1,"ypmc"=>sp.sp_s_14,"jyxm"=>data.spdata_0,"dl"=>sp.sp_s_17,"yl"=>sp.sp_s_18,"cyl"=>sp.sp_s_19,"xl"=>sp.sp_s_20}
             detailed[name] << hash
             detailed[sheng] << hash

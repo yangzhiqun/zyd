@@ -124,7 +124,7 @@ class StatisticsController < ApplicationController
       sp_bsbs.each do |sp|
         sp.spdata.each do |data| 
           if data.spdata_2 == "不合格项" or data.spdata_2 == "问题项"
-            data_items.has_key?(data.spdata_0) ? data_items[data.spdata_0]+=1 : data_items[data.spdata_0]=1   
+            data_items.has_key?(data.spdata_0) ? data_items[data.spdata_0]<< sp.id : data_items[data.spdata_0]=[sp.id] 
             hash = {"area"=>name,"dh"=>sp.sp_s_16,"bcydw"=>sp.sp_s_1,"scqy"=>sp.sp_s_64,"rwly"=>sp.sp_s_2_1,"ypmc"=>sp.sp_s_14,"jyxm"=>data.spdata_0,"dl"=>sp.sp_s_17,"yl"=>sp.sp_s_18,"cyl"=>sp.sp_s_19,"xl"=>sp.sp_s_20}
             detailed << hash
           end
@@ -141,9 +141,9 @@ class StatisticsController < ApplicationController
 
   #承检单位统计
   def unit_statistics
-    #@data_test = [{name: "合肥", code: "1",task:"22",sampling:"15",qualified:"10",unqualified:"12",Disposed:"20",Disposeing:"2",children:[{name: "合肥承检1", code: "2",task:"10",sampling:"5",qualified:"8",unqualified:"2",Disposed:"10",Disposeing:"0",},{name: "合肥承检2", code: "3",task:"5",sampling:"5",qualified:"5",unqualified:"0",Disposed:"4",Disposeing:"1",},{name: "合肥承检3", code: "4",task:"7",sampling:"5",qualified:"5",unqualified:"2",Disposed:"5",Disposeing:"2",}]},{name: "黄山", code: "5", task:"20",sampling:"15",qualified:"11",unqualified:"1",Disposed:"1",Disposeing:"1",},{name: "蚌埠", code: "6", task:"15",sampling:"15",qualified:"11",unqualified:"10",Disposed:"2",Disposeing:"2",},{name: "", code: "总计",task:"57",sampling:"45",qualified:"32",unqualified:"23",Disposed:"23",Disposeing:"5"}]
-    #SpBsb.where(created_at:(Time.now.midnight - 1.year)..Time.now.midnight) sp_d_86 时间
+    #@data_test = [{name: "合肥", code: "1",task:"22",sampling:"15",qualified:"10",unqualified:"12",Disposed:"20",Disposeing:"2",children:[]},{name: "黄山", code: "5", task:"20",sampling:"15",qualified:"11",unqualified:"1",Disposed:"1",Disposeing:"1",}]
     @data = []
+    @chart = {}
     power = unit_power
     jg_bsbs = JgBsb.where(power[0])
     if params.has_key?(:q) && params[:q]["time"].present?
@@ -186,37 +186,86 @@ class StatisticsController < ApplicationController
       #把数值转换为字符串,否则0会不显示
       @data << hash
     end
+    if params["is_export"] == "1"
+      send_file(DownloadStatistics.composite("Statistic::Unit",@data), :disposition => "attachment") and return
+    end
+    bao_a = SpBsb.all.group_by{ |sp| sp.sp_s_70 } 
+    @data.each do |data|
+      #{"cgtj":{"x":['合肥承检1','合肥承检2'],"jys":[600,400],"hgs":[180,600],"bhgs":[100,100],"yczs":[80,70],"czzs":[40,20]},"cjrw":{"x":['抽检监测（市级本级）','抽检监测（省级专项）','抽检监测（省级转移）'],"y":[12,23,7]}}
+      x,jys,hgs,bhgs,yczs,czzs = [],[],[],[],[],[]
+      name = data[:name] #市区名称
+      data[:children].each do |d| 
+        x    << d[:name]
+        jys  << d[:sampling].length
+        hgs  << d[:qualified].length
+        bhgs << d[:unqualified].length
+        yczs << d[:dcisposed].length
+        czzs << d[:disposeing].length
+      end
+      cjrw_x,cjrw_y = [],[]
+      bao_a.each do |name,arr|
+        cjrw_x << name
+        jg_name = arr.map{|s|s.sp_s_43}
+        num = 0
+        x.each{ |n| num+=1 if jg_name.include?(n)}
+        cjrw_y << num
+      end
+      @chart[data[:name]] = {"cgtj"=>{"x"=>x,"jys"=>jys,"hgs"=>hgs,"bhgs"=>bhgs,"yczs"=>yczs,"czzs"=>czzs},"ccjrw"=>{"x"=>cjrw_x,"y"=>cjrw_y}}
+    end
     @data = @data.to_json 
+    @chart = @chart.to_json
   end
 
   #抽样及检验超期统计
   def overtime_statistics
     #@data = {:合肥=>[{:xAxis=>[{:data=>["抽样单位1", "抽样单位2", "抽样单位3", "抽样单位4", "抽样单位5", "抽样单位6", "抽样单位7"]}], :series=>[{:data=>[2, 4, 5, 4, 3, 1, 6]}]}, {:xAxis=>[{:data=>["抽样单位1", "抽样单位2", "抽样单位3", "抽样单位4", "抽样单位5", "抽样单位6", "抽样单位7"]}], :series=>[{:data=>[2, 4, 5, 4, 3, 1, 6]}]}]}
     @data = {}
-    SysProvince.level1.each do |city|
-      city_name = city.name
-      jg_bsbs = JgBsb.where(city: city_name).includes(:jg_bsb_names)
-      @data[city_name] = [{:xAxis=>[{:data=>[]}],:series=>[{:data=>[]}]},{:xAxis=>[{:data=>[]}],:series=>[{:data=>[]}]}] 
-      jg_bsbs.each do |jg|
-        sampling_num = 0 #单位抽样超期数量
-        jg_name = jg.jg_bsb_names.last.name
-        sp_bsbs = SpBsb.where(sp_s_43:jg_name)
-        #抽样超期
-        sp_bsbs.where(sp_i_state:2).each { |sp| sampling_num +=1 if days_between(Time.now,sp.sp_d_38) > 5 }
-        @data[city_name][0][:xAxis][0][:data] << jg_name
-        @data[city_name][0][:series][0][:data] << sampling_num
-        #检验超期
-        examine_num = 0
-        sp_bsbs.where(sp_i_state:[2..8,16]).includes(:sp_logs).each do |sp| 
-          sp_log = nil
-          sp.sp_logs.each{|log| sp_log = log if [2,3,4,5,6,7,8,16].include?(log.sp_i_state)}
-          if sp_log
-            time = sp_log.created_at.to_s
-            examine_num += 1 if days_between(Time.now,time) > 40
-          end
+    @overdue = {}
+    power = region_power
+    sp_bsbs = SpBsb.admin_select(power[0])
+    city = power[2] == 0 ? "sp_s_4" : "sp_s_5"
+    sp_bsbs.group_by{ |sp| sp.send(city) }.each do |city_name,city_arr|
+      chou_data,chou_series,jian_data,jian_series = [],[],[],[]
+      sampling_num,examine_num = 0,0
+      city_arr.group_by{ |a| a.sp_s_35 }.each do |jg_name,jg_arr|
+        chou_data << jg_name
+        jg_arr.each do |obj|
+          sampling_num +=1 if obj.sp_i_state == 2 && Statistic.time_ranges(obj.sp_d_38,Time.now) > 5
         end
-        @data[city_name][1][:xAxis][0][:data] << jg_name
-        @data[city_name][1][:series][0][:data] << examine_num
+        chou_series << sampling_num
+        sampling_num = 0
+      end
+      city_arr.group_by{ |a| a.sp_s_43 }.each do |jg_name,jg_arr|
+        jian_data << jg_name
+        jg_arr.each do |obj|
+          examine_num += 1 if [2,3,4,5,6,7,8,16].include?(obj.sp_i_state) && Statistic.time_ranges(obj.sp_d_86,Time.now) > 20
+        end
+        jian_series << examine_num
+        examine_num = 0
+      end
+      @data[city_name] = [{:xAxis=>[{:data=>chou_data}],:series=>[{:data=>chou_series}]},{:xAxis=>[{:data=>jian_data}],:series=>[{:data=>jian_series}]}]
+    end
+    #{"x":['合肥','芜湖','蚌埠','淮南','马鞍山','淮北','铜陵','安庆','黄山','滁州','阜阳','宿州','六安市'],"y":{"hclq":[200, 140, 170, 230, 245, 176, 135, 162, 132, 120, 160, 130,140],"hcwc":[63, 35, 52, 88, 84, 43, 56, 50, 35, 73, 37, 94,42],"yycq":[6, 5, 5, 8, 4, 3, 6, 0, 5, 7, 17, 4,14]}}
+    unqualified = sp_bsbs.unqualified
+    wtyp_czb_p = WtypCzbPart.where(sp_bsb_id:unqualified.map(&:id)).group_by{ |wt| wt.sp_bsb_id } 
+    sp_logs = SpLog.where(sp_bsb_id:unqualified.map(&:id)).group_by{ |sp| sp.sp_bsb_id } 
+    x,y = [],{"hclq"=>[],"hcwc"=>[],"yycq"=>[]}
+    unqualified.group_by{ |sp| sp.send(city) }.each do |city_name,city_arr|
+      hclq,hcwc,yycq = 0,0,0
+      x << city_name
+      city_arr.each do |sp_chaoqi|
+        #核查领取超期
+        wtyp_czb_p[sp_chaoqi.id].reverse_each do |wty|
+          if wty.current_state == 1
+            sp_logs[sp_chaoqi.id].reverse_each do |log|
+              if log.sp_i_state == 9 && days_between(Time.now,log.created_at)>7
+                hclq+=1
+                break 
+              end
+            end
+            break
+          end
+        end 
       end
     end
     @data = @data.to_json
@@ -460,18 +509,18 @@ class StatisticsController < ApplicationController
       sp_bsb_arr.group_by{ |sp| sp.sp_s_35 }.each do |cy_jg,cy_arr| #抽样单位
         jg_name = cy_jg
         completely    = cy_arr.map(&:id)
-        revision_num  = 0
-        cy_arr.each{ |spbsb| revision_num += revision[spbsb.id].length if revision.has_key?(spbsb.id) } 
-        revision_rate = ((revision_num.to_f/completely.length)*100).to_i.to_s 
-        @data["chouyang"] << {"area"=>region,"cyjg"=>jg_name,"txsl"=>completely,"txl"=>revision_rate}
+        revision_num  = []
+        cy_arr.each{ |spbsb| revision_num.concat revision[spbsb.id].map(&:sp_bsb_id) if revision.has_key?(spbsb.id) } 
+        revision_rate = ((revision_num.length.to_f/completely.length)*100).to_i.to_s 
+        @data["chouyang"] << {"area"=>region,"cyjg"=>jg_name,"txsl"=>revision_num,"txl"=>revision_rate}
       end
       sp_bsb_arr.group_by{ |sp| sp.sp_s_43 }.each do |cj_jg,cj_arr| #承检单位
         jg_name = cj_jg
         completely    = cj_arr.map(&:id)
-        revision_num  = 0
-        cj_arr.each{ |spbsb| revision_num += revision[spbsb.id].length if revision.has_key?(spbsb.id) } 
-        revision_rate = ((revision_num.to_f/completely.length)*100).to_i.to_s 
-        @data["chengjian"] << {"area"=>region,"cyjg"=>jg_name,"txsl"=>completely,"txl"=>revision_rate}
+        revision_num  = []
+        cj_arr.each{ |spbsb| revision_num.concat revision[spbsb.id].map(&:sp_bsb_id) if revision.has_key?(spbsb.id) } 
+        revision_rate = ((revision_num.length.to_f/completely.length)*100).to_i.to_s 
+        @data["chengjian"] << {"area"=>region,"cyjg"=>jg_name,"txsl"=>revision_num,"txl"=>revision_rate}
       end
     end
     if params["is_export"] == "1"
