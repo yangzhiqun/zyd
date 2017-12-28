@@ -1,7 +1,6 @@
 ﻿#encoding: utf-8
 class SpBsb < ActiveRecord::Base
   include ApplicationHelper
-  #audited except: [:sp_n_15], on: [:update]
   audited only: [:sp_s_16,:sp_s_reason,:sp_s_2_1,:sp_s_70,:sp_s_67,:sp_s_1,:sp_s_17,:sp_s_18,:sp_s_29,:sp_s_20,:sp_i_state]
   trigger.after(:insert) do
     "INSERT INTO tmp_sp_bsbs(sp_s_reason, id, sp_i_state, sp_s_16, sp_s_3, sp_s_202, sp_s_14, sp_s_43, sp_s_2_1, sp_s_35, sp_s_64, sp_s_1, sp_s_17, sp_s_20, sp_s_85, created_at, updated_at, sp_s_214, sp_s_71, fail_report_path, tname, user_id, uid, sp_s_18, sp_s_70, sp_s_215, sp_s_68, sp_s_13, sp_s_27, czb_reverted_flag) values(NEW.sp_s_reason, NEW.id, NEW.sp_i_state, NEW.sp_s_16, NEW.sp_s_3, NEW.sp_s_202, NEW.sp_s_14, NEW.sp_s_43, NEW.sp_s_2_1, NEW.sp_s_35, NEW.sp_s_64, NEW.sp_s_1, NEW.sp_s_17, NEW.sp_s_20, NEW.sp_s_85, NEW.created_at, NEW.updated_at, NEW.sp_s_214, NEW.sp_s_71, NEW.fail_report_path, NEW.tname, NEW.user_id, NEW.uid, NEW.sp_s_18, NEW.sp_s_70, NEW.sp_s_215, NEW.sp_s_68, NEW.sp_s_13, NEW.sp_s_27, NEW.czb_reverted_flag)"
@@ -26,7 +25,7 @@ class SpBsb < ActiveRecord::Base
  # before_save :check_bsb_validity
  # before_save :check_benji_company
   after_update :callback_when_updated
-  audited only: [:sp_s_215,:sp_s_14,:sp_d_28,:sp_s_13,:sp_d_38,:sp_i_state]
+  audited only: [:sp_s_215,:sp_s_14,:sp_d_28,:sp_s_13,:sp_d_38,:sp_i_state,:sp_s_16]
 
   SpState = {1 => "基本信息(填报中)", 2 => "检测数据(填报)", 3 => "检测数据(填报)", 4 => "检测数据(机构审核中)", 5 => "检测数据(机构批准中)", 6 => "待机构审核", 9 => "检测数据(已提交至秘书处)", 16 => "检测数据(报告发送人审核中)", 32 => "基本信息审核", 35 => "接收样品"} 
 
@@ -514,6 +513,101 @@ class SpBsb < ActiveRecord::Base
           end
         end
       end
+    end
+  end
+
+
+  def self.statistics
+    complete_id,unqualified_id,report_for_24_id,unqualified_for_today_id,complete_for_today_id =[],[],[],[],[] #完全提交id
+    sp_bsb = SpBsb.all
+    sum = sp_bsb.count
+    complete = sp_bsb.where("sp_bsbs.sp_i_state = 9") #总完全提交
+    complete.each{|sp| complete_id << sp.id }   #总完全提交id
+    report_for_24 = sp_bsb.where(bgfl: "24小时限时报告") #24小时限时报告
+    report_for_24.each{|sp| report_for_24_id << sp.id}
+    unqualified = complete.where("(sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%')") # 不合格
+    unqualified.each{|sp| unqualified_id << sp.id }
+    unqualified_for_today = unqualified.where(" sp_bsbs.updated_at BETWEEN ? AND ? ",Time.new.beginning_of_day,Time.new.end_of_day) #今日不合格
+    unqualified_for_today.each{|sp| unqualified_for_today_id << sp.id}
+    complete_for_today = complete.where(" sp_bsbs.updated_at BETWEEN ? AND ? ",Time.new.beginning_of_day,Time.new.end_of_day) #今日完全提交
+    complete_for_today.each{|sp| complete_for_today_id << sp.id}
+    #返回 总抽检    总完全提交    24小时限时报告批次 不合格 今日不合格  今日完全提交
+    return sum, complete.count,complete_id,report_for_24.count,report_for_24_id,unqualified.count,unqualified_id,unqualified_for_today.count,unqualified_for_today_id,complete_for_today.count,complete_for_today_id
+  end
+
+  def self.warning_map_data
+    data ={}
+   # v=[]
+    
+    sp_bsb = SpBsb.select("sp_s_68, sp_s_4,count(*) as count").unqualified.group(:sp_s_4,:sp_s_68).order(sp_s_68: :asc)
+    sp_bsb.group_by{|j|j.sp_s_68}.each do |key,value|
+      v=[] 
+      i=0
+      value.each do |city|
+       i +=1
+       v << {name: city.sp_s_4 =~ /市/ ? city.sp_s_4 : city.sp_s_4+"市",value: city.count}
+      end
+      data.store("#{CyType.invert[key]}",v)
+    end
+    return  data 
+  end
+
+  CyType = {'sc' => '生产','lt' => '流通','cy' => '餐饮'  }
+  def self.unqualified_for_bcydw(sp_s_4) 
+    @bycdw =SpBsb.select("id,sp_s_4,sp_s_1,sp_s_14,sp_s_17,sp_s_14,sp_s_16,sp_s_68,count(*) as count").unqualified.group(:sp_s_1).order("count(*) desc").limit(10)
+    if sp_s_4.present?
+      @bycdw = @bycdw.where("sp_s_4 = ? or sp_s_4 =?",sp_s_4,sp_s_4.delete("市"))  
+    end
+    @info = []
+    @info2 = []
+    @ids =[]
+   #SpBsb.unqualified.where(sp_s_1: b.sp_s_1).select(:id).each{|s| @ids << s.id}
+    @bycdw.each do |b|
+    SpBsb.unqualified.where(sp_s_1: b.sp_s_1).select(:id).each{|s| @ids << s.id}
+      @info <<  {bcydwqy: b.sp_s_4,bcydwmc: b.sp_s_1,bhgyp: b.sp_s_14,bhgfl: b.sp_s_17,bhgpc: b.count,id: @ids}
+      @info2 <<  {qy: b.sp_s_14,cydh: b.sp_s_16,ypmc:b.sp_s_14,bcydwmc:b.sp_s_1,hj:b.sp_s_68,id:b.id}
+      @ids =[]
+    end
+   @sp_spdata = @bycdw.group(:sp_s_4)
+   @info3 = []
+   jyxm = ""
+   @sp_spdata.each do |sp|
+     sp.spdata.each do |data|
+       jyxm = data.spdata_0
+       @info3 <<  {qy: sp.sp_s_4,jyxm: jyxm,ypmc:sp.sp_s_14}
+     end
+   end
+    return @info.to_json,@info2.to_json,@info3.to_json   
+  end
+
+  module State_type
+    TX = 1
+    TB = 2
+    TH = 3
+    SH = 4
+    BZ = 5
+    FS = 16
+    TJ = 9
+  end
+
+  def self.state_type(state)
+    case state
+    when 1
+      '退修中'
+    when 2
+      '填报数据'
+    when 3
+      '退回待修'
+    when 4
+      '待机构审核'
+    when 5
+      '待机构批准'
+    when 16
+      '报告发送人'
+    when 9
+      '完全提交'
+    else
+       '-'   
     end
   end
 
