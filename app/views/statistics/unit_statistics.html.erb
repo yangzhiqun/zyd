@@ -9,15 +9,15 @@
     <div class="btn-group topside_date" role="group" aria-label="...">
       <%= search_form_for @q, url: unit_statistics_path, html: {role: "form"} do |f|  %>
         <div class="fillpage-date">
+          <span>样品填报时间：</span>
           <div class="form-group">
-            <span>样品填报时间：</span>
             <%= f.label :样品填报时间,class:"sr-only",for:"q_time" %>
             <%= f.text_field :time,class:"form-control",id:"time",placeholder:"选择时间",value:"#{params[:q].blank? ? '':params[:q]["time"]}" %>
           </div>
         </div>
-        <div class="form-group foodcateSelect_btn">
+        <div class="fillpage-date">
           <span>任务来源：</span>
-          <div class="form-group foodcateSelect_btn">
+          <div class="form-group foodcateSelect_btn rwly_selectbox">
               <%= f.select :sp_s_70_eq, BaosongA.all.map { |b| [b.name, b.name] },{:include_blank =>"请选择"},class:"form-control foodcateSelect_option",id:"checkbox_optionH"%>
           </div>
         </div>

@@ -52,6 +52,7 @@ div.topside_switch button.exportR{
 }
 .fillpage-date{
     margin: 0 10px;
+    display:inline-block;
 }
 .fillpage-date>span{
     font-weight: 700;
@@ -60,6 +61,9 @@ div.topside_switch button.exportR{
     width: 150px;
     display: inline-block;
     margin-bottom: 0;
+}
+.rwly_selectbox select{
+    width:185px;
 }
 /*div.topside_switch .exportR{
     display: none;
@@ -129,6 +133,11 @@ table#detail_table tr.parent{
     width: 1000px;
     height: 400px;
 }
+/*add-style*/
+.topbtnSect_cqtj table.cqtj_option{
+    padding:0;
+}
+
 /*抽样及检验超期统计*/
 /*图表样式*/
 .charts_1,.charts_2,.charts_3{

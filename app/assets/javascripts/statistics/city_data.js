@@ -17,6 +17,6 @@ $(function(){
   //  $("#cqtj_option").append($('<option>').attr({'value': prov[0]}).text(prov[0]));
   //});
   $.each(prov_data, function (i, prov) {
-    $("#cqtj_option").append($('<option>').attr({'value': prov}).text(prov));
+    $("#cqtj_option").append('<tr><td>' +prov + '</td></tr>');
   });
 })
