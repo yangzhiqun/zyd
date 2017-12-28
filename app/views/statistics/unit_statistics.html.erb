@@ -31,7 +31,7 @@
     </div>
 
     <div id="subpage">
-      <%= render :partial => "subpage_unit_statistics", :locals => {:data => @data} %>
+      <%= render :partial => "subpage_unit_statistics", :locals => {:data => @data, :chart => @chart} %>
     </div>
 
 </div>
@@ -41,6 +41,12 @@
     $("#select").click(function(){
       request_ajax();
     })
+    $("#search").click(function(){
+      $("#is_export").val("0");
+    });
+    $("#save").click(function(){
+      $("#is_export").val("1");
+    });
     function request_ajax() {
       var url  = "/unit_statistics";
       $.ajax({
