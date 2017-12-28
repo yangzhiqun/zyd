@@ -516,6 +516,70 @@ class SpBsb < ActiveRecord::Base
     end
   end
 
+
+  def self.statistics
+    complete_id,unqualified_id,report_for_24_id,unqualified_for_today_id,complete_for_today_id =[],[],[],[],[] #完全提交id
+    sp_bsb = SpBsb.all
+    sum = sp_bsb.count
+    complete = sp_bsb.where("sp_bsbs.sp_i_state = 9") #总完全提交
+    complete.each{|sp| complete_id << sp.id }   #总完全提交id
+    report_for_24 = sp_bsb.where(bgfl: "24小时限时报告") #24小时限时报告
+    report_for_24.each{|sp| report_for_24_id << sp.id}
+    unqualified = complete.where("(sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%')") # 不合格
+    unqualified.each{|sp| unqualified_id << sp.id }
+    unqualified_for_today = unqualified.where(" sp_bsbs.updated_at BETWEEN ? AND ? ",Time.new.beginning_of_day,Time.new.end_of_day) #今日不合格
+    unqualified_for_today.each{|sp| unqualified_for_today_id << sp.id}
+    complete_for_today = complete.where(" sp_bsbs.updated_at BETWEEN ? AND ? ",Time.new.beginning_of_day,Time.new.end_of_day) #今日完全提交
+    complete_for_today.each{|sp| complete_for_today_id << sp.id}
+    #返回 总抽检    总完全提交    24小时限时报告批次 不合格 今日不合格  今日完全提交
+    return sum, complete.count,complete_id,report_for_24.count,report_for_24_id,unqualified.count,unqualified_id,unqualified_for_today.count,unqualified_for_today_id,complete_for_today.count,complete_for_today_id
+  end
+
+  def self.warning_map_data
+    data ={}
+   # v=[]
+    
+    sp_bsb = SpBsb.select("sp_s_68, sp_s_4,count(*) as count").unqualified.group(:sp_s_4,:sp_s_68).order(sp_s_68: :asc)
+    sp_bsb.group_by{|j|j.sp_s_68}.each do |key,value|
+      v=[] 
+      i=0
+      value.each do |city|
+       i +=1
+       v << {name: city.sp_s_4 =~ /市/ ? city.sp_s_4 : city.sp_s_4+"市",value: city.count}
+      end
+      data.store("#{CyType.invert[key]}",v)
+    end
+    return  data 
+  end
+
+  CyType = {'sc' => '生产','lt' => '流通','cy' => '餐饮'  }
+  def self.unqualified_for_bcydw(sp_s_4) 
+    @bycdw =SpBsb.select("id,sp_s_4,sp_s_1,sp_s_14,sp_s_17,sp_s_14,sp_s_16,sp_s_68,count(*) as count").unqualified.group(:sp_s_1).order("count(*) desc").limit(10)
+    if sp_s_4.present?
+      @bycdw = @bycdw.where("sp_s_4 = ? or sp_s_4 =?",sp_s_4,sp_s_4.delete("市"))  
+    end
+    @info = []
+    @info2 = []
+    @ids =[]
+   #SpBsb.unqualified.where(sp_s_1: b.sp_s_1).select(:id).each{|s| @ids << s.id}
+    @bycdw.each do |b|
+    SpBsb.unqualified.where(sp_s_1: b.sp_s_1).select(:id).each{|s| @ids << s.id}
+      @info <<  {bcydwqy: b.sp_s_4,bcydwmc: b.sp_s_1,bhgyp: b.sp_s_14,bhgfl: b.sp_s_17,bhgpc: b.count,id: @ids}
+      @info2 <<  {qy: b.sp_s_14,cydh: b.sp_s_16,ypmc:b.sp_s_14,bcydwmc:b.sp_s_1,hj:b.sp_s_68,id:b.id}
+      @ids =[]
+    end
+   @sp_spdata = @bycdw.group(:sp_s_4)
+   @info3 = []
+   jyxm = ""
+   @sp_spdata.each do |sp|
+     sp.spdata.each do |data|
+       jyxm = data.spdata_0
+       @info3 <<  {qy: sp.sp_s_4,jyxm: jyxm,ypmc:sp.sp_s_14}
+     end
+   end
+    return @info.to_json,@info2.to_json,@info3.to_json   
+  end
+
   module State_type
     TX = 1
     TB = 2

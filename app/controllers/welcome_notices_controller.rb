@@ -9,11 +9,12 @@ class WelcomeNoticesController < ApplicationController
     @welcome_notices = WelcomeNotice.order("top desc, updated_at desc")
     @sp_bsbs,@ending_time,@begin_time = SpBsb.search({},session[:change_js],current_user,is_sheng?,is_city?,is_county_level?,is_shengshi?,all_super_departments,"spsearch")
     @sp_bsbs = @sp_bsbs.where(bgfl:"24小时限时报告").length
-
-    respond_to do |format|
-      format.html # index.html.erb
-      format.json { render json: @welcome_notices }
-    end
+    @sum,@complete,@complete_id,@report_for_24,@report_for_24_id,@unqualified,@unqualified_id,@unqualified_for_today,@unqualified_for_today_id,@complete_for_today,@complete_for_today_id = SpBsb.statistics
+    @info,@info2,@info3 = SpBsb.unqualified_for_bcydw(params[:name])
+    @data = SpBsb.warning_map_data.to_json
+   if params[:name]
+     render json: {info: @info,info2:@info2,info3:@info3,data: @data}
+   end
   end
 
   # GET /welcome_notices/1

@@ -4,16 +4,16 @@ development:
   #host: mysql_database
   encoding: utf8
   reconnect: false
-  database: jilin_ceshi
+  database: anhui_ceshi
   pool: 25
   username: root
-  password: BJzyd82510
+  password: 123456
 
 production:
   adapter: mysql2
   encoding: utf8
   reconnect: false
-  database: jilin_ceshi
+  database: anhui_ceshi
   pool: 25
   username: root
-  password: BJzyd82510
+  password: 123456
