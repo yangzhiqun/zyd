@@ -11,7 +11,9 @@ $(function(){
 function randomData() {
     return Math.round(Math.random()*1000);
 }
-var data1 = {"sc":[
+var data = {"sc":[],"lt":[],"cy":[]};
+/*var data = {"sc":[
+>>>>>>> 97a089e570f86a3f4960f358e016d1f6c663436a
     {name: '合肥市',value: randomData() },
     {name: '芜湖市',value: randomData() },
     {name: '蚌埠市',value: randomData() },
@@ -46,7 +48,7 @@ var data1 = {"sc":[
     {name: '滁州市',value: randomData() },
     {name: '宿州市',value: randomData() },
     {name: '阜阳市',value: randomData() }
-]};
+]};*/
 function charts(data){
       var option = {
             title: {
@@ -58,7 +60,7 @@ function charts(data){
             legend: {
                 orient: 'vertical',
                 left: 'left',
-                data:['生产','流通','餐饮'],
+                data:['生产','流通','餐饮']
 
             },
             visualMap: {
@@ -154,17 +156,16 @@ function charts(data){
 }
 
 
-var info11 = [{"bcydwqy":"阜阳1","bcydwmc":"阜阳华联集团股份有限公司华联大厦分公司","bhgyp":"大豆油","bhgfl":"食用油","bhgpc":"10"},
-    {"bcydwqy":"滁州","bcydwmc":"明光市李玲调味品经营部","bhgyp":"鸡精调味料","bhgfl":"调味品","bhgpc":"9"},
-    {"bcydwqy":"阜阳","bcydwmc":"阜阳华联集团股份有限公司华联大厦分公司","bhgyp":"九三牌大豆油","bhgfl":"食用油","bhgpc":"8"},
-    {"bcydwqy":"宣城","bcydwmc":"宣城大润发商业有限公司","bhgyp":"冰糕","bhgfl":"糕点","bhgpc":"7"},
-    {"bcydwqy":"宣城","bcydwmc":"绩溪县徽和天下食品有限公司","bhgyp":"绩溪臭鳜鱼","bhgfl":"速冻食品","bhgpc":"6"},
-    {"bcydwqy":"宣城","bcydwmc":"安徽省绩溪县劳模实业有限公司","bhgyp":"红豆薏米核桃粉","bhgfl":"方便食品","bhgpc":"5"},
-    {"bcydwqy":"阜阳","bcydwmc":"阜阳华联集团股份有限公司华联大厦分公司","bhgyp":"大豆油","bhgfl":"食用油","bhgpc":"4"},
-    {"bcydwqy":"阜阳","bcydwmc":"阜阳华联集团股份有限公司华联大厦分公司","bhgyp":"大豆油","bhgfl":"食用油","bhgpc":"3"},
-    {"bcydwqy":"阜阳","bcydwmc":"阜阳华联集团股份有限公司华联大厦分公司","bhgyp":"大豆油","bhgfl":"食用油","bhgpc":"2"},
-    {"bcydwqy":"阜阳","bcydwmc":"阜阳华联集团股份有限公司华联大厦分公司","bhgyp":"大豆油","bhgfl":"食用油","bhgpc":"1"}];
-
+var info = [{"bcydwqy":"阜阳","bcydwmc":"阜阳华联集团股份有限公司华联大厦分公司","bhgyp":"大豆油","bhgfl":"食用油","bhgpc":[1,2,3,4,5]},
+    {"bcydwqy":"滁州","bcydwmc":"明光市李玲调味品经营部","bhgyp":"鸡精调味料","bhgfl":"调味品","bhgpc":[1,2,3,4,5]},
+    {"bcydwqy":"阜阳","bcydwmc":"阜阳华联集团股份有限公司华联大厦分公司","bhgyp":"九三牌大豆油","bhgfl":"食用油","bhgpc":[1,2,3,4,5]},
+    {"bcydwqy":"宣城","bcydwmc":"宣城大润发商业有限公司","bhgyp":"冰糕","bhgfl":"糕点","bhgpc":[1,2,3,4,5]},
+    {"bcydwqy":"宣城","bcydwmc":"绩溪县徽和天下食品有限公司","bhgyp":"绩溪臭鳜鱼","bhgfl":"速冻食品","bhgpc":[1,2,3,4,5]},
+    {"bcydwqy":"宣城","bcydwmc":"安徽省绩溪县劳模实业有限公司","bhgyp":"红豆薏米核桃粉","bhgfl":"方便食品","bhgpc":[1,2,3,4,5]},
+    {"bcydwqy":"阜阳","bcydwmc":"阜阳华联集团股份有限公司华联大厦分公司","bhgyp":"大豆油","bhgfl":"食用油","bhgpc":[1,2,3,4,5]},
+    {"bcydwqy":"阜阳","bcydwmc":"阜阳华联集团股份有限公司华联大厦分公司","bhgyp":"大豆油","bhgfl":"食用油","bhgpc":[1,2,3,4,5]},
+    {"bcydwqy":"阜阳","bcydwmc":"阜阳华联集团股份有限公司华联大厦分公司","bhgyp":"大豆油","bhgfl":"食用油","bhgpc":[1,2,3,4,5]},
+    {"bcydwqy":"阜阳","bcydwmc":"阜阳华联集团股份有限公司华联大厦分公司","bhgyp":"大豆油","bhgfl":"食用油","bhgpc":[1,2,3,4,5]}];
 //加载top10列表
 function getDataTp(info){
     
@@ -213,17 +214,17 @@ function getDataTp(info){
         ]
     });
 }
-var info21 = [{"qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"生产"},
-    {"qy":"宣城","cydh":"SC17340622222","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
-    {"qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
-    {"qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
-    {"qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
-    {"qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
-    {"qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
-    {"qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
-    {"qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
-    {"qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
-    {"qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"}];
+var info2 = [{"id":"123","qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"生产"},
+    {"id":"123","qy":"宣城","cydh":"SC17340622222","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
+    {"id":"123","qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
+    {"id":"123","qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
+    {"id":"123","qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
+    {"id":"123","qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
+    {"id":"123","qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
+    {"id":"123","qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
+    {"id":"123","qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
+    {"id":"123","qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
+    {"id":"123","qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"}];
 //
 function getData2(info){
 
@@ -260,8 +261,8 @@ function getData2(info){
                 title : '抽样单号',
                 align : 'center',
                 formatter : function (value, row, index) {
-                    var info = "<a href='javascript:void(0);' onclick = getInfo('particulars','"+row.id+"');>"+value+"</a>"
-                    //var info = "<a href='javascript:void(0);' onclick = ajaxInfo('url','"+value+"','1')>"+value+"</a>";
+                    //var info = "<a href='javascript:void(0);' onclick = getInfo('particulars','"+row.id+"');>"+value+"</a>"
+                    var info = "<a href='javascript:void(0);' onclick = ajaxInfo('url','"+row.id+"','1')>"+value+"</a>";
                     return info;
                 }
             },
@@ -339,9 +340,8 @@ function getData3(info){
  */
 function ajaxInfo(url,params,flag){
 
-
      $.ajax({
-     type : "get",
+     type : "post",
      async : true, //异步执行
      url : url,
      data : {"name": params},
@@ -397,4 +397,36 @@ function getInfo(url,id){
       tempForm.submit();
      document.body.removeChild(tempForm);
  
+}
+
+//请求后台方法，弹出详情页面
+function openPostWindow(data){
+    var tempForm = document.createElement("form");
+    tempForm.id = "tempForm1";
+    tempForm.method = "post";
+    tempForm.action = "particulars";
+    tempForm.target="_blank"; //打开新页面
+    var hideInput1 = document.createElement("input");
+    hideInput1.type = "hidden";
+    hideInput1.name="opid"; //后台要接受这个参数来取值
+    hideInput1.value = data; //后台实际取到的值
+    /*var hideInput2 = document.createElement("input");
+     hideInput2.type = "hidden";
+     hideInput2.name="xtmc";
+     hideInput2.value = data2;  这里就是如果需要第二个参数的时候可以自己再设置*/
+    tempForm.appendChild(hideInput1);
+    //tempForm.appendChild(hideInput2);
+    if(document.all){
+        tempForm.attachEvent("onsubmit",function(){});        //IE
+    }else{
+        var subObj = tempForm.addEventListener("submit",function(){},false);    //firefox
+    }
+    document.body.appendChild(tempForm);
+    if(document.all){
+        tempForm.fireEvent("onsubmit");
+    }else{
+        tempForm.dispatchEvent(new Event("submit"));
+    }
+    tempForm.submit();
+    document.body.removeChild(tempForm);
 }

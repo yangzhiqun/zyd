@@ -1,8 +1,8 @@
 class Statistic < ActiveRecord::Base
-  Task = ["区域","任务数","抽样数","检验数","不合格数","合格数","已处置","处置中"] 
-  Food = ["名称", "序号", "任务数", "抽样数", "检验数", "不合格数", "合格数", "已处置", "处置中"]
-  Nonconformity = ["市","检验不合格项目","不合格批次"]
-  Unit = ["地区", "序号", "任务数", "接样数", "合格数", "不合格数", "已处置", "处置中"]
+  Task = ["区域","抽样数","检验数","不合格数","合格数","已处置","处置中"] 
+  Food = ["名称","抽样数", "检验数", "不合格数", "合格数", "已处置", "处置中"]
+  Nonconformity = ["区域", "抽样单号", "样品名称", "检验项目", "大类", "亚类", "次亚类", "细类"]
+  Unit = ["地区", "接样数", "合格数", "不合格数", "已处置", "处置中"]
   Overtime = ["抽样单位","天数"]
   Disposal = ["处置单位", "不合格处置数", "不合格处置率", "不合格处置完成数", "异议数", "复检数", "复检不合格数", "立案数"]
   Enterprise = ["区域", "总企业数", "被抽样单位数", "覆盖率"]
@@ -12,14 +12,17 @@ class Statistic < ActiveRecord::Base
   Corr = {1=>"sp_s_70",1=>"sp_s_67",2=>"sp_s_17",3=>"sp_s_18",4=>"sp_s_19",5=>"sp_s_20"}
   Daily = YAML.load_file("config/anhui_map.yml")
   
-
   def self.time_slot(start_time,end_time)
     Time.parse(start_time+"-01")..Time.parse(end_time+"-31").end_of_day
   end
 
   def self.time_ranges(start_time,end_time)
-    range = (start_time.to_date..end_time.to_date).to_a.map(&:to_s)
-    return range-Daily["time"]
+    all_range = (start_time.to_date..end_time.to_date).map(&:to_s)
+    num = 0
+    (all_range-Daily["jie_time"]).each do |range|
+      num += 1 if (1..5).include?(range.to_date.wday) || Daily["dao_time"].include?(range)
+    end
+    return num
   end
 
   def self.retirement(sp_bsbs,revision)
@@ -30,17 +33,18 @@ class Statistic < ActiveRecord::Base
       sp_bsb_arr.each{ |spbsb| revision_num += revision[spbsb.id].length if revision.has_key?(spbsb.id) } 
       revision_rate = ((revision_num.to_f/completely)*100).to_i.to_s 
       chart["x"]  << county_name           
-      chart["y1"] << completely
+      chart["y1"] << revision_num
       chart["y2"] << revision_rate
     end
     return chart
   end 
 
   def self.nonconformity(sp_bsbs)
-    sp_bsbs = sp_bsbs.where("sp_i_state = 9 AND (sp_s_71 like '%不合格样品%' or sp_s_71 like '%问题样品%')").includes(:spdata)
+    sheng = SysConfig.get(SysConfig::Key::PROV)+"省"
+    sp_bsbs = sp_bsbs.unqualified.includes(:spdata)
     data_arr = []
-    data_items = {"安徽省" => {}}
-    detailed = {"安徽省" => []}
+    data_items = {sheng => {}}
+    detailed = {sheng => []}
     city = sp_bsbs.where("sp_s_4 != '请选择'")
     county = sp_bsbs.where("sp_s_5 != '请选择'")
     #地图各省数据
@@ -59,12 +63,12 @@ class Statistic < ActiveRecord::Base
       detailed[name]   = []
       sp_bsbs.each do |sp|
         sp.spdata.each do |data| 
-          if data.spdata_2 == "不合格项"
-            data_items[name].has_key?(data.spdata_0) ? data_items[name][data.spdata_0]+=1 : data_items[name][data.spdata_0]=1   
-            data_items["安徽省"].has_key?(data.spdata_0) ? data_items["安徽省"][data.spdata_0]+=1 : data_items["安徽省"][data.spdata_0]=1 
+          if data.spdata_2 == "不合格项" or data.spdata_2 == "问题项"
+            data_items[name].has_key?(data.spdata_0) ? data_items[name][data.spdata_0]<< sp.id : data_items[name][data.spdata_0]=[sp.id] 
+            data_items[sheng].has_key?(data.spdata_0) ? data_items[sheng][data.spdata_0]<< sp.id : data_items[sheng][data.spdata_0]=[sp.id] 
             hash = {"area"=>name,"dh"=>sp.sp_s_16,"bcydw"=>sp.sp_s_1,"scqy"=>sp.sp_s_64,"rwly"=>sp.sp_s_2_1,"ypmc"=>sp.sp_s_14,"jyxm"=>data.spdata_0,"dl"=>sp.sp_s_17,"yl"=>sp.sp_s_18,"cyl"=>sp.sp_s_19,"xl"=>sp.sp_s_20}
             detailed[name] << hash
-            detailed["安徽省"] << hash
+            detailed[sheng] << hash
           end
         end
       end
@@ -77,23 +81,23 @@ class Statistic < ActiveRecord::Base
     data = []
     products.group_by{ |a| a.send(type) }.each do |name,sp_bsbs|
       #抽样数 检验数 不合格数 合格数 已处置 处置中
-      num1,num2,num3,num4,num5,num6 = 0,0,0,0,0,0 
-      num1 = sp_bsbs.length
+      num1,num2,num3,num4,num5,num6 = [],[],[],[],[],[] 
+      num1 = sp_bsbs.map(&:id)
       sp_bsbs.each do |s|
         if s.sp_i_state == 9
-          num2 +=1 
-          num3 +=1 if s.sp_s_71 =~ /不合格样品|问题样品/
+          num2 << s.id 
+          num3 << s.id if s.sp_s_71 =~ /不合格样品|问题样品/
           wtyp_czb_p[s.id].each do |w|
             if [1,2].include? w.current_state
-              num6 += 1
+              num6 << w.id
             elsif w.current_state == 3
-              num5 += 1 
+              num5 << w.id
             end
           end if wtyp_czb_p.has_key?(s.id)
         end
+        num4 << s.id if (/^((?!监测问题样品).)*$/ =~ s.sp_s_71) && (/([^不]合格)/ =~ s.sp_s_71) #合格批次
       end
-      num4 = num1-num3
-      data << {"name"=>name, "sampling"=>num1.to_s,"test"=>num2.to_s,"unqualified"=>num3.to_s,"qualified"=>num4.to_s,"Disposed"=>num5.to_s,"Disposal"=>num6.to_s}
+      data << {"name"=>name, "sampling"=>num1,"test"=>num2,"unqualified"=>num3,"qualified"=>num4,"Disposed"=>num5,"Disposal"=>num6}
     end
     return data
   end

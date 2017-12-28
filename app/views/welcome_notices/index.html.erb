@@ -11,8 +11,13 @@
   <div class="item">
     <ul class="clearfix">
       <li class="item1">
+<<<<<<< HEAD
         <div onclick="getInfo('particulars','7500')">
           <h4><%= @sum %></h4>
+=======
+        <div>
+          <h4><a href="javascript:void(0);" onclick='openPostWindow(this.innerText)' >12345</a></h4>
+>>>>>>> 97a089e570f86a3f4960f358e016d1f6c663436a
           <h2>总抽检批次</h2>
         </div>
       </li>
@@ -63,7 +68,6 @@
 </div>
 <div id="map">
   <%= render :partial => "index", :locals => {:info => @info,:info2 => @info2, :info3 => @info3,:data => @data} %>
-  <%#= render :partial => "index", :locals => {:data => @map} %>
 </div>
 
 </body>
