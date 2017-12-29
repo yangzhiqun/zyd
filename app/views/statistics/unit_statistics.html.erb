@@ -11,6 +11,7 @@
         <div class="fillpage-date">
           <span>样品填报时间：</span>
           <div class="form-group">
+            <%= f.hidden_field :defs,class:"form-control",id:"defs",value:"#{params[:q].blank? ? '0':params[:q]["defs"]}" %>
             <%= f.label :样品填报时间,class:"sr-only",for:"q_time" %>
             <%= f.text_field :time,class:"form-control",id:"time",placeholder:"选择时间",value:"#{params[:q].blank? ? '':params[:q]["time"]}" %>
           </div>
@@ -38,6 +39,8 @@
 </body>
 <script>
   $(document).ready(function(){
+      var char = <%= raw @chart %>
+          console.log(char);
     $("#select").click(function(){
       request_ajax();
     })
@@ -59,6 +62,19 @@
           chart()
         }
       });
+    }
+      var defs = $("#defs").val();
+      var that = $('#changeBtn');
+    if(defs=='0'){
+        that.text('切换图表模式');
+        $('.exportR').removeClass('hide');
+        $('.topbtnSect_cqtj').addClass('hide');
+    }else{
+        $('#table_testCompany').toggleClass('hide');
+        $('.charts').toggleClass('hide');
+        that.text('切换表格模式');
+        $('.exportR').addClass('hide');
+        $('.topbtnSect_cqtj').removeClass('hide');
     }
   }) 
 </script>
