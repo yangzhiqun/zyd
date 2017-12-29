@@ -11,7 +11,7 @@ $(function(){
 function randomData() {
     return Math.round(Math.random()*1000);
 }
-var data = {"sc":[],"lt":[],"cy":[]};
+//var data = {"sc":[],"lt":[],"cy":[]};
 /*var data = {"sc":[
 >>>>>>> 97a089e570f86a3f4960f358e016d1f6c663436a
     {name: '合肥市',value: randomData() },
@@ -156,6 +156,7 @@ function charts(data){
 }
 
 
+/*
 var info = [{"bcydwqy":"阜阳","bcydwmc":"阜阳华联集团股份有限公司华联大厦分公司","bhgyp":"大豆油","bhgfl":"食用油","bhgpc":[1,2,3,4,5]},
     {"bcydwqy":"滁州","bcydwmc":"明光市李玲调味品经营部","bhgyp":"鸡精调味料","bhgfl":"调味品","bhgpc":[1,2,3,4,5]},
     {"bcydwqy":"阜阳","bcydwmc":"阜阳华联集团股份有限公司华联大厦分公司","bhgyp":"九三牌大豆油","bhgfl":"食用油","bhgpc":[1,2,3,4,5]},
@@ -166,6 +167,7 @@ var info = [{"bcydwqy":"阜阳","bcydwmc":"阜阳华联集团股份有限公司�
     {"bcydwqy":"阜阳","bcydwmc":"阜阳华联集团股份有限公司华联大厦分公司","bhgyp":"大豆油","bhgfl":"食用油","bhgpc":[1,2,3,4,5]},
     {"bcydwqy":"阜阳","bcydwmc":"阜阳华联集团股份有限公司华联大厦分公司","bhgyp":"大豆油","bhgfl":"食用油","bhgpc":[1,2,3,4,5]},
     {"bcydwqy":"阜阳","bcydwmc":"阜阳华联集团股份有限公司华联大厦分公司","bhgyp":"大豆油","bhgfl":"食用油","bhgpc":[1,2,3,4,5]}];
+*/
 //加载top10列表
 function getDataTp(info){
     
@@ -214,6 +216,7 @@ function getDataTp(info){
         ]
     });
 }
+/*
 var info2 = [{"id":"123","qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"生产"},
     {"id":"123","qy":"宣城","cydh":"SC17340622222","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
     {"id":"123","qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
@@ -225,6 +228,7 @@ var info2 = [{"id":"123","qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏�
     {"id":"123","qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
     {"id":"123","qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"},
     {"id":"123","qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"}];
+*/
 //
 function getData2(info){
 
@@ -341,8 +345,8 @@ function getData3(info){
 function ajaxInfo(url,params,flag){
 
      $.ajax({
-     type : "post",
-     async : true, //异步执行
+     type : "get",
+     async : false, //异步执行
      url : url,
      data : {"name": params},
      dataType : 'json', //返回数据形式为json
@@ -400,7 +404,7 @@ function getInfo(url,id){
 }
 
 //请求后台方法，弹出详情页面
-function openPostWindow(data){
+/*function openPostWindow(data){
     var tempForm = document.createElement("form");
     tempForm.id = "tempForm1";
     tempForm.method = "post";
@@ -410,10 +414,10 @@ function openPostWindow(data){
     hideInput1.type = "hidden";
     hideInput1.name="opid"; //后台要接受这个参数来取值
     hideInput1.value = data; //后台实际取到的值
-    /*var hideInput2 = document.createElement("input");
+    /!*var hideInput2 = document.createElement("input");
      hideInput2.type = "hidden";
      hideInput2.name="xtmc";
-     hideInput2.value = data2;  这里就是如果需要第二个参数的时候可以自己再设置*/
+     hideInput2.value = data2;  这里就是如果需要第二个参数的时候可以自己再设置*!/
     tempForm.appendChild(hideInput1);
     //tempForm.appendChild(hideInput2);
     if(document.all){
@@ -429,4 +433,4 @@ function openPostWindow(data){
     }
     tempForm.submit();
     document.body.removeChild(tempForm);
-}
+}*/

@@ -104,7 +104,7 @@
                         title : '不合格处置率',
                         align : 'center',
                         formatter : function (value, row, index) {
-                            return value;
+                            return value+'%';
                         }
                     },{
                         field : 'bhgczwcs',
@@ -212,19 +212,37 @@
             <input type="text" class="form-control" id="time" placeholder="选择时间">
           </div>
         </div>
+
+        <div class="topbtn_cqtj">
+          <div class="form-group topbtnSect_cqtj">
+            <!-- 左侧选取栏 -->
+            <label>区域：</label>
+            <select class="form-control cqtj_option" id="cqtj_option"></select>
+          </div>
+          <div class="form-group topbtnSect_cqtj">
+            <label>环节：</label>
+            <select class="form-control cqtj_option" id="hj">
+              <option selected="selected" value>全部</option>
+              <option value="SC">生产</option>
+              <option value="JY">经营</option>
+              <option value="WC">网抽</option>
+            </select>
+          </div>
+      </div>
+
         <!-- 切换显示模式 -->
         <div class="topside_switch">
             <a class="btn btn-default bgc1 btn-primary exportR" href="/disposal_statistics?is_export=1">导出报表</a>
-            <button type="button" class="btn btn-default bgc1 btn-primary exportR">导出报表</button>
+            <!--<button type="button" class="btn btn-default bgc1 btn-primary exportR">导出报表</button>-->
             <button type="button" class="btn btn-default bgc1 btn-primary" id="checkBtn">查询</button>
-            <button type="button" class="btn btn-default changeType" id="changeBtn">切换图表模式</button>
+            <!--<button type="button" class="btn btn-default changeType" id="changeBtn">切换图表模式</button>-->
         </div>
     </div>
 
-     <!-- 上侧按钮部分 -->
+<!--     &lt;!&ndash; 上侧按钮部分 &ndash;&gt;
     <div class="topbtn_cqtj">
             <div class="form-group topbtnSect_cqtj">
-                <!-- 左侧选取栏 -->
+                &lt;!&ndash; 左侧选取栏 &ndash;&gt;
                 <label>区域：</label>
                 <select class="form-control cqtj_option" id="cqtj_option"></select>
             </div>
@@ -237,7 +255,7 @@
                 <option value="WC">网抽</option>
               </select>
             </div>
-    </div>
+    </div>-->
 
     <!-- 表格数据 -->
     <div class="anhui_datastatistics">

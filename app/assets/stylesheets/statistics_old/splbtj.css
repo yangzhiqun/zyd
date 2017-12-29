@@ -1,6 +1,7 @@
 .foodcate_btn{
     margin-bottom: 25px;
     border-bottom: 2px solid #ccc;
+    padding-bottom: 20px;
 }
 .foodcate_btn .foodcateSelect_btn{
     height: 38px;
@@ -52,14 +53,20 @@
 }
 .fillpage-date{
     margin: 0 10px;
+    display: inline-block;
+    vertical-align: top;
+    height:38px;
 }
 .fillpage-date>span{
     font-weight: 700;
 }
 .fillpage-date .form-group {
-    width: 150px;
     display: inline-block;
 }
 .fillpage-date input.form-control{
     
+}
+.taskbtn_operBox{
+    display: inline-block;
+    vertical-align: top;
 }
