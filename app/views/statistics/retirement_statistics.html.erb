@@ -43,6 +43,7 @@
     -->
     <%= javascript_include_tag "statistics/layDate/laydate","statistics/city_data","statistics/txtj" %>
     <script>
+      var area ;
        function getData(info){
         $('#tb_report').bootstrapTable({
             //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
@@ -156,6 +157,27 @@
        }
        var timeFn = null;
         $(document).ready(function(){
+            var _cjdw_td = $(".cjdw_td");
+            _cjdw_td.each(function(i){
+                $(this).click(function(){
+                    _cjdw_td.css({  //清除列表颜色选中样式
+                        "backgroundColor":"transparent",
+                        "color":"#555"
+                    })
+                    $(this).css({  //标记当前选中项，添加颜色
+                        "backgroundColor":"#87CEEB",
+                        "color":"#fff"
+                    })
+                    var thisText = $(this).text();
+                    area = thisText;
+                    if($(".exportR").hasClass("hide")){
+                        getChartInfo(myChart1,area,"1");
+//                    getChartInfo(myChart2,cq_selected[0],"1");
+                    }else {
+                        getinfo(area);
+                    }
+                });
+            });
             chart(<%= raw @chart %>);
             myChart1=echarts.init(document.getElementById('chart_1'));
             myChart1.setOption(option1);
@@ -194,11 +216,8 @@
            // });
 
             // 按地区选择表格数据
-            var cq_select = $("#cqtj_option");
+           /* var cq_select = $("#cqtj_option");
             cq_select.change(function(){
-              /*
-               */
-
                 //var data1 = [{"area":"瑶海","cyjg":"zhangsan","txsl":"10","txl":"12"},{"area":"庐阳","cyjg":"zhangsdsan","txsl":"23","txl":"22"}];
                 var cq_selected = $(this).find("option:selected").text();
                // console.log(cq_selected[0]);
@@ -209,7 +228,7 @@
                     getinfo(cq_selected);
                 }
 
-            })
+            })*/
         
         //var data = [{"area":"合肥","cyjg":"zhangsan","txsl":"10","txl":"12"},{"area":"黄山","cyjg":"zhangsdsan","txsl":"23","txl":"2"}];
        var data = <%= raw @data %>
@@ -220,17 +239,22 @@
             changeBtn();
             //点击查询
             $('#checkBtn').click(function(event) {
-                var getSelectInfo = $("#cqtj_option").val();
+               // var getSelectInfo = $("#cqtj_option").val();
                 if($(".exportR").hasClass("hide")){
-                    getChartInfo(myChart1,getSelectInfo,"1");
+                    getChartInfo(myChart1,area,"1");
 //                    getChartInfo(myChart2,getSelectInfo,"1");
                 }else {
-                    getinfo(getSelectInfo);//
+                    getinfo(area);//
                 }
             });
 
             $('#restBtn').click(function(event) {
-                $('#cqtj_option').val('');
+                //$('#cqtj_option').val('');
+                area = '';
+                _cjdw_td.css({  //清除列表颜色选中样式
+                    "backgroundColor":"transparent",
+                    "color":"#555"
+                })
             });
         })
         //ajax封装
@@ -362,15 +386,17 @@
     </div>-->
   <div class="content">
     <div style="width:100%;margin-top: 15px;">
-  <div class="content_left" style="float: left; width: 15%;height: 400px;">
-    <table>
+  <div class="content_left" style="float: left;height: auto;">
+
+    <table style="width: 100%;height:auto;padding:0;" class="table form-control cqtj_option" multiple="multiple" id="cqtj_option"></table>
+    <!--<table>
       <tr>
         <th class="bgc1"><select style="width: 100%;height: 400px;" class="form-control cqtj_option"  multiple="multiple" id="cqtj_option"></select></th>
       </tr>
-    </table>
+    </table>-->
   </div>
   <!-- 右侧表格 -->
-  <div id="main_id" class="content_main data-list" style="float: right;width: 85%;">
+  <div id="main_id" class="content_main data-list" style="float: left;width: 85%;margin-left: 4%;">
     <!-- 抽样机构 -->
     <h4 class="tableTit_h3">抽样机构</h4>
     <table class="table table-bordered" id="tb_report">

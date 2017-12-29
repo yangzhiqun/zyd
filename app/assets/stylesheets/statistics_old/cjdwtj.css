@@ -44,8 +44,9 @@
 }
 .topside_date div.topside_switch{
     display: inline-block;
-    margin-left: 15px;
+    margin-right: 50px;
     vertical-align: top;
+    float: right;
 }
 div.topside_switch button.exportR{
    /*background-color: #cccccc;*/

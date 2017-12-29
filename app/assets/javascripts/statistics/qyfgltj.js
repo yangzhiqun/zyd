@@ -108,23 +108,50 @@ function chart(data){
 
     //根据下拉框的下拉选中项显示相应地区的数据
     
-    $(document).on('change','#cqtj_option',function(){
+    /*$(document).on('change','#cqtj_option',function(){
         var optVal=$(this).val();
         if($(".exportR").hasClass("hide")) {
             getChartInfo(myChart2, optVal, '1');//请求后台数据
         }else{
             getInfo(optVal, '0');
         }
+    });*/
+    var _cjdw_td = $(".cjdw_td");
+    _cjdw_td.each(function(i){
+        $(this).click(function(){
+            _cjdw_td.css({  //清除列表颜色选中样式
+                "backgroundColor":"transparent",
+                "color":"#555"
+            })
+            $(this).css({  //标记当前选中项，添加颜色
+                "backgroundColor":"#87CEEB",
+                "color":"#fff"
+            })
+            var thisText = $(this).text();
+            areaInfo = thisText;
+            if($(".exportR").hasClass("hide")) {
+                getChartInfo(myChart2, areaInfo, '1');//请求后台数据
+            }else{
+                getInfo(areaInfo, '0');
+            }
+        });
     });
-
+    $('#restBtn').click(function(event) {
+        // $('#cqtj_option').val('');
+        areaInfo = '';
+        _cjdw_td.css({  //清除列表颜色选中样式
+            "backgroundColor":"transparent",
+            "color":"#555"
+        })
+    });
     //点击查询
     $('#checkBtn').click(function(event) {
-        var getSelectInfo = $("#cqtj_option").val();
+       // var getSelectInfo = $("#cqtj_option").val();
         if($(".exportR").hasClass("hide")){
-            getChartInfo(myChart2,getSelectInfo,"1");
+            getChartInfo(myChart2,areaInfo,"1");
 //                    getChartInfo(myChart2,getSelectInfo,"1");
         }else {
-            getInfo(getSelectInfo,'0');//
+            getInfo(areaInfo,'0');//
         }
     });
 
@@ -132,7 +159,7 @@ function chart(data){
     myChart2.on('click',function (params) {
         clearTimeout(timeFn);
         //由于单击事件和双击事件冲突，故单击的响应事件延迟250毫秒执行
-        timeFn = setTimeout(getChartInfo(myChart2,params.name,'1'),250);//请求后台数据
+        timeFn = setTimeout(getChartInfo(myChart2,params.name,'1'),500);//请求后台数据
     });
 
     myChart2.on('dblclick',function (params) {
