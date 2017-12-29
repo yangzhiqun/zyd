@@ -101,4 +101,66 @@ class Statistic < ActiveRecord::Base
     end
     return data
   end
+
+  #{"x":['合肥','芜湖','蚌埠','淮南','马鞍山','淮北','铜陵','安庆','黄山','滁州','阜阳','宿州','六安市'],"y":{"hclq":[200, 140, 170, 230, 245, 176, 135, 162, 132, 120, 160, 130,140],"hcwc":[63, 35, 52, 88, 84, 43, 56, 50, 35, 73, 37, 94,42],"yycq":[6, 5, 5, 8, 4, 3, 6, 0, 5, 7, 17, 4,14]}}
+  class << self
+    include ApplicationHelper
+    def overtime(sp_bsbs,city)
+      unqualified = sp_bsbs.unqualified
+      unqualified_ids = unqualified.map(&:id)
+      wtyp_czb_p = WtypCzbPart.where(sp_bsb_id:unqualified_ids).group_by{ |wt| wt.sp_bsb_id } 
+      wtyp_czb_logs = WtypCzbPartLogs.where(sp_bsb_id:unqualified_ids).group_by{ |wt| wt.sp_bsb_id }
+      sp_yy_ids = SpYydjb.all.map(&:id)
+      sp_logs = SpLog.where(sp_bsb_id:unqualified_ids).group_by{ |sp| sp.sp_bsb_id } 
+      city_arr = overtime_start({"x"=>[],"y"=>{"hclq"=>[],"hcwc"=>[],"yycq"=>[]}},unqualified,wtyp_czb_p,wtyp_czb_logs,sp_yy_ids,sp_logs,city)
+      company = {}
+      unqualified.group_by{ |sp| sp.send(city) }.each do |company_name,company_arr|
+        company[company_name] = overtime_start({"x"=>[],"y"=>{"hclq"=>[],"hcwc"=>[],"yycq"=>[]}},company_arr,wtyp_czb_p,wtyp_czb_logs,sp_yy_ids,sp_logs,"sp_s_35") 
+      end
+      return city_arr,company
+    end
+
+    def overtime_start(overdue,unqualified,wtyp_czb_p,wtyp_czb_logs,sp_yy_ids,sp_logs,city)
+      unqualified.group_by{ |sp| sp.send(city) }.each do |city_name,city_arr|
+        hclq,hcwc,yycq = 0,0,0
+        overdue["x"] << city_name
+        city_arr.each do |sp_chaoqi|
+          #核查领取超期
+          wtyp_czb_p[sp_chaoqi.id].reverse_each do |wty|
+            if wty.current_state == 1
+              sp_logs[sp_chaoqi.id].reverse_each do |log|
+                if log.sp_i_state == 9
+                  hclq+=1 if days_between(Time.now,log.created_at) > 7
+                  break 
+                end
+              end
+              break
+            end
+          end 
+          #处置完成超期
+          if wtyp_czb_logs.has_key?(sp_chaoqi.id)
+            wtyp_czb_logs[sp_chaoqi.id].reverse_each do |log|
+              if log.wtyp_czb_state != 3
+                hcwc+=1 if days_between(Time.now,log.created_at) > 90
+                break
+              end
+            end
+          end
+          #异议超期
+          if sp_yy_ids.include?(sp_chaoqi.id) 
+            sp_logs[sp_chaoqi.id].reverse_each do |log|
+              if log.sp_i_state == 9
+                yycq+=1 if days_between(Time.now,log.created_at) > 7
+                break
+              end
+            end
+          end
+        end
+        overdue["y"]["hclq"] << hclq
+        overdue["y"]["hcwc"] << hcwc
+        overdue["y"]["yycq"] << yycq
+      end
+      return overdue
+    end
+  end
 end
