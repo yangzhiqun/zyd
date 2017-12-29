@@ -29,16 +29,19 @@
 
         <!-- 上侧按钮部分 -->
         <div class="foodcate_btn">
-              <div class="fillpage-date">
-                <span>抽样单号：</span>
-                <div class="form-group foodcateSelect_btn">
-                  <input type="text" class="form-control" id="cydh" placeholder="抽样单号">
-                </div>
+          <%= search_form_for @q, url: sampling_statistics_path, html: {role: "form"} do |f|  %>
+            <div class="fillpage-date">
+              <span>抽样单号：</span>
+              <div class="form-group foodcateSelect_btn">
+                <%= f.search_field :sp_s_16_eq,class:"form-control",placeholder:"抽样单号" %>
               </div>
-                <div class="taskbtn_operBox">
-                  <button type="submit" class="btn btn-default taskbtn_query" id="search" >查询</button>
-                  <button type="submit" class="btn btn-default taskbtn_export bgc1 btn-primary">导出列表</button>
-                </div>
+            </div>
+            <div class="taskbtn_operBox">
+              <button type="submit" class="btn btn-default taskbtn_query" id="search">查询</button>
+              <button type="submit" class="btn btn-default taskbtn_export bgc1 btn-primary" id="save">导出列表</button>
+              <input type="hidden" name="is_export" value="0" id="is_export">
+            </div>
+          <% end %>
         </div>
 
         <div id="div1" style="margin-bottom: 100px;">
@@ -72,20 +75,26 @@
                 {headerText: "次亚类", dataField: "cyl",headerAlign: "center", dataAlign: "center", width: "100"},
                 {headerText: "细类", dataField: "xl",headerAlign: "center", dataAlign: "center", width: "100"}
             ],
-           // data: <#%= raw @data %>
-            data:[
-                { dh:"SC17340155315",bhgxmmc:"",ypmc:"",qy:"",dl:"",yl:"",cyl:"",xl:""},
-                {dh:"SC17340100000",bhgxmmc:"",ypmc:"",qy:"",dl:"",yl:"",cyl:"",xl:"",children:[
-                    { dh:"",bhgxmmc:"铅(以Pb计)",ypmc:"黄大茶",qy:"合肥",dl:"食品大类",yl:"食品亚类",cyl:"食品次亚类",xl:"食品细类"},
-                    { dh:"",bhgxmmc:"六六六",ypmc:"黄大茶",qy:"合肥",dl:"食品大类",yl:"食品亚类",cyl:"食品次亚类",xl:"食品细类"}
-                ]}
-            ]
+            data: <%= raw @data %>
+            //data:[
+            //    { dh:"SC17340155315",bhgxmmc:"",ypmc:"",qy:"",dl:"",yl:"",cyl:"",xl:""},
+            //    {dh:"SC17340100000",bhgxmmc:"",ypmc:"",qy:"",dl:"",yl:"",cyl:"",xl:"",children:[
+            //        { dh:"",bhgxmmc:"铅(以Pb计)",ypmc:"黄大茶",qy:"合肥",dl:"食品大类",yl:"食品亚类",cyl:"食品次亚类",xl:"食品细类"},
+            //        { dh:"",bhgxmmc:"六六六",ypmc:"黄大茶",qy:"合肥",dl:"食品大类",yl:"食品亚类",cyl:"食品次亚类",xl:"食品细类"}
+            //    ]}
+            //]
         };
 
         $(document).ready(function(){
 //            $("#div1 table tr:last td:first").children("img").remove(); //删除最后图标
             $(".allcheck").click(function(){
                 $("#tg1").find("input[name='cblbox']").attr("checked",$(this).attr("checked"));
+            });
+            $("#search").click(function(){
+              $("#is_export").val("0");
+            });
+            $("#save").click(function(){
+              $("#is_export").val("1");
             });
 
             // 时间区域选取
@@ -144,6 +153,7 @@
         //创建一个组件对象
         var treeGrid = new TreeGrid(config);
         treeGrid.show();
+        treeGrid.expandAll("N");//默认关闭
 
         /*
             展开、关闭所有节点。
