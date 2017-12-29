@@ -18,6 +18,16 @@ module ApplicationHelper
     end
   end
 
+  def cy_type(type)
+   case type
+   when "生产"
+     return "sc"
+   when "流通"
+     return "lt" 
+   when "餐饮"
+     return "cy" 
+   end
+  end
   #返回天数时间差
   def days_between (date1,date2)
     d1 = Date.parse(date1.to_s)

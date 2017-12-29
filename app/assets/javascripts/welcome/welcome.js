@@ -1,4 +1,8 @@
 $(function(){
+   var data = JSON.parse($('#data').val());
+   var info = JSON.parse($('#info').val());
+   var info2 = JSON.parse($('#info2').val());
+   var info3 = JSON.parse($('#info3').val());
     charts(data);
     getDataTp(info);
     getData2(info2);
@@ -9,6 +13,7 @@ function randomData() {
 }
 var data = {"sc":[],"lt":[],"cy":[]};
 /*var data = {"sc":[
+>>>>>>> 97a089e570f86a3f4960f358e016d1f6c663436a
     {name: '合肥市',value: randomData() },
     {name: '芜湖市',value: randomData() },
     {name: '蚌埠市',value: randomData() },
@@ -144,11 +149,12 @@ function charts(data){
     myChart.setOption(option);
     //点击事件
     myChart.on('click', function(params) {
-        console.log(params);
-        //ajaxInfo(url,params.name,'0');
+        var url = "/welcome_notices";
+        ajaxInfo(url,params.name,'0');
     });
 
 }
+
 
 var info = [{"bcydwqy":"阜阳","bcydwmc":"阜阳华联集团股份有限公司华联大厦分公司","bhgyp":"大豆油","bhgfl":"食用油","bhgpc":[1,2,3,4,5]},
     {"bcydwqy":"滁州","bcydwmc":"明光市李玲调味品经营部","bhgyp":"鸡精调味料","bhgfl":"调味品","bhgpc":[1,2,3,4,5]},
@@ -162,6 +168,7 @@ var info = [{"bcydwqy":"阜阳","bcydwmc":"阜阳华联集团股份有限公司�
     {"bcydwqy":"阜阳","bcydwmc":"阜阳华联集团股份有限公司华联大厦分公司","bhgyp":"大豆油","bhgfl":"食用油","bhgpc":[1,2,3,4,5]}];
 //加载top10列表
 function getDataTp(info){
+    
     $('#tb_report1').bootstrapTable({
         //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
         //method: 'get',                      //请求方式（*）
@@ -196,19 +203,11 @@ function getDataTp(info){
                 title : '被抽样单位名称',
                 align : 'center'
             },{
-                field : 'bhgyp',
-                title : '不合格样品',
-                align : 'center'
-            },{
-                field : 'bhgfl',
-                title : '不合格分类',
-                align : 'center'
-            },{
                 field : 'bhgpc',
                 title : '不合格批次',
                 align : 'center',
                 formatter : function (value, row, index) {
-                    var info = "<a href='javascript:void(0);' onclick = openPostWindow('"+value+"')>"+value.length+"</a>";
+                    var info = "<a href='javascript:void(0);' onclick = getInfo('particulars','"+row.id+"');>"+value+"</a>";
                     return info;
                 }
             }
@@ -228,6 +227,7 @@ var info2 = [{"id":"123","qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏�
     {"id":"123","qy":"宣城","cydh":"SC17340626352","ypmc":"红豆薏米核桃粉","bcydwmc":"安徽省绩溪县劳模实业有限公司","hj":"餐饮"}];
 //
 function getData2(info){
+
     $('#tb_report2').bootstrapTable({
         height:250,
         //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
@@ -261,6 +261,7 @@ function getData2(info){
                 title : '抽样单号',
                 align : 'center',
                 formatter : function (value, row, index) {
+                    //var info = "<a href='javascript:void(0);' onclick = getInfo('particulars','"+row.id+"');>"+value+"</a>"
                     var info = "<a href='javascript:void(0);' onclick = ajaxInfo('url','"+row.id+"','1')>"+value+"</a>";
                     return info;
                 }
@@ -281,7 +282,7 @@ function getData2(info){
         ]
     });
 }
-var info3 = [{"qy":"合肥","jyxm":"糖精钠(以糖精计)","ypmc":"九三牌大豆油"},
+var info31 = [{"qy":"合肥","jyxm":"糖精钠(以糖精计)","ypmc":"九三牌大豆油"},
     {"qy":"合肥","jyxm":"糖精钠(以糖精计)","ypmc":"九三牌大豆油"},
     {"qy":"合肥","jyxm":"糖精钠(以糖精计)","ypmc":"九三牌大豆油"},
     {"qy":"合肥","jyxm":"糖精钠(以糖精计)","ypmc":"九三牌大豆油"},
@@ -327,7 +328,7 @@ function getData3(info){
                 field : 'ypmc',
                 title : '样品名称',
                 align : 'center'
-            }
+           }
         ]
     });
 }
@@ -339,12 +340,12 @@ function getData3(info){
  */
 function ajaxInfo(url,params,flag){
 
-console.log(url);
-    /*  $.ajax({
+     $.ajax({
      type : "post",
      async : true, //异步执行
-     url : "AcceptData",
-     dataType : "json", //返回数据形式为json
+     url : url,
+     data : {"name": params},
+     dataType : 'json', //返回数据形式为json
      success : function(json) {
          if(flag=='1'){
          //先销毁表格
@@ -355,11 +356,47 @@ console.log(url);
          }else if(flag=='2'){
          $('#tb_report3').bootstrapTable('destroy');
              getData3(json);
-         }
+         }else if(flag =='0'){
+          //$("#map").html(json.info,json.info2,json.info3,json.data); 
+          $('#tb_report1').bootstrapTable('destroy');
+          $('#tb_report2').bootstrapTable('destroy');
+          $('#tb_report3').bootstrapTable('destroy');
+          getDataTp(JSON.parse(json.info));
+          getData2(JSON.parse(json.info2));
+          getData3(JSON.parse(json.info3));
+         } 
      },
-     error:function(){
+     error:function(XMLHttpRequest, textStatus, errorThrown){
         alert('加载数据失败');
-     }*/
+     }
+  });
+} 
+
+function getInfo(url,id){
+   var tempForm = document.createElement("form");
+   tempForm.id = "tempForm1";
+   tempForm.method = "post";
+   tempForm.action = url;
+   tempForm.target="_blank"; //打开新页面
+   var hideInput1 = document.createElement("input");
+    hideInput1.type = "hidden";
+    hideInput1.name="opid"; //后台要接受这个参数来取值
+    hideInput1.value = id; //后台实际取到的值
+    tempForm.appendChild(hideInput1);
+   if(document.all){
+     tempForm.attachEvent("onsubmit",function(){});        //IE
+   }else{
+     var subObj = tempForm.addEventListener("submit",function(){},false);    //firefox
+   }
+     document.body.appendChild(tempForm);
+   if(document.all){
+     tempForm.fireEvent("onsubmit");
+   }else{
+      tempForm.dispatchEvent(new Event("submit"));
+    }
+      tempForm.submit();
+     document.body.removeChild(tempForm);
+ 
 }
 
 //请求后台方法，弹出详情页面

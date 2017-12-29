@@ -59,70 +59,21 @@ $(document).ready(function(){
 </form>
 <div id="sc">
 <% if @sp_bsb.present? %>
-  <ul class="timeline-v2">
+   <ul class="timeline-v2">
     <% @sp_bsb.each do |i| %>
-     <%# if i.action !="create"%> 
-      <li>
+       <li> 
         <time class="cbp_tmtime" datetime="">
           <span><%= i.created_at.strftime("%H:%M:%S") %></span>
           <span><%= i.created_at.strftime("%Y-%m-%d") %></span>
         </time>
-        <i class="cbp_tmicon rounded-x hidden-xs"></i>
         <div class="cbp_tmlabel ibox">
-          <h4 class="mb10 f16 b titNa iconTop" id="titNa">
             <!-- 执行动作 -->
-            <%= action_obtain_name(i.action,i.audited_changes.first[0],i.audited_changes.first[1][1],i.auditable_type) %>
+            <%= action_obtain_name(i) %>
           </h4>
-
-          <div class="margin-bottom-10 ibox-content" id="ibox-content" style="display: none;">
-            <div class="headline mb10">
-              <h5 class="heading-sm f14 b">修改的字段</h5>
-            </div>
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th>参数名称</th>
-                  <th>修改前</th>
-                  <th>修改后</th>
-                </tr>
-              </thead>
-              <tbody>
-              <% if i.action == "update" %>
-                <% (i[:audited_changes] rescue []).each do |k, v| %>
-                  <% next if v.nil? %>
-                  <tr>
-                    <td><%= I18n.t("#{i.auditable_type}.#{k}") %></td>
-                    <td><%= v[0] %></td>
-                    <td><%= v[1] %></td>
-                  </tr>
-                <% end %>
-             <% elsif i.action == "create"%>
-              <% (i[:audited_changes] rescue []).each do |k, v| %>
-                <tr>
-                <td><%= I18n.t("#{i.auditable_type}.#{k}") %></td>
-                <td><%= v%></td>
-                <td></td>
-                </tr>
-              <% end%>  
-             <% end %>  
-              </tbody>
-            </table>   
-          </div>
-          <p id="operation" style="display: none;">
-            <d class="f14 b">操作人 : </d><%= i.user.tname %>&nbsp;&nbsp;
-            <d class="f14 b">单位 : </d><%= i.user.jg_bsb.jg_name %>&nbsp;&nbsp;
-          </p >          
         </div>
-        <% if i.action == "destroy" %>
-        <p>
-           <d class="f14 b">操作人 : </d><%= i.user.tname %>&nbsp;&nbsp;
-           <d class="f14 b">单位 : </d><%= i.user.jg_bsb.jg_name %>&nbsp;&nbsp;
-        </p >
-       <% end%> 
-      </li>
-     <%# end %>  
-    <% end %>
-  </ul>
+      </li>     
+     <% end %>
+   </ul>
 <% else %>
   暂无记录
 <% end %>
