@@ -16,7 +16,7 @@
     <script src="../libs/echarts.js"></script>
     <script src="../libs/jquery-easyui-1.5.3/jquery.easyui.min.js"></script>
     -->
-    <%= javascript_include_tag "statistics/city_data","statistics/cyjjycqtj" %>
+    <%= javascript_include_tag "statistics/cyjjycqtj" %>
 </head>
 <body>
 <div class="container">
@@ -55,9 +55,31 @@
 </div>
 </body>
 <script>
+    $(function(){
+        $.ajaxSetup({
+            async : false
+        });
+        var prov_data = $('body').data('prov_data');
+        if (!prov_data) {
+            $.get('/new_prov_data.json', {}, function (data) {
+                if (data.status == 'OK') {
+                    $('body').data('prov_data', data.prov_data);
+                    prov_data = $('body').data('prov_data');
+                } else {
+                    $('body').data('prov_data', null);
+                }
+            }, 'json');
+        }
+       // $("#cqtj_option").append($('<option>').attr({'value': '请选择'}).text('请选择'));
+        $.each(prov_data, function (i, prov) {
+            $("#cqtj_option").append($('<option>').attr({'value': prov}).text(prov));
+        });
+        chart(data[$("#cqtj_option").val()]);
+    })
         var data = <%= raw @data %>
-        //console.log(data);
-        var idTmr;  
+        var overdue  = <%= raw @overdue  %>
+        var company  = <%= raw @company  %>
+        var idTmr;
         function  getExplorer() {  
             var explorer = window.navigator.userAgent ;  
             //ie  

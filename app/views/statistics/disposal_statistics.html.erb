@@ -17,23 +17,27 @@
     <script src="../libs/layDate/laydate.js"></script>
     <script src="../libs/echarts.js"></script>
     -->
-    <%= javascript_include_tag "statistics/layDate/laydate","statistics/city_data","statistics/hccztj" %>
+    <%= javascript_include_tag "statistics/layDate/laydate","statistics/hccztj" %>
     <script>
         $(document).ready(function(){
-            // 时间区域选取
-            // 初始时间
-           /* laydate.render({
-              elem: '#page-start', //指定元素
-              type: 'month',
-                value:'2016-08'
+            $.ajaxSetup({
+                async : false
             });
-            // 结束时间
-            laydate.render({
-              elem: '#page-end', //指定元素
-              type: 'month',
-                value:'2017-02'
-            });*/
-
+            var prov_data = $('body').data('prov_data');
+            if (!prov_data) {
+                $.get('/new_prov_data.json', {}, function (data) {
+                    if (data.status == 'OK') {
+                        $('body').data('prov_data', data.prov_data);
+                        prov_data = $('body').data('prov_data');
+                    } else {
+                        $('body').data('prov_data', null);
+                    }
+                }, 'json');
+            }
+            $("#cqtj_option").append($('<option>').attr({'value': '请选择'}).text('请选择'));
+            $.each(prov_data, function (i, prov) {
+              $("#cqtj_option").append($('<option>').attr({'value': prov}).text(prov));
+            });
             // 初始时间
             var date=new Date;
             var year = date.getFullYear();
@@ -45,8 +49,8 @@
                 type: 'month',
                 range: '/',
                 format: 'yyyy-MM',
-                value:'2016-08 / 2017-02'
-                //value: year+'-01 / '+mydate  //先写死
+                //value:'2016-08 / 2017-02'
+                value: year+'-01 / '+mydate  //先写死
             });
             getData(data);
             changeBtn();
