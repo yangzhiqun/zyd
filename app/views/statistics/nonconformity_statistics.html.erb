@@ -219,6 +219,11 @@ function chartMap(){
     $(document).on('click','.area_btn',function(){
         var thisTxt=$(this).text();
         var thisVal=$(this).val();
+        $(document).find(".area_btn").css("backgroundColor","transparent");
+        $(this).css({
+            "backgroundColor":"#87CEEB",
+            "border":"#87CEEB"
+        });
         //console.log(thisVal);
         addHtml(all_data[thisTxt]);
         if(!thisVal){ //获取上级地图
