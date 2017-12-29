@@ -220,7 +220,6 @@ class StatisticsController < ApplicationController
   def overtime_statistics
     #@data = {:合肥=>[{:xAxis=>[{:data=>["抽样单位1", "抽样单位2", "抽样单位3", "抽样单位4", "抽样单位5", "抽样单位6", "抽样单位7"]}], :series=>[{:data=>[2, 4, 5, 4, 3, 1, 6]}]}, {:xAxis=>[{:data=>["抽样单位1", "抽样单位2", "抽样单位3", "抽样单位4", "抽样单位5", "抽样单位6", "抽样单位7"]}], :series=>[{:data=>[2, 4, 5, 4, 3, 1, 6]}]}]}
     @data = {}
-    @overdue = {}
     power = region_power
     sp_bsbs = SpBsb.admin_select(power[0])
     city = power[2] == 0 ? "sp_s_4" : "sp_s_5"
@@ -245,29 +244,9 @@ class StatisticsController < ApplicationController
       end
       @data[city_name] = [{:xAxis=>[{:data=>chou_data}],:series=>[{:data=>chou_series}]},{:xAxis=>[{:data=>jian_data}],:series=>[{:data=>jian_series}]}]
     end
-    #{"x":['合肥','芜湖','蚌埠','淮南','马鞍山','淮北','铜陵','安庆','黄山','滁州','阜阳','宿州','六安市'],"y":{"hclq":[200, 140, 170, 230, 245, 176, 135, 162, 132, 120, 160, 130,140],"hcwc":[63, 35, 52, 88, 84, 43, 56, 50, 35, 73, 37, 94,42],"yycq":[6, 5, 5, 8, 4, 3, 6, 0, 5, 7, 17, 4,14]}}
-    unqualified = sp_bsbs.unqualified
-    wtyp_czb_p = WtypCzbPart.where(sp_bsb_id:unqualified.map(&:id)).group_by{ |wt| wt.sp_bsb_id } 
-    sp_logs = SpLog.where(sp_bsb_id:unqualified.map(&:id)).group_by{ |sp| sp.sp_bsb_id } 
-    x,y = [],{"hclq"=>[],"hcwc"=>[],"yycq"=>[]}
-    unqualified.group_by{ |sp| sp.send(city) }.each do |city_name,city_arr|
-      hclq,hcwc,yycq = 0,0,0
-      x << city_name
-      city_arr.each do |sp_chaoqi|
-        #核查领取超期
-        wtyp_czb_p[sp_chaoqi.id].reverse_each do |wty|
-          if wty.current_state == 1
-            sp_logs[sp_chaoqi.id].reverse_each do |log|
-              if log.sp_i_state == 9 && days_between(Time.now,log.created_at)>7
-                hclq+=1
-                break 
-              end
-            end
-            break
-          end
-        end 
-      end
-    end
+    @overdue,@company = Statistic.overtime(sp_bsbs,city) 
+    @overdue = @overdue.to_json
+    @company = @company.to_json
     @data = @data.to_json
   end
 
@@ -439,7 +418,11 @@ class StatisticsController < ApplicationController
   end
 
   #单号查询统计
+  #{dh:"SC17340100000",bhgxmmc:"",ypmc:"",qy:"",dl:"",yl:"",cyl:"",xl:"",children:[{dh:"",bhgxmmc:"铅(以Pb计)",ypmc:"黄大茶",qy:"合肥",dl:"食品大类",yl:"食品亚类",cyl:"食品次亚类",xl:"食品细类"},{dh:"",bhgxmmc:"六六六",ypmc:"黄大茶",qy:"合肥",dl:"食品大类",yl:"食品亚类",cyl:"食品次亚类",xl:"食品细类"}]}
   def sampling_statistics
+    @q = SpBsb.ransack(params[:q])
+    @products = @q.result(distinct: true)
+    @data = []
   end
 
   #企业覆盖率统计
