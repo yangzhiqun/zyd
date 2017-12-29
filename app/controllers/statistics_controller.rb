@@ -245,6 +245,10 @@ class StatisticsController < ApplicationController
       @data[city_name] = [{:xAxis=>[{:data=>chou_data}],:series=>[{:data=>chou_series}]},{:xAxis=>[{:data=>jian_data}],:series=>[{:data=>jian_series}]}]
     end
     @overdue,@company = Statistic.overtime(sp_bsbs,city) 
+    if params["is_export"] == "1"
+      send_file(DownloadStatistics.overtime(@data), :disposition => "attachment") and return
+    end
+    p @company
     @overdue = @overdue.to_json
     @company = @company.to_json
     @data = @data.to_json
@@ -420,9 +424,23 @@ class StatisticsController < ApplicationController
   #单号查询统计
   #{dh:"SC17340100000",bhgxmmc:"",ypmc:"",qy:"",dl:"",yl:"",cyl:"",xl:"",children:[{dh:"",bhgxmmc:"铅(以Pb计)",ypmc:"黄大茶",qy:"合肥",dl:"食品大类",yl:"食品亚类",cyl:"食品次亚类",xl:"食品细类"},{dh:"",bhgxmmc:"六六六",ypmc:"黄大茶",qy:"合肥",dl:"食品大类",yl:"食品亚类",cyl:"食品次亚类",xl:"食品细类"}]}
   def sampling_statistics
-    @q = SpBsb.ransack(params[:q])
-    @products = @q.result(distinct: true)
+    power = region_power
+    @q = SpBsb.admin_select(power[0]).unqualified.ransack(params[:q])
+    @products = @q.result(distinct: true).includes(:spdata)
     @data = []
+    @products.each do |sp_bsb|
+      children = []
+      sp_bsb.spdata.each do |data| 
+        if data.spdata_2 == "不合格项" or data.spdata_2 == "问题项"
+          children << {"dh"=>sp_bsb.sp_s_16,"bhgxmmc"=>data.spdata_0,"ypmc"=>sp_bsb.sp_s_14,"qy"=>sp_bsb.sp_s_4,"dl"=>sp_bsb.sp_s_17,"yl"=>sp_bsb.sp_s_18,"cyl"=>sp_bsb.sp_s_19,"xl"=>sp_bsb.sp_s_20}
+        end
+      end# if params["is_export"] == "1"
+      @data << {"dh"=>sp_bsb.sp_s_16,"bhgxmmc"=>"","ypmc"=>sp_bsb.sp_s_14,"qy"=>sp_bsb.sp_s_4,"dl"=>sp_bsb.sp_s_17,"yl"=>sp_bsb.sp_s_18,"cyl"=>sp_bsb.sp_s_19,"xl"=>sp_bsb.sp_s_20,:children=>children}
+    end
+    if params["is_export"] == "1"
+      send_file(DownloadStatistics.composite("Statistic::Sampling",@data), :disposition => "attachment") and return
+    end
+    @data = @data.to_json
   end
 
   #企业覆盖率统计
