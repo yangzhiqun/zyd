@@ -449,7 +449,7 @@ Rails.application.routes.draw do
   get 'overtime_statistics' => 'statistics#overtime_statistics'
   get 'disposal_statistics' => 'statistics#disposal_statistics'
   get 'disposal_month_statistics' => 'statistics#disposal_month_statistics'
-  get 'sampling_statistics' => 'statistics#sampling_statistics'
+  match 'sampling_statistics' => 'statistics#sampling_statistics', via: [:get, :post]
   get 'enterprise_statistics' => 'statistics#enterprise_statistics'
   get 'early_warning' => 'statistics#early_warning'
   match 'composite_statistics' => 'statistics#composite_statistics', via: [:get, :post], as: :composite_statistics
