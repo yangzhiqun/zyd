@@ -39,13 +39,9 @@
                <%= f.select :sp_s_20_eq, [],{:include_blank =>"请选择"},class:"form-control checkbox_optionM",id:"checkbox_optionM"%>
             </div>
           <div class="taskbtn_operBox">
-            <button type="submit" class="btn btn-default taskbtn_query" id="search">查询</button>
-            <!--<form action="/nonconformity_statistics">
-                  <button class="btn btn-default bgc1 btn-primary export_btn">导出报表</button>
-                  <input type="hidden" name="is_export" id="is_export" value="1">
-                </form>-->
-            <input type="hidden" name="is_export" value="0" id="is_export">
-            <input type="submit" name="commit" value="导出报表" id="save" class="btn btn-default bgc1 btn-primary export_btn">
+             <button type="submit" class="btn btn-default taskbtn_query" id="search">查询</button>
+             <button type="submit" class="btn btn-default taskbtn_export bgc1 btn-primary" id="save">导出列表</button>
+             <input type="hidden" name="is_export" value="0" id="is_export">
           </div>
           <% end %>
           <!-- 注释说明 -->
@@ -54,9 +50,9 @@
           <div style="width:100%;margin-top: 15px;">
                 <div class="content_left">
                     <table>
-                        <tr>
+                        <!--<tr>
                             <th class="bgc1"><button class="area_btn" id="btn_area">安徽省</button></th>
-                        </tr>
+                        </tr>-->
                     </table>
                 </div>
                 <div class="content_main" id="mainMap"></div>
@@ -98,12 +94,16 @@
     <script>
     var all_data;
     var data;
+    var area;
+    var super_area;
     $(function(){
         all_data = <%= raw @data_items %>
         data = <%= raw @nonconformity %>
+        area = <%= raw @region %>
+        super_area = <%= raw @super %>
         chartMap();
-        main();
-        getData(data["安徽省"]);
+        main(area);
+        getData(data[super_area[0]]);
         $("#search").click(function(){
           $("#is_export").val("0");
         });
@@ -111,25 +111,18 @@
           $("#is_export").val("1");
         });
     })
-    function main(params){
+    function main(area){
         //动态渲染左侧区域数据
         var htmlStr='';
-        for(var k in cityMap){
-            if(k!='安徽省'){
+        $('.content_left table').append(htmlStr);//初始化
+        for(var k in area){
+           // if(k!='安徽省'){
                  htmlStr+='<tr>'+
-                            '<td><button class="area_btn">'+k+'</'+'button></td>'+
+                            '<td><button class="area_btn" value="'+area[k]+'">'+k+'</'+'button></td>'+
                         '</tr>'
-            }
+           // }
         }
         $('.content_left table').append(htmlStr);
-        // $('#btn_area').click(function(event) {
-        //     $('td').slideDown(500);
-        // });
-    
-        // 点击检验值弹出对应区域的数据详情
-       /* $(document).on('click','.value_btn',function(){
-            alert(this.value);
-        });*/
        
     }
 
@@ -169,29 +162,31 @@ function chartMap(){
     var mapStack = [];
     var timeFn = null;
     var curMap = {};
-    var titleType=['安徽省','合肥市','淮北市','宿州市','阜阳市','淮南市','滁州市','六安市','马鞍山市','芜湖市','宣城市','池州市','安庆市','黄山市','亳州市','蚌埠市'];
-    var randomData=returnData();
+   // var titleType=['安徽省','合肥市','淮北市','宿州市','阜阳市','淮南市','滁州市','六安市','马鞍山市','芜湖市','宣城市','池州市','安庆市','黄山市','亳州市','蚌埠市'];
+   // var randomData=returnData();
     //初始化地图
     // function randomData() {
     //     return Math.round(Math.random()*100);
     // }    
-    loadMap('340000', 'anhui','安徽省');
-    addHtml(all_data["安徽省"]);
+    loadMap(super_area[1], super_area[0],super_area[0]);
+    addHtml(all_data[super_area[0]]);
     
     myChart.on('mapselectchanged', function(params) {
         clearTimeout(timeFn);
         //由于单击事件和双击事件冲突，故单击的响应事件延迟250毫秒执行
         timeFn = setTimeout(function(){
             var name = params.batch[0].name;
-            var mapCode = cityMap[name];
+            var mapCode = area[name];
            // alert(name);
            // alert(mapCode);
             if (!mapCode) {
-
                 getSelect(name);  //需加参数
               //  alert('无此区域地图显示');
                 return;
             }
+            //先销毁表格
+            $('#tb_report').bootstrapTable('destroy');
+            getData(data[name]);
             addHtml(all_data[name]);
             loadMap(mapCode, name,name); 
             //将上一级地图信息压入mapStack
@@ -221,12 +216,23 @@ function chartMap(){
        加载地图：根据地图所在省市的行政编号
     */
     //点击左侧区域右侧地图和数据表随之更新
-    
     $(document).on('click','.area_btn',function(){
         var thisTxt=$(this).text();
-        getSelect(thisTxt); //需加参数
+        var thisVal=$(this).val();
+        $(document).find(".area_btn").css("backgroundColor","transparent");
+        $(this).css({
+            "backgroundColor":"#87CEEB",
+            "border":"#87CEEB"
+        });
+        //console.log(thisVal);
         addHtml(all_data[thisTxt]);
-        switch(thisTxt){
+        if(!thisVal){ //获取上级地图
+            thisTxt = super_area[0];
+            thisVal = super_area[1];
+            getSelect(thisTxt); //需加参数
+        }
+        click_slide(thisVal,thisTxt,thisTxt);
+        /*switch(thisTxt){
             case '安徽省':
             click_slide(randomData.anhui.yb,'anhui','安徽省');
             break;
@@ -280,12 +286,12 @@ function chartMap(){
             break;
             default:
             break;
-        }
+        }*/
     });
     // 点击左侧边栏显示相应的地区
     function click_slide(mapCode,mapTitle,name){
         if (!mapCode) {
-            alert('无此区域地图显示');
+            alert('无此区域地图显示,将显示上级');
             return;
         }
         loadMap(mapCode,mapTitle,name); 
@@ -295,14 +301,7 @@ function chartMap(){
             mapName: curMap.mapName
         });
     }
-    function addHtml(obj){
-      var htmlStr = '';
-      for (var key in obj) {
-        str =  '<tr>'+'<td><a>'+key+'</a></td>'+'<td><a  href=javascript:void(0); class="value_btn" onclick=openPostWindow("'+obj[key]+'")>'+obj[key]+'</a></td>'+'</tr>';
-        htmlStr += str
-      }
-      $('.content_right>table>tbody').html(htmlStr);
-    }
+
     // 地图方法封装
     function loadMap(mapCode, mapName,titleName) {
         // alert(mapCode)
@@ -361,7 +360,17 @@ function chartMap(){
         });
     }   
 }
+    function addHtml(obj){
+        $('.content_right>table>tbody').html('');
+        var htmlStr = '';
+        for (var key in obj) {
+            str =  '<tr>'+'<td><a>'+key+'</a></td>'+'<td><a  href=javascript:void(0); class="value_btn" onclick=openPostWindow("'+obj[key]+'")>'+obj[key].length+'</a></td>'+'</tr>';
+            htmlStr += str
+        }
+        $('.content_right>table>tbody').html(htmlStr);
+    }
     function getData(info){
+
         $('#tb_report').bootstrapTable({
             //url: '/GroupColumns/GetReport',         //请求后台的URL（*）
             //method: 'get',                      //请求方式（*）
@@ -388,67 +397,39 @@ function chartMap(){
                 {
                     field : 'area',
                     title : '区域',
-                    align : 'center',
-                    formatter : function (value, row, index) {
-                        return value;
-                    }
+                    align : 'center'
                 },
                 {
                     field : 'dh',
                     title : '抽样单号',
-                    align : 'center',
-                    formatter : function (value, row, index) {
-                        var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
-                        return info;
-                    }
+                    align : 'center'
                 },{
                     field : 'ypmc',
                     title : '样品名称',
-                    align : 'center',
-                    formatter : function (value, row, index) {
-                        var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
-                        return info;
-                    }
+                    align : 'center'
                 },{
                     field : 'jyxm',
                     title : '检验项目',
-                    align : 'center',
-                    formatter : function (value, row, index) {
-                        var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
-                        return info;
-                    }
+                    align : 'center'
                 },{
                     field : 'dl',
                     title : '大类',
-                    align : 'center',
-                    formatter : function (value, row, index) {
-                        var info = "<a href='javascript:void(0);' onclick = 'getinfo();'>"+value+"</a>";
-                        return info;
-                    }
+                    align : 'center'
                 },
                 {
                     field : 'yl',
                     title : '亚类',
-                    align : 'center',
-                    formatter : function (value, row, index) {
-                        return value;
-                    }
+                    align : 'center'
                 },
                 {
                     field : 'cyl',
                     title : '次亚类',
-                    align : 'center',
-                    formatter : function (value, row, index) {
-                        return value;
-                    }
+                    align : 'center'
                 },
                 {
                     field : 'xl',
                     title : '细类',
-                    align : 'center',
-                    formatter : function (value, row, index) {
-                        return value;
-                    }
+                    align : 'center'
                 }
             ]
         });
@@ -456,32 +437,32 @@ function chartMap(){
     function getSelect(params){
         //先销毁表格
         $('#tb_report').bootstrapTable('destroy');
-      /*  $.ajax({
-       type: "post",
-       contentType: "application/json",
-       url: "",
-       data: {
-       "parmas":parmas
-       },
-       success: function (data) {
-       if (data) {
-        getData(data[params]);
-       }
-       else {
-       alert("数据错误");
-       }
-       }
+        $.ajax({
+          type: "get",
+          contentType: "application/json",
+          url: "nonconformity_county_statistics",
+          data: {
+            "county":params
+          },
+          success: function (data) {
+            if (data) {
+                console.log(data);
+              addHtml(data.data_items);
+              getData(data.detailed);
+            } else {
+              alert("数据错误");
+            }
+          }
        })
-       */
-       getData(data[params]);
+       //getData(data[params]);
     }
-    $("#search").on('click',function(){
+ /*   $("#search").on('click',function(){
        //  alert(123);
          //ajax 参数 为 下拉数据  如$("#xxx").val(); 可定义 params
         $.ajax({
        type: "post",
        contentType: "application/json",
-       url: "WebService1.asmx/Login",
+       url: "",
        data: {
            "checkbox_optionH":$("#checkbox_optionH").val(),//报送分类A
            "checkbox_optionI":$("#checkbox_optionI").val(),//报送分类B
@@ -495,8 +476,8 @@ function chartMap(){
            all_data = info[0];
            data = info[1];
            chartMap();
-           main();
-           getSelect(data["安徽省"]);
+           main(info[3]); //这里是传回来的 area
+           getSelect(data[super_area[0]]);
        }
        else {
           alert("数据错误");
@@ -504,7 +485,7 @@ function chartMap(){
        }
        })
 
-    })
+    })*/
     </script>
     <%= render :partial => "baosong_js" %>
 </body>

@@ -1,0 +1,129 @@
+﻿<%= stylesheet_link_tag 'log_management' %>
+<script>
+
+function dianji(arr) {
+  arr.each(function(){
+    var pageJudge = false;  // 默认内容关闭状态
+    $(this).siblings().hide();
+    $(this).click(function(e){
+      e.preventDefault();
+      if(pageJudge == true){
+        $(this).addClass("iconTop").removeClass("iconBtm");
+        $(this).siblings().hide("fast");
+        pageJudge = false;
+      }else if(pageJudge == false){
+        $(this).addClass("iconBtm").removeClass("iconTop");
+        $(this).siblings().show("fast");
+        pageJudge = true;
+      }
+      return false;
+    })
+  })     
+}
+
+$(document).ready(function(){
+  var _titNa = $(".titNa");
+
+  dianji($(".titNa"));
+  $("#begin_time, #ending_time").datepicker({
+    dateFormat: "yy-mm-dd",
+    changeMonth: true,
+    changeYear: true
+  });
+  $(".search").click(function(){
+    var url="/sp_bsbs/sampling_process"
+    var sp_s_16 = $("#sp_s_16").val();
+    $.ajax({
+     type: "get",
+     url:  url,
+     data: {sp_s_16: sp_s_16},
+     success: function(data){
+     location.href = '/sp_bsbs/sampling_process?sp_s_16='+sp_s_16+'&<%= session[:query].html_safe if session[:query].present? %>'; 
+     _titNa = $(".titNa");
+     dianji(_titNa);
+     }
+    });
+});
+});
+</script>
+<form action="/sp_bsbs/sampling_process" method="GET">
+ <table class="table table-bordered">
+  <tr>
+   <td width="80" class="Con1">抽样编号</td>
+   <td width="200" class="Con1"><input name="sp_s_16" class="form-control input-sm value_btn" id="sp_s_16" type="text"></td>
+   <td>
+   <input type="button" value="搜索" class="btn btn-sm btn-primary search">
+   </td>
+  </tr>
+ </table>
+</form>
+<div id="sc">
+<% if @sp_bsb.present? %>
+  <ul class="timeline-v2">
+    <% @sp_bsb.each do |i| %>
+     <%# if i.action !="create"%> 
+      <li>
+        <time class="cbp_tmtime" datetime="">
+          <span><%= i.created_at.strftime("%H:%M:%S") %></span>
+          <span><%= i.created_at.strftime("%Y-%m-%d") %></span>
+        </time>
+        <i class="cbp_tmicon rounded-x hidden-xs"></i>
+        <div class="cbp_tmlabel ibox">
+          <h4 class="mb10 f16 b titNa iconTop" id="titNa">
+            <!-- 执行动作 -->
+            <%= action_obtain_name(i.action,i.audited_changes.first[0],i.audited_changes.first[1][1],i.auditable_type) %>
+          </h4>
+
+          <div class="margin-bottom-10 ibox-content" id="ibox-content" style="display: none;">
+            <div class="headline mb10">
+              <h5 class="heading-sm f14 b">修改的字段</h5>
+            </div>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>参数名称 <%= i.audited_changes["sp_s_16"]%></th>
+                  <th>修改前</th>
+                  <th>修改后</th>
+                </tr>
+              </thead>
+              <tbody>
+              <% if i.action == "update" %>
+                <% (i[:audited_changes] rescue []).each do |k, v| %>
+                  <% next if v.nil? %>
+                  <tr>
+                    <td><%= I18n.t("#{i.auditable_type}.#{k}") %></td>
+                    <td><%= v[0] %></td>
+                    <td><%= v[1] %></td>
+                  </tr>
+                <% end %>
+             <% elsif i.action == "create"%>
+              <% (i[:audited_changes] rescue []).each do |k, v| %>
+                <tr>
+                <td><%= I18n.t("#{i.auditable_type}.#{k}") %></td>
+                <td><%= v%></td>
+                <td></td>
+                </tr>
+              <% end%>  
+             <% end %>  
+              </tbody>
+            </table>   
+          </div>
+          <p id="operation" style="display: none;">
+            <d class="f14 b">操作人 : </d><%= i.user.tname %>&nbsp;&nbsp;
+            <d class="f14 b">单位 : </d><%= i.user.jg_bsb.jg_name %>&nbsp;&nbsp;
+          </p >          
+        </div>
+        <% if i.action == "destroy" %>
+        <p>
+           <d class="f14 b">操作人 : </d><%= i.user.tname %>&nbsp;&nbsp;
+           <d class="f14 b">单位 : </d><%= i.user.jg_bsb.jg_name %>&nbsp;&nbsp;
+        </p >
+       <% end%> 
+      </li>
+     <%# end %>  
+    <% end %>
+  </ul>
+<% else %>
+  暂无记录
+<% end %>
+<div>

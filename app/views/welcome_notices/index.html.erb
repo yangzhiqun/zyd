@@ -11,8 +11,8 @@
   <div class="item">
     <ul class="clearfix">
       <li class="item1">
-        <div>
-          <h4>1122331</h4>
+        <div onclick="getInfo('particulars','7500')">
+          <h4><%= @sum %></h4>
           <h2>总抽检批次</h2>
         </div>
       </li>
@@ -23,14 +23,14 @@
         </div>
       </li>-->
       <li class="item3">
-        <div>
-          <h4>1122331</h4>
+        <div onclick="getInfo('particulars',<%= @unqualified_for_today_id %>)">
+          <h4><%= @unqualified_for_today %></h4>
           <h2>今日不合格批次</h2>
         </div>
       </li>
       <li class="item4">
-        <div>
-          <h4>1122331</h4>
+        <div onclick="getInfo('particulars',<%= @unqualified_id %>)">
+          <h4><%= @unqualified %></h4>
           <h2>总不合格批次</h2>
         </div>
       </li>
@@ -41,53 +41,29 @@
         </div>
       </li>-->
       <li class="item8">
-        <div>
-          <h4>1122331</h4>
+        <div onclick="getInfo('particulars',<%= @report_for_24_id %>)">
+          <h4><%= @report_for_24 %></h4>
           <h2>24小时时限报告批次</h2>
         </div>
       </li>
       <li class="item6">
-        <div>
-          <h4>1122331</h4>
+        <div onclick="getInfo('particulars',<%= @unqualified_for_today_id %>)">
+          <h4><%= @unqualified_for_today %></h4>
           <h2>今日完全提交批次</h2>
         </div>
       </li>
       <li class="item7">
-        <div>
-          <h4>1122331</h4>
+        <div onclick="getInfo('particulars',<%= @complete_id %>)">
+          <h4><%= @complete %></h4>
           <h2>总完全提交批次</h2>
         </div>
       </li>
     </ul>
   </div>
 </div>
-  <div class="myTable">
-    <h2 class="data-title">被抽样单位不合格批次TOP10</h2>
-    <div class="data-list">
-      <table id = "tb_report1">
-      </table>
-    </div>
-  </div>
-</br>
-  <div class="myTable">
-    <h2 class="data-title">全省预警</h2>
-    </br>
-    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-    <div id="main" style="float:left;height:500px;width:40%;border:0px solid black;background-color:#f3f3f3"></div>
-    <div style="float:right;height:500px;width:60%;">
-      <div class="data-list" style="height:250px;padding: 5px;">
-        <table id = "tb_report2">
-
-        </table>
-      </div>
-      <div class="data-list" style="height:250px;padding: 5px;">
-        <table id = "tb_report3">
-
-        </table>
-      </div>
-    </div>
-
-  </div>
+<div id="map">
+  <%= render :partial => "index", :locals => {:info => @info,:info2 => @info2, :info3 => @info3,:data => @data} %>
 </div>
+
 </body>
 </html>

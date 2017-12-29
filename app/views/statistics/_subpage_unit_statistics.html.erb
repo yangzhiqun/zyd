@@ -1,10 +1,10 @@
 <%= javascript_include_tag "statistics/layDate/laydate","statistics/city_data","statistics/treegrad/jquery-1.3.2.min","statistics/treegrad/TreeGrid","statistics/cjdwtj" %>
 <!-- 表格数据 -->
 <div id="table_testCompany" style="margin-bottom: 100px;"></div>
-<div class="form-group topbtnSect_cqtj hide" style="float: left; width: 15%;height: 400px;">
+<div class="form-group topbtnSect_cqtj hide" style="float: left;height:auto;">
   <!-- 左侧选取栏 -->
   <label>区域：</label>
-  <select style="width: 100%;height: 400px;" class="form-control cqtj_option" multiple="multiple" id="cqtj_option"></select>
+  <table style="width: 100%;height:auto;" class="table form-control cqtj_option" multiple="multiple" id="cqtj_option"></table>
 </div>
 <!-- 右侧图表-->
 <div class="charts hide" style="float: right;width: 85%;">
@@ -24,6 +24,8 @@
     <!--</div> -->
 <!--</div>  -->
 <script>
+    var chart_data = <%= raw chart %>
+   // console.log(chart_data);
     var config = {
             id: "tg1",
             width: "100%",
@@ -62,8 +64,33 @@
         };
 
         $(document).ready(function(){
+
+            changeBtn();
+            var _cjdw_td = $(".cjdw_td");
+            _cjdw_td.each(function(i){
+                if(i == 0){
+                    console.log($(this)[i]);
+                    var _this = $(this)[i];
+                    debugger;
+                    $(_this).attr("style","background-color:#87CEEB");
+                    chart(chart_data[$(_this).text()]);
+                };
+                $(this).click(function(){
+                    _cjdw_td.css({  //清除列表颜色选中样式
+                        "backgroundColor":"transparent",
+                        "color":"#555"
+                    })
+                    $(this).css({  //标记当前选中项，添加颜色
+                        "backgroundColor":"#87CEEB",
+                        "color":"#fff"
+                    })
+                    var thisText = $(this).text();
+                    chart(chart_data[thisText]);
+                });
+            });
+
+
             treeGrid.expandAll("N");//默认关闭
-            $("#table_testCompany table tr:last td:first").children("img").remove(); //删除最后图标
             $(".allcheck").click(function(){
                 $("#tg1").find("input[name='cblbox']").attr("checked",$(this).attr("checked"));
             });
@@ -142,7 +169,7 @@
         num = row[col.dataField].length;
         name = row[col.dataField] || [];
         if(col.dataField=='dcisposed'||col.dataField=='disposeing'){
-            url = '';
+            url = 'hccz_particulars';
         }else{
             url = 'particulars';
         }

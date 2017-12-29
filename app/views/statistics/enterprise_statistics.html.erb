@@ -46,13 +46,11 @@
     <script type="text/javascript">
     $(".leftsidebar_box dt").css({"background-color":"#3992d0"});
     $(".leftsidebar_box dt img").attr("src","../images/left.png");
+    var areaInfo;
     $(function(){
         //$('.topbtnSect_cqtj').children().hide();
         changeBtn();
         getData(info);
-        $('#restBtn').click(function(event) {
-            $('#cqtj_option').val('');
-        });
         var data = <%= raw @chart %>
         chart(data);
     })
@@ -206,10 +204,12 @@
     </div>
   <div class="content">
     <!-- 左侧选取栏 -->
-    <div class="content_left" style="float: left; width: 10%;height: 400px;">
-      <label>区域：</label>
+    <div class="content_left" style="float: left; width: auto;height: 400px;">
+      <table style="width: 100%;height:500px;padding:0;overflow:auto;" class="table form-control cqtj_option" multiple="multiple" id="cqtj_option"></table>
+
+      <!--<label>区域：</label>
       <select style="width: 100%;height: 400px;" class="form-control cqtj_option" id="cqtj_option"  multiple="multiple"></select>
-    </div>
+    --></div>
      <!-- 右侧表格 -->
     <div class="content_bottom data-list" style="float: right;width: 85%;margin:0 auto 80px;">
         <!-- 生产企业覆盖率 -->

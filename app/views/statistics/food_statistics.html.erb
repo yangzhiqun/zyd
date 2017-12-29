@@ -36,7 +36,7 @@
                     <%= f.select :sp_s_70_eq, BaosongA.all.map { |b| [b.name, b.name] },{:include_blank =>"请选择"},class:"form-control foodcateSelect_option",id:"checkbox_optionH"%>
                 </div>
               </div>
-                <div class="fillpage-date">
+                <div class="fillpage-date" style="height:36px;">
                   <span>样品填报时间：</span>
                   <div class="form-group">
                     <%= f.label :选择时间,class:"sr-only",for:"q_time" %>
@@ -44,8 +44,9 @@
                   </div>
                 </div>
                 <div class="taskbtn_operBox">
-                  <button type="submit" class="btn btn-default taskbtn_query" id="search" >查询</button>
-                  <button type="submit" class="btn btn-default taskbtn_export bgc1 btn-primary">导出列表</button>
+                  <button type="submit" class="btn btn-default taskbtn_query" id="search">查询</button>
+                  <button type="submit" class="btn btn-default taskbtn_export bgc1 btn-primary" id="save">导出列表</button>
+                  <input type="hidden" name="is_export" value="0" id="is_export">
                 </div>
             <% end %>
         </div>
@@ -103,9 +104,14 @@
         };
 
         $(document).ready(function(){
-            $("#div1 table tr:last td:first").children("img").remove(); //删除最后图标
             $(".allcheck").click(function(){
                 $("#tg1").find("input[name='cblbox']").attr("checked",$(this).attr("checked"));
+            });
+            $("#search").click(function(){
+              $("#is_export").val("0");
+            });
+            $("#save").click(function(){
+              $("#is_export").val("1");
             });
 
             // 时间区域选取
@@ -182,7 +188,7 @@
             num = row[col.dataField].length;
             name = row[col.dataField] || [];
             if(col.dataField=='Disposed'||col.dataField=='Disposal'){
-                url = '';
+                url = 'hccz_particulars';
             }else{
                 url = 'particulars';
             }
