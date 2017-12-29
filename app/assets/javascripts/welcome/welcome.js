@@ -150,7 +150,8 @@ function charts(data){
     //点击事件
     myChart.on('click', function(params) {
         var url = "/welcome_notices";
-        ajaxInfo(url,params.name,'0');
+        var  data = {"name": params.name};
+        ajaxInfo(url,data,'0');
     });
 
 }
@@ -266,7 +267,10 @@ function getData2(info){
                 align : 'center',
                 formatter : function (value, row, index) {
                     //var info = "<a href='javascript:void(0);' onclick = getInfo('particulars','"+row.id+"');>"+value+"</a>"
-                    var info = "<a href='javascript:void(0);' onclick = ajaxInfo('url','"+row.id+"','1')>"+value+"</a>";
+                    var url = "/welcome_notices";
+                    var  params = "{"+'"cydh"'+":"+'"'+value +'"'+"}";
+                    var info = "<a href='javascript:void(0);' onclick = ajaxInfo('"+url+"','"+params+"','1')>"+value+"</a>";
+                    
                     return info;
                 }
             },
@@ -343,20 +347,18 @@ function getData3(info){
  * @param flag 类型 0，点击地图；1，点击抽样编号
  */
 function ajaxInfo(url,params,flag){
-
+     var  data = (typeof(params) == "object") ?  params : JSON.parse(params)
      $.ajax({
      type : "get",
      async : false, //异步执行
      url : url,
-     data : {"name": params},
+     data : data,
      dataType : 'json', //返回数据形式为json
      success : function(json) {
          if(flag=='1'){
          //先销毁表格
-         $('#tb_report2').bootstrapTable('destroy');
          $('#tb_report3').bootstrapTable('destroy');
-             getData2(json);
-             getData3(json);
+          getData3(JSON.parse(json.info3));
          }else if(flag=='2'){
          $('#tb_report3').bootstrapTable('destroy');
              getData3(json);

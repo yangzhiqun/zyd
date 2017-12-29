@@ -553,7 +553,7 @@ class SpBsb < ActiveRecord::Base
   end
 
   CyType = {'sc' => '生产','lt' => '流通','cy' => '餐饮'  }
-  def self.unqualified_for_bcydw(sp_s_4) 
+  def self.unqualified_for_bcydw(sp_s_4,cydh) 
     @bycdw =SpBsb.select("id,sp_s_4,sp_s_1,sp_s_14,sp_s_17,sp_s_14,sp_s_16,sp_s_68,count(*) as count").unqualified.group(:sp_s_1).order("count(*) desc").limit(10)
     if sp_s_4.present?
       @bycdw = @bycdw.where("sp_s_4 = ? or sp_s_4 =?",sp_s_4,sp_s_4.delete("市"))  
@@ -569,6 +569,9 @@ class SpBsb < ActiveRecord::Base
       @ids =[]
     end
    @sp_spdata = @bycdw.group(:sp_s_4)
+   if cydh.present?
+     @sp_spdata = @sp_spdata.where(sp_s_16: cydh)
+   end   
    @info3 = []
    jyxm = ""
    @sp_spdata.each do |sp|
