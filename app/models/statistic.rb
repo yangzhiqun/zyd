@@ -127,17 +127,19 @@ class Statistic < ActiveRecord::Base
         overdue["x"] << city_name
         city_arr.each do |sp_chaoqi|
           #核查领取超期
-          wtyp_czb_p[sp_chaoqi.id].reverse_each do |wty|
-            if wty.current_state == 1
-              sp_logs[sp_chaoqi.id].reverse_each do |log|
-                if log.sp_i_state == 9
-                  hclq+=1 if days_between(Time.now,log.created_at) > 7
-                  break 
+          if wtyp_czb_p.has_key?(sp_chaoqi.id)
+            wtyp_czb_p[sp_chaoqi.id].reverse_each do |wty|
+              if wty.current_state == 1
+                sp_logs[sp_chaoqi.id].reverse_each do |log|
+                  if log.sp_i_state == 9
+                    hclq+=1 if days_between(Time.now,log.created_at) > 7
+                    break 
+                  end
                 end
+                break
               end
-              break
-            end
-          end 
+            end 
+          end
           #处置完成超期
           if wtyp_czb_logs.has_key?(sp_chaoqi.id)
             wtyp_czb_logs[sp_chaoqi.id].reverse_each do |log|
