@@ -601,24 +601,24 @@ class StatisticsController < ApplicationController
   end
 
   def region_power
-    return "","sp_s_4",0 if is_sheng? 
+    return "","sp_s_4",0 if is_sheng? or current_user.is_admin? 
     return "sp_s_4 = '#{current_user.prov_city}'","sp_s_4",1 if is_city? 
     return "sp_s_5 = '#{current_user.prov_country}'","sp_s_5",2 if is_county_level? 
   end
 
   def disposal_power(region=nil)
     if region.blank?
-      return "" if is_sheng? 
+      return "" if is_sheng? or current_user.is_admin? 
       return "sp_s_4='#{current_user.prov_city}' or sp_s_wcshi='#{current_user.prov_city}' or sp_s_220='#{current_user.prov_city}'" if is_city? 
       return "sp_s_5='#{current_user.prov_country}' or sp_s_wcxian='#{current_user.prov_country}' or sp_s_221='#{current_user.prov_country}'" if is_county_level? 
     else
-      return "sp_s_4='#{region}' or sp_s_wcshi='#{region}' or sp_s_220='#{region}'" if is_sheng?
+      return "sp_s_4='#{region}' or sp_s_wcshi='#{region}' or sp_s_220='#{region}'" if is_sheng? or current_user.is_admin?
       return "sp_s_5='#{region}' or sp_s_wcxian='#{region}' or sp_s_221='#{region}'" if is_city? or is_county_level? 
     end
   end
 
   def unit_power
-    return "city != '-请选择-' and jg_province = '#{current_user.user_s_province}'","city" if is_sheng?
+    return "city != '-请选择-' and jg_province = '#{current_user.user_s_province}'","city" if is_sheng? or current_user.is_admin?
     return "city = '#{current_user.prov_city}'","city" if is_city?
     return "country = '#{current_user.prov_country}'","country" if is_county_level?
   end 
@@ -626,7 +626,7 @@ class StatisticsController < ApplicationController
   def nonconformity_power
     region = {}
     code_h = Statistic::Daily["region"].to_h
-    return code_h,code_h.first if is_sheng?
+    return code_h,code_h.first if is_sheng? or current_user.is_admin?
     name = code_h.has_key?(current_user.prov_city+"市") ? current_user.prov_city+"市" : current_user.prov_city
     region[name] = code_h[name] if code_h.has_key?(name)
     return region,region.first if is_city?
