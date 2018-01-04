@@ -518,21 +518,22 @@ class SpBsb < ActiveRecord::Base
 
 
   def self.statistics
-    complete_id,unqualified_id,report_for_24_id,unqualified_for_today_id,complete_for_today_id =[],[],[],[],[] #完全提交id
-    sp_bsb = SpBsb.all
+    sum_id,complete_id,unqualified_id,report_for_24_id,unqualified_for_today_id,complete_for_today_id =[],[],[],[],[] #完全提交id
+    sp_bsb = SpBsb.select(:id).all
     sum = sp_bsb.count
+    sum_id = sp_bsb.map(&:id)
     complete = sp_bsb.where("sp_bsbs.sp_i_state = 9") #总完全提交
-    complete.each{|sp| complete_id << sp.id }   #总完全提交id
+    complete_id = complete.map(&:id)
     report_for_24 = sp_bsb.where(bgfl: "24小时限时报告") #24小时限时报告
-    report_for_24.each{|sp| report_for_24_id << sp.id}
+    report_for_24_id = report_for_24.map(&:id)
     unqualified = complete.where("(sp_bsbs.sp_s_71 like '%不合格样品%' or sp_bsbs.sp_s_71 like '%问题样品%')") # 不合格
-    unqualified.each{|sp| unqualified_id << sp.id }
+    unqualified_id = unqualified.map(&:id)
     unqualified_for_today = unqualified.where(" sp_bsbs.updated_at BETWEEN ? AND ? ",Time.new.beginning_of_day,Time.new.end_of_day) #今日不合格
-    unqualified_for_today.each{|sp| unqualified_for_today_id << sp.id}
+    unqualified_for_today_id = unqualified_for_today.map(&:id)
     complete_for_today = complete.where(" sp_bsbs.updated_at BETWEEN ? AND ? ",Time.new.beginning_of_day,Time.new.end_of_day) #今日完全提交
-    complete_for_today.each{|sp| complete_for_today_id << sp.id}
+    complete_for_today_id = complete_for_today.map(&:id)
     #返回 总抽检    总完全提交    24小时限时报告批次 不合格 今日不合格  今日完全提交
-    return sum, complete.count,complete_id,report_for_24.count,report_for_24_id,unqualified.count,unqualified_id,unqualified_for_today.count,unqualified_for_today_id,complete_for_today.count,complete_for_today_id
+    return sum,sum_id, complete.count,complete_id,report_for_24.count,report_for_24_id,unqualified.count,unqualified_id,unqualified_for_today.count,unqualified_for_today_id,complete_for_today.count,complete_for_today_id
   end
 
   def self.warning_map_data

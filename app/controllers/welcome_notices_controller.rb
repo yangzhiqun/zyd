@@ -6,10 +6,12 @@ class WelcomeNoticesController < ApplicationController
   # GET /welcome_notices
   # GET /welcome_notices.json
   def index
-    @welcome_notices = WelcomeNotice.order("top desc, updated_at desc")
-    @sp_bsbs,@ending_time,@begin_time = SpBsb.search({},session[:change_js],current_user,is_sheng?,is_city?,is_county_level?,is_shengshi?,all_super_departments,"spsearch")
-    @sp_bsbs = @sp_bsbs.where(bgfl:"24小时限时报告").length
-    @sum,@complete,@complete_id,@report_for_24,@report_for_24_id,@unqualified,@unqualified_id,@unqualified_for_today,@unqualified_for_today_id,@complete_for_today,@complete_for_today_id = SpBsb.statistics
+    #@welcome_notices = WelcomeNotice.order("top desc, updated_at desc")
+    #@sp_bsbs,@ending_time,@begin_time = SpBsb.search({},session[:change_js],current_user,is_sheng?,is_city?,is_county_level?,is_shengshi?,all_super_departments,"spsearch")
+    #@sp_bsbs = @sp_bsbs.where(bgfl:"24小时限时报告").length
+    if !params[:cydh]
+    @sum,@sum_id,@complete,@complete_id,@report_for_24,@report_for_24_id,@unqualified,@unqualified_id,@unqualified_for_today,@unqualified_for_today_id,@complete_for_today,@complete_for_today_id = SpBsb.statistics
+    end
     @info,@info2,@info3 = SpBsb.unqualified_for_bcydw(params[:name],params[:cydh])
     @data = SpBsb.warning_map_data.to_json
    if params[:name]
